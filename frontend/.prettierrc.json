@@ -1,0 +1,28 @@
+{
+  "printWidth": 100,
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "semi": true,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "endOfLine": "auto",
+  "jsxSingleQuote": false,
+  "singleQuote": false,
+  "proseWrap": "preserve",
+  "quoteProps": "as-needed",
+  "useTabs": false,
+  "htmlWhitespaceSensitivity": "css",
+  "importOrderSeparation": false,
+  "importOrderSortSpecifiers": true,
+  "importOrder": [
+    "styles/globals.scss",
+    "^react",
+    "^next(/)",
+    "<THIRD_PARTY_MODULES>",
+    "^components(/)?(.*)$",
+    "^util(/)?(.*)$",
+    "^data(/)?(.*)$",
+    "^styles(/)?(.*)$",
+    "^[./]"
+  ]
+}
