@@ -8,4 +8,6 @@ app.listen(port, () => {
     logger.info(`======= ENV: ${process.env.NODE_ENV} =======`);
     logger.info(`🚀 App listening on the port ${port}`);
     logger.info("=================================");
+}).on("error", (err) => {
+    logger.error(err);
 });
