@@ -9,5 +9,6 @@ app.listen(port, () => {
     logger.info(`🚀 App listening on the port ${port}`);
     logger.info("=================================");
 }).on("error", (err) => {
-    logger.error(err);
+    logger.error(err.message);
+    console.error(err);
 });
