@@ -13,4 +13,4 @@ COPY . /app
 
 EXPOSE 8080
 
-ENTRYPOINT yarn run start
+ENTRYPOINT yarn run dev

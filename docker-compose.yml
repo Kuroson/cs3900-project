@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   frontend:
-    image: frontend
+    image: 3900-githappens-frontend
     build: ./frontend
     restart: always
     networks:
@@ -14,7 +14,7 @@ services:
       - /app/node_modules
       - /app/.next
   backend:
-    image: backend
+    image: 3900-githappens-backend
     build: ./backend
     restart: always
     networks:
