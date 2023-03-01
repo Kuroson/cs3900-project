@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import { GetServerSideProps } from "next";
-import { AuthAction, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { Footer, Header } from "components";
 import initAuth from "util/firebase";
 
@@ -14,6 +14,9 @@ type HomePageProps = {
 
 const HomePage = ({ email }: HomePageProps): JSX.Element => {
   console.log("On client side,", email);
+
+  const authUser = useAuthUser();
+
   return (
     <>
       <Head>
@@ -25,15 +28,25 @@ const HomePage = ({ email }: HomePageProps): JSX.Element => {
       <div className="w-full flex flex-col px-[5%]">
         <h1 className="text-center pt-4 text-4xl">stuff {email}</h1>
         <div className="flex flex-row justify justify-center py-10">stuff</div>
-        <div className="w-[100px]">
-          <Button
-            variant="contained"
-            onClick={() => {
-              signOut(getAuth());
-            }}
-          >
-            Logout
-          </Button>
+        <div className="flex flex-col items-center">
+          <div className="w-[100px]">
+            <Button
+              variant="outlined"
+              onClick={() => {
+                signOut(getAuth());
+              }}
+            >
+              Logout
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                console.log(authUser);
+              }}
+            >
+              Debug
+            </Button>
+          </div>
         </div>
       </div>
       <Footer />
