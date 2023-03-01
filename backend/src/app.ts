@@ -1,6 +1,7 @@
 import errorMiddleware from "@middlewares/error.middleware";
 import { logger, stream } from "@utils/logger";
 import cors from "cors";
+import { config } from "dotenv";
 import express from "express";
 import helmet from "helmet";
 import hpp from "hpp";
@@ -8,6 +9,10 @@ import { connect, set } from "mongoose";
 import morgan from "morgan";
 import { exit } from "process";
 import { indexRouter } from "./routes";
+import validateEnv from "./utils/validateEnv";
+
+config({ path: ".env" });
+validateEnv();
 
 export const app = express();
 
