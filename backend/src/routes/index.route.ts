@@ -31,7 +31,7 @@ export const indexController = async (req: Request, res: Response): Promise<void
             console.log(res);
         })
         .catch((err) => {
-            console.error(res);
+            console.error(err);
         });
     res.json({ message: "Hello World" });
 };
