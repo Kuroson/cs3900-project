@@ -9,6 +9,8 @@ const validateEnv = cleanEnv(process.env, {
     FIREBASE_PRIVATE_KEY: str(),
     FIREBASE_PROJECT_ID: str(),
     FIREBASE_CLIENT_EMAIL: str(),
+    MONGODB_USERNAME: str(),
+    MONGODB_PASSWORD: str(),
 });
 
 export default validateEnv;

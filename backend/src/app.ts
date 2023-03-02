@@ -8,6 +8,7 @@ import { connect, set } from "mongoose";
 import morgan from "morgan";
 import { exit } from "process";
 import { indexRouter } from "./routes";
+import validateEnv from "./utils/validateEnv";
 
 export const app = express();
 
@@ -19,14 +20,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(errorMiddleware);
 
-// connect("")
-//     .then((res) => {
-//         logger.info("Connected to MongoDB");
-//     })
-//     .catch((err) => {
-//         logger.error("Failed to connected to MongoDB");
-//         exit(1);
-//     });
+const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/?retryWrites=true&w=majority`;
+
+connect(mongoDBURI)
+    .then((res) => {
+        logger.info("Connected to MongoDB");
+    })
+    .catch((err) => {
+        logger.error("Failed to connected to MongoDB");
+        exit(1);
+    });
 
 // Add routes
 app.use("/", indexRouter);
