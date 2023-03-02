@@ -33,3 +33,8 @@ connect(mongoDBURI)
 
 // Add routes
 app.use("/", indexRouter);
+
+// Ensure this is last
+app.get("*", (req, res) => {
+    return res.status(404).json({ message: "Route does not exist" });
+});
