@@ -1,5 +1,7 @@
 import errorMiddleware from "@middlewares/error.middleware";
+import { indexRouter } from "@routes/index";
 import { logger, stream } from "@utils/logger";
+import validateEnv from "@utils/validateEnv";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
@@ -7,8 +9,6 @@ import hpp from "hpp";
 import { connect, set } from "mongoose";
 import morgan from "morgan";
 import { exit } from "process";
-import { indexRouter } from "./routes";
-import validateEnv from "./utils/validateEnv";
 
 export const app = express();
 
