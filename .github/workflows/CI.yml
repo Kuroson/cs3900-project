@@ -38,8 +38,16 @@ jobs:
       - name: Prettier
         run: yarn prettier
       - name: Build
+        env:
+          FIREBASE_PRIVATE_KEY: ${{ secrets.BACKEND_FIREBASE_PRIVATE_KEY }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
         run: yarn build
       - name: Run tests
+        env:
+          FIREBASE_PRIVATE_KEY: ${{ secrets.BACKEND_FIREBASE_PRIVATE_KEY }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
         run: yarn test
   backend-docker:
     runs-on: ubuntu-latest
