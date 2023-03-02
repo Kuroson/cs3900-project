@@ -51,7 +51,7 @@ export const exampleController = async (
         } else {
             throw new HttpException(
                 400,
-                `Missing body f: ${getMissingBodyIDs<QueryPayload>(req.body, ["message"])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, ["message"])}`,
             );
         }
     } catch (error) {

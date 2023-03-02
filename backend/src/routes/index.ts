@@ -5,4 +5,4 @@ import { indexController } from "./index.route";
 export const indexRouter = Router();
 
 indexRouter.get("/", indexController);
-indexRouter.get("/example", exampleController);
+indexRouter.all("/example", exampleController);

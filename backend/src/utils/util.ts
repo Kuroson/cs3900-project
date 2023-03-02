@@ -9,7 +9,11 @@ export const isValidBody = <T extends Record<string, unknown>>(
     body: any,
     fields: Array<keyof T>,
 ): body is T => {
-    return Object.keys(body).every((key) => fields.includes(key));
+    if (fields.length !== 0 && Object.keys(body).length === 0) return false;
+    return Object.keys(body).every((key) => {
+        console.log(key, fields.includes(key));
+        return fields.includes(key);
+    });
 };
 
 /**
