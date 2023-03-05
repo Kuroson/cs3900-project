@@ -1,0 +1,34 @@
+{
+    "printWidth": 100,
+    "trailingComma": "all",
+    "tabWidth": 4,
+    "semi": true,
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "endOfLine": "auto",
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "quoteProps": "as-needed",
+    "useTabs": false,
+    "overrides": [
+        {
+            "files": "*.yml",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ],
+    "importOrderSeparation": false,
+    "importOrderSortSpecifiers": true,
+    "importOrder": [
+        "styles/globals.scss",
+        "^react",
+        "^next(/)",
+        "<THIRD_PARTY_MODULES>",
+        "^components(/)?(.*)$",
+        "^util(/)?(.*)$",
+        "^data(/)?(.*)$",
+        "^styles(/)?(.*)$",
+        "^[./]"
+    ]
+}

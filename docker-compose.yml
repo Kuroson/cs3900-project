@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: 3900-githappens-frontend
+    build: ./frontend
+    restart: always
+    networks:
+      - 3900-network
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+  backend:
+    image: 3900-githappens-backend
+    build: ./backend
+    restart: always
+    networks:
+      - 3900-network
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+networks:
+  3900-network:
+    driver: bridge
