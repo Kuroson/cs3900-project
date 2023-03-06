@@ -1,6 +1,7 @@
 describe("Login tests", () => {
   beforeEach(() => {
     indexedDB.deleteDatabase("firebaseLocalStorageDb"); // Reset firebase localstorage login
+    cy.viewport(1920, 1080);
     cy.visit("http://localhost:3000/");
   });
 
@@ -8,7 +9,7 @@ describe("Login tests", () => {
     cy.location("pathname").should("eq", "/login");
     cy.get("#email-input").focus().type("cypress@test.com");
     cy.get("#outlined-password-input").focus().type("password");
-    cy.get("#loginSubmissionButton").click();
+    cy.get("#submit-form-button").click();
     cy.wait(250);
     cy.get(".Toastify > div").should("exist"); // Error
   });
@@ -17,7 +18,7 @@ describe("Login tests", () => {
     cy.location("pathname").should("eq", "/login");
     cy.get("#email-input").focus().type("cypress@test.com");
     cy.get("#outlined-password-input").focus().type("cypress1234"); // TODO: convert to env variable maybe
-    cy.get("#loginSubmissionButton").click();
+    cy.get("#submit-form-button").click();
     cy.wait(250);
     cy.get(".Toastify > div").should("not.exist"); // Error
     cy.location("pathname").should("eq", "/");

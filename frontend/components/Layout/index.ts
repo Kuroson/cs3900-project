@@ -1,6 +1,6 @@
 import ContentContainer from "./ContentContainer";
 import Footer from "./Footer/Footer";
-import Header from "./Header/Header";
 import Layout from "./Layout";
+import SideNavbar from "./SideNavBar";
 
-export { ContentContainer, Header, Footer, Layout };
+export { ContentContainer, SideNavbar, Footer, Layout };

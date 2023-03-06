@@ -1,3 +1,4 @@
+import Footer from "./Footer/Footer";
 import styles from "./Layout.module.scss";
 
 type LayoutProps = {
@@ -5,5 +6,11 @@ type LayoutProps = {
 };
 
 export default function Layout({ children }: LayoutProps): JSX.Element {
-  return <div className={styles.mainContent}>{children}</div>;
+  return (
+    <div className={styles.mainContent}>
+      {children}
+      <div></div>
+      <Footer />
+    </div>
+  );
 }
