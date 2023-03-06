@@ -15,7 +15,7 @@ type QueryPayload = {
     email: string;
 };
 
-const registerUser = async (
+export const registerUser = async (
     firstName: string,
     lastName: string,
     email: string,
