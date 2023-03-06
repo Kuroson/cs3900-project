@@ -1,5 +1,5 @@
 import { HttpException } from "@/exceptions/HttpException";
-import User from "@/models/users.model";
+import User from "@/models/user.model";
 import { app } from "@/utils/firebase";
 import { Request, Response } from "express";
 import { getAuth } from "firebase-admin/auth";
