@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import errorMiddleware from "@middlewares/error.middleware";
 import { indexRouter } from "@routes/index";
 import { logger, stream } from "@utils/logger";
