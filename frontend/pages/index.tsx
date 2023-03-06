@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { Footer, Header } from "components";
+import { SideNavbar } from "components";
 import { HttpException } from "util/HttpExceptions";
 import { examplePost } from "util/api";
 import initAuth from "util/firebase";
@@ -68,7 +68,7 @@ const HomePage = ({ email }: HomePageProps): JSX.Element => {
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <Header />
+      <SideNavbar />
       <div className="w-full flex flex-col px-[5%]">
         <h1 className="text-center pt-4 text-4xl">stuff {email}</h1>
         <div className="flex flex-row justify justify-center py-10">stuff</div>
@@ -109,8 +109,7 @@ const HomePage = ({ email }: HomePageProps): JSX.Element => {
             </Button>
           </div>
         </div>
-      </div>
-      <Footer />
+      </div>{" "}
     </>
   );
 };

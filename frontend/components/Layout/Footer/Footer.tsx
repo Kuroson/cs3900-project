@@ -3,7 +3,7 @@ import styles from "../Layout.module.scss";
 
 export default function Footer(): JSX.Element {
   return (
-    <div className={styles.footer}>
+    <footer className={styles.footer}>
       <div className="w-full h-full bg-blue-400">
         <ContentContainer>
           <div className="h-full grid place-items-center">
@@ -11,6 +11,6 @@ export default function Footer(): JSX.Element {
           </div>
         </ContentContainer>
       </div>
-    </div>
+    </footer>
   );
 }
