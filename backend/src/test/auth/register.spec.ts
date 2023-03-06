@@ -9,9 +9,14 @@ describe("Test creation of new User", () => {
 
     it("Should create new user", async () => {
         const id = Date.now();
-        await registerUser(`firstJest${id}`, `lastJest${id}`, `jest-${id}@test.com`, id.toString());
+        await registerUser(
+            `firstJest${id}`,
+            `lastJest${id}`,
+            `jest-${id}@delete.com`,
+            id.toString(),
+        );
 
-        const res = await User.find({ email: `jest-${id}@test.com` }).exec();
+        const res = await User.find({ email: `jest-${id}@delete.com` }).exec();
         expect(res.length).toBe(1);
         const user = res.at(0);
         expect(user?.firebase_uid).toBe(id.toString());
@@ -22,9 +27,9 @@ describe("Test creation of new User", () => {
 
     it("Instructor if admin is in email", async () => {
         const id = Date.now();
-        await registerUser(`admin${id}`, `lastJest${id}`, `admin-${id}@test.com`, id.toString());
+        await registerUser(`admin${id}`, `lastJest${id}`, `admin-${id}@delete.com`, id.toString());
 
-        const res = await User.find({ email: `admin-${id}@test.com` }).exec();
+        const res = await User.find({ email: `admin-${id}@delete.com` }).exec();
 
         expect(res.length).toBe(1);
         const user = res.at(0);
