@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
@@ -37,9 +38,15 @@ const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): 
       />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center items-center px-[5%]">
-          <h1 className="text-xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
-            Welcome, {`${firstName} ${lastName}`}
+          <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
+            <span className="ml-4">Welcome, {`${firstName} ${lastName}`}</span>
           </h1>
+          <div className="w-full flex flex-col">
+            <h2 className="text-2xl w-full ml-4 m-0">Course Overview</h2>
+            <div className="ml-4 pt-5">
+              <TextField id="outlined-search" label="Search field" type="search" />
+            </div>
+          </div>
         </div>
       </ContentContainer>
       <LeftSideBar />
