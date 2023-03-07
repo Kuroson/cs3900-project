@@ -1,6 +1,4 @@
 import Head from "next/head";
-import { Button } from "@mui/material";
-import { getAuth, signOut } from "firebase/auth";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
