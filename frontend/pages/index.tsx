@@ -36,7 +36,11 @@ const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): 
         avatarURL={avatar}
       />
       <ContentContainer>
-        <div>Stuff</div>
+        <div className="flex flex-col w-full justify-center items-center px-[5%]">
+          <h1 className="text-xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
+            Welcome, {`${firstName} ${lastName}`}
+          </h1>
+        </div>
       </ContentContainer>
       <LeftSideBar />
       <Footer />
