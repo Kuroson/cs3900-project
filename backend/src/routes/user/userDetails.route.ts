@@ -17,19 +17,20 @@ type ResponsePayload = {
     avatar: string;
 };
 
-const getUserDetails = async (email?: string): Promise<Nullable<ResponsePayload>> => {
+export const getUserDetails = async (email?: string): Promise<Nullable<ResponsePayload>> => {
     if (email === undefined) throw new HttpException(401, "Bad token. No email");
 
     logger.info(`Getting user details for ${email}`);
     const res = await User.find({ email: email }).exec();
-    if (res.length !== 0) throw new HttpException(400, "Email associated with token doesn't exist");
+    if (res.length === 0)
+        throw new HttpException(400, `Email associated with token doesn't exist: ${email}`);
     const user = res.at(0);
     return {
         firstName: user?.first_name ?? null,
         lastName: user?.last_name ?? null,
         email: user?.email ?? null,
         role: user?.role ?? null,
-        avatar: user?.avatar ?? null,
+        avatar: null, // TODO return avatar once implemented
     };
 };
 
