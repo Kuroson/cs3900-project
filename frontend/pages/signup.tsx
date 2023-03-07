@@ -6,7 +6,7 @@ import { TextField } from "@mui/material";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { GetStaticProps } from "next";
 import { AuthAction, withAuthUser } from "next-firebase-auth";
-import { ContentContainer, SideNavbar } from "components";
+import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
 import { HttpException } from "util/HttpExceptions";
 import { PROCESS_BACKEND_URL, apiPost } from "util/api";
 import { isValidEmail, isValidPassword } from "util/authVerficiation";
@@ -263,6 +263,8 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
           </div>
         </form>
       </ContentContainer>
+      <LeftSideBar />
+      <Footer />
     </>
   );
 };

@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { SideNavbar } from "components";
+import { Footer, LeftSideBar, SideNavbar } from "components";
 import { HttpException } from "util/HttpExceptions";
 import { examplePost } from "util/api";
 import initAuth from "util/firebase";
@@ -109,7 +109,9 @@ const HomePage = ({ email }: HomePageProps): JSX.Element => {
             </Button>
           </div>
         </div>
-      </div>{" "}
+      </div>
+      <LeftSideBar />
+      <Footer />
     </>
   );
 };
