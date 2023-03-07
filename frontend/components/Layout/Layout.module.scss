@@ -3,24 +3,24 @@
   margin: 0 auto;
   display: grid;
   grid-template-areas:
-    "topbar"
-    "content"
-    "footer";
-  navBar {
-    grid-area: navBar;
-  }
+    "sidebar-left content sidebar-right"
+    "footer   footer  footer";
   main {
     grid-area: content;
   }
   footer {
     grid-area: footer;
+    width: 100%;
+    z-index: 100;
   }
-  grid-template-rows: 5rem auto 4rem;
+  grid-template-rows: auto 4rem;
+  grid-template-columns: 13rem 6fr 13rem;
 }
 
-.header {
-  position: fixed; /* Set the navbar to fixed position */
-  top: 0; /* Position the navbar at the top of the page */
-  width: 100%; /* Full width */
+.headerStuff {
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
   z-index: 10;
 }

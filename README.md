@@ -4,4 +4,4 @@
 - Stephanie Liaw (z5205661)
 - Alvin Cherk (z5311001)
 - Aditi Nitturkar (z5233984)
-- Charlene Kwok (z5....)
+- Charlene Kwok (z5309564)

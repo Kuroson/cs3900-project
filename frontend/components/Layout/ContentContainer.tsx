@@ -4,10 +4,10 @@ type ContentContainerProps = {
 
 export default function ContentContainer({ children }: ContentContainerProps): JSX.Element {
   return (
-    <div className="w-full h-full grid place-items-center">
+    <main className="w-full h-full flex justify-center items-center">
       <div className="w-full h-full max-w-screen-2xl">
-        <div className="px-6 h-full">{children}</div>
+        <div className="h-full w-full">{children}</div>
       </div>
-    </div>
+    </main>
   );
 }
