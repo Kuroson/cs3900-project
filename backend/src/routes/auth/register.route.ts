@@ -34,7 +34,7 @@ export const registerUser = async (
         email: email,
         enrolments: [],
         role: role,
-        avatar: "",
+        avatar: "", // TODO
     });
 
     await newUser
