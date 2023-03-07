@@ -10,7 +10,7 @@ type ResponsePayload = {
     message?: string;
 };
 
-type QueryPayload = {};
+type QueryPayload = Record<string, never>;
 
 export const adminController = async (
     req: Request<QueryPayload>,
