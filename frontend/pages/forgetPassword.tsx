@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import { LoadingButton } from "@mui/lab";
 import { Button, TextField } from "@mui/material";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { GetStaticProps } from "next";
 import { AuthAction, withAuthUser } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
@@ -34,6 +35,23 @@ const ForgetPasswordPage = (): JSX.Element => {
 
     setLoading(true);
     // Send request to backendAPI;
+    await sendPasswordResetEmail(getAuth(), email)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        if (err?.code === "auth/user-not-found") {
+          toast.error("Email does not exist!");
+        } else if (err?.code === "auth/too-many-requests") {
+          toast.error("Too many requests! Please try again later");
+        } else if (err?.code === "auth/invalid-email") {
+          toast.error("Invalid email");
+        } else {
+          console.error(err);
+          toast.error("Something went wrong! Please try again later");
+        }
+      });
+
     setLoading(false);
     return;
   };
