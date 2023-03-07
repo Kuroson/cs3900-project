@@ -83,7 +83,7 @@ const LoginPage = (): JSX.Element => {
                 <span className="underline text-base mx-1 py-1">Forget Password</span>
               </Link>
             </div>
-            <div className="w-[25rem] mt-4">
+            <div className="w-[25rem] my-4">
               <LoadingButton
                 variant="contained"
                 id="submit-form-button"
@@ -93,6 +93,12 @@ const LoginPage = (): JSX.Element => {
               >
                 Login
               </LoadingButton>
+            </div>
+            <div className="w-[25rem]">
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className="underline">
+                Sign Up
+              </Link>
             </div>
           </div>
         </form>
