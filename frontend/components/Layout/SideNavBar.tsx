@@ -2,11 +2,34 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 
-type SideNavBarProps = {
+type SideNavBarProps = UserDetailsProps & {
   empty?: boolean;
 };
 
-export default function SideNavbar({ empty }: SideNavBarProps): JSX.Element {
+type UserDetailsProps = {
+  fullName?: string;
+  role?: string;
+  avatarURL?: string;
+};
+
+const UserDetails = ({ fullName, role, avatarURL }: UserDetailsProps): JSX.Element => {
+  return (
+    <div className="outline mt-5 ml-5 flex flex-row">
+      <div className="w-[50px] h-[50px] bg-orange-500 rounded-full">{/* Avatar here */}</div>
+      <div className="flex flex-col pl-2">
+        <span className="font-bold">{fullName}</span>
+        <span>{role}</span>
+      </div>
+    </div>
+  );
+};
+
+export default function SideNavbar({
+  empty,
+  fullName,
+  role,
+  avatarURL,
+}: SideNavBarProps): JSX.Element {
   if (empty === true) {
     return <div></div>;
   }
@@ -24,9 +47,7 @@ export default function SideNavbar({ empty }: SideNavBarProps): JSX.Element {
         <div className="w-full flex flex-col justify-between h-[calc(100%_-_4rem)]">
           <div>
             {/* Top */}
-            <Link href="/">
-              <h1 className="text-2xl font-bold mt-4 px-4 py-2 text-center">Git Happens</h1>
-            </Link>
+            <UserDetails fullName={fullName} role={role} avatarURL={avatarURL} />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}
