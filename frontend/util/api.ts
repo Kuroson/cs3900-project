@@ -52,7 +52,39 @@ export const apiPost = async <T extends Record<string, unknown>, U extends Recor
     return [data, null];
   } catch (err) {
     console.error("Error with posting to example");
-    console.error(err);
+    return [null, err];
+  }
+};
+
+export const apiGet = async <T extends Record<string, string>, U extends Record<string, unknown>>(
+  url: string,
+  token: string | null,
+  queryParams: T,
+): Promise<[U | null, null | Error | any]> => {
+  try {
+    const generateURL = () => {
+      const urlParams = new URLSearchParams({ ...queryParams });
+      if (urlParams.entries.length === 0) {
+        return url;
+      }
+      return `${url}?${urlParams.toString()}`;
+    };
+
+    const res = await fetch(generateURL(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token ?? "bad"}`,
+      },
+    });
+    if (!res.ok) {
+      const status = res.status;
+      const data = await res.json();
+      return [null, new HttpException(status, data.message)];
+    }
+    const data = await res.json();
+    return [data, null];
+  } catch (err) {
     return [null, err];
   }
 };
