@@ -255,6 +255,7 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
                   id="submit-form-button"
                   className="w-[25rem]"
                   type="submit"
+                  loading={loading}
                 >
                   Sign Up
                 </LoadingButton>
