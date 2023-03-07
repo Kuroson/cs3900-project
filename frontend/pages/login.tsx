@@ -1,6 +1,7 @@
 import React from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
+import Link from "next/link";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { TextField } from "@mui/material";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
@@ -76,6 +77,11 @@ const LoginPage = (): JSX.Element => {
                 className="w-[25rem]"
                 autoComplete="new-password"
               />
+            </div>
+            <div className="mt-3">
+              <Link href="/forgetPassword">
+                <span className="underline text-base mx-1 py-1">Forget Password</span>
+              </Link>
             </div>
             <div className="w-[25rem] mt-4">
               <LoadingButton
