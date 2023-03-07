@@ -38,14 +38,7 @@ export const adminController = async (
             const queryBody = req.body;
 
             // Get user from database to check permissions
-            let isAdmin = false;
-            await User.findOne({ firebase_uid: authUser.uid })
-                .then((res) => {
-                    isAdmin = res !== null && res.role === 0;
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
+            const isAdmin = await checkAdmin(authUser.uid);
 
             logger.info(`isAdmin: ${isAdmin}`);
             return res.status(200).json({ isAdmin });
@@ -69,4 +62,18 @@ export const adminController = async (
                 .json({ message: "Internal server error. Error was not caught", isAdmin: false });
         }
     }
+};
+
+export const checkAdmin = async (firebase_uid: string) => {
+    // Get user from database to check permissions
+    let isAdmin = false;
+    await User.findOne({ firebase_uid })
+        .then((res) => {
+            isAdmin = res !== null && res.role === 0;
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+
+    return isAdmin;
 };

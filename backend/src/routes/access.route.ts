@@ -40,17 +40,7 @@ export const accessController = async (
             const queryBody = req.body;
             const { courseId } = queryBody;
 
-            // Get user from database to check permissions
-            let canAccess = false;
-            await User.findOne({ firebase_uid: authUser.uid })
-                .then((res) => {
-                    console.log(res);
-                    canAccess =
-                        res !== null && (res.role === 0 || res.enrolments.includes(courseId));
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
+            const canAccess = await checkAccess(authUser.uid, courseId);
 
             logger.info(`canAccess: ${canAccess}`);
             return res.status(200).json({ canAccess });
@@ -74,4 +64,18 @@ export const accessController = async (
                 .json({ message: "Internal server error. Error was not caught", canAccess: false });
         }
     }
+};
+
+export const checkAccess = async (firebase_uid: string, courseId: string) => {
+    // Get user from database to check permissions
+    let canAccess = false;
+    await User.findOne({ firebase_uid })
+        .then((res) => {
+            canAccess = res !== null && (res.role === 0 || res.enrolments.includes(courseId));
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+
+    return canAccess;
 };
