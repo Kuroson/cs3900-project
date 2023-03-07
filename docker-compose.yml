@@ -2,6 +2,8 @@ version: "3.8"
 
 services:
   frontend:
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://backend:8080
     image: 3900-githappens-frontend
     build: ./frontend
     restart: always
