@@ -27,6 +27,38 @@ const UserDetails = ({ firstName, lastName, role, avatarURL }: UserDetailsProps)
   );
 };
 
+export type Routes = {
+  name: string;
+  route: string;
+};
+
+const NavBar = (): JSX.Element => {
+  const routes: Routes[] = [
+    { name: "Dashboard", route: "/" },
+    { name: "COMP1511", route: "/COMP1511" },
+    { name: "COMP6080", route: "/COMP6080" },
+    { name: "MTRN2500", route: "/MTRN2500" },
+  ];
+
+  return (
+    <div className="w-full flex flex-col items-center mt-5">
+      {routes.map(({ name, route }, index) => {
+        return (
+          <Link
+            key={`nav-index-${index}`}
+            href={route}
+            className="w-full flex justify-items items-center py-2 outline"
+          >
+            <div className="w-full flex justify-items items-center">
+              <span className="text-lg w-full text-center">{name}</span>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+};
+
 export default function SideNavbar({
   empty,
   firstName,
@@ -49,7 +81,7 @@ export default function SideNavbar({
         // 13rem matches Layout.module.scss
       >
         <div className="w-full flex flex-col justify-between h-[calc(100%_-_4rem)]">
-          <div>
+          <div className="">
             {/* Top */}
             <UserDetails
               firstName={firstName}
@@ -57,6 +89,7 @@ export default function SideNavbar({
               role={role}
               avatarURL={avatarURL}
             />
+            <NavBar />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}
