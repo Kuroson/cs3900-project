@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCourse, getCourse, updateCourse } from "./course/course.route";
+import { createCourse, getCourse, updateCourse } from "./course.route";
 import { exampleController } from "./example.route";
 import { indexController } from "./index.route";
 
