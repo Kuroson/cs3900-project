@@ -7,18 +7,21 @@ type SideNavBarProps = UserDetailsProps & {
 };
 
 type UserDetailsProps = {
-  fullName?: string;
+  firstName?: string | null;
+  lastName?: string | null;
   role?: string;
-  avatarURL?: string;
+  avatarURL?: string | null;
 };
 
-const UserDetails = ({ fullName, role, avatarURL }: UserDetailsProps): JSX.Element => {
+const UserDetails = ({ firstName, lastName, role, avatarURL }: UserDetailsProps): JSX.Element => {
   return (
-    <div className="outline mt-5 ml-5 flex flex-row">
-      <div className="w-[50px] h-[50px] bg-orange-500 rounded-full">{/* Avatar here */}</div>
-      <div className="flex flex-col pl-2">
-        <span className="font-bold">{fullName}</span>
-        <span>{role}</span>
+    <div className="mt-5 ml-5 flex flex-row">
+      <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
+        <span className="text-2xl font-bold">AC</span>
+      </div>
+      <div className="flex flex-col pl-2 justify-center items-center">
+        <span className="font-bold text-start w-full">{`${firstName} ${lastName}`}</span>
+        <span className="text-start w-full">{role}</span>
       </div>
     </div>
   );
@@ -26,7 +29,8 @@ const UserDetails = ({ fullName, role, avatarURL }: UserDetailsProps): JSX.Eleme
 
 export default function SideNavbar({
   empty,
-  fullName,
+  firstName,
+  lastName,
   role,
   avatarURL,
 }: SideNavBarProps): JSX.Element {
@@ -47,7 +51,12 @@ export default function SideNavbar({
         <div className="w-full flex flex-col justify-between h-[calc(100%_-_4rem)]">
           <div>
             {/* Top */}
-            <UserDetails fullName={fullName} role={role} avatarURL={avatarURL} />
+            <UserDetails
+              firstName={firstName}
+              lastName={lastName}
+              role={role}
+              avatarURL={avatarURL}
+            />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}

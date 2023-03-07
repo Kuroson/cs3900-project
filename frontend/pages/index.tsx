@@ -4,7 +4,7 @@ import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "nex
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
-import { Nullable } from "util/util";
+import { Nullable, getRoleName } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -29,7 +29,12 @@ const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): 
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <SideNavbar />
+      <SideNavbar
+        firstName={firstName}
+        lastName={lastName}
+        role={getRoleName(role)}
+        avatarURL={avatar}
+      />
       <ContentContainer>
         <div>Stuff</div>
       </ContentContainer>
