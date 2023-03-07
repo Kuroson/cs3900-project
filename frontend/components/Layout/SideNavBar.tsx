@@ -16,7 +16,7 @@ export default function SideNavbar({ empty }: SideNavBarProps): JSX.Element {
   };
 
   return (
-    <div className="bg-green-500 w-full">
+    <div className="bg-blue-primary w-full">
       <div
         className="h-full fixed top-[0] left-[0] z-10 w-[13rem]"
         // 13rem matches Layout.module.scss
