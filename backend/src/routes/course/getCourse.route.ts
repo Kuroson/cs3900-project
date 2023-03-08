@@ -29,7 +29,7 @@ export const getCourseController = async (
         const authUser = await verifyIdTokenValid(token);
 
         // User has been verified
-        // Get course from url param
+        // Get course id from url param
         const ret_data = await getCourse(req.params.coursecode);
 
         logger.info(ret_data);
