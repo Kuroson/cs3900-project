@@ -19,7 +19,6 @@ type QueryPayload = {
     icon: string;
 };
 
-// Sends a post request to create a new Course
 export const createCourseController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
