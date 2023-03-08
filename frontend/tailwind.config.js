@@ -2,4 +2,15 @@
 module.exports = {
   content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   plugins: [],
+  theme: {
+    extend: {
+      colors: {
+        "blue-primary": "#A0C5F8",
+      },
+    },
+  },
+  corePlugins: {
+    preflight: false,
+  },
+  important: "#__next",
 };

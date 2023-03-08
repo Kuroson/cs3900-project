@@ -1,65 +1,27 @@
-import { toast } from "react-toastify";
 import Head from "next/head";
-import { Button } from "@mui/material";
-import { getAuth, signOut } from "firebase/auth";
+import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { Footer, LeftSideBar, SideNavbar } from "components";
-import { HttpException } from "util/HttpExceptions";
-import { examplePost } from "util/api";
+import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
+import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
+import { Nullable, getRoleName } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
-type HomePageProps = {
+type UserDetailsPayload = Nullable<{
+  firstName: string;
+  lastName: string;
   email: string;
-};
+  role: number;
+  avatar: string;
+}>;
 
-const HomePage = ({ email }: HomePageProps): JSX.Element => {
-  console.log("On client side,", email);
+type HomePageProps = UserDetailsPayload;
+
+const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser();
-
-  const handleBadRequest = async () => {
-    const [res, err] = await examplePost(
-      "http://localhost:8080/example",
-      (await authUser.getIdToken()) as string,
-      {},
-    );
-
-    if (err !== null) {
-      // Post request did not succeed
-      if (err instanceof HttpException) {
-        toast.error(err.getMessage());
-      } else {
-        // Unknown error
-        toast.error(err); // Probably do better error handling here
-      }
-      return;
-    }
-    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
-    toast.success(res.message);
-  };
-
-  const handleGoodRequest = async () => {
-    const [res, err] = await examplePost(
-      "http://localhost:8080/example",
-      (await authUser.getIdToken()) as string,
-      { message: "Hello from frontend!" },
-    );
-
-    if (err !== null) {
-      // Post request did not succeed
-      if (err instanceof HttpException) {
-        toast.error(err.getMessage());
-      } else {
-        // Unknown error
-        toast.error(err); // Probably do better error handling here
-      }
-      return;
-    }
-    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
-    toast.success(res.message);
-  };
+  console.log(firstName, lastName, email, role, avatar);
 
   return (
     <>
@@ -68,48 +30,25 @@ const HomePage = ({ email }: HomePageProps): JSX.Element => {
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <SideNavbar />
-      <div className="w-full flex flex-col px-[5%]">
-        <h1 className="text-center pt-4 text-4xl">stuff {email}</h1>
-        <div className="flex flex-row justify justify-center py-10">stuff</div>
-        <div className="flex flex-col items-center">
-          <div className="w-[300px]">
-            <Button
-              variant="outlined"
-              onClick={() => {
-                signOut(getAuth());
-              }}
-            >
-              Logout
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => {
-                console.log(authUser);
-              }}
-            >
-              Debug
-            </Button>
-
-            <Button
-              variant="outlined"
-              onClick={() => {
-                handleBadRequest();
-              }}
-            >
-              Send bad example request
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => {
-                handleGoodRequest();
-              }}
-            >
-              Send good example request
-            </Button>
+      <SideNavbar
+        firstName={firstName}
+        lastName={lastName}
+        role={getRoleName(role)}
+        avatarURL={avatar}
+      />
+      <ContentContainer>
+        <div className="flex flex-col w-full justify-center items-center px-[5%]">
+          <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
+            <span className="ml-4">Welcome, {`${firstName} ${lastName}`}</span>
+          </h1>
+          <div className="w-full flex flex-col">
+            <h2 className="text-2xl w-full ml-4 m-0">Course Overview</h2>
+            <div className="ml-4 pt-5">
+              <TextField id="outlined-search" label="Search field" type="search" />
+            </div>
           </div>
         </div>
-      </div>
+      </ContentContainer>
       <LeftSideBar />
       <Footer />
     </>
@@ -119,12 +58,31 @@ const HomePage = ({ email }: HomePageProps): JSX.Element => {
 export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser }): Promise<{ props: HomePageProps }> => {
-  // Can already assume that they're authed
-  // const history = await queryHistory(AuthUser.id as string);
-  console.log("On server side,", AuthUser.email);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [data, err] = await apiGet<any, UserDetailsPayload>(
+    `${PROCESS_BACKEND_URL}/user/details`,
+    await AuthUser.getIdToken(),
+    {},
+  );
+
+  if (err !== null) {
+    console.error(err);
+    // handle error
+    return {
+      props: {
+        email: null,
+        firstName: null,
+        lastName: null,
+        role: null,
+        avatar: null,
+      },
+    };
+  }
+
+  if (data === null) throw new Error("This shouldn't have happened");
   return {
     props: {
-      email: AuthUser.email as string,
+      ...data,
     },
   };
 });
