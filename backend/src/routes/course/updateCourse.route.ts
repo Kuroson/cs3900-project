@@ -1,6 +1,5 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
-import User from "@/models/user.model";
 import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
