@@ -6,8 +6,9 @@ import { TextField } from "@mui/material";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { GetStaticProps } from "next";
 import { AuthAction, withAuthUser } from "next-firebase-auth";
-import { ContentContainer, SideNavbar } from "components";
-import { PROCESS_BACKEND_URL } from "util/api";
+import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
+import { HttpException } from "util/HttpExceptions";
+import { PROCESS_BACKEND_URL, apiPost } from "util/api";
 import { isValidEmail, isValidPassword } from "util/authVerficiation";
 
 type PasswordRequirementsProps = {
@@ -52,6 +53,16 @@ const PasswordRequirements = ({
 
 type SignUpPageProps = {
   BACKEND_URL: string;
+};
+
+type APIPayload = {
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
+type APIResponse = {
+  message: string;
 };
 
 const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
@@ -99,11 +110,11 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
     }
     // Everything should be valid after this
     setLoading(true);
-    await createUserWithEmailAndPassword(getAuth(), email, password)
+    const authUser = await createUserWithEmailAndPassword(getAuth(), email, password)
       .then((res) => {
         console.log(res);
+        return res;
       })
-      // TODO need to post to backend to create entry here
       .catch((err) => {
         // Error codes:
         // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#createuserwithemailandpassword
@@ -119,8 +130,34 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
           console.error(err);
           toast.error("Error Uncaught");
         }
-      })
-      .finally(() => setLoading(false));
+      });
+
+    const payload: APIPayload = {
+      firstName,
+      lastName,
+      email,
+    };
+
+    const [res, err] = await apiPost<APIPayload, APIResponse>(
+      `${BACKEND_URL}/auth/register`,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (authUser as any).user?.accessToken,
+      payload,
+    );
+
+    if (err !== null) {
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+    toast.info(res.message);
+    setLoading(false);
   };
 
   return (
@@ -218,6 +255,7 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
                   id="submit-form-button"
                   className="w-[25rem]"
                   type="submit"
+                  loading={loading}
                 >
                   Sign Up
                 </LoadingButton>
@@ -226,6 +264,8 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
           </div>
         </form>
       </ContentContainer>
+      <LeftSideBar />
+      <Footer />
     </>
   );
 };

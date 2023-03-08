@@ -1,13 +1,29 @@
 import { Router } from "express";
-import { createCourse, getCourse, updateCourse } from "./course.route";
+import { accessController } from "./admin/access.route";
+import { adminController } from "./admin/admin.route";
+import { registerController } from "./auth/register.route";
+import { createCourseController } from "./course/createCourse.route";
+import { getCourseController } from "./course/getCourse.route";
+import { updateCourseController } from "./course/updateCourse.route";
 import { exampleController } from "./example.route";
 import { indexController } from "./index.route";
+import { userDetailsController } from "./user/userDetails.route";
 
 export const indexRouter = Router();
 
+// Base routes
 indexRouter.get("/", indexController);
 indexRouter.all("/example", exampleController);
 
-indexRouter.post("/course", createCourse);
-indexRouter.get("/course/:coursecode", getCourse);
-indexRouter.put("/course/:coursecode", updateCourse);
+// Auth routes
+indexRouter.get("/admin", adminController);
+indexRouter.get("/admin/access", accessController);
+indexRouter.all("/auth/register", registerController);
+
+// User routes
+indexRouter.all("/user/details", userDetailsController);
+
+// Course routes
+indexRouter.post("/course", createCourseController);
+indexRouter.get("/course/:coursecode", getCourseController);
+indexRouter.put("/course/:coursecode", updateCourseController);
