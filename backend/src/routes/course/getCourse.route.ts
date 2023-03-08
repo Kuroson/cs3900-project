@@ -1,9 +1,7 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
-import User from "@/models/user.model";
 import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 
 type ResponsePayload = {
@@ -16,9 +14,7 @@ type ResponsePayload = {
     message?: string;
 };
 
-type QueryPayload = {
-    courseId: string;
-};
+type QueryPayload = {};
 
 export const getCourseController = async (
     req: Request<QueryPayload>,
@@ -33,20 +29,11 @@ export const getCourseController = async (
         const authUser = await verifyIdTokenValid(token);
 
         // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["courseId"])) {
-            // Body has been verified
-            const queryBody = req.body;
+        // Get course from url param
+        const ret_data = await getCourse(req.params.coursecode);
 
-            const ret_data = await getCourse(queryBody, authUser.uid);
-
-            logger.info(ret_data);
-            return res.status(200).json(ret_data);
-        } else {
-            throw new HttpException(
-                400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [])}`,
-            );
-        }
+        logger.info(ret_data);
+        return res.status(200).json(ret_data);
     } catch (error) {
         if (error instanceof HttpException) {
             logger.error(error.getMessage());
@@ -59,9 +46,7 @@ export const getCourseController = async (
     }
 };
 
-export const getCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
-    const { courseId } = queryBody;
-
+export const getCourse = async (courseId: string) => {
     const myCourse = await Course.findById(courseId);
 
     if (myCourse === null) throw new Error("Course does not exist");

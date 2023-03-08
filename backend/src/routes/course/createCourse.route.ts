@@ -45,7 +45,13 @@ export const createCourseController = async (
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
+                    "code",
+                    "title",
+                    "session",
+                    "description",
+                    "icon",
+                ])}`,
             );
         }
     } catch (error) {
