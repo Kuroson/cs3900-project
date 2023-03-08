@@ -1,48 +1,77 @@
 import Course from "@/models/course.model";
-import { checkAccess } from "@/routes/access.route";
+import User from "@/models/user.model";
+import { checkAccess } from "@/routes/admin/access.route";
+import { registerUser } from "@/routes/auth/register.route";
 import initialiseMongoose from "../testUtil";
 
 describe("Test checking if user has access to a course", () => {
+    const id = Date.now();
+    let courseId = "";
+    let adminId = "";
+
     beforeAll(async () => {
         await initialiseMongoose();
+
+        // Creates users for testing
+        await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`);
+        await registerUser("first_name", "last_name", `user${id}@email.com`, `acc2${id}`);
+        await registerUser("first_name", "last_name", `user2${id}@email.com`, `acc3${id}`);
+
+        // Create course (with admin as creator)
+        await User.findOne({ firebase_uid: `acc1${id}` })
+            .then((res) => {
+                if (res === null) throw new Error("Failed to get admin for test");
+                adminId = res._id;
+            })
+            .catch((err) => {
+                throw new Error("Failed to get admin for test");
+            });
+
+        const myCourse = new Course({
+            title: "Test course",
+            session: "T1",
+            creator: adminId,
+        });
+
+        await myCourse
+            .save()
+            .then((res) => {
+                courseId = res._id;
+            })
+            .catch((err) => {
+                throw new Error("Failed to create course for test");
+            });
+
+        // Add course to student
+        const myUser = await User.findOne({ firebase_uid: `acc3${id}` });
+        if (myUser === null) throw new Error("Failed to get user for test");
+
+        myUser.enrolments.push(myCourse);
+        await myUser.save().catch(() => {
+            throw new Error("Failed to save updated user for test");
+        });
     });
 
     it("Admin should have access", async () => {
-        const res = await Course.find({
-            title: "testCourse",
-            description: "this is for testing",
-        }).exec();
-
-        expect(res.length).toBeGreaterThan(0);
-        const courseId = res[0]._id;
-
-        const canAccess = await checkAccess("test_user", courseId);
+        const canAccess = await checkAccess(`acc1${id}`, courseId);
         expect(canAccess).toBe(true);
     }, 10000);
 
     it("Student should not have access", async () => {
-        const res = await Course.find({
-            title: "testCourse",
-            description: "this is for testing",
-        }).exec();
-
-        expect(res.length).toBeGreaterThan(0);
-        const courseId = res[0]._id;
-
-        const canAccess = await checkAccess("test_user2", courseId);
+        const canAccess = await checkAccess(`acc2${id}`, courseId);
         expect(canAccess).toBe(false);
     }, 10000);
 
     it("Student should have access if they are enrolled", async () => {
-        const res = await Course.find({
-            title: "testCourse",
-            description: "this is for testing",
-        }).exec();
-
-        expect(res.length).toBeGreaterThan(0);
-        const courseId = res[0]._id;
-
-        const canAccess = await checkAccess("test_user3", courseId);
+        const canAccess = await checkAccess(`acc3${id}`, courseId);
         expect(canAccess).toBe(true);
     }, 10000);
+
+    afterAll(async () => {
+        // Clean up
+        User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        User.deleteOne({ firebase_uid: `acc2${id}` }).exec();
+        User.deleteOne({ firebase_uid: `acc3${id}` }).exec();
+        Course.deleteOne({ title: "Test course", session: "T1", creator: adminId }).exec();
+    });
 });
