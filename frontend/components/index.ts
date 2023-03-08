@@ -1,3 +1,3 @@
-import { ContentContainer, Footer, Layout, SideNavbar } from "./Layout";
+import { ContentContainer, Footer, Layout, LeftSideBar, SideNavbar } from "./Layout";
 
-export { ContentContainer, SideNavbar, Footer, Layout };
+export { ContentContainer, SideNavbar, Footer, Layout, LeftSideBar };
