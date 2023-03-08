@@ -1,6 +1,9 @@
 import { Document, Schema, Types, model } from "mongoose";
 import { Course } from "./course.model";
 
+export const STUDENT_ROLE = "1";
+export const INSTRUCTOR_ROLE = "0";
+
 export interface User extends Document {
     firebase_uid: string;
     email: string;
