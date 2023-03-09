@@ -23,7 +23,6 @@ type HomePageProps = UserDetailsPayload;
 const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser();
   console.log(firstName, lastName, email, role, avatar);
-
   return (
     <>
       <Head>
@@ -50,21 +49,24 @@ const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): 
           </div>
         </div>
         <div className="flex flex-col w-full justify-left items-left px-[5%]">
-        <div className="hello">
+        <div className="column-3">
             <CourseTile
               courseName="Programming Fundamentals"
               courseCode="COMP1511"
-              courseDescription="This course teaches basic programming"
+              courseDescription="An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language."
+              courseURL="\COMP1511"
             />
             <CourseTile
-              courseName="Statistics and Probability"
-              courseCode="MATH2089"
-              courseDescription="This course teaches basic math"
+              courseName="Web Front End Programming"
+              courseCode="COMP6080"
+              courseDescription="This course introduces the fundamentals and advanced techniques of programming for the web front-end in JavaScript."
+              courseURL="\COMP6080"
             />
             <CourseTile
-              courseName="Industrial Management"
-              courseCode="MANF3500"
-              courseDescription="This course teaches basic management and entrepreneurship principles"
+              courseName="Computing for Mechatronic Engineers"
+              courseCode="MTRN2500"
+              courseDescription="This course will teach students C++ and Matlab programing."
+              courseURL="\MTRN2500"
             />
           </div>
         </div>
