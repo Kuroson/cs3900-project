@@ -13,7 +13,7 @@ type CourseTileProps = {
 const CourseTileDetails = ({ courseCode, courseName, courseDescription, courseIconURL, courseURL }: CourseTileProps): JSX.Element => {
   const styles = {
     courselink: {
-      "font-weight": "bold",
+      //"font-weight": "bold",
     },
     coursename: {
       "font-style": "italic"
