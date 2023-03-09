@@ -18,10 +18,10 @@ describe("Test checking if user has access to a course", () => {
         await registerUser("first_name", "last_name", `user2${id}@email.com`, `acc3${id}`);
 
         // Create course (with admin as creator)
-        await User.findOne({ firebase_uid: `acc1${id}` })
+        adminId = await User.findOne({ firebase_uid: `acc1${id}` })
             .then((res) => {
                 if (res === null) throw new Error("Failed to get admin for test");
-                adminId = res._id;
+                return res._id;
             })
             .catch((err) => {
                 throw new Error("Failed to get admin for test");
@@ -29,14 +29,15 @@ describe("Test checking if user has access to a course", () => {
 
         const myCourse = new Course({
             title: "Test course",
+            code: "TEST",
             session: "T1",
             creator: adminId,
         });
 
-        await myCourse
+        courseId = await myCourse
             .save()
             .then((res) => {
-                courseId = res._id;
+                return res._id;
             })
             .catch((err) => {
                 throw new Error("Failed to create course for test");

@@ -45,7 +45,7 @@ export const updateCourseController = async (
             // Body has been verified
             const queryBody = req.body;
 
-            const courseId = await updateCourse(queryBody, authUser.uid);
+            const courseId = await updateCourse(queryBody);
 
             logger.info(`courseId: ${courseId}`);
             return res.status(200).json({ courseId });
@@ -71,7 +71,7 @@ export const updateCourseController = async (
     }
 };
 
-export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const updateCourse = async (queryBody: QueryPayload) => {
     const { courseId, code, title, session, description, icon } = queryBody;
 
     const myCourse = await Course.findById(courseId);

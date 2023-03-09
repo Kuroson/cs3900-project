@@ -25,5 +25,5 @@ indexRouter.all("/user/details", userDetailsController);
 
 // Course routes
 indexRouter.post("/course", createCourseController);
-indexRouter.get("/course/:coursecode", getCourseController);
-indexRouter.put("/course/:coursecode", updateCourseController);
+indexRouter.get("/course/:courseCode", getCourseController);
+indexRouter.put("/course/:courseCode", updateCourseController);

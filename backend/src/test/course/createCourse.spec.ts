@@ -6,7 +6,6 @@ import initialiseMongoose from "../testUtil";
 
 describe("Test creating a course", () => {
     const id = Date.now();
-    let adminId = "";
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -38,7 +37,37 @@ describe("Test creating a course", () => {
         await Course.findByIdAndDelete(courseId);
     }, 10000);
 
-    it("Can successfully create two courses with the same info", async () => {}, 10000);
+    it("Can successfully create two courses with the same info", async () => {
+        const courseInfo = {
+            code: "TEST",
+            title: "Test",
+            session: "T1",
+            description: "This is a test course",
+            icon: "",
+        };
+
+        const courseId = await createCourse(courseInfo, `acc${id}`);
+        const courseId2 = await createCourse(courseInfo, `acc${id}`);
+
+        const myCourse = await Course.findById(courseId);
+        const myCourse2 = await Course.findById(courseId2);
+
+        expect(myCourse?.code).toBe("TEST");
+        expect(myCourse?.title).toBe("Test");
+        expect(myCourse?.session).toBe("T1");
+        expect(myCourse?.description).toBe("This is a test course");
+        expect(myCourse?.icon).toBe("");
+
+        expect(myCourse2?.code).toBe("TEST");
+        expect(myCourse2?.title).toBe("Test");
+        expect(myCourse2?.session).toBe("T1");
+        expect(myCourse2?.description).toBe("This is a test course");
+        expect(myCourse2?.icon).toBe("");
+
+        // Delete the courses
+        await Course.findByIdAndDelete(courseId);
+        await Course.findByIdAndDelete(courseId2);
+    }, 10000);
 
     afterAll(async () => {
         // Clean up

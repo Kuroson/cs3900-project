@@ -10,11 +10,13 @@ type ResponsePayload = {
     description?: string;
     session?: string;
     icon?: string;
-    pages?: any;
+    pages?: Array<object>;
     message?: string;
 };
 
-type QueryPayload = {};
+type QueryPayload = {
+    courseCode: string;
+};
 
 export const getCourseController = async (
     req: Request<QueryPayload>,
@@ -30,7 +32,7 @@ export const getCourseController = async (
 
         // User has been verified
         // Get course id from url param
-        const ret_data = await getCourse(req.params.coursecode);
+        const ret_data = await getCourse(req.params.courseCode);
 
         logger.info(ret_data);
         return res.status(200).json(ret_data);
@@ -51,7 +53,7 @@ export const getCourse = async (courseId: string) => {
 
     if (myCourse === null) throw new Error("Course does not exist");
 
-    let courseInfo = {
+    const courseInfo = {
         code: myCourse.code,
         title: myCourse.title,
         description: myCourse.description,
