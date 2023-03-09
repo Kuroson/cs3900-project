@@ -3,6 +3,7 @@ import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
+import CourseTile from "components/CourseTile";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
@@ -46,6 +47,25 @@ const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): 
             <div className="ml-4 pt-5">
               <TextField id="outlined-search" label="Search field" type="search" />
             </div>
+          </div>
+        </div>
+        <div className="flex flex-col w-full justify-left items-left px-[5%]">
+        <div className="hello">
+            <CourseTile
+              courseName="Programming Fundamentals"
+              courseCode="COMP1511"
+              courseDescription="This course teaches basic programming"
+            />
+            <CourseTile
+              courseName="Statistics and Probability"
+              courseCode="MATH2089"
+              courseDescription="This course teaches basic math"
+            />
+            <CourseTile
+              courseName="Industrial Management"
+              courseCode="MANF3500"
+              courseDescription="This course teaches basic management and entrepreneurship principles"
+            />
           </div>
         </div>
       </ContentContainer>
