@@ -3,7 +3,7 @@ import { Section } from "./section.model";
 
 export interface Page extends Document {
     title: string;
-    sections?: Types.DocumentArray<Section["_id"]>;
+    sections: Types.DocumentArray<Section["_id"]>;
 }
 
 const pageSchema: Schema = new Schema<Page>({

@@ -8,6 +8,11 @@ import { getCoursesController } from "./course/getCourses.route";
 import { updateCourseController } from "./course/updateCourse.route";
 import { exampleController } from "./example.route";
 import { indexController } from "./index.route";
+import { createPageController } from "./page/createPage.route";
+import { deletePageController } from "./page/deletePage.route";
+import { getPageController } from "./page/getPage.route";
+import { getPagesController } from "./page/getPages.route";
+import { updatePageController } from "./page/updatePage.route";
 import { userDetailsController } from "./user/userDetails.route";
 
 export const indexRouter = Router();
@@ -29,3 +34,10 @@ indexRouter.post("/course", createCourseController);
 indexRouter.get("/course", getCoursesController);
 indexRouter.get("/course/:courseCode", getCourseController);
 indexRouter.put("/course/:courseCode", updateCourseController);
+
+// Page routes
+indexRouter.post("/page/:courseId", createPageController);
+indexRouter.get("/page/:courseId", getPagesController);
+indexRouter.delete("/page/:courseId", deletePageController);
+indexRouter.put("/page/:courseId/:pageId", updatePageController);
+indexRouter.get("/page/:courseId/:pageId", getPageController);
