@@ -11,17 +11,6 @@ type CourseTileProps = {
 };
 
 const CourseTileDetails = ({ courseCode, courseName, courseDescription, courseIconURL, courseURL }: CourseTileProps): JSX.Element => {
-  const styles = {
-    courselink: {
-      //"font-weight": "bold",
-    },
-    coursename: {
-      "font-style": "italic"
-    },
-    coursedesc: {
-
-    }
-  };
   return (
     <div>
       <div>
@@ -29,11 +18,11 @@ const CourseTileDetails = ({ courseCode, courseName, courseDescription, courseIc
           href={`${courseURL}`}
         >
           <div>
-            <span style={styles.courselink}>{courseCode}</span>
+            <span style={{fontWeight: "bold"}}>{courseCode}</span>
           </div>
         </Link>
-        <span style={styles.coursename}>{courseName}</span><br></br>
-        <span style={styles.coursedesc}>{courseDescription}</span>        
+        <span style={{fontStyle: "italic"}}>{courseName}</span><br></br>
+        <span>{courseDescription}</span>        
       </div>
     </div>
   );
@@ -46,19 +35,14 @@ export default function CourseTile({
   courseIconURL,
   courseURL
 }: CourseTileProps): JSX.Element {
-  const styles = {
-    tile: {
-      outline: "thin solid #D3D3D3",
-      "border-radius": "10px",
-      width: "35%",
-      height: "200px",
-      padding: "20px",
-      margin: "15px",
-      "float": "left"
-    },
-  };
   return (
-    <div className="" style={styles.tile}>
+    <div className="course-tiles" style={
+      { outline: 'thin solid #D3D3D3', borderRadius: 10, width: '35%',
+        height: 200,
+        padding: 20,
+        margin: 15,
+        float: "left"
+      }}>
       <div>
         <CourseTileDetails 
           courseName={courseName}
