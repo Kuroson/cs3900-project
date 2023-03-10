@@ -18,11 +18,11 @@ const CourseTileDetails = ({ courseCode, courseName, courseDescription, courseIc
           href={`${courseURL}`}
         >
           <div>
-            <span style={{fontWeight: "bold"}}>{courseCode}</span>
+            <span style={{fontWeight: "bold", color: "#037ffc"}}>{courseCode}</span>
           </div>
         </Link>
-        <span style={{fontStyle: "italic"}}>{courseName}</span><br></br>
-        <span>{courseDescription}</span>        
+        <span style={{color: "#037ffc"}}>{courseName}</span><br></br>
+        <span style={{fontStyle: "italic"}}>{courseDescription}</span>        
       </div>
     </div>
   );
@@ -36,13 +36,7 @@ export default function CourseTile({
   courseURL
 }: CourseTileProps): JSX.Element {
   return (
-    <div className="course-tiles" style={
-      { outline: 'thin solid #D3D3D3', borderRadius: 10, width: '35%',
-        height: 200,
-        padding: 20,
-        margin: 15,
-        float: "left"
-      }}>
+    <div className="course-tiles" style={{ outline: "thin solid #D3D3D3", borderRadius: 10, width: "35%", height: 200, padding: 20, margin: 15, float: "left"}}>
       <div>
         <CourseTileDetails 
           courseName={courseName}

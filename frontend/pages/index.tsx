@@ -18,11 +18,15 @@ type UserDetailsPayload = Nullable<{
   avatar: string;
 }>;
 
-type HomePageProps = UserDetailsPayload;
+type EnrolmentsPayload = Nullable<{
+  coursesEnrolled: Array<any>;
+}>;
 
-const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
-  const authUser = useAuthUser();
-  console.log(firstName, lastName, email, role, avatar);
+type HomePageProps = UserDetailsPayload & EnrolmentsPayload;
+
+const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }: HomePageProps): JSX.Element => {
+  const authUser = useAuthUser(); 
+  console.log(firstName, lastName, email, role, avatar, coursesEnrolled);
   return (
     <>
       <Head>
@@ -50,23 +54,24 @@ const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): 
         </div>
         <div className="flex flex-col w-full justify-left items-left px-[5%]">
         <div className="column-3">
+          courses: {coursesEnrolled?.length}
           <CourseTile
             courseName="Programming Fundamentals"
             courseCode="COMP1511"
             courseDescription="An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language."
-            courseURL="\COMP1511"
+            courseURL="/COMP1511"
           />
           <CourseTile
             courseName="Web Front End Programming"
             courseCode="COMP6080"
             courseDescription="This course introduces the fundamentals and advanced techniques of programming for the web front-end in JavaScript."
-            courseURL="\COMP6080"
+            courseURL="/COMP6080"
           />
           <CourseTile
             courseName="Computing for Mechatronic Engineers"
             courseCode="MTRN2500"
             courseDescription="This course will teach students C++ and Matlab programing."
-            courseURL="\MTRN2500"
+            courseURL="/MTRN2500"
           />
         </div>
         </div>
@@ -81,7 +86,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser }): Promise<{ props: HomePageProps }> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [data, err] = await apiGet<any, UserDetailsPayload>(
+  const [data, err] = await apiGet<any, HomePageProps>(
     `${PROCESS_BACKEND_URL}/user/details`,
     await AuthUser.getIdToken(),
     {},
@@ -97,6 +102,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
         lastName: null,
         role: null,
         avatar: null,
+        coursesEnrolled: null,
       },
     };
   }

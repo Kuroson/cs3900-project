@@ -4,6 +4,8 @@ import { verifyIdToken, verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { Nullable } from "@/utils/util";
 import { Request, Response } from "express";
+import { Types } from "mongoose";
+import Course from "@/models/course.model";
 
 type ErrorPayload = {
     message: string;
@@ -17,6 +19,9 @@ type ResponsePayload = {
     avatar: string;
 };
 
+type EnrolmentsPayload = {
+    coursesEnrolled: Array<typeof Course>;
+}
 export const getUserDetails = async (email?: string): Promise<Nullable<ResponsePayload>> => {
     if (email === undefined) throw new HttpException(401, "Bad token. No email");
 
@@ -34,6 +39,34 @@ export const getUserDetails = async (email?: string): Promise<Nullable<ResponseP
     };
 };
 
+export const getStudentEnrolments = async (email?: string): Promise<Nullable<EnrolmentsPayload>> => {
+    if (email === undefined) throw new HttpException(401, "Bad token. No email");
+    if (email.includes("admin")) throw new HttpException(402, "Admin user doesn't have course enrolment");
+
+    logger.info(`Getting student enrolments for ${email}`);
+    //const res = await User.find({ email: "user2@githappens.com" }).exec(); //change this back to email
+    const res = await User.find({ email: email }).exec(); //change this back to email
+    if (res.length === 0)
+        throw new HttpException(400, `Email associated with token doesn't exist: ${email}`);
+    const user = res.at(0);
+    logger.info("got user");
+    var courses = new Array<typeof Course>();
+    var i = 0;
+    logger.info(`num course is ${user?.enrolments.length}`);
+    logger.info(`num course is ${user?.enrolments}`);
+    for (const c of user?.enrolments) {
+        logger.info(`start of for loop ${c}`);
+        var course = await Course.find({ _id: c }).exec()
+        courses.push(course);
+        logger.info(`Course is ${course}`);
+        i++;
+    }
+    return {
+        coursesEnrolled: courses,
+    };
+};
+
+
 export const userDetailsController = async (
     req: Request,
     res: Response<Nullable<ResponsePayload> | ErrorPayload>,
@@ -48,7 +81,8 @@ export const userDetailsController = async (
         const token = req.headers.authorization.split(" ")[1];
         const authUser = await verifyIdTokenValid(token);
         const userDetails = await getUserDetails(authUser.email);
-        return res.status(200).json({ ...userDetails });
+        const coursesEnrolled = await getStudentEnrolments(authUser.email);
+        return res.status(200).json({ ...userDetails, ...coursesEnrolled });
     } catch (error) {
         if (error instanceof HttpException) {
             logger.error(error.getMessage());
