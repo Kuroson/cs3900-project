@@ -1,3 +1,4 @@
+import { firebaseUpload } from "@/utils/firebase";
 import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
@@ -7,6 +8,8 @@ import { getCourseController } from "./course/getCourse.route";
 import { getCoursesController } from "./course/getCourses.route";
 import { updateCourseController } from "./course/updateCourse.route";
 import { exampleController } from "./example.route";
+import { downloadFileController } from "./file/downloadFile.route";
+import { uploadFileController } from "./file/uploadFile.route";
 import { indexController } from "./index.route";
 import { createPageController } from "./page/createPage.route";
 import { deletePageController } from "./page/deletePage.route";
@@ -41,3 +44,7 @@ indexRouter.get("/page/:courseId", getPagesController);
 indexRouter.delete("/page/:courseId", deletePageController);
 indexRouter.put("/page/:courseId/:pageId", updatePageController);
 indexRouter.get("/page/:courseId/:pageId", getPageController);
+
+// File routes
+indexRouter.post("/file/upload", firebaseUpload.single("file"), uploadFileController);
+indexRouter.get("/file/download", downloadFileController);
