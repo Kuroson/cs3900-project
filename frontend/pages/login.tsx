@@ -103,8 +103,6 @@ const LoginPage = (): JSX.Element => {
           </div>
         </form>
       </ContentContainer>
-      <LeftSideBar />
-      <Footer />
     </>
   );
 };

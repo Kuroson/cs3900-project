@@ -7,5 +7,9 @@ type ContentContainerProps = {
 };
 
 export default function ContentContainer({ children }: ContentContainerProps): JSX.Element {
-  return <Container maxWidth="xl"><Box className={styles.container}>{children}</Box></Container>;
+  return (
+    <Container maxWidth="xl">
+      <Box className={styles.container}>{children}</Box>
+    </Container>
+  );
 }

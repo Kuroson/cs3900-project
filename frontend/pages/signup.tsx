@@ -264,8 +264,7 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
           </div>
         </form>
       </ContentContainer>
-      <LeftSideBar />
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

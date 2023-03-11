@@ -1,35 +1,27 @@
-// .mainContent {
-//   height: 100vh;
-//   margin: 0 auto;
-//   display: grid;
-//   grid-template-areas:
-//     "sidebar-left content sidebar-right"
-//     "footer   footer  footer";
-//   main {
-//     grid-area: content;
-//   }
-//   footer {
-//     grid-area: footer;
-//     width: 100%;
-//     z-index: 100;
-//   }
-//   grid-template-rows: auto 4rem;
-//   grid-template-columns: 13rem 6fr 13rem;
-// }
-
-.mainContent {
+.common {
   background-image: linear-gradient( 174.2deg,  rgba(255,244,228,1) 7.1%, rgba(240,246,238,1) 67.4% );
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
   display: grid;
+}
+
+.login_layout {
+  @extend .common;
   grid-template-areas:
-    "sidebar-left content";
+    "sidebar-left content sidebar-right";
+  grid-template-columns: 13rem auto 13rem;
+}
+
+.maincontent {
+  @extend .common;
+  grid-template-areas:
+  "sidebar-left content";
   grid-template-columns: 13rem auto;
 }
 
 .container {
   background-color: white;
   border-radius: 40px;
-  // margin: 20px;
   height: 100%;
   overflow: scroll;
 }
