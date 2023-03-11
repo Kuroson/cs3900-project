@@ -2,10 +2,10 @@ import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
 import Page from "@/models/page.model";
 import Resource from "@/models/resource.model";
-import Section from "@/models/section.model";
+import Section, { Section as SectionType } from "@/models/section.model";
 import { recallFileUrl, verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { getMissingBodyIDs, isValidBody } from "@/utils/util";
+import { Nullable, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { getPage } from "./getPage.route";
 
@@ -123,9 +123,7 @@ export const updatePage = async (queryBody: QueryPayload) => {
                 return res._id;
             })
             .catch((err) => {
-                console.error(err);
-
-                throw new Error("Failed to save resource1");
+                throw new Error("Failed to save resource");
             });
 
         myPage.resources.push(newResourceId);
@@ -134,11 +132,11 @@ export const updatePage = async (queryBody: QueryPayload) => {
     // Move through sections and add new ones (and accompanying resources)
     for (const section of sections) {
         const { title, sectionId } = section;
-        let currSection = new Section();
+        let currSection: SectionType | null = null;
         if (sectionId === undefined) {
             currSection = new Section({ title });
         } else {
-            const currSection = await Section.findById(sectionId);
+            currSection = await Section.findById(sectionId);
             if (currSection === null) throw new Error("Cannot retrieve section");
         }
 

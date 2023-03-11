@@ -64,9 +64,5 @@ export const getPages = async (courseId: string) => {
         });
     }
 
-    for (const page of pageList) {
-        console.log(page);
-    }
-
     return pageList;
 };
