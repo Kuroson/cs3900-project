@@ -3,7 +3,7 @@ import { Resource } from "./resource.model";
 
 export interface Section extends Document {
     title: string;
-    resources?: Types.DocumentArray<Resource["_id"]>;
+    resources: Types.DocumentArray<Resource["_id"]>;
 }
 
 const sectionSchema: Schema = new Schema<Section>({

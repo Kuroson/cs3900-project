@@ -1,21 +1,36 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import Page from "@/models/page.model";
+import Resource from "@/models/resource.model";
+import Section from "@/models/section.model";
+import { recallFileUrl, verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { Request, Response } from "express";
 
+type ResponseResourceInfo = {
+    resourceId: string;
+    title: string;
+    description: string;
+    fileType: string;
+    linkToResource: string;
+};
+
+type ResponseSectionInfo = {
+    sectionId: string;
+    title: string;
+    resources: Array<ResponseResourceInfo>;
+};
+
 type ResponsePayload = {
-    code?: string;
-    title?: string;
-    description?: string;
-    session?: string;
-    icon?: string;
-    pages?: Array<object>;
+    courseId?: string;
+    pageId?: string;
+    resources?: Array<ResponseResourceInfo>;
+    sections?: Array<ResponseSectionInfo>;
     message?: string;
 };
 
 type QueryPayload = {
-    courseCode: string;
+    courseId: string;
+    pageId: string;
 };
 
 export const getPageController = async (
@@ -32,7 +47,7 @@ export const getPageController = async (
 
         // User has been verified
         // Get course id from url param
-        const ret_data = await getPage(req.params.courseCode);
+        const ret_data = await getPage(req.params.pageId, req.params.courseId);
 
         logger.info(ret_data);
         return res.status(200).json(ret_data);
@@ -48,19 +63,62 @@ export const getPageController = async (
     }
 };
 
-export const getPage = async (courseId: string) => {
-    const myCourse = await Course.findById(courseId);
+export const getPage = async (pageId: string, courseId: string) => {
+    const myPage = await Page.findById(pageId);
+    if (myPage === null) throw new Error("Failed to recall page");
 
-    if (myCourse === null) throw new Error("Course does not exist");
-
-    const courseInfo = {
-        code: myCourse.code,
-        title: myCourse.title,
-        description: myCourse.description,
-        session: myCourse.session,
-        icon: myCourse.icon,
-        pages: [], // TODO: when pages are created, update to return pages
+    const pageInfo = {
+        courseId,
+        pageId,
+        resources: new Array<ResponseResourceInfo>(),
+        sections: new Array<ResponseSectionInfo>(),
     };
 
-    return courseInfo;
+    // Get all resources directly on the page
+    const getResourcesInfo = async (resources: any) => {
+        const resourcesInfo = new Array<ResponseResourceInfo>();
+
+        for (let resource of resources) {
+            let currResource = await Resource.findById(resource);
+            if (currResource === null) throw new Error("Failed to fetch resource");
+
+            const { title, description, file_type, stored_name } = currResource;
+            let resourceInfo: ResponseResourceInfo = {
+                resourceId: currResource._id,
+                title,
+                description: description === undefined ? "" : description,
+                fileType: "",
+                linkToResource: "",
+            };
+
+            if (stored_name !== undefined && file_type !== undefined) {
+                const linkToResource = await recallFileUrl(stored_name);
+                resourceInfo.fileType = file_type;
+                resourceInfo.linkToResource = linkToResource;
+            }
+
+            resourcesInfo.push(resourceInfo);
+        }
+
+        return resourcesInfo;
+    };
+
+    pageInfo.resources = await getResourcesInfo(myPage.resources);
+
+    // Get all sections and accompanying resources
+    for (let section of myPage.sections) {
+        let currSection = await Section.findById(section);
+        if (currSection === null) throw new Error("Failed to fetch section");
+
+        const { title, resources } = currSection;
+        let sectionInfo: ResponseSectionInfo = {
+            sectionId: currSection._id,
+            title,
+            resources: await getResourcesInfo(currSection.resources),
+        };
+
+        pageInfo.sections.push(sectionInfo);
+    }
+
+    return pageInfo;
 };

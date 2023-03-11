@@ -1,22 +1,53 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import Page from "@/models/page.model";
+import Resource from "@/models/resource.model";
+import Section from "@/models/section.model";
+import { recallFileUrl, verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { getPage } from "./getPage.route";
+
+type ResponseResourceInfo = {
+    resourceId: string;
+    title: string;
+    description: string;
+    fileType: string;
+    linkToResource: string;
+};
+
+type ResponseSectionInfo = {
+    sectionId: string;
+    title: string;
+    resources: Array<ResponseResourceInfo>;
+};
 
 type ResponsePayload = {
-    courseId: string;
+    courseId?: string;
+    pageId?: string;
+    resources?: Array<ResponseResourceInfo>;
+    sections?: Array<ResponseSectionInfo>;
     message?: string;
+};
+
+type QueryResourceInfo = {
+    title: string;
+    description?: string;
+    resourceId?: string;
+};
+
+type QuerySectionInfo = {
+    title: string;
+    resources: Array<QueryResourceInfo>;
+    sectionId?: string;
 };
 
 type QueryPayload = {
     courseId: string;
-    code: string;
-    title: string;
-    session: string;
-    description: string;
-    icon: string;
+    pageId: string;
+    resources: Array<QueryResourceInfo>;
+    sections: Array<QuerySectionInfo>;
 };
 
 export const updatePageController = async (
@@ -32,27 +63,23 @@ export const updatePageController = async (
         const authUser = await verifyIdTokenValid(token);
 
         // User has been verified
-        if (
-            isValidBody<QueryPayload>(req.body, [
-                "courseId",
-                "code",
-                "title",
-                "session",
-                "description",
-                "icon",
-            ])
-        ) {
+        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "resources", "sections"])) {
             // Body has been verified
             const queryBody = req.body;
 
-            const courseId = await updatePage(queryBody);
+            const ret_data = await updatePage(queryBody);
 
-            logger.info(`courseId: ${courseId}`);
-            return res.status(200).json({ courseId });
+            logger.info(ret_data);
+            return res.status(200).json(ret_data);
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
+                    "courseId",
+                    "pageId",
+                    "resources",
+                    "sections",
+                ])}`,
             );
         }
     } catch (error) {
@@ -72,29 +99,86 @@ export const updatePageController = async (
 };
 
 export const updatePage = async (queryBody: QueryPayload) => {
-    const { courseId, code, title, session, description, icon } = queryBody;
+    const { courseId, pageId, resources, sections } = queryBody;
 
-    const myCourse = await Course.findById(courseId);
-    if (myCourse === null) throw new Error("Failed to retrieve course");
+    const myPage = await Page.findById(pageId);
+    if (myPage === null) throw new Error("Failed to retrieve page");
 
-    myCourse.code = code;
-    myCourse.title = title;
-    myCourse.session = session;
-    myCourse.description = description;
-    myCourse.icon = icon;
+    // Move through resources and add new ones
+    for (const resource of resources) {
+        const { title, description, resourceId } = resource;
+        if (resourceId !== undefined) continue;
 
-    const retCourseId = await myCourse
-        .save()
-        .then((res) => {
-            return res._id;
-        })
-        .catch((err) => {
-            return null;
+        const newResource = new Resource({
+            title,
         });
 
-    if (courseId === null) {
-        throw new Error("Failed to update course");
+        if (description !== undefined) {
+            newResource.description = description;
+        }
+
+        const newResourceId = await newResource
+            .save()
+            .then((res) => {
+                return res._id;
+            })
+            .catch((err) => {
+                console.error(err);
+
+                throw new Error("Failed to save resource1");
+            });
+
+        myPage.resources.push(newResourceId);
     }
 
-    return retCourseId;
+    // Move through sections and add new ones (and accompanying resources)
+    for (const section of sections) {
+        const { title, sectionId } = section;
+        let currSection = new Section();
+        if (sectionId === undefined) {
+            currSection = new Section({ title });
+        } else {
+            let currSection = await Section.findById(sectionId);
+            if (currSection === null) throw new Error("Cannot retrieve section");
+        }
+
+        for (let resource of section.resources) {
+            const { title, description, resourceId } = resource;
+            if (resourceId !== undefined) continue;
+
+            const newResource = new Resource({
+                title,
+            });
+
+            if (description !== undefined) {
+                newResource.description = description;
+            }
+
+            await newResource.save().catch((err) => {
+                throw new Error("Failed to save resource");
+            });
+
+            currSection.resources.push(newResource);
+        }
+
+        const currSectionId = await currSection
+            .save()
+            .then((res) => {
+                return res._id;
+            })
+            .catch((err) => {
+                throw new Error("Failed to save section");
+            });
+
+        if (sectionId === undefined) {
+            myPage.sections.push(currSectionId);
+        }
+    }
+
+    // Save updated page
+    await myPage.save().catch((err) => {
+        throw new Error("Failed to save page");
+    });
+
+    return await getPage(pageId, courseId);
 };
