@@ -7,6 +7,7 @@ import CourseTile from "components/CourseTile";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
+import { parse } from 'node-html-parser';
 
 initAuth(); // SSR maybe, i think...
 
@@ -26,7 +27,22 @@ type HomePageProps = UserDetailsPayload & EnrolmentsPayload;
 
 const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser(); 
+  var htmlText = "";
   console.log(firstName, lastName, email, role, avatar, coursesEnrolled);
+  if (coursesEnrolled !== null) {
+    for (const c of coursesEnrolled) {
+      const courseDetails = c.split(" ");
+      htmlText += `<CourseTile
+        courseName="${courseDetails[1]}"
+        courseCode="${courseDetails[0]}"
+        courseDescription="${courseDetails[2]}"
+        courseURL="/${courseDetails[0]}"
+      />`;
+    }
+  } 
+  var HTMLParser = require('node-html-parser');
+  var root = HTMLParser.parse(htmlText);
+  console.info(root);
   return (
     <>
       <Head>
@@ -40,6 +56,7 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
         role={getRoleName(role)}
         avatarURL={avatar}
       />
+      
       <ContentContainer>
         <div className="flex flex-col w-full justify-center items-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
@@ -54,6 +71,7 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
         </div>
         <div className="flex flex-col w-full justify-left items-left px-[5%]">
         <div className="column-3">
+          {/* {HTMLParser.parse(htmlText)} */}
           courses: {coursesEnrolled?.length}
           <CourseTile
             courseName="Programming Fundamentals"
