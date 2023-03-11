@@ -24,6 +24,10 @@
 .container {
   background-color: white;
   border-radius: 40px;
-  height: 100%;
+  margin: 10px;
   overflow: scroll;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
 }
