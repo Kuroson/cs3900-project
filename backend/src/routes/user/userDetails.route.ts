@@ -20,7 +20,7 @@ type ResponsePayload = {
 };
 
 type EnrolmentsPayload = {
-    coursesEnrolled: Array<typeof Course>;
+    coursesEnrolled: Array<string>;
 }
 export const getUserDetails = async (email?: string): Promise<Nullable<ResponsePayload>> => {
     if (email === undefined) throw new HttpException(401, "Bad token. No email");
@@ -50,20 +50,28 @@ export const getStudentEnrolments = async (email?: string): Promise<Nullable<Enr
         throw new HttpException(400, `Email associated with token doesn't exist: ${email}`);
     const user = res.at(0);
     logger.info("got user");
-    var courses = new Array<typeof Course>();
+    var courses = new Array<string>();
     var i = 0;
     logger.info(`num course is ${user?.enrolments.length}`);
     logger.info(`num course is ${user?.enrolments}`);
-    for (const c of user?.enrolments) {
-        logger.info(`start of for loop ${c}`);
-        var course = await Course.find({ _id: c }).exec()
-        courses.push(course);
-        logger.info(`Course is ${course}`);
-        i++;
+    if (user?.enrolments !== null) {
+        for (const c of user?.enrolments) {
+            logger.info(`start of for loop ${c}`);
+            var course = await Course.findOne({ _id: c }).exec();
+            var courseString = `${course.code} ${course.title} ${course.description}`;
+            courses.push(courseString);
+            logger.info(`Course is ${courseString}`);
+            i++;
+        }
+        return {
+            coursesEnrolled: courses,
+        };
+    } else {
+        return {
+            coursesEnrolled: null,
+        }
     }
-    return {
-        coursesEnrolled: courses,
-    };
+    
 };
 
 
