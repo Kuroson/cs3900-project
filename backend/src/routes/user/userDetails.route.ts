@@ -41,7 +41,6 @@ export const getUserDetails = async (email?: string): Promise<Nullable<ResponseP
 
 export const getStudentEnrolments = async (email?: string): Promise<Nullable<EnrolmentsPayload>> => {
     if (email === undefined) throw new HttpException(401, "Bad token. No email");
-    if (email.includes("admin")) throw new HttpException(402, "Admin user doesn't have course enrolment");
 
     logger.info(`Getting student enrolments for ${email}`);
     //const res = await User.find({ email: "user2@githappens.com" }).exec(); //change this back to email
@@ -51,16 +50,12 @@ export const getStudentEnrolments = async (email?: string): Promise<Nullable<Enr
     const user = res.at(0);
     logger.info("got user");
     var courses = new Array<typeof Course>();
-    var i = 0;
-    logger.info(`num course is ${user?.enrolments.length}`);
-    logger.info(`num course is ${user?.enrolments}`);
     if (user?.enrolments !== null) {
         for (const c of user?.enrolments) {
             logger.info(`start of for loop ${c}`);
             var course = await Course.findOne({ _id: c }).exec();
             courses.push(course);
             logger.info(`Course is ${course}`);
-            i++;
         }
         return {
             coursesEnrolled: courses,
