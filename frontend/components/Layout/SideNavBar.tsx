@@ -17,11 +17,12 @@ type UserDetailsProps = {
 };
 
 const UserDetails = ({ firstName, lastName, role, avatarURL }: UserDetailsProps): JSX.Element => {
-  
   return (
     <div className="mt-5 ml-5 flex flex-row">
       <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
-        <span className="text-2xl font-bold">{(firstName?.charAt(0) ?? "") + (lastName?.charAt(0) ?? "")}</span>
+        <span className="text-2xl font-bold">
+          {(firstName?.charAt(0) ?? "") + (lastName?.charAt(0) ?? "")}
+        </span>
       </div>
       <div className="flex flex-col pl-2 justify-center items-center">
         <span className="font-bold text-start w-full">{`${firstName} ${lastName}`}</span>

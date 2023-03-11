@@ -1,5 +1,9 @@
 .common {
-  background-image: linear-gradient( 174.2deg,  rgba(255,244,228,1) 7.1%, rgba(240,246,238,1) 67.4% );
+  background-image: linear-gradient(
+    174.2deg,
+    rgba(255, 244, 228, 1) 7.1%,
+    rgba(240, 246, 238, 1) 67.4%
+  );
   min-height: 100vh;
   height: auto;
   display: grid;
@@ -7,15 +11,13 @@
 
 .login_layout {
   @extend .common;
-  grid-template-areas:
-    "sidebar-left content sidebar-right";
+  grid-template-areas: "sidebar-left content sidebar-right";
   grid-template-columns: 13rem auto 13rem;
 }
 
 .maincontent {
   @extend .common;
-  grid-template-areas:
-  "sidebar-left content";
+  grid-template-areas: "sidebar-left content";
   grid-template-columns: 13rem auto;
 }
 
