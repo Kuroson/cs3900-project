@@ -24,6 +24,7 @@ export const firebaseUpload = multer({
         credentials,
         unique: true,
         hooks: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             beforeUpload: async (req: Request, file: any) => {
                 // Verify token
                 if (req.headers.authorization === undefined)

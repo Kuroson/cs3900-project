@@ -26,7 +26,9 @@ export const uploadFileController = async (
             const resource = await Resource.findById(resourceId);
             if (resource === null) throw new Error("Cannot find resource");
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             resource.stored_name = (req.file as any).fileRef.name;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             resource.file_type = (req.file as any).mimetype;
 
             await resource.save().catch((err) => {

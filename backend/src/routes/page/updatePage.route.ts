@@ -138,11 +138,11 @@ export const updatePage = async (queryBody: QueryPayload) => {
         if (sectionId === undefined) {
             currSection = new Section({ title });
         } else {
-            let currSection = await Section.findById(sectionId);
+            const currSection = await Section.findById(sectionId);
             if (currSection === null) throw new Error("Cannot retrieve section");
         }
 
-        for (let resource of section.resources) {
+        for (const resource of section.resources) {
             const { title, description, resourceId } = resource;
             if (resourceId !== undefined) continue;
 

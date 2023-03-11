@@ -75,15 +75,16 @@ export const getPage = async (pageId: string, courseId: string) => {
     };
 
     // Get all resources directly on the page
-    const getResourcesInfo = async (resources: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const getResourcesInfo = async (resources: Iterable<any>) => {
         const resourcesInfo = new Array<ResponseResourceInfo>();
 
-        for (let resource of resources) {
-            let currResource = await Resource.findById(resource);
+        for (const resource of resources) {
+            const currResource = await Resource.findById(resource);
             if (currResource === null) throw new Error("Failed to fetch resource");
 
             const { title, description, file_type, stored_name } = currResource;
-            let resourceInfo: ResponseResourceInfo = {
+            const resourceInfo: ResponseResourceInfo = {
                 resourceId: currResource._id,
                 title,
                 description: description === undefined ? "" : description,
@@ -106,12 +107,12 @@ export const getPage = async (pageId: string, courseId: string) => {
     pageInfo.resources = await getResourcesInfo(myPage.resources);
 
     // Get all sections and accompanying resources
-    for (let section of myPage.sections) {
-        let currSection = await Section.findById(section);
+    for (const section of myPage.sections) {
+        const currSection = await Section.findById(section);
         if (currSection === null) throw new Error("Failed to fetch section");
 
-        const { title, resources } = currSection;
-        let sectionInfo: ResponseSectionInfo = {
+        const { title } = currSection;
+        const sectionInfo: ResponseSectionInfo = {
             sectionId: currSection._id,
             title,
             resources: await getResourcesInfo(currSection.resources),

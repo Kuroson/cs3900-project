@@ -32,12 +32,11 @@ export const downloadFileController = async (
             const queryBody = req.query;
             const { resourceId } = queryBody;
 
-            console.log(resourceId); // TODO: remove
-
             // Update in database
             const storedName = await Resource.findById(resourceId)
                 .then((res) => {
                     if (res === null) throw new Error("Cannot find resource");
+                    if (res.stored_name === undefined) throw new Error("Resource not uploaded");
                     return res.stored_name;
                 })
                 .catch((err) => {
