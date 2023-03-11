@@ -6,8 +6,7 @@ import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
 import CourseTile from "components/CourseTile";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
-import { Nullable, getRoleName } from "util/util";
-import { parse } from 'node-html-parser';
+import { Nullable, getRoleName, getCourseURL } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -27,22 +26,7 @@ type HomePageProps = UserDetailsPayload & EnrolmentsPayload;
 
 const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser(); 
-  var htmlText = "";
   console.log(firstName, lastName, email, role, avatar, coursesEnrolled);
-  if (coursesEnrolled !== null) {
-    for (const c of coursesEnrolled) {
-      const courseDetails = c.split(" ");
-      htmlText += `<CourseTile
-        courseName="${courseDetails[1]}"
-        courseCode="${courseDetails[0]}"
-        courseDescription="${courseDetails[2]}"
-        courseURL="/${courseDetails[0]}"
-      />`;
-    }
-  } 
-  var HTMLParser = require('node-html-parser');
-  var root = HTMLParser.parse(htmlText);
-  console.info(root);
   return (
     <>
       <Head>
@@ -71,26 +55,13 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
         </div>
         <div className="flex flex-col w-full justify-left items-left px-[5%]">
         <div className="column-3">
-          {/* {HTMLParser.parse(htmlText)} */}
-          courses: {coursesEnrolled?.length}
-          <CourseTile
-            courseName="Programming Fundamentals"
-            courseCode="COMP1511"
-            courseDescription="An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language."
-            courseURL="/COMP1511"
-          />
-          <CourseTile
-            courseName="Web Front End Programming"
-            courseCode="COMP6080"
-            courseDescription="This course introduces the fundamentals and advanced techniques of programming for the web front-end in JavaScript."
-            courseURL="/COMP6080"
-          />
-          <CourseTile
-            courseName="Computing for Mechatronic Engineers"
-            courseCode="MTRN2500"
-            courseDescription="This course will teach students C++ and Matlab programing."
-            courseURL="/MTRN2500"
-          />
+          {coursesEnrolled?.map(x => {
+            return <CourseTile 
+              courseName={x.title}
+              courseCode={x.code}
+              courseDescription={x.description}
+              courseURL={getCourseURL(x.code)}/>
+          })}
         </div>
         </div>
       </ContentContainer>

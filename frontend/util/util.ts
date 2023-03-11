@@ -8,3 +8,7 @@ export const getRoleName = (role: number | null): string => {
   if (role === INSTRUCTOR_NUMBER) return "Instructor";
   return "Student";
 };
+
+export const getCourseURL = (courseCode: string | null): string => {
+  return "/" + courseCode;
+}
