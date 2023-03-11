@@ -49,8 +49,7 @@ const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): 
           </div>
         </div>
       </ContentContainer>
-      <LeftSideBar />
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

@@ -1,6 +1,9 @@
 import Link from "next/link";
+import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
+import TitleWithIcon from "components/common/TitleWithIcon";
 
 type SideNavBarProps = UserDetailsProps & {
   empty?: boolean;
@@ -30,11 +33,12 @@ const UserDetails = ({ firstName, lastName, role, avatarURL }: UserDetailsProps)
 export type Routes = {
   name: string;
   route: string;
+  Icon?: React.ReactNode;
 };
 
 const NavBar = (): JSX.Element => {
   const routes: Routes[] = [
-    { name: "Dashboard", route: "/" },
+    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
     { name: "COMP1511", route: "/COMP1511" },
     { name: "COMP6080", route: "/COMP6080" },
     { name: "MTRN2500", route: "/MTRN2500" },
@@ -42,16 +46,17 @@ const NavBar = (): JSX.Element => {
 
   return (
     <div className="w-full flex flex-col items-center mt-5">
-      {routes.map(({ name, route }, index) => {
+      {routes.map(({ name, route, Icon }, index) => {
         return (
           <Link
             key={`nav-index-${index}`}
             href={route}
-            className="w-full flex justify-items items-center py-2 outline"
+            className="w-full flex justify-center items-center py-2"
           >
-            <div className="w-full flex justify-items items-center">
+            {/* <div className="w-full flex justify-items items-center">
               <span className="text-lg w-full text-center">{name}</span>
-            </div>
+            </div> */}
+            <TitleWithIcon text={name}>{Icon}</TitleWithIcon>
           </Link>
         );
       })}
@@ -75,7 +80,7 @@ export default function SideNavbar({
   };
 
   return (
-    <div className="bg-blue-primary w-full">
+    <div className="w-full">
       <div
         className="h-full fixed top-[0] left-[0] z-10 w-[13rem]"
         // 13rem matches Layout.module.scss
@@ -93,7 +98,7 @@ export default function SideNavbar({
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}
-            <Button variant="contained" onClick={handleOnClick}>
+            <Button variant="outlined" onClick={handleOnClick} startIcon={<LogoutIcon />}>
               Logout
             </Button>
           </div>
