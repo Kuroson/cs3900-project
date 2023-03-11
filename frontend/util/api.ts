@@ -101,7 +101,7 @@ export const apiUploadFile = async <
   try {
     const formData = new FormData();
     formData.append("file", file);
-    for (let key of Object.keys(queryParams)) {
+    for (const key of Object.keys(queryParams)) {
       formData.append(key, queryParams[key]);
     }
 
