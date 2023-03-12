@@ -82,12 +82,12 @@ export const createCourseController = async (
 export const createCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
     const { code, title, session, description, icon } = queryBody;
 
-    const adminId = await User.findOne({ firebase_uid })
+    const admin = await User.findOne({ firebase_uid })
         .then((res) => {
             if (res === null) {
                 throw new HttpException(500, "Invalid user in database");
             }
-            return res._id;
+            return res;
         })
         .catch((err) => {
             throw new HttpException(500, "Invalid user in database");
@@ -99,7 +99,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         description,
         session,
         icon,
-        creator: adminId,
+        creator: admin._id,
     });
 
     const courseId = await myCourse
@@ -108,12 +108,18 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
             return res._id;
         })
         .catch((err) => {
-            return null;
+            throw new HttpException(500, "Failed to save new course");
         });
 
     if (courseId === null) {
         throw new HttpException(500, "Failed to create course");
     }
+
+    admin.created_courses.push(courseId);
+
+    await admin.save().catch((err) => {
+        throw new HttpException(500, "Failed to save user");
+    });
 
     return courseId;
 };
