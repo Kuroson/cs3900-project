@@ -50,6 +50,14 @@ export const getCoursesController = async (
     }
 };
 
+/**
+ * Finds all the courses that the given user has available to them. If this is
+ * an admin, it will be all courses. If this is a student, this will be their
+ * enrolled courses.
+ *
+ * @param firebase_uid ID of the user to get their available courses for
+ * @returns List of the user's courses
+ */
 export const getCourses = async (firebase_uid: string) => {
     const isAdmin = await checkAdmin(firebase_uid);
 

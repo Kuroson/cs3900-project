@@ -48,6 +48,12 @@ export const getPagesController = async (
     }
 };
 
+/**
+ * Gets all the pages that exist in the given course with their IDs and base information
+ *
+ * @param courseId The ID of the course to get the pages of
+ * @returns A list of all pages and their base information
+ */
 export const getPages = async (courseId: string) => {
     const pageList = new Array<PageInfo>();
 

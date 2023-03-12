@@ -71,6 +71,13 @@ export const updateCourseController = async (
     }
 };
 
+/**
+ * Updates the specified fields within the specified course
+ *
+ * @param queryBody Fields that should be updated for the course in the format of
+ * QueryPayload defined above
+ * @returns The ID of the course updated
+ */
 export const updateCourse = async (queryBody: QueryPayload) => {
     const { courseId, code, title, session, description, icon } = queryBody;
 

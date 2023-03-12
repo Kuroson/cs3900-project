@@ -58,6 +58,12 @@ export const createPageController = async (
     }
 };
 
+/**
+ * Creates a new page in the given course with the information specified
+ *
+ * @param queryBody The page information in the format of QueryPayload defined above
+ * @returns The ID of the new page that has been created
+ */
 export const createPage = async (queryBody: QueryPayload) => {
     const { courseId, title } = queryBody;
 

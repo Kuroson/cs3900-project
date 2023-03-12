@@ -70,6 +70,15 @@ export const createCourseController = async (
     }
 };
 
+/**
+ * Creates a new course in the system containing the base information in queryBody
+ * initialised with an empty array of pages
+ * The creator is set to the user who sent the request
+ *
+ * @param queryBody Arguments containing the fields defined above in QueryPayload
+ * @param firebase_uid Unique identifier of user
+ * @returns The ID of the course that has been created
+ */
 export const createCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
     const { code, title, session, description, icon } = queryBody;
 

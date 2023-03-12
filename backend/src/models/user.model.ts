@@ -4,6 +4,13 @@ import { Course } from "./course.model";
 export const STUDENT_ROLE = "1";
 export const INSTRUCTOR_ROLE = "0";
 
+/**
+ * The user defines one of two user types in the system
+ * They can be instructors/admins or students
+ *
+ * The firebase_uid should come from registration in firebase
+ * Users can be enrolled in courses which is added to their enrollment list
+ */
 export interface User extends Document {
     firebase_uid: string;
     email: string;

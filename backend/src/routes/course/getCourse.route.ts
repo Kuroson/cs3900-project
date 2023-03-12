@@ -54,6 +54,13 @@ export const getCourseController = async (
     }
 };
 
+/**
+ * Gets the information for a given course including its base info (title, code, etc.) and the pages
+ * it contains
+ *
+ * @param courseId The ID of the course to be recalled
+ * @returns Base information on the course based on return requirements in ResponsePayload
+ */
 export const getCourse = async (courseId: string) => {
     const myCourse = await Course.findById(courseId);
 

@@ -69,6 +69,11 @@ export const verifyIdTokenValid = async (token: string) => {
         });
 };
 
+/**
+ * Fetches a download URL of the specified file
+ *
+ * @param fileName The name of the file (as stored in firebase storage)
+ */
 export const recallFileUrl = async (fileName: string) => {
     const file = bucket.file(fileName);
 

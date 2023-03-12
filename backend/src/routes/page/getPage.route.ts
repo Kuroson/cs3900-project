@@ -63,6 +63,15 @@ export const getPageController = async (
     }
 };
 
+/**
+ * Gets the state of a given page, returning its resources, sections and resources
+ * nested within these sections. It gives base information for each and the link to
+ * access download of any resource.
+ *
+ * @param pageId The ID of the page to get information for
+ * @param courseId The course the page is located within
+ * @returns The state of the page in the format defined within ResponsePayload
+ */
 export const getPage = async (pageId: string, courseId: string) => {
     const myPage = await Page.findById(pageId);
     if (myPage === null) throw new HttpException(500, "Failed to recall page");

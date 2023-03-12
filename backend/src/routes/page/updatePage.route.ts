@@ -98,6 +98,20 @@ export const updatePageController = async (
     }
 };
 
+/**
+ * Updates the state pf a given page
+ * The arguments lay out the page in the same format that it is displayed
+ * and stored. This means that the page can have resources and sections (with
+ * the sections themselves containing nested resources).
+ * This is called prior to files actually being uploaded. It gives the resourceIDs
+ * of each file that is to be uploaded and this is passed to the upload function.
+ * When it is called, each resource and section can be optionally be given an ID
+ * and when given it indicates that this is an existing section or resource.
+ *
+ * @param queryBody Parameters for the page that are to be updated
+ * @returns The state of the page in the same format passed, giving the sectionId
+ * and resourceId of each section and page respectively.
+ */
 export const updatePage = async (queryBody: QueryPayload) => {
     const { courseId, pageId, resources, sections } = queryBody;
 

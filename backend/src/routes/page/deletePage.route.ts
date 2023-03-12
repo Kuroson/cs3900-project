@@ -56,6 +56,12 @@ export const deletePageController = async (
     }
 };
 
+/**
+ * Deletes the given page from the given course, deleting the page itself and
+ * removes it from the course
+ *
+ * @param queryBody The arguments of course and page IDs to be deleted
+ */
 export const deletePage = async (queryBody: QueryPayload) => {
     const { courseId, pageId } = queryBody;
 
