@@ -19,14 +19,14 @@ type UserDetailsPayload = Nullable<{
 
 type HomePageProps = UserDetailsPayload;
 
-const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
+const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser();
   console.log(firstName, lastName, email, role, avatar);
 
   return (
     <>
       <Head>
-        <title>Home page</title>
+        <title>Admin page</title>
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
@@ -41,15 +41,8 @@ const HomePage = ({ firstName, lastName, email, role, avatar }: HomePageProps): 
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
             <span className="ml-4">Welcome, {`${firstName} ${lastName}`}</span>
           </h1>
-          <div className="w-full flex flex-col">
-            <h2 className="text-2xl w-full ml-4 m-0">Course Overview</h2>
-            <div className="ml-4 pt-5">
-              <TextField id="outlined-search" label="Search field" type="search" />
-            </div>
-          </div>
         </div>
       </ContentContainer>
-      {/* <Footer /> */}
     </>
   );
 };
@@ -90,4 +83,4 @@ export default withAuthUser<HomePageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
   // LoaderComponent: MyLoader,
-})(HomePage);
+})(Admin);

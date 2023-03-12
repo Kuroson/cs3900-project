@@ -99,8 +99,6 @@ const ForgetPasswordPage = (): JSX.Element => {
           </div>
         </form>
       </ContentContainer>
-      <LeftSideBar />
-      <Footer />
     </>
   );
 };
