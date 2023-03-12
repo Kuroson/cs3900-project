@@ -76,12 +76,12 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
     const adminId = await User.findOne({ firebase_uid })
         .then((res) => {
             if (res === null) {
-                throw new Error("Invalid user in database");
+                throw new HttpException(500, "Invalid user in database");
             }
             return res._id;
         })
         .catch((err) => {
-            throw new Error("Invalid user in database");
+            throw new HttpException(500, "Invalid user in database");
         });
 
     const myCourse = new Course({
@@ -103,7 +103,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         });
 
     if (courseId === null) {
-        throw new Error("Failed to create course");
+        throw new HttpException(500, "Failed to create course");
     }
 
     return courseId;

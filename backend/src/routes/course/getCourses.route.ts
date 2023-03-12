@@ -81,7 +81,7 @@ export const getCourses = async (firebase_uid: string) => {
     } else {
         // Get enrolled courses
         const user = await User.findOne({ firebase_uid });
-        if (user === null) throw new Error("Failed to find user");
+        if (user === null) throw new HttpException(500, "Failed to find user");
 
         for (const courseId of user.enrolments) {
             // Get course for info

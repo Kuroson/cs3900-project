@@ -102,7 +102,7 @@ export const updatePage = async (queryBody: QueryPayload) => {
     const { courseId, pageId, resources, sections } = queryBody;
 
     const myPage = await Page.findById(pageId);
-    if (myPage === null) throw new Error("Failed to retrieve page");
+    if (myPage === null) throw new HttpException(400, "Page does not exist");
 
     // Move through resources and add new ones
     for (const resource of resources) {
@@ -123,7 +123,7 @@ export const updatePage = async (queryBody: QueryPayload) => {
                 return res._id;
             })
             .catch((err) => {
-                throw new Error("Failed to save resource");
+                throw new HttpException(500, "Failed to save resource");
             });
 
         myPage.resources.push(newResourceId);
@@ -137,7 +137,7 @@ export const updatePage = async (queryBody: QueryPayload) => {
             currSection = new Section({ title });
         } else {
             currSection = await Section.findById(sectionId);
-            if (currSection === null) throw new Error("Cannot retrieve section");
+            if (currSection === null) throw new HttpException(500, "Cannot retrieve section");
         }
 
         for (const resource of section.resources) {
@@ -153,7 +153,7 @@ export const updatePage = async (queryBody: QueryPayload) => {
             }
 
             await newResource.save().catch((err) => {
-                throw new Error("Failed to save resource");
+                throw new HttpException(500, "Failed to save resource");
             });
 
             currSection.resources.push(newResource);
@@ -165,7 +165,7 @@ export const updatePage = async (queryBody: QueryPayload) => {
                 return res._id;
             })
             .catch((err) => {
-                throw new Error("Failed to save section");
+                throw new HttpException(500, "Failed to save section");
             });
 
         if (sectionId === undefined) {
@@ -175,7 +175,7 @@ export const updatePage = async (queryBody: QueryPayload) => {
 
     // Save updated page
     await myPage.save().catch((err) => {
-        throw new Error("Failed to save page");
+        throw new HttpException(500, "Failed to save page");
     });
 
     return await getPage(pageId, courseId);

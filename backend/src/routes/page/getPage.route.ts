@@ -65,7 +65,7 @@ export const getPageController = async (
 
 export const getPage = async (pageId: string, courseId: string) => {
     const myPage = await Page.findById(pageId);
-    if (myPage === null) throw new Error("Failed to recall page");
+    if (myPage === null) throw new HttpException(500, "Failed to recall page");
 
     const pageInfo = {
         courseId,
@@ -81,7 +81,7 @@ export const getPage = async (pageId: string, courseId: string) => {
 
         for (const resource of resources) {
             const currResource = await Resource.findById(resource);
-            if (currResource === null) throw new Error("Failed to fetch resource");
+            if (currResource === null) throw new HttpException(500, "Failed to fetch resource");
 
             const { title, description, file_type, stored_name } = currResource;
             const resourceInfo: ResponseResourceInfo = {
@@ -109,7 +109,7 @@ export const getPage = async (pageId: string, courseId: string) => {
     // Get all sections and accompanying resources
     for (const section of myPage.sections) {
         const currSection = await Section.findById(section);
-        if (currSection === null) throw new Error("Failed to fetch section");
+        if (currSection === null) throw new HttpException(500, "Failed to fetch section");
 
         const { title } = currSection;
         const sectionInfo: ResponseSectionInfo = {

@@ -62,7 +62,7 @@ export const createPage = async (queryBody: QueryPayload) => {
     const { courseId, title } = queryBody;
 
     const course = await Course.findById(courseId);
-    if (course === null) throw new Error("Course does not exist");
+    if (course === null) throw new HttpException(400, "Course does not exist");
 
     const myPage = new Page({
         title,
@@ -74,14 +74,14 @@ export const createPage = async (queryBody: QueryPayload) => {
             return res._id;
         })
         .catch((err) => {
-            throw new Error("Failed to create page");
+            throw new HttpException(500, "Failed to create page");
         });
 
     // Add page to course
     course.pages.push(pageId);
 
     await course.save().catch((err) => {
-        throw new Error("Failed to add page to course");
+        throw new HttpException(500, "Failed to add page to course");
     });
 
     return pageId;

@@ -75,7 +75,7 @@ export const updateCourse = async (queryBody: QueryPayload) => {
     const { courseId, code, title, session, description, icon } = queryBody;
 
     const myCourse = await Course.findById(courseId);
-    if (myCourse === null) throw new Error("Failed to retrieve course");
+    if (myCourse === null) throw new HttpException(500, "Failed to retrieve course");
 
     myCourse.code = code;
     myCourse.title = title;
@@ -93,7 +93,7 @@ export const updateCourse = async (queryBody: QueryPayload) => {
         });
 
     if (courseId === null) {
-        throw new Error("Failed to update course");
+        throw new HttpException(500, "Failed to update course");
     }
 
     return retCourseId;

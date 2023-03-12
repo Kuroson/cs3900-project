@@ -52,7 +52,7 @@ export const getPages = async (courseId: string) => {
     const pageList = new Array<PageInfo>();
 
     const myCourse = await Course.findById(courseId);
-    if (myCourse === null) throw new Error("Faild to find course");
+    if (myCourse === null) throw new HttpException(400, "Course does not exist");
 
     for (const pageId of myCourse.pages) {
         const page = await Page.findById(pageId);

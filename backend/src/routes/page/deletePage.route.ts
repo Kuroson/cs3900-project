@@ -60,12 +60,12 @@ export const deletePage = async (queryBody: QueryPayload) => {
     const { courseId, pageId } = queryBody;
 
     const course = await Course.findById(courseId);
-    if (course === null) throw new Error("Course does not exist");
+    if (course === null) throw new HttpException(400, "Course does not exist");
 
     // Remove from course and overall
     course.pages.remove(pageId);
     await course.save().catch((err) => {
-        throw new Error("Failed to remove page from course");
+        throw new HttpException(500, "Failed to remove page from course");
     });
     await Page.findByIdAndDelete(pageId);
 };

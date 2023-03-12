@@ -35,12 +35,13 @@ export const downloadFileController = async (
             // Update in database
             const storedName = await Resource.findById(resourceId)
                 .then((res) => {
-                    if (res === null) throw new Error("Cannot find resource");
-                    if (res.stored_name === undefined) throw new Error("Resource not uploaded");
+                    if (res === null) throw new HttpException(500, "Cannot find resource");
+                    if (res.stored_name === undefined)
+                        throw new HttpException(400, "Resource not uploaded");
                     return res.stored_name;
                 })
                 .catch((err) => {
-                    throw new Error("Failed to retrieve file");
+                    throw new HttpException(500, "Failed to retrieve file");
                 });
 
             const fileUrl = await recallFileUrl(storedName);

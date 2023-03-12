@@ -1,8 +1,14 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
+import Page from "@/models/page.model";
 import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { Request, Response } from "express";
+
+type PageInfo = {
+    pageId: string;
+    title: string;
+};
 
 type ResponsePayload = {
     code?: string;
@@ -10,7 +16,7 @@ type ResponsePayload = {
     description?: string;
     session?: string;
     icon?: string;
-    pages?: Array<object>;
+    pages?: Array<PageInfo>;
     message?: string;
 };
 
@@ -51,7 +57,7 @@ export const getCourseController = async (
 export const getCourse = async (courseId: string) => {
     const myCourse = await Course.findById(courseId);
 
-    if (myCourse === null) throw new Error("Course does not exist");
+    if (myCourse === null) throw new HttpException(500, "Course does not exist");
 
     const courseInfo = {
         code: myCourse.code,
@@ -59,8 +65,19 @@ export const getCourse = async (courseId: string) => {
         description: myCourse.description,
         session: myCourse.session,
         icon: myCourse.icon,
-        pages: [], // TODO: when pages are created, update to return pages
+        pages: new Array<PageInfo>(),
     };
+
+    // Get each page info
+    for (const page of myCourse.pages) {
+        const myPage = await Page.findById(page);
+        if (myPage === null) throw new HttpException(500, "Failed to retrieve page");
+
+        courseInfo.pages.push({
+            title: myPage.title,
+            pageId: myPage._id,
+        });
+    }
 
     return courseInfo;
 };

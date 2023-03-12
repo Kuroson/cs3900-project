@@ -24,7 +24,7 @@ export const uploadFileController = async (
 
             // Update in database
             const resource = await Resource.findById(resourceId);
-            if (resource === null) throw new Error("Cannot find resource");
+            if (resource === null) throw new HttpException(500, "Cannot find resource");
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             resource.stored_name = (req.file as any).fileRef.name;
@@ -32,7 +32,7 @@ export const uploadFileController = async (
             resource.file_type = (req.file as any).mimetype;
 
             await resource.save().catch((err) => {
-                throw new Error("Failed to save updated resource");
+                throw new HttpException(500, "Failed to save updated resource");
             });
 
             return res.status(200).json({});
