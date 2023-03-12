@@ -1,8 +1,12 @@
+import { useState } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import AddIcon from "@mui/icons-material/Add";
 import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
+import { ContentContainer, SideNavbar } from "components";
+import CourseCard from "components/common/CourseCard";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
@@ -21,7 +25,7 @@ type HomePageProps = UserDetailsPayload;
 
 const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser();
-  console.log(firstName, lastName, email, role, avatar);
+  const router = useRouter();
 
   return (
     <>
@@ -37,11 +41,6 @@ const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX
         avatarURL={avatar}
       />
       <ContentContainer>
-        <div className="flex flex-col w-full justify-center items-center px-[5%]">
-          <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
-            <span className="ml-4">Welcome, {`${firstName} ${lastName}`}</span>
-          </h1>
-        </div>
       </ContentContainer>
     </>
   );

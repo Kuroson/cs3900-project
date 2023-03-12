@@ -1,9 +1,12 @@
 import Link from "next/link";
+import AddIcon from "@mui/icons-material/Add";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import TitleWithIcon from "components/common/TitleWithIcon";
+import { useRouter } from "next/router";
 
 type SideNavBarProps = UserDetailsProps & {
   empty?: boolean;
@@ -39,21 +42,40 @@ export type Routes = {
 };
 
 const NavBar = (): JSX.Element => {
-  const routes: Routes[] = [
+  // detect the role and course then extract the sidebar list by using api??
+  const router = useRouter();
+  const adminRoutes: Routes[] = [
+    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
+    {
+      name: "Admin allocation",
+      route: "/admin/admin-allocation",
+      Icon: <SupervisorAccountIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Create Course",
+      route: "/admin/create-course",
+      Icon: <AddIcon fontSize="large" color="primary" />,
+    },
+  ];
+
+  const studentRoutes: Routes[] = [
     { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
     { name: "COMP1511", route: "/COMP1511" },
     { name: "COMP6080", route: "/COMP6080" },
     { name: "MTRN2500", route: "/MTRN2500" },
   ];
 
+  // TODO: change after merging
+  const routes:Routes[] = router.asPath.includes("admin") ? adminRoutes : studentRoutes;
+
   return (
-    <div className="w-full flex flex-col items-center mt-5">
+    <div className="w-full flex flex-col mt-5">
       {routes.map(({ name, route, Icon }, index) => {
         return (
           <Link
             key={`nav-index-${index}`}
             href={route}
-            className="w-full flex justify-center items-center py-2"
+            className="w-full flex justify-center py-2"
           >
             {/* <div className="w-full flex justify-items items-center">
               <span className="text-lg w-full text-center">{name}</span>
