@@ -45,7 +45,7 @@ const NavBar = (): JSX.Element => {
   // detect the role and course then extract the sidebar list by using api??
   const router = useRouter();
   const adminRoutes: Routes[] = [
-    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
+    { name: "Dashboard", route: "/admin", Icon: <HomeIcon fontSize="large" color="primary" /> },
     {
       name: "Admin allocation",
       route: "/admin/admin-allocation",

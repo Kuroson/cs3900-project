@@ -2,7 +2,7 @@ import { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
-import { TextField } from "@mui/material";
+import { Avatar, Button, TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, SideNavbar } from "components";
@@ -23,9 +23,24 @@ type UserDetailsPayload = Nullable<{
 
 type HomePageProps = UserDetailsPayload;
 
-const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
+const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser();
   const router = useRouter();
+  const [image, setImage] = useState<string>();
+
+  // upload image
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]);
+      reader.onload = () => {
+        setImage(reader.result as string);
+      };
+    }
+  };
+
+  // create course
+  const handleCreateCourse = () => {};
 
   return (
     <>
@@ -41,6 +56,31 @@ const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX
         avatarURL={avatar}
       />
       <ContentContainer>
+        <div className="py-5 px-9">
+          <h1>Create Course</h1>
+        </div>
+        <form
+          className="flex flex-col items-center justify-center gap-6"
+          onSubmit={handleCreateCourse}
+        >
+          <Avatar
+            alt="Course"
+            src={(image != null) ? image : "/static/images/avatar/3.jpg"}
+            sx={{ width: "100px", height: "100px" }}
+          />
+          <Button variant="outlined" component="label">
+            Upload Icon
+            <input hidden accept="image/*" multiple type="file" onChange={handleImageChange} />
+          </Button>
+          <div className="flex flex-col gap-6 w-[600px]">
+            <TextField id="Course ID" label="Course ID" variant="outlined" />
+            <TextField id="Title" label="Course Title" variant="outlined" />
+            <TextField id="Description" label="Description" variant="outlined" multiline rows={9} />
+            <Button variant="contained" fullWidth type="submit">
+              Create
+            </Button>
+          </div>
+        </form>
       </ContentContainer>
     </>
   );
@@ -82,4 +122,4 @@ export default withAuthUser<HomePageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
   // LoaderComponent: MyLoader,
-})(Admin);
+})(CreateCourse);
