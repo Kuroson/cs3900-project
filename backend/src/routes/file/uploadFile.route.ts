@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 
 type ResponsePayload = {
     message?: string;
+    success: boolean;
 };
 
 type QueryPayload = {
@@ -35,7 +36,7 @@ export const uploadFileController = async (
                 throw new HttpException(500, "Failed to save updated resource");
             });
 
-            return res.status(200).json({});
+            return res.status(200).json({ success: true });
         } else {
             throw new HttpException(
                 400,
@@ -46,10 +47,14 @@ export const uploadFileController = async (
         if (error instanceof HttpException) {
             logger.error(error.getMessage());
             logger.error(error.originalError);
-            return res.status(error.getStatusCode()).json({ message: error.getMessage() });
+            return res
+                .status(error.getStatusCode())
+                .json({ message: error.getMessage(), success: false });
         } else {
             logger.error(error);
-            return res.status(500).json({ message: "Internal server error. Error was not caught" });
+            return res
+                .status(500)
+                .json({ message: "Internal server error. Error was not caught", success: false });
         }
     }
 };
