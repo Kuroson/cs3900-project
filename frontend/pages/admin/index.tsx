@@ -2,6 +2,8 @@ import { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
+import HomeIcon from "@mui/icons-material/Home";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
@@ -10,6 +12,7 @@ import CourseCard from "components/common/CourseCard";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
+import { Routes } from "components/Layout/SideNavBar";
 
 initAuth(); // SSR maybe, i think...
 
@@ -58,6 +61,20 @@ const courses: Course[] = [
   },
 ];
 
+export const adminRoutes: Routes[] = [
+  { name: "Dashboard", route: "/admin", Icon: <HomeIcon fontSize="large" color="primary" /> },
+  {
+    name: "Admin allocation",
+    route: "/admin/admin-allocation",
+    Icon: <SupervisorAccountIcon fontSize="large" color="primary" />,
+  },
+  {
+    name: "Create Course",
+    route: "/admin/create-course",
+    Icon: <AddIcon fontSize="large" color="primary" />,
+  },
+];
+
 const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
   const allCourses = courses;
   const [showedCourses, setShowedCourses] = useState(courses);
@@ -84,6 +101,7 @@ const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX
         lastName={lastName}
         role={getRoleName(role)}
         avatarURL={avatar}
+        list={adminRoutes}
       />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
@@ -95,7 +113,7 @@ const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX
             <h2>Course Overview</h2>
             <TextField
               id="search course"
-              label="Search Course ID"
+              label="Search Course Code"
               variant="outlined"
               sx={{ width: "300px" }}
               onKeyDown={handleKeyDown}

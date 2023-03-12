@@ -10,6 +10,7 @@ import CourseCard from "components/common/CourseCard";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
+import { adminRoutes } from "./index";
 
 initAuth(); // SSR maybe, i think...
 
@@ -40,7 +41,7 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
   };
 
   // create course
-  const handleCreateCourse = () => {};
+  // const handleCreateCourse = () => {};
 
   return (
     <>
@@ -54,6 +55,7 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
         lastName={lastName}
         role={getRoleName(role)}
         avatarURL={avatar}
+        list={adminRoutes}
       />
       <ContentContainer>
         <div className="py-5 px-9">
@@ -61,7 +63,7 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
         </div>
         <form
           className="flex flex-col items-center justify-center gap-6"
-          onSubmit={handleCreateCourse}
+          // onSubmit={handleCreateCourse}
         >
           <Avatar
             alt="Course"
@@ -73,7 +75,7 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
             <input hidden accept="image/*" multiple type="file" onChange={handleImageChange} />
           </Button>
           <div className="flex flex-col gap-6 w-[600px]">
-            <TextField id="Course ID" label="Course ID" variant="outlined" />
+            <TextField id="Course ID" label="Course Code" variant="outlined" />
             <TextField id="Title" label="Course Title" variant="outlined" />
             <TextField id="Description" label="Description" variant="outlined" multiline rows={9} />
             <Button variant="contained" fullWidth type="submit">

@@ -1,15 +1,12 @@
 import Link from "next/link";
-import AddIcon from "@mui/icons-material/Add";
-import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import TitleWithIcon from "components/common/TitleWithIcon";
-import { useRouter } from "next/router";
 
 type SideNavBarProps = UserDetailsProps & {
   empty?: boolean;
+  list: Routes[] // sidebar sections list
 };
 
 type UserDetailsProps = {
@@ -41,36 +38,10 @@ export type Routes = {
   Icon?: React.ReactNode;
 };
 
-const NavBar = (): JSX.Element => {
-  // detect the role and course then extract the sidebar list by using api??
-  const router = useRouter();
-  const adminRoutes: Routes[] = [
-    { name: "Dashboard", route: "/admin", Icon: <HomeIcon fontSize="large" color="primary" /> },
-    {
-      name: "Admin allocation",
-      route: "/admin/admin-allocation",
-      Icon: <SupervisorAccountIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Create Course",
-      route: "/admin/create-course",
-      Icon: <AddIcon fontSize="large" color="primary" />,
-    },
-  ];
-
-  const studentRoutes: Routes[] = [
-    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
-    { name: "COMP1511", route: "/COMP1511" },
-    { name: "COMP6080", route: "/COMP6080" },
-    { name: "MTRN2500", route: "/MTRN2500" },
-  ];
-
-  // TODO: change after merging
-  const routes:Routes[] = router.asPath.includes("admin") ? adminRoutes : studentRoutes;
-
+const NavBar = ({routes}: {routes: Routes[]}): JSX.Element => {
   return (
     <div className="w-full flex flex-col mt-5">
-      {routes.map(({ name, route, Icon }, index) => {
+      {routes?.map(({ name, route, Icon }, index) => {
         return (
           <Link
             key={`nav-index-${index}`}
@@ -94,6 +65,7 @@ export default function SideNavbar({
   lastName,
   role,
   avatarURL,
+  list
 }: SideNavBarProps): JSX.Element {
   if (empty === true) {
     return <div></div>;
@@ -118,7 +90,7 @@ export default function SideNavbar({
               role={role}
               avatarURL={avatarURL}
             />
-            <NavBar />
+            <NavBar routes={list}/>
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}
