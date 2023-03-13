@@ -100,46 +100,48 @@ const NavBar = ({
     setRadio((event.target as HTMLInputElement).value);
   };
 
+  const sendRequest = async (name: string) => {
+    // Send to backend
+    if (courseId === undefined) {
+      throw new Error("CourseId element does not exist"); // Should never get here
+    }
+
+    const [res, err] = await apiPost<CreatePagePayload, any>(
+      `${PROCESS_BACKEND_URL}/page/${courseId}`,
+      await authUser.getIdToken(),
+      {
+        courseId,
+        title: name,
+      },
+    );
+
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
+      }
+    }
+
+    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+  };
+
   const handleAddNewPage = async () => {
     handleClose();
 
     // Add to page list
     if (radio === "Other Page") {
-      // Send to backend
-      if (courseId === undefined) {
-        throw new Error("CourseId element does not exist"); // Should never get here
-      }
-
-      const [res, err] = await apiPost<CreatePagePayload, any>(
-        `${PROCESS_BACKEND_URL}/page/${courseId}`,
-        await authUser.getIdToken(),
-        {
-          courseId,
-          title: pageName,
-        },
-      );
-
-      if (err !== null) {
-        console.error(err);
-        if (err instanceof HttpException) {
-          toast.error(err.message);
-        } else {
-          toast.error(err);
-        }
-      }
-
-      if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
-
-      routes.push({
-        name: pageName,
-        route: "/admin",
-      });
+      sendRequest(pageName);
     } else {
-      routes.push({
-        name: radio,
-        route: "/admin",
-      });
+      sendRequest(radio);
     }
+
+    routes.push({
+      name: pageName,
+      route: `/admin/${courseId}`,
+    });
+
     setPageName("");
     setRadio("");
   };

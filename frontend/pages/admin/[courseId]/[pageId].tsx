@@ -144,7 +144,7 @@ const SectionPage = ({
 
     fetchCourseInfo().catch(console.error);
     fetchPageInfo().catch(console.error);
-  }, []);
+  }, [authUser, courseId, pageId]);
   // fetch all the section
 
   return (
