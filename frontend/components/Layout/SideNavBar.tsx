@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {
@@ -93,6 +94,7 @@ const NavBar = ({
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const routesNames = routes.map((route) => route.name);
+  const router = useRouter();
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadio((event.target as HTMLInputElement).value);
@@ -147,6 +149,7 @@ const NavBar = ({
       {routes?.map(({ name, route, Icon, hasLine }, index) => {
         return (
           <div key={`nav-index-${index}`} className="w-full flex py-2 flex-col">
+            {/* TODO: href doesn't reload page and therefore doesn't call useEffect */}
             <Link href={route}>
               <TitleWithIcon text={name}>{Icon}</TitleWithIcon>
             </Link>
