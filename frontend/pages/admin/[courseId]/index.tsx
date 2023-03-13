@@ -43,7 +43,7 @@ const course: courseInfo = {
   session: "23T1",
   icon: "",
   pages: [
-    { title: "Assignments", pageId: "3" },
+    { title: "Assignment", pageId: "3" },
     { title: "Week1", pageId: "1" },
     { title: "Week2", pageId: "2" },
   ],
