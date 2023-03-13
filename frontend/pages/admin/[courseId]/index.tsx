@@ -35,19 +35,13 @@ type courseInfo = {
 };
 type coursesInfoPayload = courseInfo;
 
-// TODO: remove
 const course: courseInfo = {
-  code: "COMP1511",
-  title: "Programming Fundamentals",
-  description:
-    "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-  session: "23T1",
+  code: "",
+  title: "",
+  description: "",
+  session: "",
   icon: "",
-  pages: [
-    { title: "Assignment", pageId: "3" },
-    { title: "Week1", pageId: "1" },
-    { title: "Week2", pageId: "2" },
-  ],
+  pages: [],
 };
 
 const CoursePage = ({
@@ -94,8 +88,6 @@ const CoursePage = ({
       }
 
       if (data === null) throw new Error("This shouldn't have happened");
-
-      console.log(data);
 
       setCourseInfo(data);
     };

@@ -19,7 +19,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { useAuthUser } from "next-firebase-auth";
 import TitleWithIcon from "components/common/TitleWithIcon";
 import { HttpException } from "util/HttpExceptions";
-import { PROCESS_BACKEND_URL, apiPost } from "util/api";
+import { PROCESS_BACKEND_URL, apiGet, apiPost } from "util/api";
 import { Nullable } from "util/util";
 
 type SideNavBarProps = UserDetailsProps & {
@@ -84,7 +84,7 @@ const NavBar = ({
 }: {
   routes: Routes[];
   isCoursePage: boolean;
-  courseId: string;
+  courseId?: string;
 }): JSX.Element => {
   const authUser = useAuthUser();
   const [open, setOpen] = useState(false);
@@ -103,7 +103,11 @@ const NavBar = ({
 
     // Add to page list
     if (radio === "Other Page") {
-      // // Send to backend
+      // Send to backend
+      if (courseId === undefined) {
+        throw new Error("CourseId element does not exist"); // Should never get here
+      }
+
       const [res, err] = await apiPost<CreatePagePayload, any>(
         `${PROCESS_BACKEND_URL}/page/${courseId}`,
         await authUser.getIdToken(),
