@@ -8,11 +8,11 @@ import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, SideNavbar } from "components";
+import { Routes } from "components/Layout/SideNavBar";
 import CourseCard from "components/common/CourseCard";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
-import { Routes } from "components/Layout/SideNavBar";
 
 initAuth(); // SSR maybe, i think...
 
@@ -26,6 +26,7 @@ type UserDetailsPayload = Nullable<{
 
 export type Course = {
   courseId: string;
+  code: string;
   title: string;
   description: string;
   session: string;
@@ -36,27 +37,30 @@ type HomePageProps = UserDetailsPayload;
 
 const courses: Course[] = [
   {
-    courseId: "COMP1511",
+    courseId: "1",
     title: "Programming Fundamentals",
+    code: "COMP1511",
     description:
       "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-    session: "",
+    session: "23T1",
     icon: "",
   },
   {
-    courseId: "COMP1521",
+    courseId: "2",
     title: "Programming Fundamentals",
+    code: "COMP1521",
     description:
       "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-    session: "",
+    session: "22T2",
     icon: "",
   },
   {
-    courseId: "COMP1531",
+    courseId: "3",
     title: "Programming Fundamentals",
+    code: "COMP1531",
     description:
       "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-    session: "",
+    session: "21T3",
     icon: "",
   },
 ];
@@ -78,14 +82,14 @@ export const adminRoutes: Routes[] = [
 const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
   const allCourses = courses;
   const [showedCourses, setShowedCourses] = useState(courses);
-  const [courseId, setCourseId] = useState("");
+  const [code, setCode] = useState("");
   const authUser = useAuthUser();
   const router = useRouter();
 
   // search course id
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      setShowedCourses(allCourses.filter((course) => course.courseId.includes(courseId)));
+      setShowedCourses(allCourses.filter((course) => course.code.includes(code)));
     }
   };
 
@@ -117,15 +121,15 @@ const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX
               variant="outlined"
               sx={{ width: "300px" }}
               onKeyDown={handleKeyDown}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCourseId(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCode(e.target.value)}
             />
           </div>
-          <div className="flex flex-wrap mx-7">
+          <div className="flex flex-wrap w-full mx-3">
             {showedCourses.map((course, index) => (
-              <CourseCard key={index} course={course} />
+              <CourseCard key={index} course={course} href={`/admin/${course.courseId}`} />
             ))}
             <div
-              className="flex flex-col rounded-lg shadow-md p-5 my-2 mx-5 w-[400px] h-[264px] cursor-pointer hover:shadow-lg items-center justify-center"
+              className="flex flex-col rounded-lg shadow-md p-5 my-2 mx-5 w-[370px] h-[264px] cursor-pointer hover:shadow-lg items-center justify-center"
               onClick={() => router.push("/admin/create-course")}
             >
               <AddIcon fontSize="large" color="primary" />

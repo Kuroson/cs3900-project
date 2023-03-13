@@ -1,12 +1,16 @@
 import Link from "next/link";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Button } from "@mui/material";
+import { Avatar, Button, Divider } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import TitleWithIcon from "components/common/TitleWithIcon";
 
 type SideNavBarProps = UserDetailsProps & {
   empty?: boolean;
-  list: Routes[] // sidebar sections list
+  list: Routes[]; // sidebar sections list
+  isCoursePage?: boolean; // check if the current page is course page
+  courseCode?: string;
+  courseIcon?: string;
 };
 
 type UserDetailsProps = {
@@ -18,7 +22,7 @@ type UserDetailsProps = {
 
 const UserDetails = ({ firstName, lastName, role, avatarURL }: UserDetailsProps): JSX.Element => {
   return (
-    <div className="mt-5 ml-5 flex flex-row">
+    <div className="mt-5 flex flex-row justify-center">
       <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
         <span className="text-2xl font-bold">
           {(firstName?.charAt(0) ?? "") + (lastName?.charAt(0) ?? "")}
@@ -36,23 +40,20 @@ export type Routes = {
   name: string;
   route: string;
   Icon?: React.ReactNode;
+  hasLine?: boolean;
 };
 
-const NavBar = ({routes}: {routes: Routes[]}): JSX.Element => {
+const NavBar = ({ routes }: { routes: Routes[] }): JSX.Element => {
   return (
-    <div className="w-full flex flex-col mt-5">
-      {routes?.map(({ name, route, Icon }, index) => {
+    <div className="w-full flex flex-col items-center justify-center mt-4 pl-2">
+      {routes?.map(({ name, route, Icon, hasLine }, index) => {
         return (
-          <Link
-            key={`nav-index-${index}`}
-            href={route}
-            className="w-full flex justify-center py-2"
-          >
-            {/* <div className="w-full flex justify-items items-center">
-              <span className="text-lg w-full text-center">{name}</span>
-            </div> */}
-            <TitleWithIcon text={name}>{Icon}</TitleWithIcon>
-          </Link>
+          <>
+            <Link key={`nav-index-${index}`} href={route} className="w-full flex py-2">
+              <TitleWithIcon text={name}>{Icon}</TitleWithIcon>
+            </Link>
+            {(hasLine ?? false) && <Divider light sx={{ marginLeft: "10px", width: "100%" }} />}
+          </>
         );
       })}
     </div>
@@ -65,7 +66,10 @@ export default function SideNavbar({
   lastName,
   role,
   avatarURL,
-  list
+  list,
+  isCoursePage,
+  courseCode,
+  courseIcon,
 }: SideNavBarProps): JSX.Element {
   if (empty === true) {
     return <div></div>;
@@ -82,15 +86,32 @@ export default function SideNavbar({
         // 13rem matches Layout.module.scss
       >
         <div className="w-full flex flex-col justify-between h-[calc(100%_-_4rem)]">
-          <div className="">
+          <div>
             {/* Top */}
-            <UserDetails
-              firstName={firstName}
-              lastName={lastName}
-              role={role}
-              avatarURL={avatarURL}
-            />
-            <NavBar routes={list}/>
+            {isCoursePage ?? false ? (
+              <div className="flex flex-col items-center justify-center gap-2 my-2">
+                <Link href="/admin" className="mr-8">
+                  <TitleWithIcon text="Dashborad">
+                    <ArrowBackIosIcon />
+                  </TitleWithIcon>
+                </Link>
+                <div className="flex items-center gap-2">
+                  <Avatar
+                    src={courseIcon ?? "" ? courseIcon : "/static/images/avatar/3.jpg"}
+                    alt="Course Icon"
+                  />
+                  <h2>{courseCode}</h2>
+                </div>
+              </div>
+            ) : (
+              <UserDetails
+                firstName={firstName}
+                lastName={lastName}
+                role={role}
+                avatarURL={avatarURL}
+              />
+            )}
+            <NavBar routes={list} />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}

@@ -67,7 +67,7 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
         >
           <Avatar
             alt="Course"
-            src={(image != null) ? image : "/static/images/avatar/3.jpg"}
+            src={image != null ? image : "/static/images/avatar/3.jpg"}
             sx={{ width: "100px", height: "100px" }}
           />
           <Button variant="outlined" component="label">
@@ -77,6 +77,7 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
           <div className="flex flex-col gap-6 w-[600px]">
             <TextField id="Course ID" label="Course Code" variant="outlined" />
             <TextField id="Title" label="Course Title" variant="outlined" />
+            <TextField id="Session" label="Course Session" variant="outlined" />
             <TextField id="Description" label="Description" variant="outlined" multiline rows={9} />
             <Button variant="contained" fullWidth type="submit">
               Create
