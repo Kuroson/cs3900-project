@@ -3,10 +3,9 @@ import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
-import CourseTile from "components/CourseTile";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
-import { Nullable, getRoleName, getCourseURL } from "util/util";
+import { Nullable, getRoleName } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -18,19 +17,16 @@ type UserDetailsPayload = Nullable<{
   avatar: string;
 }>;
 
-type EnrolmentsPayload = Nullable<{
-  coursesEnrolled: Array<any>;
-}>;
+type HomePageProps = UserDetailsPayload;
 
-type HomePageProps = UserDetailsPayload & EnrolmentsPayload;
+const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
+  const authUser = useAuthUser();
+  console.log(firstName, lastName, email, role, avatar);
 
-const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }: HomePageProps): JSX.Element => {
-  const authUser = useAuthUser(); 
-  console.log(firstName, lastName, email, role, avatar, coursesEnrolled);
   return (
     <>
       <Head>
-        <title>Home page</title>
+        <title>Admin page</title>
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
@@ -40,32 +36,13 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
         role={getRoleName(role)}
         avatarURL={avatar}
       />
-      
       <ContentContainer>
         <div className="flex flex-col w-full justify-center items-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
             <span className="ml-4">Welcome, {`${firstName} ${lastName}`}</span>
           </h1>
-          <div className="w-full flex flex-col">
-            <h2 className="text-2xl w-full ml-4 m-0">Course Overview</h2>
-            <div className="ml-4 pt-5">
-              <TextField id="outlined-search" label="Search field" type="search" />
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col w-full justify-left items-left px-[5%]">
-        <div className="column-3">
-          {coursesEnrolled?.map(x => {
-            return <CourseTile 
-              courseName={x.title}
-              courseCode={x.code}
-              courseDescription={x.description}
-              courseURL={getCourseURL(x.code)}/>
-          })}
-        </div>
         </div>
       </ContentContainer>
-      {/* <Footer /> */}
     </>
   );
 };
@@ -74,7 +51,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser }): Promise<{ props: HomePageProps }> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [data, err] = await apiGet<any, HomePageProps>(
+  const [data, err] = await apiGet<any, UserDetailsPayload>(
     `${PROCESS_BACKEND_URL}/user/details`,
     await AuthUser.getIdToken(),
     {},
@@ -90,7 +67,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
         lastName: null,
         role: null,
         avatar: null,
-        coursesEnrolled: null,
       },
     };
   }
@@ -107,4 +83,4 @@ export default withAuthUser<HomePageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
   // LoaderComponent: MyLoader,
-})(HomePage);
+})(Admin);

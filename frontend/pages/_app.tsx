@@ -9,7 +9,7 @@ import initAuth from "util/firebase";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#0971f1",
+      main: "#26a69a",
     },
   },
 });

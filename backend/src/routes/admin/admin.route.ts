@@ -1,6 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
-import { verifyIdToken } from "@/utils/firebase";
+import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
@@ -22,16 +22,7 @@ export const adminController = async (
 
         // Verify token
         const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdToken(token)
-            .then((res) => {
-                if (res.id === null || res.email === null) {
-                    throw new HttpException(401, "Expired token");
-                }
-                return res;
-            })
-            .catch((err) => {
-                throw new HttpException(401, "Invalid token", err);
-            });
+        const authUser = await verifyIdTokenValid(token);
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, [])) {
             // Body has been verified
@@ -64,6 +55,12 @@ export const adminController = async (
     }
 };
 
+/**
+ * Checks whether the given user (denoted by their unique uid) is
+ * and admin (instructor) within the system
+ * @param firebase_uid Unique identifier of user
+ * @returns Boolean of whether the user is an admin
+ */
 export const checkAdmin = async (firebase_uid: string) => {
     // Get user from database to check permissions
     let isAdmin = false;
