@@ -13,11 +13,11 @@ type ResponsePayload = {
 
 type QueryPayload = {
     courseId: string;
-    code: string;
-    title: string;
-    session: string;
-    description: string;
-    icon: string;
+    code?: string;
+    title?: string;
+    session?: string;
+    description?: string;
+    icon?: string;
 };
 
 export const updateCourseController = async (
@@ -89,11 +89,25 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
     const myCourse = await Course.findById(courseId);
     if (myCourse === null) throw new HttpException(500, "Failed to retrieve course");
 
-    myCourse.code = code;
-    myCourse.title = title;
-    myCourse.session = session;
-    myCourse.description = description;
-    myCourse.icon = icon;
+    if (code !== undefined) {
+        myCourse.code = code;
+    }
+
+    if (title !== undefined) {
+        myCourse.title = title;
+    }
+
+    if (session !== undefined) {
+        myCourse.session = session;
+    }
+
+    if (description !== undefined) {
+        myCourse.description = description;
+    }
+
+    if (icon !== undefined) {
+        myCourse.icon = icon;
+    }
 
     const retCourseId = await myCourse
         .save()
@@ -101,12 +115,8 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
             return res._id;
         })
         .catch((err) => {
-            return null;
+            throw new HttpException(500, "Failed to update course");
         });
-
-    if (courseId === null) {
-        throw new HttpException(500, "Failed to update course");
-    }
 
     return retCourseId;
 };
