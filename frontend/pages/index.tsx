@@ -1,9 +1,11 @@
 import Head from "next/head";
+import HomeIcon from "@mui/icons-material/Home";
 import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
 import CourseTile from "components/CourseTile";
+import { Routes } from "components/Layout/SideNavBar";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName, getCourseURL } from "util/util";
@@ -27,6 +29,13 @@ type HomePageProps = UserDetailsPayload & EnrolmentsPayload;
 const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser(); 
   console.log(firstName, lastName, email, role, avatar, coursesEnrolled);
+
+  const studentRoutes: Routes[] = [
+    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
+    { name: "COMP1511", route: "/COMP1511" },
+    { name: "COMP6080", route: "/COMP6080" },
+    { name: "MTRN2500", route: "/MTRN2500" },
+  ];
   return (
     <>
       <Head>
@@ -39,6 +48,7 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
         lastName={lastName}
         role={getRoleName(role)}
         avatarURL={avatar}
+        list={studentRoutes}
       />
       
       <ContentContainer>
