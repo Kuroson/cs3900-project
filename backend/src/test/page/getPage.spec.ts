@@ -62,6 +62,7 @@ describe("Test getting a page", () => {
         const pageState = await getPage(pageId, courseId);
 
         expect(pageState.courseId).toBe(courseId);
+        expect(pageState.title).toBe("Test page");
         expect(pageState.resources.length).toBe(2);
         expect(pageState.resources[0].title).toBe("res1");
         expect(pageState.resources[1].title).toBe("res2");
@@ -104,6 +105,7 @@ describe("Test getting a page", () => {
         const updatedPageState = await getPage(pageId, courseId);
 
         expect(updatedPageState.courseId).toBe(courseId);
+        expect(updatedPageState.title).toBe("Test page");
         expect(updatedPageState.resources.length).toBe(3);
         expect(updatedPageState.resources[0].title).toBe("res1");
         expect(updatedPageState.resources[1].title).toBe("res2");

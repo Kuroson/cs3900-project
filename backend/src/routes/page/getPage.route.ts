@@ -23,6 +23,7 @@ type ResponseSectionInfo = {
 type ResponsePayload = {
     courseId?: string;
     pageId?: string;
+    title?: string;
     resources?: Array<ResponseResourceInfo>;
     sections?: Array<ResponseSectionInfo>;
     message?: string;
@@ -79,6 +80,7 @@ export const getPage = async (pageId: string, courseId: string) => {
     const pageInfo = {
         courseId,
         pageId,
+        title: myPage.title,
         resources: new Array<ResponseResourceInfo>(),
         sections: new Array<ResponseSectionInfo>(),
     };

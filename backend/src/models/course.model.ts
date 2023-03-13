@@ -1,6 +1,5 @@
 import { Document, Schema, Types, model } from "mongoose";
 import { Page } from "./page.model";
-import { Resource } from "./resource.model";
 import { User } from "./user.model";
 
 /**
