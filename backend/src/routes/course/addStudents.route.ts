@@ -6,8 +6,13 @@ import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 
-type ResponsePayload = {
+type StudentCourseResponse = {
     courseId: string;
+    invalidEmails: Array<string>;
+};
+
+type ResponsePayload = {
+    invalidEmails: Array<string>;
     message?: string;
 };
 
@@ -33,10 +38,10 @@ export const addStudentsController = async (
             // Body has been verified
             const queryBody = req.body;
 
-            const courseId = await addStudents(queryBody);
+            const invalidEmailsres = await addStudents(queryBody);
 
-            logger.info(`courseId: ${courseId}`);
-            return res.status(200).json({ courseId });
+            logger.info(`invalidEmails: ${invalidEmailsres}`);
+            return res.status(200).json({ invalidEmails: invalidEmailsres });
         } else {
             throw new HttpException(
                 400,
@@ -49,12 +54,15 @@ export const addStudentsController = async (
             logger.error(error.originalError);
             return res
                 .status(error.getStatusCode())
-                .json({ message: error.getMessage(), courseId: "" });
+                .json({ message: error.getMessage(), invalidEmails: [""] });
         } else {
             logger.error(error);
             return res
                 .status(500)
-                .json({ message: "Internal server error. Error was not caught", courseId: "" });
+                .json({
+                    message: "Internal server error. Error was not caught",
+                    invalidEmails: [""],
+                });
         }
     }
 };
@@ -81,12 +89,8 @@ export const addStudents = async (queryBody: QueryPayload) => {
             return res._id;
         })
         .catch((err) => {
-            return null;
+            throw new HttpException(500, "Failed to update course");
         });
 
-    if (courseId === null) {
-        throw new Error("Failed to update course");
-    }
-
-    return retCourseId;
+    return invalidStudentEmails;
 };

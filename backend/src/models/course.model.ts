@@ -1,7 +1,15 @@
 import { Document, Schema, Types, model } from "mongoose";
 import { Page } from "./page.model";
+import { Resource } from "./resource.model";
 import { User } from "./user.model";
 
+/**
+ * Model to represent a course in the system
+ * A course has some base information (title, code, description,
+ * session it is running in, icon, and instructor who made it)
+ *
+ * A course is split up to have many pages that can have information added to them
+ */
 export interface Course extends Document {
     title: string;
     code: string;
@@ -9,8 +17,8 @@ export interface Course extends Document {
     session: string;
     icon?: string;
     creator: User["_id"];
-    pages?: Types.DocumentArray<Page["_id"]>;
-    students?: Types.DocumentArray<User["_id"]>;
+    pages: Types.DocumentArray<Page["_id"]>;
+    students: Types.DocumentArray<User["_id"]>;
 }
 
 const courseSchema: Schema = new Schema<Course>({

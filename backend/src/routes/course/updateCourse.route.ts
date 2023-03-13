@@ -71,11 +71,18 @@ export const updateCourseController = async (
     }
 };
 
+/**
+ * Updates the specified fields within the specified course
+ *
+ * @param queryBody Fields that should be updated for the course in the format of
+ * QueryPayload defined above
+ * @returns The ID of the course updated
+ */
 export const updateCourse = async (queryBody: QueryPayload) => {
     const { courseId, code, title, session, description, icon } = queryBody;
 
     const myCourse = await Course.findById(courseId);
-    if (myCourse === null) throw new Error("Failed to retrieve course");
+    if (myCourse === null) throw new HttpException(500, "Failed to retrieve course");
 
     myCourse.code = code;
     myCourse.title = title;
@@ -92,8 +99,8 @@ export const updateCourse = async (queryBody: QueryPayload) => {
             return null;
         });
 
-    if (retCourseId === null) {
-        throw new Error("Failed to update course");
+    if (courseId === null) {
+        throw new HttpException(500, "Failed to update course");
     }
 
     return retCourseId;

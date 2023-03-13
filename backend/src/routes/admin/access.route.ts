@@ -1,6 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
-import { verifyIdToken } from "@/utils/firebase";
+import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
@@ -24,16 +24,8 @@ export const accessController = async (
 
         // Verify token
         const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdToken(token)
-            .then((res) => {
-                if (res.id === null || res.email === null) {
-                    throw new HttpException(401, "Expired token");
-                }
-                return res;
-            })
-            .catch((err) => {
-                throw new HttpException(401, "Invalid token", err);
-            });
+        const authUser = await verifyIdTokenValid(token);
+
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, ["courseId"])) {
             // Body has been verified
@@ -66,6 +58,15 @@ export const accessController = async (
     }
 };
 
+/**
+ * Checks whether a user should be able to access a given course
+ * This will mean they are either an instructor/admin or they are enrolled
+ * in the course
+ *
+ * @param firebase_uid Unique identifier of user within the system
+ * @param courseId mongoDB Id of the course that the user wishes to access
+ * @returns Whether the user should be able to access the course
+ */
 export const checkAccess = async (firebase_uid: string, courseId: string) => {
     // Get user from database to check permissions
     let canAccess = false;

@@ -50,6 +50,14 @@ export const getCoursesController = async (
     }
 };
 
+/**
+ * Finds all the courses that the given user has available to them. If this is
+ * an admin, it will be all courses. If this is a student, this will be their
+ * enrolled courses.
+ *
+ * @param firebase_uid ID of the user to get their available courses for
+ * @returns List of the user's courses
+ */
 export const getCourses = async (firebase_uid: string) => {
     const isAdmin = await checkAdmin(firebase_uid);
 
@@ -81,7 +89,7 @@ export const getCourses = async (firebase_uid: string) => {
     } else {
         // Get enrolled courses
         const user = await User.findOne({ firebase_uid });
-        if (user === null) throw new Error("Failed to find user");
+        if (user === null) throw new HttpException(500, "Failed to find user");
 
         for (const courseId of user.enrolments) {
             // Get course for info
