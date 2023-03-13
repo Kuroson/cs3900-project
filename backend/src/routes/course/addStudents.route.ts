@@ -1,5 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
+import User from "@/models/user.model";
 import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -12,14 +13,10 @@ type ResponsePayload = {
 
 type QueryPayload = {
     courseId: string;
-    code: string;
-    title: string;
-    session: string;
-    description: string;
-    icon: string;
+    students: Array<string>;
 };
 
-export const updateCourseController = async (
+export const addStudentsController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
 ) => {
@@ -32,20 +29,11 @@ export const updateCourseController = async (
         const authUser = await verifyIdTokenValid(token);
 
         // User has been verified
-        if (
-            isValidBody<QueryPayload>(req.body, [
-                "courseId",
-                "code",
-                "title",
-                "session",
-                "description",
-                "icon",
-            ])
-        ) {
+        if (isValidBody<QueryPayload>(req.body, ["courseId", "students"])) {
             // Body has been verified
             const queryBody = req.body;
 
-            const courseId = await updateCourse(queryBody);
+            const courseId = await addStudents(queryBody);
 
             logger.info(`courseId: ${courseId}`);
             return res.status(200).json({ courseId });
@@ -71,19 +59,23 @@ export const updateCourseController = async (
     }
 };
 
-export const updateCourse = async (queryBody: QueryPayload) => {
-    const { courseId, code, title, session, description, icon } = queryBody;
+export const addStudents = async (queryBody: QueryPayload) => {
+    const { courseId, students } = queryBody;
 
-    const myCourse = await Course.findById(courseId);
-    if (myCourse === null) throw new Error("Failed to retrieve course");
+    const invalidStudentEmails = Array<string>();
 
-    myCourse.code = code;
-    myCourse.title = title;
-    myCourse.session = session;
-    myCourse.description = description;
-    myCourse.icon = icon;
+    const course = await Course.findById(courseId);
+    if (course === null) throw new Error("Failed to retrieve course");
 
-    const retCourseId = await myCourse
+    students.forEach((studentemail) => {
+        if (User.find({ email: studentemail }) !== null) {
+            course.students?.addToSet(studentemail);
+        } else {
+            invalidStudentEmails.push(studentemail);
+        }
+    });
+
+    const retCourseId = await course
         .save()
         .then((res) => {
             return res._id;
@@ -92,7 +84,7 @@ export const updateCourse = async (queryBody: QueryPayload) => {
             return null;
         });
 
-    if (retCourseId === null) {
+    if (courseId === null) {
         throw new Error("Failed to update course");
     }
 
