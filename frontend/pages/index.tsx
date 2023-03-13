@@ -1,13 +1,13 @@
 import Head from "next/head";
+import HomeIcon from "@mui/icons-material/Home";
 import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
+import { Routes } from "components/Layout/SideNavBar";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
-import HomeIcon from "@mui/icons-material/Home";
-import { Routes } from "components/Layout/SideNavBar";
 
 initAuth(); // SSR maybe, i think...
 
