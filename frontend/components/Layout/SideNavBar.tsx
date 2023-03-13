@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import Link from "next/link";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -15,7 +16,11 @@ import {
   TextField,
 } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
+import { useAuthUser } from "next-firebase-auth";
 import TitleWithIcon from "components/common/TitleWithIcon";
+import { HttpException } from "util/HttpExceptions";
+import { PROCESS_BACKEND_URL, apiPost } from "util/api";
+import { Nullable } from "util/util";
 
 type SideNavBarProps = UserDetailsProps & {
   empty?: boolean;
@@ -23,6 +28,7 @@ type SideNavBarProps = UserDetailsProps & {
   isCoursePage?: boolean; // check if the current page is course page
   courseCode?: string;
   courseIcon?: string;
+  courseId?: string;
 };
 
 type UserDetailsProps = {
@@ -31,6 +37,11 @@ type UserDetailsProps = {
   role?: string;
   avatarURL?: string | null;
 };
+
+type CreatePagePayload = Nullable<{
+  courseId: string;
+  title: string;
+}>;
 
 export type Routes = {
   name: string;
@@ -69,13 +80,16 @@ const style = {
 const NavBar = ({
   routes,
   isCoursePage,
+  courseId,
 }: {
   routes: Routes[];
   isCoursePage: boolean;
+  courseId: string;
 }): JSX.Element => {
+  const authUser = useAuthUser();
   const [open, setOpen] = useState(false);
   const [radio, setRadio] = useState("");
-  const [sectionName, setSectionName] = useState("");
+  const [pageName, setPageName] = useState("");
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const routesNames = routes.map((route) => route.name);
@@ -84,11 +98,34 @@ const NavBar = ({
     setRadio((event.target as HTMLInputElement).value);
   };
 
-  const handleAddNewPage = () => {
+  const handleAddNewPage = async () => {
     handleClose();
-    if (radio === "Other Section") {
+
+    // Add to page list
+    if (radio === "Other Page") {
+      // // Send to backend
+      const [res, err] = await apiPost<CreatePagePayload, any>(
+        `${PROCESS_BACKEND_URL}/page/${courseId}`,
+        await authUser.getIdToken(),
+        {
+          courseId,
+          title: pageName,
+        },
+      );
+
+      if (err !== null) {
+        console.error(err);
+        if (err instanceof HttpException) {
+          toast.error(err.message);
+        } else {
+          toast.error(err);
+        }
+      }
+
+      if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+
       routes.push({
-        name: sectionName,
+        name: pageName,
         route: "/admin",
       });
     } else {
@@ -97,7 +134,7 @@ const NavBar = ({
         route: "/admin",
       });
     }
-    setSectionName("");
+    setPageName("");
     setRadio("");
   };
 
@@ -149,22 +186,22 @@ const NavBar = ({
               control={<Radio disabled={routesNames.includes("Forum")} />}
               label="Forum"
             />
-            <FormControlLabel value="Other Section" control={<Radio />} label="Other Section" />
+            <FormControlLabel value="Other Page" control={<Radio />} label="Other Page" />
             <TextField
-              disabled={radio !== "Other Section"}
-              id="Section Name"
-              label="Section Name"
+              disabled={radio !== "Other Page"}
+              id="Page Name"
+              label="Page Name"
               variant="standard"
               sx={{ marginLeft: "30px" }}
-              value={sectionName}
-              onChange={(e) => setSectionName(e.target.value)}
+              value={pageName}
+              onChange={(e) => setPageName(e.target.value)}
             />
           </RadioGroup>
           <Button
             variant="contained"
             sx={{ marginTop: "30px" }}
             onClick={handleAddNewPage}
-            disabled={radio === "Other Section" && sectionName === ""}
+            disabled={radio === "Other Page" && pageName === ""}
           >
             Add new page
           </Button>
@@ -184,6 +221,7 @@ export default function SideNavbar({
   isCoursePage,
   courseCode,
   courseIcon,
+  courseId,
 }: SideNavBarProps): JSX.Element {
   if (empty === true) {
     return <div></div>;
@@ -225,7 +263,7 @@ export default function SideNavbar({
                 avatarURL={avatarURL}
               />
             )}
-            <NavBar routes={list} isCoursePage={isCoursePage ?? false} />
+            <NavBar routes={list} isCoursePage={isCoursePage ?? false} courseId={courseId} />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}

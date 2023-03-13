@@ -95,7 +95,7 @@ const SectionPage = ({
   const courseRoutes: Routes[] = [
     {
       name: "Home",
-      route: `/admin/${courseId}/home`,
+      route: `/admin/${courseId}`,
       Icon: <GridViewIcon fontSize="large" color="primary" />,
     },
     {

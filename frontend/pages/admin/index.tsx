@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
@@ -24,46 +24,20 @@ type UserDetailsPayload = Nullable<{
   avatar: string;
 }>;
 
-export type Course = {
+type HomePageProps = UserDetailsPayload;
+
+type coursesInfo = Array<{
   courseId: string;
-  code: string;
   title: string;
+  code: string;
   description: string;
   session: string;
   icon: string;
+}>;
+
+type coursesInfoPayload = {
+  courses: coursesInfo;
 };
-
-type HomePageProps = UserDetailsPayload;
-
-const courses: Course[] = [
-  {
-    courseId: "1",
-    title: "Programming Fundamentals",
-    code: "COMP1511",
-    description:
-      "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-    session: "23T1",
-    icon: "",
-  },
-  {
-    courseId: "2",
-    title: "Programming Fundamentals",
-    code: "COMP1521",
-    description:
-      "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-    session: "22T2",
-    icon: "",
-  },
-  {
-    courseId: "3",
-    title: "Programming Fundamentals",
-    code: "COMP1531",
-    description:
-      "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-    session: "21T3",
-    icon: "",
-  },
-];
 
 export const adminRoutes: Routes[] = [
   { name: "Dashboard", route: "/admin", Icon: <HomeIcon fontSize="large" color="primary" /> },
@@ -80,9 +54,10 @@ export const adminRoutes: Routes[] = [
 ];
 
 const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
-  const allCourses = courses;
-  const [showedCourses, setShowedCourses] = useState(courses);
+  // const allCourses = courses;
+  const [showedCourses, setShowedCourses] = useState<coursesInfo>([]);
   const [code, setCode] = useState("");
+  const [allCourses, setAllCourses] = useState<coursesInfo>([]);
   const authUser = useAuthUser();
   const router = useRouter();
 
@@ -92,6 +67,28 @@ const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX
       setShowedCourses(allCourses.filter((course) => course.code.includes(code)));
     }
   };
+
+  // Fetch all this admin's courses
+  useEffect(() => {
+    const fetchData = async () => {
+      const [data, err] = await apiGet<any, coursesInfoPayload>(
+        `${PROCESS_BACKEND_URL}/course`,
+        await authUser.getIdToken(),
+        {},
+      );
+
+      if (err !== null) {
+        console.error(err);
+      }
+
+      if (data === null) throw new Error("This shouldn't have happened");
+
+      setAllCourses(data.courses);
+      setShowedCourses(data.courses);
+    };
+
+    fetchData().catch(console.error);
+  }, []);
 
   return (
     <>

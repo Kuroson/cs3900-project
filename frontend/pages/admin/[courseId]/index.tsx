@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import GridViewIcon from "@mui/icons-material/GridView";
@@ -33,7 +33,9 @@ type courseInfo = {
   icon: string;
   pages: Array<{ title: string; pageId: string }>;
 };
+type coursesInfoPayload = courseInfo;
 
+// TODO: remove
 const course: courseInfo = {
   code: "COMP1511",
   title: "Programming Fundamentals",
@@ -56,13 +58,13 @@ const CoursePage = ({
   avatar,
   courseId,
 }: PageProps): JSX.Element => {
-  const [courseInfo, setCourseInfo] = useState(course);
+  const [courseInfo, setCourseInfo] = useState<courseInfo>(course);
   const authUser = useAuthUser();
   const router = useRouter();
   const courseRoutes: Routes[] = [
     {
       name: "Home",
-      route: `/admin/${courseId}/home`,
+      route: `/admin/${courseId}`,
       Icon: <GridViewIcon fontSize="large" color="primary" />,
     },
     {
@@ -78,7 +80,28 @@ const CoursePage = ({
     route: `/admin/${courseId}/${page.pageId}`,
   }));
 
-  // fetch all the section
+  // Fetch all the course information
+  useEffect(() => {
+    const fetchData = async () => {
+      const [data, err] = await apiGet<any, coursesInfoPayload>(
+        `${PROCESS_BACKEND_URL}/course/${courseId}`,
+        await authUser.getIdToken(),
+        {},
+      );
+
+      if (err !== null) {
+        console.error(err);
+      }
+
+      if (data === null) throw new Error("This shouldn't have happened");
+
+      console.log(data);
+
+      setCourseInfo(data);
+    };
+
+    fetchData().catch(console.error);
+  }, []);
 
   return (
     <>
@@ -96,6 +119,7 @@ const CoursePage = ({
         isCoursePage={true}
         courseCode={courseInfo.code}
         courseIcon={courseInfo.icon}
+        courseId={courseId}
       />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
