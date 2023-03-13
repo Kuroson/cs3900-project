@@ -5,6 +5,7 @@ import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
     courseId: string;
@@ -80,6 +81,10 @@ export const createCourseController = async (
  * @returns The ID of the course that has been created
  */
 export const createCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
+    if (!(await checkAdmin(firebase_uid))) {
+        throw new HttpException(401, "Must be an admin to get all courses");
+    }
+
     const { code, title, session, description, icon } = queryBody;
 
     const admin = await User.findOne({ firebase_uid })

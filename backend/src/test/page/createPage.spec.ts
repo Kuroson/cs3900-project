@@ -28,10 +28,13 @@ describe("Test creating a page", () => {
     });
 
     it("Should create a new page within the database", async () => {
-        const pageId = await createPage({
-            title: "Test page",
-            courseId,
-        });
+        const pageId = await createPage(
+            {
+                title: "Test page",
+                courseId,
+            },
+            `acc${id}`,
+        );
 
         const myPage = await Page.findById(pageId);
 
@@ -39,19 +42,25 @@ describe("Test creating a page", () => {
         expect(myPage?.title).toBe("Test page");
 
         // Delete the page
-        await deletePage({ courseId, pageId });
+        await deletePage({ courseId, pageId }, `acc${id}`);
     }, 10000);
 
     it("Multiple pages should be addable to the course", async () => {
-        const pageId1 = await createPage({
-            title: "Test page",
-            courseId,
-        });
+        const pageId1 = await createPage(
+            {
+                title: "Test page",
+                courseId,
+            },
+            `acc${id}`,
+        );
 
-        const pageId2 = await createPage({
-            title: "Test page 2",
-            courseId,
-        });
+        const pageId2 = await createPage(
+            {
+                title: "Test page 2",
+                courseId,
+            },
+            `acc${id}`,
+        );
 
         const myCourse = await Course.findById(courseId);
         expect(myCourse === null).toBe(false);
@@ -61,8 +70,8 @@ describe("Test creating a page", () => {
         expect(myCourse?.pages[1] as string).toEqual(pageId2);
 
         // Delete the pages
-        await deletePage({ courseId, pageId: pageId1 });
-        await deletePage({ courseId, pageId: pageId2 });
+        await deletePage({ courseId, pageId: pageId1 }, `acc${id}`);
+        await deletePage({ courseId, pageId: pageId2 }, `acc${id}`);
     }, 10000);
 
     afterAll(async () => {

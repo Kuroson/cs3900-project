@@ -26,14 +26,17 @@ describe("Test recalling a course", () => {
     });
 
     it("Can update course information", async () => {
-        await updateCourse({
-            courseId: courseId,
-            code: "TEST2",
-            title: "New Title",
-            session: "T2",
-            description: "This is updated info",
-            icon: "",
-        });
+        await updateCourse(
+            {
+                courseId: courseId,
+                code: "TEST2",
+                title: "New Title",
+                session: "T2",
+                description: "This is updated info",
+                icon: "",
+            },
+            `acc${id}`,
+        );
 
         const myCourse = await Course.findById(courseId);
 
@@ -46,14 +49,17 @@ describe("Test recalling a course", () => {
 
     it("Invalid course ID should throw", async () => {
         expect(
-            updateCourse({
-                courseId: "FAKE ID",
-                code: "TEST2",
-                title: "New Title",
-                session: "T2",
-                description: "This is updated info",
-                icon: "",
-            }),
+            updateCourse(
+                {
+                    courseId: "FAKE ID",
+                    code: "TEST2",
+                    title: "New Title",
+                    session: "T2",
+                    description: "This is updated info",
+                    icon: "",
+                },
+                `acc${id}`,
+            ),
         ).rejects.toThrow();
     }, 10000);
 
