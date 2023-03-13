@@ -167,7 +167,7 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
         <meta name="description" content="Sign Up" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <SideNavbar empty={true} />
+      <SideNavbar empty={true} list={[]} />
       <ContentContainer>
         <form
           className="w-full h-full flex flex-col items-center pt-[6rem]"

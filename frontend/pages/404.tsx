@@ -8,7 +8,7 @@ export default function Custom404() {
         <title>404 - Page Not Found</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <SideNavbar empty={true} />
+      <SideNavbar empty={true} list={[]} />
       <ContentContainer>
         <div className="w-full h-full flex items-center justify-center flex-col text-black">
           <h1 className="text-7xl font-bold">404</h1>
