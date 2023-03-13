@@ -12,13 +12,13 @@
 .login_layout {
   @extend .common;
   grid-template-areas: "sidebar-left content sidebar-right";
-  grid-template-columns: 13rem auto 13rem;
+  grid-template-columns: 14rem auto 14rem;
 }
 
 .maincontent {
   @extend .common;
   grid-template-areas: "sidebar-left content";
-  grid-template-columns: 13rem auto;
+  grid-template-columns: 14rem auto;
 }
 
 .container {

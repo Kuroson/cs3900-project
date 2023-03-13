@@ -63,7 +63,7 @@ const ForgetPasswordPage = (): JSX.Element => {
         <link rel="icon" href="/favicon.png" />
         <meta name="description" content="Forget password page" />
       </Head>
-      <SideNavbar empty={true} />
+      <SideNavbar empty={true} list={[]} />
       <ContentContainer>
         <form
           className="w-full h-full flex flex-col items-center pt-[6rem]"
