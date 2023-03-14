@@ -27,4 +27,15 @@ export const getMissingBodyIDs = <T extends Record<string, unknown>>(
     return fields.filter((key) => !Object.keys(body).includes(key as string)).join(", ");
 };
 
+
+export type UserInfo = {
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: number; // 0=instructor, 1=student
+    enrolments: Array<string>;
+    created_courses: Array<string>;
+    avatar?: string;
+}
+
 export type Nullable<T> = { [K in keyof T]: T[K] | null };
