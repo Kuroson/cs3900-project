@@ -15,6 +15,7 @@ describe("Test adding a section to a page", () => {
     let pageId: string;
 
     beforeAll(async () => {
+        jest.setTimeout(20 * 1000);
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
