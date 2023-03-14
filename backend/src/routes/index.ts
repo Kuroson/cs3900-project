@@ -57,7 +57,6 @@ indexRouter.get("/page/:courseId/:pageId", getPageController);
 
 indexRouter.post("/page/:courseId/:pageId/resource", addResourceController);
 indexRouter.post("/page/:courseId/:pageId/section", addSectionController);
-// indexRouter.post("/page/:courseId/:pageId/:sectionId", getPageController);
 
 // File routes
 indexRouter.post("/file/upload", firebaseUpload.single("file"), uploadFileController);
