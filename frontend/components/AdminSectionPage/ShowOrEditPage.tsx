@@ -1,30 +1,8 @@
 import React, { useState } from "react";
-import FilePresentIcon from "@mui/icons-material/FilePresent";
 import { Button } from "@mui/material";
 import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
-import ShowResource from "components/common/ShowOrEditResource";
-import TitleWithIcon from "components/common/TitleWithIcon";
-
-// export type pageInfo = {
-//     title: string;
-//     courseId: string;
-//     pageId: string;
-//     resources: resources[];
-//     sections: sections[];
-//   };
-
-// export type resources = {
-//   resourceId: string;
-//   title: string;
-//   description?: string;
-//   type: string;
-//   linkToResource: string;
-// };
-// export type sections = {
-//   sectionId: string;
-//   title: string;
-//   resources: resources[];
-// };
+import ShowOrEditResource from "components/common/ShowOrEditResource";
+import ShowOrEditSectionT from "./ShowOrEditSectionT";
 
 const defaultM: PageType = {
   title: "resource1",
@@ -33,35 +11,64 @@ const defaultM: PageType = {
   resources: [
     {
       resourceId: "3",
-      title: "file1.py",
+      title: "file1",
       description: "",
       type: "",
       linkToResource: "",
     },
     {
       resourceId: "5",
-      title: "file2.py",
+      title: "file2",
       description: "hello 5 resource",
       type: "pdf",
-      linkToResource: "",
+      linkToResource: "pdf",
     },
     {
       resourceId: "6",
       title: "file3",
       description: "hello 6 resource",
       type: "pdf",
-      linkToResource: "",
+      linkToResource: "pdf",
     },
   ],
-  sections: [],
+  sections: [
+    {
+      sectionId: "123",
+      title: "Monday",
+      resources: [
+        {
+          resourceId: "3",
+          title: "file1.py",
+          description: "",
+          type: "",
+          linkToResource: "",
+        },
+        {
+          resourceId: "5",
+          title: "file2.py",
+          description: "hello 5 resource",
+          type: "pdf",
+          linkToResource: "pdf",
+        },
+        {
+          resourceId: "6",
+          title: "file3",
+          description: "hello 6 resource",
+          type: "pdf",
+          linkToResource: "pdf",
+        },
+      ],
+    },
+  ],
 };
 
-const EditMaterials: React.FC<{
+const ShowOrEditPage: React.FC<{
   pageInfo: PageType;
   handleSave: (newPages: PageType) => void | (() => void);
   handleCloseEdit: () => void;
   editing: boolean;
 }> = ({ pageInfo, handleSave, handleCloseEdit, editing }) => {
+  // TODO: replace to pageInfo
   const [newMaterials, setNewMaterials] = useState<PageType>(defaultM);
 
   // edit resource outside of sections
@@ -74,7 +81,6 @@ const EditMaterials: React.FC<{
       );
       resources.splice(oldResourceIndex, 1, newResource);
       copy.resources = resources;
-      console.log("🚀 ~ file: EditMaterials.tsx:67 ~ handleEditResourceOut ~ copy:", copy);
       return copy;
     });
   };
@@ -85,13 +91,10 @@ const EditMaterials: React.FC<{
 
   return (
     <>
-      {/* Resources */}
-      <TitleWithIcon text="Resources">
-        <FilePresentIcon color="primary" />
-      </TitleWithIcon>
-      <div className="flex flex-col">
+      {/* Resources outside sections: show/edit mode*/}
+      <div className="flex flex-col mb-4">
         {newMaterials.resources.map((resource, index) => (
-          <ShowResource
+          <ShowOrEditResource
             resource={resource}
             key={index}
             editing={editing}
@@ -100,6 +103,12 @@ const EditMaterials: React.FC<{
         ))}
       </div>
       {/* Sections */}
+      {newMaterials.sections.map((section, index) => (
+        <div key={`section_${index}`}>
+          <ShowOrEditSectionT title={section.title} editing={editing} />
+        </div>
+      ))}
+      {/* edit mode */}
       {editing && (
         <div className="flex justify-end gap-2">
           <Button
@@ -120,4 +129,4 @@ const EditMaterials: React.FC<{
   );
 };
 
-export default EditMaterials;
+export default ShowOrEditPage;

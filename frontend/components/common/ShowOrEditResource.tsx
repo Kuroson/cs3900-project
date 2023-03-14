@@ -24,6 +24,7 @@ const ShowOrEditResource: React.FC<{
   const [description, setDescription] = useState(resource.description);
 
   const handleEditClick = () => {
+    // finish edit
     if (editResource) {
       // setNewMaterials(prev =>)
       const newResource: ResourcesType = {
@@ -42,6 +43,7 @@ const ShowOrEditResource: React.FC<{
   return (
     <div>
       {editResource ? (
+        // Edit mode
         <div className="my-4 flex flex-col gap-2">
           <TextField
             id="Resource Title"
@@ -76,15 +78,20 @@ const ShowOrEditResource: React.FC<{
           )}
         </div>
       ) : (
-        <>
+        // read mode
+        <div className="my-3">
+          <h4 className="m-0">{resource.title}</h4>
           <p className="">{resource.description ?? ""}</p>
           {/* TODO: not sure how to show resource, need to be changed*/}
-          <div className="rounded-lg shadow-md px-5 py-3 w-fit">
-            <p className="m-0">{resource.title}: </p>
-            {/* read file linktoResource */}
-          </div>
-        </>
+          {resource.linkToResource && (
+            <div className="rounded-lg shadow-md px-5 py-3 w-fit">
+              {/* read file linktoResource */}
+              {resource.linkToResource}
+            </div>
+          )}
+        </div>
       )}
+      {/* edit mode - edit and delete */}
       {editing && (
         <>
           <IconButton color="primary" aria-label="edit" component="label" onClick={handleEditClick}>

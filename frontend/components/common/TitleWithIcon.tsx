@@ -9,7 +9,7 @@ type PropsType = {
 
 const TitleWithIcon = ({ children, text }: PropsType) => {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* image/icon/avatar */}
       {children ? children : <span className="ml-9" />}
       <Typography variant="h6" fontWeight="600">

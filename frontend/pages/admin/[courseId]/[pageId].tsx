@@ -7,7 +7,7 @@ import { Button } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, SideNavbar } from "components";
-import ShowOrEditMaterials from "components/AdminSectionPage/ShowOrEditMaterials";
+import ShowOrEditPage from "components/AdminSectionPage/ShowOrEditPage";
 import { Routes } from "components/Layout/SideNavBar";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
@@ -197,14 +197,14 @@ const SectionPage = ({
             </div>
           </h1>
           {edit ? (
-            <ShowOrEditMaterials
+            <ShowOrEditPage
               pageInfo={pageInfo}
               handleSave={handleSave}
               handleCloseEdit={() => setEdit((prev) => !prev)}
               editing={true}
             />
           ) : (
-            <ShowOrEditMaterials
+            <ShowOrEditPage
               pageInfo={pageInfo}
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               handleSave={() => {}}
