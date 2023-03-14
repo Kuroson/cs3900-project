@@ -5,11 +5,7 @@ import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
-
-type StudentCourseResponse = {
-    courseId: string;
-    invalidEmails: Array<string>;
-};
+import { getUserDetails } from "../user/userDetails.route";
 
 type ResponsePayload = {
     invalidEmails: Array<string>;
@@ -57,12 +53,10 @@ export const addStudentsController = async (
                 .json({ message: error.getMessage(), invalidEmails: [""] });
         } else {
             logger.error(error);
-            return res
-                .status(500)
-                .json({
-                    message: "Internal server error. Error was not caught",
-                    invalidEmails: [""],
-                });
+            return res.status(500).json({
+                message: "Internal server error. Error was not caught",
+                invalidEmails: [""],
+            });
         }
     }
 };
@@ -75,9 +69,12 @@ export const addStudents = async (queryBody: QueryPayload) => {
     const course = await Course.findById(courseId);
     if (course === null) throw new Error("Failed to retrieve course");
 
-    students.forEach((studentemail) => {
-        if (User.find({ email: studentemail }) !== null) {
-            course.students?.addToSet(studentemail);
+    students.forEach(async (studentemail) => {
+        const user = await User.findOne({ email: studentemail });
+
+        if (user !== null) {
+            course.students?.addToSet(user._id);
+            console.log(course.students);
         } else {
             invalidStudentEmails.push(studentemail);
         }

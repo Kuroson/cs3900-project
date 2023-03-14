@@ -3,6 +3,7 @@ import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
 import { registerController } from "./auth/register.route";
+import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
 import { getCourseController } from "./course/getCourse.route";
 import { getCoursesController } from "./course/getCourses.route";
@@ -37,6 +38,7 @@ indexRouter.post("/course", createCourseController);
 indexRouter.get("/course", getCoursesController);
 indexRouter.get("/course/:courseCode", getCourseController);
 indexRouter.put("/course/:courseCode", updateCourseController);
+indexRouter.put("/course/addStudents", addStudentsController);
 
 // Page routes
 indexRouter.post("/page/:courseId", createPageController);
