@@ -5,7 +5,7 @@ import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import EditIcon from "@mui/icons-material/Edit";
 import { Button, IconButton, TextField } from "@mui/material";
 import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
-import { Feature } from "components/AdminSectionPage/ShowOrEditPage";
+import { Feature } from "components/SectionPage/ShowOrEditPage";
 
 const ShowOrEditResource: React.FC<{
   resource: ResourcesType;

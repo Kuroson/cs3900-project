@@ -8,8 +8,8 @@ import { Button } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, SideNavbar } from "components";
-import ShowOrEditPage from "components/AdminSectionPage/ShowOrEditPage";
 import { Routes } from "components/Layout/SideNavBar";
+import ShowOrEditPage from "components/SectionPage/ShowOrEditPage";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
@@ -40,7 +40,7 @@ type courseInfo = {
 type coursesInfoPayload = courseInfo;
 
 export type ResourcesType = {
-  resourceId: string;
+  resourceId?: string;
   title: string;
   description?: string;
   fileType?: string;

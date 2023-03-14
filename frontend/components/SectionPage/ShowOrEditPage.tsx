@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
 import ShowOrEditResource from "components/common/ShowOrEditResource";
+import AddResource from "./AddResource";
 import ShowOrEditSectionT from "./ShowOrEditSectionT";
 
 export enum Feature {
@@ -11,6 +12,9 @@ export enum Feature {
   RemoveSectionResource,
   RemoveResourceOut,
   EditSectionTitle,
+  AddResourceOut,
+  AddSection,
+  AddSectionResource,
 }
 
 const defaultM: PageType = {
@@ -163,6 +167,8 @@ const ShowOrEditPage: React.FC<{
     });
   };
 
+  const handleAddResource = (newResource: ResourcesType, feature: Feature) => {};
+
   return (
     <>
       {/* Resources outside*/}
@@ -175,6 +181,7 @@ const ShowOrEditPage: React.FC<{
           />
         ))}
       </div>
+      <AddResource handleAddResource={handleAddResource} />
       {/* Sections */}
       {newMaterials.sections.map((section, index) => (
         <div key={`section_${index}`}>
