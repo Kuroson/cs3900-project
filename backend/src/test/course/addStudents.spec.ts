@@ -50,13 +50,17 @@ describe("Test adding a student", () => {
         const student1 = await User.findOne({ email: `student1${id}@email.com` });
         const student2 = await User.findOne({ email: `student2${id}@email.com` });
 
+        console.log(student1)
+
         expect(myCourse?.students).toEqual([student1?._id, student2?._id]);
+        expect(student1?.enrolments).toEqual([myCourse?._id]);
+        expect(student2?.enrolments).toEqual([myCourse?._id]);
     }, 2000);
 
-    it("Add invalid student to course", async () => {
+    it("Add student to course", async () => {
         expect(await addStudents({
             courseId: courseId,
-            students: Array<string>(`fakeStudent@email.com`, `student3${id}@email.com`),
+            students: Array<string>(`fakeStudent@email.com`, `student1${id}@email.com`, `student2${id}@email.com`, `student3${id}@email.com`)
         })).toEqual([`fakeStudent@email.com`])
 
         const myCourse = await Course.findById(courseId);
@@ -65,6 +69,9 @@ describe("Test adding a student", () => {
         const student3 = await User.findOne({ email: `student3${id}@email.com` });
 
         expect(myCourse?.students).toEqual([student1?._id, student2?._id, student3?._id]);
+        expect(student1?.enrolments).toEqual([myCourse?._id]);
+        expect(student2?.enrolments).toEqual([myCourse?._id]);
+        expect(student3?.enrolments).toEqual([myCourse?._id]);
     }, 2000);
 
     afterAll(async () => {

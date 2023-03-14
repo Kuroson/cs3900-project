@@ -75,6 +75,11 @@ export const addStudents = async (queryBody: QueryPayload) => {
 
             if (user !== null) {
                 course.students.addToSet(user._id);
+                user.enrolments.addToSet(course._id);
+                await user.save().catch((err) => {
+                    throw new HttpException(500, "Failed to update course");
+                });
+            
             } else {
                 invalidStudentEmails.push(studentemail);
             }
@@ -84,7 +89,7 @@ export const addStudents = async (queryBody: QueryPayload) => {
 
     await Promise.all(promiseList);
 
-
+    
     await course.save().catch((err) => {
         throw new HttpException(500, "Failed to update course");
     });
