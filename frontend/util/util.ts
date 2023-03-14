@@ -13,6 +13,7 @@ export type CourseGETResponse = {
   courses: CourseInformation[];
 };
 
+// NOTE: some fetches dont have courseiD??
 export type CourseInformation = {
   courseId: string;
   title: string;

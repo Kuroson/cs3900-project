@@ -22,6 +22,7 @@ export const addStudentsController = async (
     res: Response<ResponsePayload>,
 ) => {
     try {
+        logger.info("yes");
         if (req.headers.authorization === undefined)
             throw new HttpException(405, "No authorization header found");
 
@@ -41,7 +42,10 @@ export const addStudentsController = async (
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
+                    "courseId",
+                    "students",
+                ])}`,
             );
         }
     } catch (error) {
