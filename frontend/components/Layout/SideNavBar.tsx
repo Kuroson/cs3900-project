@@ -125,6 +125,7 @@ const NavBar = ({
     }
 
     if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+    return res.pageId;
   };
 
   const handleAddNewPage = async () => {
@@ -136,12 +137,7 @@ const NavBar = ({
     } else {
       sendRequest(radio);
     }
-
-    routes.push({
-      name: pageName,
-      route: `/admin/${courseId}`,
-    });
-
+    router.push(`/admin/${courseId}`);
     setPageName("");
     setRadio("");
   };
