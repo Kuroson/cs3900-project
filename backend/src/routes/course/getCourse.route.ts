@@ -75,6 +75,8 @@ export const getCourse = async (courseId: string) => {
         pages: new Array<PageInfo>(),
     };
 
+    console.log(myCourse);
+
     // Get each page info
     for (const page of myCourse.pages) {
         const myPage = await Page.findById(page);

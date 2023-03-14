@@ -5,6 +5,7 @@ import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
     courseId: string;
@@ -80,14 +81,18 @@ export const createCourseController = async (
  * @returns The ID of the course that has been created
  */
 export const createCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
+    if (!(await checkAdmin(firebase_uid))) {
+        throw new HttpException(401, "Must be an admin to get all courses");
+    }
+
     const { code, title, session, description, icon } = queryBody;
 
-    const adminId = await User.findOne({ firebase_uid })
+    const admin = await User.findOne({ firebase_uid })
         .then((res) => {
             if (res === null) {
                 throw new HttpException(500, "Invalid user in database");
             }
-            return res._id;
+            return res;
         })
         .catch((err) => {
             throw new HttpException(500, "Invalid user in database");
@@ -99,7 +104,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         description,
         session,
         icon,
-        creator: adminId,
+        creator: admin._id,
     });
 
     const courseId = await myCourse
@@ -108,12 +113,18 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
             return res._id;
         })
         .catch((err) => {
-            return null;
+            throw new HttpException(500, "Failed to save new course");
         });
 
     if (courseId === null) {
         throw new HttpException(500, "Failed to create course");
     }
+
+    admin.created_courses.push(courseId);
+
+    await admin.save().catch((err) => {
+        throw new HttpException(500, "Failed to save user");
+    });
 
     return courseId;
 };

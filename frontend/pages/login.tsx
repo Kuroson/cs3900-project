@@ -47,7 +47,7 @@ const LoginPage = (): JSX.Element => {
         <meta name="description" content="Login Page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <SideNavbar empty={true} />
+      <SideNavbar empty={true} list={[]} />
       <ContentContainer>
         <form
           className="w-full h-full flex flex-col items-center pt-[6rem]"

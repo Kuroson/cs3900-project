@@ -5,6 +5,7 @@ import { adminController } from "./admin/admin.route";
 import { registerController } from "./auth/register.route";
 import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
+import { getAllCoursesController } from "./course/getAllCourses.route";
 import { getCourseController } from "./course/getCourse.route";
 import { getCoursesController } from "./course/getCourses.route";
 import { updateCourseController } from "./course/updateCourse.route";
@@ -36,6 +37,7 @@ indexRouter.all("/user/details", userDetailsController);
 // Course routes
 indexRouter.post("/course", createCourseController);
 indexRouter.get("/course", getCoursesController);
+indexRouter.get("/course/all", getAllCoursesController);
 indexRouter.get("/course/:courseCode", getCourseController);
 indexRouter.put("/course/:courseCode", updateCourseController);
 indexRouter.put("/course/addStudents", addStudentsController);

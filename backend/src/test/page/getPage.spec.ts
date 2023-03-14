@@ -30,32 +30,39 @@ describe("Test getting a page", () => {
     });
 
     beforeEach(async () => {
-        pageId = await createPage({
-            title: "Test page",
-            courseId,
-        });
+        pageId = await createPage(
+            {
+                title: "Test page",
+                courseId,
+            },
+            `acc${id}`,
+        );
     });
 
     it("Should retrieve page information", async () => {
-        await updatePage({
-            courseId,
-            pageId,
-            resources: [{ title: "res1" }, { title: "res2" }],
-            sections: [
-                {
-                    title: "sec1",
-                    resources: [{ title: "res3" }, { title: "res4" }],
-                },
-                {
-                    title: "sec2",
-                    resources: [],
-                },
-            ],
-        });
+        await updatePage(
+            {
+                courseId,
+                pageId,
+                resources: [{ title: "res1" }, { title: "res2" }],
+                sections: [
+                    {
+                        title: "sec1",
+                        resources: [{ title: "res3" }, { title: "res4" }],
+                    },
+                    {
+                        title: "sec2",
+                        resources: [],
+                    },
+                ],
+            },
+            `acc${id}`,
+        );
 
         const pageState = await getPage(pageId, courseId);
 
         expect(pageState.courseId).toBe(courseId);
+        expect(pageState.title).toBe("Test page");
         expect(pageState.resources.length).toBe(2);
         expect(pageState.resources[0].title).toBe("res1");
         expect(pageState.resources[1].title).toBe("res2");
@@ -69,32 +76,36 @@ describe("Test getting a page", () => {
     }, 10000);
 
     it("Should retrieve updated page information", async () => {
-        const initialPage = await updatePage({
-            courseId,
-            pageId,
-            resources: [{ title: "res1" }, { title: "res2" }],
-            sections: [
-                {
-                    title: "sec1",
-                    resources: [{ title: "res3" }, { title: "res4" }],
-                },
-                {
-                    title: "sec2",
-                    resources: [],
-                },
-            ],
-        });
+        const initialPage = await updatePage(
+            {
+                courseId,
+                pageId,
+                resources: [{ title: "res1" }, { title: "res2" }],
+                sections: [
+                    {
+                        title: "sec1",
+                        resources: [{ title: "res3" }, { title: "res4" }],
+                    },
+                    {
+                        title: "sec2",
+                        resources: [],
+                    },
+                ],
+            },
+            `acc${id}`,
+        );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (initialPage as any).resources.push({ title: "newOne" });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (initialPage as any).sections[1].resources.push({ title: "newOne2" });
 
-        await updatePage(initialPage);
+        await updatePage(initialPage, `acc${id}`);
 
         const updatedPageState = await getPage(pageId, courseId);
 
         expect(updatedPageState.courseId).toBe(courseId);
+        expect(updatedPageState.title).toBe("Test page");
         expect(updatedPageState.resources.length).toBe(3);
         expect(updatedPageState.resources[0].title).toBe("res1");
         expect(updatedPageState.resources[1].title).toBe("res2");
@@ -110,7 +121,7 @@ describe("Test getting a page", () => {
     }, 10000);
 
     afterEach(async () => {
-        await deletePage({ courseId, pageId });
+        await deletePage({ courseId, pageId }, `acc${id}`);
     });
 
     afterAll(async () => {

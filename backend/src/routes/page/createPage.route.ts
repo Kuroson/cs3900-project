@@ -5,6 +5,7 @@ import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
     pageId?: string;
@@ -33,7 +34,7 @@ export const createPageController = async (
             // Body has been verified
             const queryBody = req.body;
 
-            const pageId = await createPage(queryBody);
+            const pageId = await createPage(queryBody, authUser.uid);
 
             logger.info(`pageId: ${pageId}`);
             return res.status(200).json({ pageId });
@@ -64,7 +65,11 @@ export const createPageController = async (
  * @param queryBody The page information in the format of QueryPayload defined above
  * @returns The ID of the new page that has been created
  */
-export const createPage = async (queryBody: QueryPayload) => {
+export const createPage = async (queryBody: QueryPayload, firebase_uid: string) => {
+    if (!(await checkAdmin(firebase_uid))) {
+        throw new HttpException(401, "Must be an admin to create a page");
+    }
+
     const { courseId, title } = queryBody;
 
     const course = await Course.findById(courseId);
