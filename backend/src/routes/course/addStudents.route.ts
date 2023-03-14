@@ -29,7 +29,7 @@ export const addStudentsController = async (
         const token = req.headers.authorization.split(" ")[1];
         const authUser = await verifyIdTokenValid(token);
 
-        // User has been verified
+        // User has been verifiedyyy
         if (isValidBody<QueryPayload>(req.body, ["courseId", "students"])) {
             // Body has been verified
             const queryBody = req.body;
@@ -67,27 +67,22 @@ export const addStudents = async (queryBody: QueryPayload) => {
     const invalidStudentEmails = Array<string>();
 
     const course = await Course.findById(courseId);
-    if (course === null) throw new Error("Failed to retrieve course");
+    if (course === null) throw new HttpException(400, "Failed to retrieve course");
 
     students.forEach(async (studentemail) => {
         const user = await User.findOne({ email: studentemail });
 
         if (user !== null) {
-            course.students?.addToSet(user._id);
+            course.students.addToSet(user._id);
             console.log(course.students);
         } else {
             invalidStudentEmails.push(studentemail);
         }
     });
 
-    const retCourseId = await course
-        .save()
-        .then((res) => {
-            return res._id;
-        })
-        .catch((err) => {
-            throw new HttpException(500, "Failed to update course");
-        });
+    await course.save().catch((err) => {
+        throw new HttpException(500, "Failed to update course");
+    });
 
     return invalidStudentEmails;
 };
