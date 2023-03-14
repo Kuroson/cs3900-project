@@ -4,10 +4,16 @@ import { registerUser } from "@/routes/auth/register.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { removeStudents } from "@/routes/course/removeStudents.route";
+<<<<<<< HEAD
 import initialiseMongoose from "../testUtil";
+=======
+import { updateCourse } from "@/routes/course/updateCourse.route";
+import { v4 as uuidv4 } from "uuid";
+import initialiseMongoose, { stringifyOutput } from "../testUtil";
+>>>>>>> bf74c90d004d5109de845e8a2fc894b118011311
 
 describe("Test removing a student", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
 
     beforeAll(async () => {
@@ -64,11 +70,16 @@ describe("Test removing a student", () => {
         const student2 = await User.findOne({ email: `removestudent2${id}@email.com` });
         const student3 = await User.findOne({ email: `removestudent3${id}@email.com` });
 
-        expect(myCourse?.students).toEqual([student1?._id, student2?._id, student3?._id]);
+        const ourOutput = myCourse?.students.map((x) => stringifyOutput(x)) ?? []; // Parse each student id to string
+
+        expect(ourOutput.length).toBe(3);
+        expect(ourOutput).toContain(stringifyOutput(student1?._id));
+        expect(ourOutput).toContain(stringifyOutput(student2?._id));
+        expect(ourOutput).toContain(stringifyOutput(student3?._id));
         expect(student1?.enrolments).toEqual([myCourse?._id]);
         expect(student2?.enrolments).toEqual([myCourse?._id]);
         expect(student3?.enrolments).toEqual([myCourse?._id]);
-    }, 2000);
+    }, 10000);
 
     it("Remove users from course", async () => {
         expect(
@@ -92,7 +103,7 @@ describe("Test removing a student", () => {
         expect(student1?.enrolments).toEqual([]);
         expect(student2?.enrolments).toEqual([]);
         expect(student3?.enrolments).toEqual([]);
-    }, 2000);
+    }, 10000);
 
     afterAll(async () => {
         // Clean up

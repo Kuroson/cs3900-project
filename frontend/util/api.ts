@@ -125,4 +125,11 @@ export const apiUploadFile = async <
   }
 };
 
+// Link used for NextJS SSR
 export const PROCESS_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080";
+
+// Backend Link used specifically for clients
+export const PROCESS_FRONTEND_URL =
+  process.env.NEXT_PUBLIC_DOCKER !== undefined
+    ? "http://localhost:8080"
+    : process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080";
