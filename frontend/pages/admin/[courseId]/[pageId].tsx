@@ -161,6 +161,7 @@ const SectionPage = ({
         avatarURL={avatar}
         list={courseRoutes.concat(pages)}
         isCoursePage={true}
+        courseId={courseId}
         courseCode={courseInfo.code}
         courseIcon={courseInfo.icon}
         courseId={courseId}
