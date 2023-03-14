@@ -35,7 +35,7 @@ export const removeStudentsController = async (
 
             const invalidEmailsres = await removeStudents(queryBody);
 
-            console.log(invalidEmailsres)
+            console.log(invalidEmailsres);
 
             logger.info(`invalidEmails: ${invalidEmailsres}`);
             return res.status(200).json({ invalidEmails: invalidEmailsres });
@@ -75,7 +75,7 @@ export const removeStudents = async (queryBody: QueryPayload) => {
             const user = await User.findOne({ email: studentemail });
 
             if (user !== null) {
-                course.students.pull(user._id)
+                course.students.pull(user._id);
                 user.enrolments.pull(course._id);
                 await user.save().catch((err) => {
                     throw new HttpException(500, "Failed to update course");

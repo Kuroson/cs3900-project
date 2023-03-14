@@ -3,8 +3,8 @@ import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
-import { updateCourse } from "@/routes/course/updateCourse.route";
 import { removeStudents } from "@/routes/course/removeStudents.route";
+import { updateCourse } from "@/routes/course/updateCourse.route";
 import initialiseMongoose from "../testUtil";
 
 describe("Test removing a student", () => {
@@ -30,8 +30,13 @@ describe("Test removing a student", () => {
         );
         await addStudents({
             courseId: courseId,
-            students: Array<string>(`fakeStudent@email.com`, `student1${id}@email.com`, `student2${id}@email.com`, `student3${id}@email.com`)
-        })
+            students: Array<string>(
+                `fakeStudent@email.com`,
+                `student1${id}@email.com`,
+                `student2${id}@email.com`,
+                `student3${id}@email.com`,
+            ),
+        });
     });
 
     it("Remove no users from course", async () => {
@@ -52,10 +57,17 @@ describe("Test removing a student", () => {
     }, 2000);
 
     it("Remove users from course", async () => {
-        expect(await removeStudents({
-            courseId: courseId,
-            students: Array<string>(`fakeStudent@email.com`, `student1${id}@email.com`, `student2${id}@email.com`, `student3${id}@email.com`)
-        })).toEqual([`fakeStudent@email.com`])
+        expect(
+            await removeStudents({
+                courseId: courseId,
+                students: Array<string>(
+                    `fakeStudent@email.com`,
+                    `student1${id}@email.com`,
+                    `student2${id}@email.com`,
+                    `student3${id}@email.com`,
+                ),
+            }),
+        ).toEqual([`fakeStudent@email.com`]);
 
         const myCourse = await Course.findById(courseId);
         const student1 = await User.findOne({ email: `student1${id}@email.com` });
@@ -67,7 +79,6 @@ describe("Test removing a student", () => {
         expect(student2?.enrolments).toEqual([]);
         expect(student3?.enrolments).toEqual([]);
     }, 2000);
-
 
     afterAll(async () => {
         // Clean up

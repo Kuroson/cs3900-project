@@ -21,7 +21,6 @@ export const addStudentsController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
 ) => {
-    logger.info("Steph code")
     try {
         if (req.headers.authorization === undefined)
             throw new HttpException(405, "No authorization header found");
@@ -80,7 +79,6 @@ export const addStudents = async (queryBody: QueryPayload) => {
                 await user.save().catch((err) => {
                     throw new HttpException(500, "Failed to update course");
                 });
-            
             } else {
                 invalidStudentEmails.push(studentemail);
             }
@@ -90,7 +88,6 @@ export const addStudents = async (queryBody: QueryPayload) => {
 
     await Promise.all(promiseList);
 
-    
     await course.save().catch((err) => {
         throw new HttpException(500, "Failed to update course");
     });

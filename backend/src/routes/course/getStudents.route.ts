@@ -6,9 +6,8 @@ import { logger } from "@/utils/logger";
 import { UserInfo } from "@/utils/util";
 import { Request, Response } from "express";
 
-
 type ResponsePayload = {
-    code?: string,
+    code?: string;
     students?: Array<UserInfo>;
     message?: string;
 };
@@ -73,7 +72,6 @@ export const getStudents = async (courseId: string) => {
     //     pages: new Array<PageInfo>(),
     // };
 
-
     // // Get each page info
     // for (const page of myCourse.pages) {
     //     const myPage = await Page.findById(page);
@@ -87,6 +85,6 @@ export const getStudents = async (courseId: string) => {
 
     return {
         code: courseId,
-        students: students
+        students: students,
     };
 };
