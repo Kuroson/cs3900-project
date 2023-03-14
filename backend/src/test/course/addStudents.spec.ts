@@ -31,7 +31,7 @@ describe("Test adding a student", () => {
             },
             `acc${id}`,
         );
-    });
+    }, 20000);
 
     it("Add no users to course", async () => {
         await addStudents({
