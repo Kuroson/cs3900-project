@@ -85,5 +85,8 @@ export const getStudents = async (courseId: string) => {
     //     });
     // }
 
-    return students;
+    return {
+        code: courseId,
+        students: students
+    };
 };
