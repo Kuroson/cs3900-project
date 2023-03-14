@@ -44,6 +44,10 @@ type CreatePagePayload = Nullable<{
   title: string;
 }>;
 
+type NewPagePayload = Nullable<{
+  pageId: string;
+}>;
+
 export type Routes = {
   name: string;
   route: string;
@@ -106,7 +110,7 @@ const NavBar = ({
       throw new Error("CourseId element does not exist"); // Should never get here
     }
 
-    const [res, err] = await apiPost<CreatePagePayload, any>(
+    const [res, err] = await apiPost<CreatePagePayload, NewPagePayload>(
       `${PROCESS_BACKEND_URL}/page/${courseId}`,
       await authUser.getIdToken(),
       {
@@ -125,6 +129,7 @@ const NavBar = ({
     }
 
     if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+    return res;
   };
 
   const handleAddNewPage = async () => {
@@ -132,15 +137,21 @@ const NavBar = ({
 
     // Add to page list
     if (radio === "Other Page") {
-      sendRequest(pageName);
+      const res = await sendRequest(pageName);
+      res.pageId;
+
+      routes.push({
+        name: pageName,
+        route: `/admin/${courseId}/${res.pageId}`,
+      });
     } else {
       sendRequest(radio);
-    }
 
-    routes.push({
-      name: pageName,
-      route: `/admin/${courseId}`,
-    });
+      routes.push({
+        name: pageName,
+        route: `/admin/${courseId}`,
+      });
+    }
 
     setPageName("");
     setRadio("");
