@@ -77,25 +77,35 @@ const page: pageInfo = {
   sections: [],
 };
 
+const FROG_IMAGE_URL =
+  "https://i.natgeofe.com/k/8fa25ea4-6409-47fb-b3cc-4af8e0dc9616/red-eyed-tree-frog-on-leaves-3-2_3x2.jpg";
+
 const ResourcesDisplay = ({ resources }: { resources: Array<Resources> }): JSX.Element => {
   return (
-    <>
+    <div className="flex flex-col w-full">
       {resources.map((resource) => {
         return (
-          <div key={resource.resourceId} style={{ marginBottom: "30px" }}>
-            <Typography variant="h6" fontWeight="400">
-              {resource.title}
-            </Typography>
-            {resource.description ?? <div>{resource.description}</div>}
+          <div key={resource.resourceId} className="w-full mb-5">
+            <span className="w-full text-xl font-medium flex flex-col">{`Resource: ${resource.title}`}</span>
+            {/* Description */}
+            {resource.description ?? (
+              <span className="">{`Description: ${resource.description}`}</span>
+            )}
+            {/* Resource */}
             {resource.linkToResource && (
-              <div>
+              <div className="my-5">
                 {resource.fileType.includes("image") ? (
-                  // <div>IS AN IMAGE</div>
                   <div>
-                    <img src={resource.linkToResource} alt={resource.description} />
+                    <img
+                      src={
+                        resource.linkToResource.length === 0
+                          ? FROG_IMAGE_URL
+                          : resource.linkToResource
+                      }
+                      alt={resource.description}
+                    />
                   </div>
                 ) : (
-                  // <div>ISN"T AN IMAGE</div>
                   <Button variant="contained" href={resource.linkToResource}>
                     Download File
                   </Button>
@@ -105,7 +115,7 @@ const ResourcesDisplay = ({ resources }: { resources: Array<Resources> }): JSX.E
           </div>
         );
       })}
-    </>
+    </div>
   );
 };
 
@@ -205,23 +215,18 @@ const SectionPage = ({
           </h1>
 
           {/* First list out all the base resources */}
-          <ResourcesDisplay resources={pageInfo.resources} />
+          <div className="bg-gray-300 rounded-xl px-[2.5%] py-[2.5%] mb-5">
+            <h1 className="text-2xl m-0 p-0">Page Resources</h1>
+            <ResourcesDisplay resources={pageInfo.resources} />
+          </div>
 
           {/* Then list out all the sections */}
           {pageInfo.sections.map((section) => {
             return (
               <div key={section.sectionId}>
-                <div
-                  className="w-full flex py-2 flex-col"
-                  style={{
-                    backgroundColor: "lightGray",
-                    margin: "10px",
-                    padding: "10px",
-                    borderRadius: "10px",
-                  }}
-                >
+                <div className="w-full flex flex-col bg-gray-300 rounded-xl px-[2.5%] py-[2.5%] mb-5">
                   <Typography variant="h5" fontWeight="600">
-                    {section.title}
+                    {`Section: ${section.title}`}
                   </Typography>
                   <ResourcesDisplay resources={section.resources} />
                 </div>
