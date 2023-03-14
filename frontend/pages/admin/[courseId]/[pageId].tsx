@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import GridViewIcon from "@mui/icons-material/GridView";
@@ -35,6 +35,7 @@ type courseInfo = {
   icon: string;
   pages: Array<{ title: string; pageId: string }>;
 };
+type coursesInfoPayload = courseInfo;
 
 export type resources = {
   resourceId: string;
@@ -50,29 +51,25 @@ export type sections = {
 };
 
 export type pageInfo = {
-  pageName: string;
+  title: string;
   courseId: string;
   pageId: string;
   resources: resources[];
   sections: sections[];
 };
+type pageInfoPayload = pageInfo;
 
 const course: courseInfo = {
-  code: "COMP1511",
-  title: "Programming Fundamentals",
-  description:
-    "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-  session: "23T1",
+  code: "",
+  title: "",
+  description: "",
+  session: "",
   icon: "",
-  pages: [
-    { title: "Assignment", pageId: "3" },
-    { title: "Week1", pageId: "1" },
-    { title: "Week2", pageId: "2" },
-  ],
+  pages: [],
 };
 
 const page: pageInfo = {
-  pageName: "Week1",
+  title: "Week1",
   courseId: "1",
   pageId: "1",
   resources: [],
@@ -95,7 +92,7 @@ const SectionPage = ({
   const courseRoutes: Routes[] = [
     {
       name: "Home",
-      route: `/admin/${courseId}/home`,
+      route: `/admin/${courseId}`,
       Icon: <GridViewIcon fontSize="large" color="primary" />,
     },
     {
@@ -111,6 +108,43 @@ const SectionPage = ({
     route: `/admin/${courseId}/${page.pageId}`,
   }));
 
+  // Fetch all the course information
+  useEffect(() => {
+    const fetchCourseInfo = async () => {
+      const [data, err] = await apiGet<any, coursesInfoPayload>(
+        `${PROCESS_BACKEND_URL}/course/${courseId}`,
+        await authUser.getIdToken(),
+        {},
+      );
+
+      if (err !== null) {
+        console.error(err);
+      }
+
+      if (data === null) throw new Error("This shouldn't have happened");
+
+      setCourseInfo(data);
+    };
+
+    const fetchPageInfo = async () => {
+      const [data, err] = await apiGet<any, pageInfoPayload>(
+        `${PROCESS_BACKEND_URL}/page/${courseId}/${pageId}`,
+        await authUser.getIdToken(),
+        {},
+      );
+
+      if (err !== null) {
+        console.error(err);
+      }
+
+      if (data === null) throw new Error("This shouldn't have happened");
+
+      setPageInfo(data);
+    };
+
+    fetchCourseInfo().catch(console.error);
+    fetchPageInfo().catch(console.error);
+  }, [authUser, courseId, pageId]);
   // fetch all the section
 
   return (
@@ -127,13 +161,14 @@ const SectionPage = ({
         avatarURL={avatar}
         list={courseRoutes.concat(pages)}
         isCoursePage={true}
+        courseId={courseId}
         courseCode={courseInfo.code}
         courseIcon={courseInfo.icon}
       />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between">
-            <span className="ml-4">{pageInfo.pageName}</span>
+            <span className="ml-4">{pageInfo.title}</span>
             <Button>Edit</Button>
           </h1>
         </div>
