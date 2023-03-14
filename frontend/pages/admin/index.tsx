@@ -26,14 +26,16 @@ type UserDetailsPayload = Nullable<{
 
 type HomePageProps = UserDetailsPayload;
 
-type coursesInfo = Array<{
+export type CourseInfo = {
   courseId: string;
   title: string;
   code: string;
   description: string;
   session: string;
   icon: string;
-}>;
+};
+
+type coursesInfo = Array<CourseInfo>;
 
 type coursesInfoPayload = {
   courses: coursesInfo;

@@ -1,9 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import { Avatar, Card, CardContent, Typography } from "@mui/material";
-import { Course } from "pages/admin";
+import { CourseInfo } from "pages/admin";
 
-const CourseCard: React.FC<{ course: Course; href: string }> = ({ course, href }) => {
+const CourseCard: React.FC<{ course: CourseInfo; href: string }> = ({ course, href }) => {
   return (
     <Link
       href={href}
