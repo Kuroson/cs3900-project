@@ -10,7 +10,7 @@ import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteSection } from "@/routes/page/deleteSection.route";
 import initialiseMongoose from "../testUtil";
 
-describe("Test adding a section to a page", () => {
+describe("Test removing a section from a page", () => {
     const id = Date.now();
     let courseId: string;
     let pageId: string;
@@ -39,38 +39,28 @@ describe("Test adding a section to a page", () => {
         );
     });
 
-    it("Should add a section to the page", async () => {
+    it("Should remove section", async () => {
         const sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
 
-        const myPage = await Page.findById(pageId);
+        let myPage = await Page.findById(pageId);
 
         expect(myPage === null).toBe(false);
         expect(myPage?.sections.length).toBe(1);
         expect(myPage?.sections[0]).toEqual(sectionId);
 
-        const mySection = await Section.findById(sectionId);
+        let mySection = await Section.findById(sectionId);
         expect(mySection === null).toBe(false);
         expect(mySection?.title).toBe("Test section");
 
         await deleteSection({ courseId, pageId, sectionId }, `acc${id}`);
-    }, 10000);
 
-    it("Should update information in a section", async () => {
-        const sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
-
-        await addSection({ courseId, pageId, sectionId, title: "New title" }, `acc${id}`);
-
-        const myPage = await Page.findById(pageId);
+        myPage = await Page.findById(pageId);
 
         expect(myPage === null).toBe(false);
-        expect(myPage?.sections.length).toBe(1);
-        expect(myPage?.sections[0]).toEqual(sectionId);
+        expect(myPage?.sections.length).toBe(0);
 
-        const mySection = await Section.findById(sectionId);
-        expect(mySection === null).toBe(false);
-        expect(mySection?.title).toBe("New title");
-
-        await deleteSection({ courseId, pageId, sectionId }, `acc${id}`);
+        mySection = await Section.findById(sectionId);
+        expect(mySection === null).toBe(true);
     }, 10000);
 
     afterAll(async () => {

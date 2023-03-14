@@ -43,23 +43,31 @@ describe("Test adding a resource", () => {
         sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
     });
 
-    it("Adding resource to base page", async () => {
+    it("Removing resource from base page", async () => {
         const resourceId = await addResource(
             { courseId, pageId, title: "Test resource", description: "Test description" },
             `acc${id}`,
         );
 
-        const myPage = await Page.findById(pageId);
+        let myPage = await Page.findById(pageId);
 
         expect(myPage === null).toBe(false);
         expect(myPage?.resources.length).toBe(1);
 
-        const myResource = await Resource.findById(resourceId);
+        let myResource = await Resource.findById(resourceId);
         expect(myResource === null).toBe(false);
         expect(myResource?.title).toBe("Test resource");
         expect(myResource?.description).toBe("Test description");
 
         await deleteResource({ courseId, pageId, resourceId }, `acc${id}`);
+
+        myPage = await Page.findById(pageId);
+
+        expect(myPage === null).toBe(false);
+        expect(myPage?.resources.length).toBe(0);
+
+        myResource = await Resource.findById(resourceId);
+        expect(myResource === null).toBe(true);
     }, 10000);
 
     it("Adding resource to section", async () => {
@@ -73,57 +81,25 @@ describe("Test adding a resource", () => {
             `acc${id}`,
         );
 
-        const mySection = await Section.findById(sectionId);
+        let mySection = await Section.findById(sectionId);
 
         expect(mySection === null).toBe(false);
         expect(mySection?.resources.length).toBe(1);
 
-        const myResource = await Resource.findById(resourceId);
+        let myResource = await Resource.findById(resourceId);
         expect(myResource === null).toBe(false);
         expect(myResource?.title).toBe("Another resource");
         expect(myResource?.description).toBe(undefined);
 
         await deleteResource({ courseId, pageId, sectionId, resourceId }, `acc${id}`);
-    }, 10000);
 
-    it("Updating resource information", async () => {
-        const resourceId = await addResource(
-            { courseId, pageId, title: "Test resource" },
-            `acc${id}`,
-        );
+        mySection = await Section.findById(sectionId);
 
-        let myPage = await Page.findById(pageId);
-
-        expect(myPage === null).toBe(false);
-        expect(myPage?.resources.length).toBe(1);
-
-        let myResource = await Resource.findById(resourceId);
-        expect(myResource === null).toBe(false);
-        expect(myResource?.title).toBe("Test resource");
-        expect(myResource?.description).toBe(undefined);
-
-        await addResource(
-            {
-                courseId,
-                pageId,
-                resourceId,
-                title: "New title",
-                description: "Now has a description",
-            },
-            `acc${id}`,
-        );
-
-        myPage = await Page.findById(pageId);
-
-        expect(myPage === null).toBe(false);
-        expect(myPage?.resources.length).toBe(1);
+        expect(mySection === null).toBe(false);
+        expect(mySection?.resources.length).toBe(0);
 
         myResource = await Resource.findById(resourceId);
-        expect(myResource === null).toBe(false);
-        expect(myResource?.title).toBe("New title");
-        expect(myResource?.description).toBe("Now has a description");
-
-        await deleteResource({ courseId, pageId, resourceId }, `acc${id}`);
+        expect(myResource === null).toBe(true);
     }, 10000);
 
     afterAll(async () => {
