@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {
   Avatar,
@@ -29,6 +30,7 @@ type SideNavBarProps = UserDetailsProps & {
   isCoursePage?: boolean; // check if the current page is course page
   courseCode?: string;
   courseIcon?: string;
+  showDashboardRoute?: boolean;
   courseId?: string;
 };
 
@@ -241,6 +243,7 @@ export default function SideNavbar({
   isCoursePage,
   courseCode,
   courseIcon,
+  showDashboardRoute,
   courseId,
 }: SideNavBarProps): JSX.Element {
   if (empty === true) {
@@ -250,6 +253,17 @@ export default function SideNavbar({
   const handleOnClick = async () => {
     signOut(getAuth());
   };
+
+  const defaultDashboardRoute = {
+    name: "Dashboard",
+    route: "/",
+    Icon: <HomeIcon fontSize="large" color="primary" />,
+  };
+
+  const routesList: Routes[] = [
+    ...(showDashboardRoute === true ? [defaultDashboardRoute] : []),
+    ...list,
+  ];
 
   return (
     <div className="w-full">
@@ -283,7 +297,7 @@ export default function SideNavbar({
                 avatarURL={avatarURL}
               />
             )}
-            <NavBar routes={list} isCoursePage={isCoursePage ?? false} courseId={courseId} />
+            <NavBar routes={routesList} isCoursePage={isCoursePage ?? false} courseId={courseId} />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}
