@@ -164,7 +164,6 @@ const SectionPage = ({
         courseId={courseId}
         courseCode={courseInfo.code}
         courseIcon={courseInfo.icon}
-        courseId={courseId}
       />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
