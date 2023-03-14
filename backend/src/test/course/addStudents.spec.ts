@@ -4,6 +4,7 @@ import { registerUser } from "@/routes/auth/register.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
+import { logger } from "@/utils/logger";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -13,6 +14,7 @@ describe("Test adding a student", () => {
     let courseId: string;
 
     beforeAll(async () => {
+        // logger.transports["scaZXinfo"].silent = true;
         await initialiseMongoose();
 
         await registerUser("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`);
@@ -52,11 +54,11 @@ describe("Test adding a student", () => {
         const student1 = await User.findOne({ email: `student1${id}@email.com` });
         const student2 = await User.findOne({ email: `student2${id}@email.com` });
 
-        console.log(student1);
-
-        expect(myCourse?.students).toEqual([student1?._id, student2?._id]);
-        expect(student1?.enrolments).toEqual([myCourse?._id]);
-        expect(student2?.enrolments).toEqual([myCourse?._id]);
+        const expected = [student1?._id, student2?._id];
+        expect(myCourse?.students.length).toBe(expected.length);
+        expect(myCourse?.students).toStrictEqual(expected);
+        expect(student1?.enrolments).toStrictEqual([myCourse?._id]);
+        expect(student2?.enrolments).toStrictEqual([myCourse?._id]);
     }, 2000);
 
     it("Add student to course", async () => {
