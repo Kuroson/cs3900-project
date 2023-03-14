@@ -9,6 +9,7 @@ import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName, getCourseURL } from "util/util";
 import CourseCard from "components/common/CourseCard";
+import { useState } from "react";
 
 initAuth(); // SSR maybe, i think...
 
@@ -43,6 +44,18 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
     { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> }
   ];
 
+  const allCourses = coursesEnrolled;
+  const [showedCourses, setShowedCourses] = useState(coursesEnrolled);
+  const [code, setCode] = useState("");
+  
+  // search course id
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (allCourses != null) {
+        setShowedCourses(allCourses.filter((course) => course.code.includes(code)));
+      }
+    }
+  };
 
   return (
     <>
@@ -58,24 +71,28 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
         avatarURL={avatar}
         list={studentRoutes}
       />
-      
       <ContentContainer>
-        <div className="flex flex-col w-full justify-center items-center px-[5%]">
+        <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
             <span className="ml-4">Welcome, {`${firstName} ${lastName}`}</span>
           </h1>
-          <div className="w-full flex flex-col">
-            <h2 className="text-2xl w-full ml-4 m-0">Course Overview</h2>
-            <div className="ml-4 pt-5">
-              <TextField id="outlined-search" label="Search field" type="search" />
-            </div>
+          <div className="flex justify-between mx-6">
+            <h2>Course Overview</h2>
+            <TextField
+              id="search course"
+              label="Search Course Code"
+              variant="outlined"
+              sx={{ width: "300px" }}
+              onKeyDown={handleKeyDown}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCode(e.target.value)}
+            />
           </div>
-        </div>
         <div className="flex flex-wrap w-full mx-3">
-            {coursesEnrolled?.map((x, index) => {
+            {showedCourses?.map((x, index) => {
               return <CourseCard key={index} course={x} href={`/${x.courseId}`} />
             })}
         </div>
+      </div>
       </ContentContainer>
       {/* <Footer /> */}
     </>
