@@ -3,7 +3,7 @@ import { Button, Divider } from "@mui/material";
 import { AuthUserContext } from "next-firebase-auth";
 import { PageType, ResourcesType, SectionsType } from "pages/admin/[courseId]/[pageId]";
 import ShowOrEditResource from "components/common/ShowOrEditResource";
-import { PROCESS_BACKEND_URL, apiPost, apiPut } from "util/api";
+import { PROCESS_BACKEND_URL, apiDelete, apiPost, apiPut } from "util/api";
 import AddResource from "./AddResource";
 import AddSection from "./AddSection";
 import ShowOrEditSectionT from "./ShowOrEditSectionT";
@@ -20,124 +20,27 @@ export enum Feature {
   AddSectionResource,
 }
 
-const defaultM: PageType = {
-  title: "resource1",
-  courseId: "1",
-  pageId: "2",
-  resources: [
-    {
-      resourceId: "3",
-      title: "file1",
-      description: "",
-      fileType: "",
-      linkToResource: "",
-    },
-    {
-      resourceId: "5",
-      title: "file2",
-      description: "hello 5 resource",
-      fileType: "pdf",
-      linkToResource: "pdf",
-    },
-    {
-      resourceId: "6",
-      title: "file3",
-      description: "hello 6 resource",
-      fileType: "pdf",
-      linkToResource: "pdf",
-    },
-  ],
-  sections: [
-    {
-      sectionId: "123",
-      title: "Monday",
-      resources: [
-        {
-          resourceId: "3",
-          title: "sectionfile1",
-          description: "",
-          fileType: "",
-          linkToResource: "",
-        },
-        {
-          resourceId: "5",
-          title: "file2",
-          description: "hello 5 resource",
-          fileType: "pdf",
-          linkToResource: "pdf",
-        },
-        {
-          resourceId: "6",
-          title: "file3",
-          description: "hello 6 resource",
-          fileType: "pdf",
-          linkToResource: "pdf",
-        },
-      ],
-    },
-  ],
-};
-
 const ShowOrEditPage: React.FC<{
   pageInfo: PageType;
   courseId: string;
   authUser: AuthUserContext;
 }> = ({ pageInfo, courseId, authUser }) => {
-  // TODO: replace to pageInfo
   const [newMaterials, setNewMaterials] = useState<PageType>(pageInfo);
-  // console.log("🚀 ~ file: ShowOrEditPage.tsx:88 ~ newMaterials:", newMaterials);
-  const [dataToBackend, setDateToBackend] = useState<PageType>();
-
-  // remove linkToResource and fileType
-  const pageDataToBackend = (data: PageType) => {
-    // copy original data
-    const copy = { ...data };
-    const resources = copy.resources;
-    const sections = copy.sections;
-    // remove all linkToResource in resources and sections array
-    const resourcesWithoutLink = resources.map(({ linkToResource, fileType, ...rest }) => rest);
-    const sectionsWithoutLink = sections.map((section) => ({
-      ...section,
-      resources: section.resources.map(({ linkToResource, fileType, ...rest }) => rest),
-    }));
-    copy.resources = resourcesWithoutLink;
-    copy.sections = sectionsWithoutLink;
-    delete copy.title;
-    return copy;
-  };
+  const RESOURCE_URL = `${PROCESS_BACKEND_URL}/page/${courseId}/${pageInfo.pageId}/resource`;
+  const SECTION_URL = `${PROCESS_BACKEND_URL}/page/${courseId}/${pageInfo.pageId}/section`;
 
   useEffect(() => {
     setNewMaterials(pageInfo);
   }, [pageInfo]);
 
-  useEffect(() => {
-    console.log("send the whole data to backend ");
-    // console.log(dataToBackend);
-    const sendChanges = async () => {
-      if (dataToBackend) {
-        console.log(dataToBackend);
-        const [data, err] = await apiPut<any, any>(
-          `${PROCESS_BACKEND_URL}/page/${courseId}/${pageInfo.pageId}`,
-          await authUser.getIdToken(),
-          dataToBackend,
-        );
-
-        if (err !== null) {
-          console.error(err);
-        }
-
-        if (data === null) throw new Error("This shouldn't have happened");
-        console.log("🚀 ~ file: ShowOrEditPage.tsx:130 ~ sendChanges ~ data:", data);
-      }
-    };
-    sendChanges();
-  }, [authUser, courseId, dataToBackend, pageInfo.pageId]);
-
   // edit and remove each resource outside and inside of sections
-  const handleEditResource = (resource: ResourcesType, feature: Feature, sectionId?: string) => {
+  const handleEditResource = async (
+    resource: ResourcesType,
+    feature: Feature,
+    sectionId?: string,
+  ) => {
     // change materials showing on the page
     setNewMaterials((prev) => {
-      // const copy = pageDataToBackend(prev);
       const copy = { ...prev };
       if (feature === Feature.EditResourceOut || feature === Feature.RemoveResourceOut) {
         const oldResourceIndex = copy.resources.findIndex(
@@ -168,15 +71,50 @@ const ShowOrEditPage: React.FC<{
           copy.sections[sectionIndex] = section;
         }
       }
-
-      // remove fileType and linkToResource
-      setDateToBackend(pageDataToBackend(copy));
       return copy;
     });
+
+    // update in backend
+    if (feature === Feature.EditResourceOut) {
+      const body = {
+        courseId: courseId,
+        pageId: pageInfo.pageId,
+        title: resource.title,
+        description: resource.description,
+        resourceId: resource.resourceId,
+      };
+      await sendToBackend(body, RESOURCE_URL);
+    } else if (feature === Feature.EditSectionResource) {
+      const body = {
+        courseId: courseId,
+        pageId: pageInfo.pageId,
+        title: resource?.title,
+        description: resource?.description,
+        sectionId: sectionId,
+        resourceId: resource.resourceId,
+      };
+      await sendToBackend(body, RESOURCE_URL);
+    } else if (feature === Feature.RemoveResourceOut) {
+      const body = {
+        courseId: courseId,
+        pageId: pageInfo.pageId,
+        resourceId: resource.resourceId,
+      };
+      await deleteInBackend(body, RESOURCE_URL);
+    } else {
+      // remove resource inside section
+      const body = {
+        courseId: courseId,
+        pageId: pageInfo.pageId,
+        sectionId: sectionId,
+        resourceId: resource.resourceId,
+      };
+      await deleteInBackend(body, RESOURCE_URL);
+    }
   };
 
-  // edit title and remove section
-  const handleEditTitle = (newTitle: string, sectionId: string, feature: Feature) => {
+  // edit title of Section and remove section
+  const handleEditTitle = async (newTitle: string, sectionId: string, feature: Feature) => {
     // change materials showing on the page
     setNewMaterials((prev) => {
       const copy = { ...prev };
@@ -189,15 +127,33 @@ const ShowOrEditPage: React.FC<{
         copy.sections.splice(getIdx, 1);
       }
 
-      // remove fileType and linkToResource
-      setDateToBackend(pageDataToBackend(copy));
       return copy;
     });
+
+    // send to backend
+    if (feature === Feature.EditSectionTitle) {
+      const body = {
+        sectionId: sectionId,
+        courseId: courseId,
+        pageId: pageInfo.pageId,
+        title: newTitle,
+      };
+      await sendToBackend(body, SECTION_URL);
+    } else {
+      // delete section
+      const body = {
+        courseId: courseId,
+        pageId: pageInfo.pageId,
+        sectionId: sectionId,
+      };
+      await deleteInBackend(body, SECTION_URL);
+    }
   };
 
-  const getResourceId = async (body: any) => {
-    const [data, err] = await apiPost<any, { resourceId: string }>(
-      `${PROCESS_BACKEND_URL}/page/${courseId}/${pageInfo.pageId}/resource`,
+  // Send update and add new resource/section to backend
+  const sendToBackend = async (body: any, url: string) => {
+    const [data, err] = await apiPut<any, { resourceId: string }>(
+      url,
       await authUser.getIdToken(),
       body,
     );
@@ -210,6 +166,20 @@ const ShowOrEditPage: React.FC<{
     return data.resourceId;
   };
 
+  // delete Resource/section in backend
+  const deleteInBackend = async (body: any, url: string) => {
+    const [data, err] = await apiDelete<any, { sectionId: string }>(
+      url,
+      await authUser.getIdToken(),
+      body,
+    );
+
+    if (err !== null) {
+      console.error(err);
+    }
+  };
+
+  // Add Resource outside or in section
   const handleAddResource = async (
     feature: Feature,
     newResource?: ResourcesType,
@@ -224,10 +194,10 @@ const ShowOrEditPage: React.FC<{
         description: newResource?.description,
       };
       if (newResource) {
-        newResource.resourceId = await getResourceId(resourseOut);
+        newResource.resourceId = await sendToBackend(resourseOut, RESOURCE_URL);
       }
     } else if (feature === Feature.AddSectionResource) {
-      const resourseOut = {
+      const sectionResourse = {
         courseId: courseId,
         pageId: pageInfo.pageId,
         title: newResource?.title,
@@ -235,27 +205,18 @@ const ShowOrEditPage: React.FC<{
         sectionId: sectionId,
       };
       if (newResource) {
-        newResource.resourceId = await getResourceId(resourseOut);
+        newResource.resourceId = await sendToBackend(sectionResourse, RESOURCE_URL);
       }
     } else {
-      const [data, err] = await apiPost<any, { sectionId: string }>(
-        `${PROCESS_BACKEND_URL}/page/${courseId}/${pageInfo.pageId}/section`,
-        await authUser.getIdToken(),
-        {
-          courseId: courseId,
-          pageId: pageInfo.pageId,
-          title: newSection?.title,
-        },
-      );
-
-      if (err !== null) {
-        console.error(err);
-      }
-
-      if (data === null) throw new Error("This shouldn't have happened");
+      // add section
+      const sectionBody = {
+        courseId: courseId,
+        pageId: pageInfo.pageId,
+        title: newSection?.title,
+      };
 
       if (newSection) {
-        newSection.sectionId = data.sectionId;
+        newSection.sectionId = await sendToBackend(sectionBody, SECTION_URL);
       }
     }
 

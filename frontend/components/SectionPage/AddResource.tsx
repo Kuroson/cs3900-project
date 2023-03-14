@@ -4,6 +4,7 @@ import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
 import { ResourcesType, SectionsType } from "pages/admin/[courseId]/[pageId]";
 import { PROCESS_BACKEND_URL, apiPost } from "util/api";
+import ShowFile from "./ShowFile";
 import { Feature } from "./ShowOrEditPage";
 
 const AddResource: React.FC<{
@@ -34,9 +35,8 @@ const AddResource: React.FC<{
       fileType: "", //todo: new file
       linkToResource: file, //todo: new
     };
-    // TODO: send above to api and api return id then add it to newMaterials
-
-    console.log("s");
+    // TODO: Upload file API
+    console.log("New Resource => if has file then call api here");
     if (sectionId !== null && sectionId !== undefined) {
       // add outside resource
       handleAddResource(Feature.AddSectionResource, newResource, undefined, sectionId);
@@ -73,7 +73,8 @@ const AddResource: React.FC<{
           />
           <div className="flex justify-between max-w-[1000px]">
             {file != "" ? (
-              <div>TODO: show resource</div>
+              // TODO: show resource
+              <ShowFile />
             ) : (
               <Button
                 variant="outlined"

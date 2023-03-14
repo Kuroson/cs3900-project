@@ -13,12 +13,13 @@ const ShowOrEditResource: React.FC<{
     resource: ResourcesType,
     feature: Feature,
     sectionId?: string,
-  ) => void | (() => void);
+  ) => Promise<void> | (() => void);
   sectionId?: string;
 }> = ({ resource, handleEditResource, sectionId }) => {
   const [editResource, setEditResource] = useState(false);
   const [title, setTitle] = useState(resource.title);
   const [description, setDescription] = useState(resource.description);
+  const [file, setFile] = useState(resource.linkToResource);
 
   const handleEditClick = () => {
     // click tick
@@ -27,8 +28,8 @@ const ShowOrEditResource: React.FC<{
         resourceId: resource.resourceId,
         title: title,
         description: description,
-        fileType: resource.fileType, //todo: new file
-        linkToResource: resource.linkToResource, //todo: new
+        fileType: resource.fileType, //todo: new file, currently is old file
+        linkToResource: resource.linkToResource, //todo: new, currently is old
       };
       if (sectionId === null || sectionId === undefined) {
         // finish edit outside resource
@@ -78,7 +79,7 @@ const ShowOrEditResource: React.FC<{
             onChange={(e) => setDescription(e.target.value)}
           />
           {resource.linkToResource !== "" ? (
-            <div>TODO: show resource</div>
+            <div>TODO: show resource --- {file}</div>
           ) : (
             <Button
               variant="contained"
@@ -87,7 +88,14 @@ const ShowOrEditResource: React.FC<{
               startIcon={<DriveFolderUploadIcon />}
             >
               Upload Material
-              <input hidden accept="image/*" multiple type="file" />
+              <input
+                hidden
+                accept="image/*"
+                multiple
+                type="file"
+                value={file}
+                onChange={(e) => setFile(e.target.value)}
+              />
             </Button>
           )}
         </div>
