@@ -3,12 +3,17 @@ import Course from "@/models/course.model";
 import User from "@/models/user.model";
 import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { UserInfo } from "@/utils/util";
 import { Request, Response } from "express";
+
+type StudentInfo = {
+    email: string;
+    first_name: string;
+    last_name: string;
+};
 
 type ResponsePayload = {
     code?: string;
-    students?: Array<UserInfo>;
+    students?: Array<StudentInfo>;
     message?: string;
 };
 
@@ -52,36 +57,24 @@ export const getStudentsController = async (
  * @returns All students for a given courseId
  */
 export const getStudents = async (courseId: string) => {
-    const myCourse = await Course.findById(courseId);
+    const course = await Course.findById(courseId);
 
-    if (myCourse === null) throw new HttpException(500, "Course does not exist");
+    if (course === null) throw new HttpException(500, "Course does not exist");
 
-    const students = Array<UserInfo>();
+    const students = Array<StudentInfo>();
 
-    // for (const student_id of myCourse.students) {
-    //     const student = await User.findById(student_id)
-    //     if (student === null) throw new HttpException(500, "Failed to retrieve student");
-    // }
+    course.students.forEach(async (student_id) => {
+        const student = await User.findById(student_id);
+        if (student === null) throw new HttpException(500, "Failed to retrieve student");
 
-    // const courseInfo = {
-    //     code: myCourse.code,
-    //     title: myCourse.title,
-    //     description: myCourse.description,
-    //     session: myCourse.session,
-    //     icon: myCourse.icon,
-    //     pages: new Array<PageInfo>(),
-    // };
+        const studentInfo = {
+            email: student.email,
+            first_name: student.first_name,
+            last_name: student.last_name,
+        };
 
-    // // Get each page info
-    // for (const page of myCourse.pages) {
-    //     const myPage = await Page.findById(page);
-    //     if (myPage === null) throw new HttpException(500, "Failed to retrieve page");
-
-    //     courseInfo.pages.push({
-    //         title: myPage.title,
-    //         pageId: myPage._id,
-    //     });
-    // }
+        students.push(studentInfo);
+    });
 
     return {
         code: courseId,

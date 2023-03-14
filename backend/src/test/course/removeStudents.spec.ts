@@ -4,7 +4,6 @@ import { registerUser } from "@/routes/auth/register.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { removeStudents } from "@/routes/course/removeStudents.route";
-import { updateCourse } from "@/routes/course/updateCourse.route";
 import initialiseMongoose from "../testUtil";
 
 describe("Test removing a student", () => {
@@ -14,10 +13,25 @@ describe("Test removing a student", () => {
     beforeAll(async () => {
         await initialiseMongoose();
 
-        await registerUser("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`);
-        await registerUser("first_name2", "last_name2", `student1${id}@email.com`, `acc1${id}`);
-        await registerUser("first_name3", "last_name3", `student2${id}@email.com`, `acc2${id}`);
-        await registerUser("first_name4", "last_name4", `student3${id}@email.com`, `acc3${id}`);
+        await registerUser("first_name1", "last_name1", `removeadmin${id}@email.com`, `acc${id}`);
+        await registerUser(
+            "first_name2",
+            "last_name2",
+            `removestudent1${id}@email.com`,
+            `acc1${id}`,
+        );
+        await registerUser(
+            "first_name3",
+            "last_name3",
+            `removestudent2${id}@email.com`,
+            `acc2${id}`,
+        );
+        await registerUser(
+            "first_name4",
+            "last_name4",
+            `removestudent3${id}@email.com`,
+            `acc3${id}`,
+        );
         courseId = await createCourse(
             {
                 code: "TEST",
@@ -31,10 +45,10 @@ describe("Test removing a student", () => {
         await addStudents({
             courseId: courseId,
             students: Array<string>(
-                "fakeStudent@email.com",
-                `student1${id}@email.com`,
-                `student2${id}@email.com`,
-                `student3${id}@email.com`,
+                "fakeRemoveStudent@email.com",
+                `removestudent1${id}@email.com`,
+                `removestudent2${id}@email.com`,
+                `removestudent3${id}@email.com`,
             ),
         });
     });
@@ -46,9 +60,9 @@ describe("Test removing a student", () => {
         });
 
         const myCourse = await Course.findById(courseId);
-        const student1 = await User.findOne({ email: `student1${id}@email.com` });
-        const student2 = await User.findOne({ email: `student2${id}@email.com` });
-        const student3 = await User.findOne({ email: `student3${id}@email.com` });
+        const student1 = await User.findOne({ email: `removestudent1${id}@email.com` });
+        const student2 = await User.findOne({ email: `removestudent2${id}@email.com` });
+        const student3 = await User.findOne({ email: `removestudent3${id}@email.com` });
 
         expect(myCourse?.students).toEqual([student1?._id, student2?._id, student3?._id]);
         expect(student1?.enrolments).toEqual([myCourse?._id]);
@@ -61,18 +75,18 @@ describe("Test removing a student", () => {
             await removeStudents({
                 courseId: courseId,
                 students: Array<string>(
-                    "fakeStudent@email.com",
-                    `student1${id}@email.com`,
-                    `student2${id}@email.com`,
-                    `student3${id}@email.com`,
+                    "fakeRemoveStudent@email.com",
+                    `removestudent1${id}@email.com`,
+                    `removestudent2${id}@email.com`,
+                    `removestudent3${id}@email.com`,
                 ),
             }),
-        ).toEqual(["fakeStudent@email.com"]);
+        ).toEqual(["fakeRemoveStudent@email.com"]);
 
         const myCourse = await Course.findById(courseId);
-        const student1 = await User.findOne({ email: `student1${id}@email.com` });
-        const student2 = await User.findOne({ email: `student2${id}@email.com` });
-        const student3 = await User.findOne({ email: `student3${id}@email.com` });
+        const student1 = await User.findOne({ email: `removestudent1${id}@email.com` });
+        const student2 = await User.findOne({ email: `removestudent2${id}@email.com` });
+        const student3 = await User.findOne({ email: `removestudent3${id}@email.com` });
 
         expect(myCourse?.students).toEqual([]);
         expect(student1?.enrolments).toEqual([]);
