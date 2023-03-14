@@ -18,6 +18,7 @@ type QueryPayload = {
     courseId: string;
     pageId: string;
     sectionId?: string;
+    resourceId?: string;
     title: string;
     description?: string;
 };
@@ -77,7 +78,24 @@ export const addResource = async (queryBody: QueryPayload, firebase_uid: string)
         throw new HttpException(401, "Must be an admin to add a resource");
     }
 
-    const { courseId, pageId, sectionId, title, description } = queryBody;
+    const { courseId, pageId, sectionId, resourceId, title, description } = queryBody;
+
+    if (resourceId !== undefined) {
+        const existingResource = await Resource.findById(resourceId).catch((err) => {
+            throw new HttpException(500, "Failed to fetch resource");
+        });
+        if (existingResource === null) throw new HttpException(500, "Failed to fetch resource");
+
+        existingResource.title = title;
+        if (description !== undefined) {
+            existingResource.description = description;
+        }
+
+        await existingResource.save().catch((err) => {
+            throw new HttpException(500, "Failed to update resource");
+        });
+        return;
+    }
 
     const newResource = new Resource({
         title,
@@ -87,7 +105,7 @@ export const addResource = async (queryBody: QueryPayload, firebase_uid: string)
         newResource.description = description;
     }
 
-    const resourceId = await newResource
+    const newResourceId = await newResource
         .save()
         .then((res) => {
             return res._id;
@@ -101,7 +119,7 @@ export const addResource = async (queryBody: QueryPayload, firebase_uid: string)
         const currPage = await Page.findById(pageId);
         if (currPage === null) throw new HttpException(500, "Cannot retrieve section");
 
-        currPage.resources.push(resourceId);
+        currPage.resources.push(newResourceId);
 
         await currPage.save().catch((err) => {
             throw new HttpException(500, "Failed to save updated section");
@@ -111,7 +129,7 @@ export const addResource = async (queryBody: QueryPayload, firebase_uid: string)
         const currSection = await Section.findById(sectionId);
         if (currSection === null) throw new HttpException(500, "Cannot retrieve section");
 
-        currSection.resources.push(resourceId);
+        currSection.resources.push(newResourceId);
 
         await currSection.save().catch((err) => {
             throw new HttpException(500, "Failed to save updated section");
@@ -121,5 +139,5 @@ export const addResource = async (queryBody: QueryPayload, firebase_uid: string)
     const course = await Course.findById(courseId);
     if (course === null) throw new HttpException(400, "Course does not exist");
 
-    return resourceId;
+    return newResourceId;
 };

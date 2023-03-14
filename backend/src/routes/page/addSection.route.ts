@@ -16,6 +16,7 @@ type ResponsePayload = {
 type QueryPayload = {
     courseId: string;
     pageId: string;
+    sectionId?: string;
     title: string;
 };
 
@@ -73,13 +74,26 @@ export const addSection = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(401, "Must be an admin to add a resource");
     }
 
-    const { courseId, pageId, title } = queryBody;
+    const { courseId, pageId, sectionId, title } = queryBody;
+
+    if (sectionId !== undefined) {
+        const existingSection = await Section.findById(sectionId).catch((err) => {
+            throw new HttpException(500, "Failed to fetch section");
+        });
+        if (existingSection === null) throw new HttpException(500, "Failed to fetch section");
+
+        existingSection.title = title;
+        await existingSection.save().catch((err) => {
+            throw new HttpException(500, "Failed to update section");
+        });
+        return;
+    }
 
     const newSection = new Section({
         title,
     });
 
-    const sectionId = await newSection
+    const newSectionId = await newSection
         .save()
         .then((res) => {
             return res._id;
@@ -92,7 +106,7 @@ export const addSection = async (queryBody: QueryPayload, firebase_uid: string) 
     const currPage = await Page.findById(pageId);
     if (currPage === null) throw new HttpException(500, "Cannot retrieve page");
 
-    currPage.sections.push(sectionId);
+    currPage.sections.push(newSectionId);
 
     await currPage.save().catch((err) => {
         throw new HttpException(500, "Failed to save updated section");
@@ -101,5 +115,5 @@ export const addSection = async (queryBody: QueryPayload, firebase_uid: string) 
     const course = await Course.findById(courseId);
     if (course === null) throw new HttpException(400, "Course does not exist");
 
-    return sectionId;
+    return newSectionId;
 };
