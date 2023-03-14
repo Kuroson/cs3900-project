@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import DeleteIcon from "@mui/icons-material/Delete";
 import GridViewIcon from "@mui/icons-material/GridView";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { Button } from "@mui/material";
@@ -43,7 +44,7 @@ export type ResourcesType = {
   title: string;
   description?: string;
   type: string;
-  linkToResource: string;
+  linkToResource?: string;
 };
 export type SectionsType = {
   sectionId: string;
@@ -87,7 +88,6 @@ const SectionPage = ({
     resources: [],
     sections: [],
   });
-  const [edit, setEdit] = useState(false);
   const authUser = useAuthUser();
   const router = useRouter();
   const courseRoutes: Routes[] = [
@@ -111,7 +111,6 @@ const SectionPage = ({
 
   // Fetch all the course information
   useEffect(() => {
-    setEdit(false);
     const fetchCourseInfo = async () => {
       const [data, err] = await apiGet<any, coursesInfoPayload>(
         `${PROCESS_BACKEND_URL}/course/${courseId}`,
@@ -154,12 +153,6 @@ const SectionPage = ({
     router.push(`/admin/${courseId}`);
   };
 
-  const handleSave = (newPages: PageType) => {
-    // call api to save edited resources
-    setPageInfo(newPages);
-    setEdit(false);
-  };
-
   return (
     <>
       <Head>
@@ -183,36 +176,12 @@ const SectionPage = ({
           <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between">
             <div className="flex items-center gap-4">
               <span className="ml-4">{pageInfo.title}</span>
-              {edit && (
-                <span className="bg-[#26a69a] p-1 rounded-[20px] font-bold text-white text-xs">
-                  Edit Mode
-                </span>
-              )}
             </div>
-            <div>
-              <Button color="error" onClick={handleDeletePage}>
-                Delete
-              </Button>
-              {!edit && <Button onClick={() => setEdit((prev) => !prev)}>Edit</Button>}
-            </div>
+            <Button color="error" onClick={handleDeletePage} startIcon={<DeleteIcon />}>
+              Delete page
+            </Button>
           </h1>
-          {edit ? (
-            <ShowOrEditPage
-              pageInfo={pageInfo}
-              handleSave={handleSave}
-              handleCloseEdit={() => setEdit((prev) => !prev)}
-              editing={true}
-            />
-          ) : (
-            <ShowOrEditPage
-              pageInfo={pageInfo}
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
-              handleSave={() => {}}
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
-              handleCloseEdit={() => {}}
-              editing={false}
-            />
-          )}
+          <ShowOrEditPage pageInfo={pageInfo} />
         </div>
       </ContentContainer>
     </>

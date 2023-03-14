@@ -5,6 +5,7 @@ import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import EditIcon from "@mui/icons-material/Edit";
 import { Button, IconButton, TextField } from "@mui/material";
 import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
+import { EditPosition } from "components/AdminSectionPage/ShowOrEditPage";
 
 // export type resources = {
 //   resourceId: string;
@@ -16,27 +17,28 @@ import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
 
 const ShowOrEditResource: React.FC<{
   resource: ResourcesType;
-  editing: boolean;
-  handleEditResource: (newResource: ResourcesType) => void | (() => void);
-}> = ({ resource, editing, handleEditResource }) => {
+  handleEditResource: (newResource: ResourcesType, position?: EditPosition) => void;
+  inSection: boolean;
+}> = ({ resource, handleEditResource, inSection }) => {
   const [editResource, setEditResource] = useState(false);
   const [title, setTitle] = useState(resource.title);
   const [description, setDescription] = useState(resource.description);
 
   const handleEditClick = () => {
-    // finish edit
+    // finish edit - click tick
     if (editResource) {
-      // setNewMaterials(prev =>)
+      // no linkToResource for put api
       const newResource: ResourcesType = {
         resourceId: resource.resourceId,
         title: title,
         description: description,
         type: resource.type, // todo
-        linkToResource: resource.linkToResource, //todo
       };
+      // show the changes in not edit mode
       handleEditResource(newResource);
+      // TODO: call upload file api here if file changes
+      console.log("if file changed, call api here");
     }
-
     setEditResource((prev) => !prev);
   };
 
@@ -83,7 +85,7 @@ const ShowOrEditResource: React.FC<{
           <h4 className="m-0">{resource.title}</h4>
           <p className="">{resource.description ?? ""}</p>
           {/* TODO: not sure how to show resource, need to be changed*/}
-          {resource.linkToResource && (
+          {resource.linkToResource != null && (
             <div className="rounded-lg shadow-md px-5 py-3 w-fit">
               {/* read file linktoResource */}
               {resource.linkToResource}
@@ -91,17 +93,14 @@ const ShowOrEditResource: React.FC<{
           )}
         </div>
       )}
-      {/* edit mode - edit and delete */}
-      {editing && (
-        <>
-          <IconButton color="primary" aria-label="edit" component="label" onClick={handleEditClick}>
-            {editResource ? <DoneIcon /> : <EditIcon />}
-          </IconButton>
-          <IconButton color="error" aria-label="delete" component="label">
-            <DeleteIcon />
-          </IconButton>
-        </>
-      )}
+      <>
+        <IconButton color="primary" aria-label="edit" component="label" onClick={handleEditClick}>
+          {editResource ? <DoneIcon /> : <EditIcon />}
+        </IconButton>
+        <IconButton color="error" aria-label="delete" component="label">
+          <DeleteIcon />
+        </IconButton>
+      </>
     </div>
   );
 };

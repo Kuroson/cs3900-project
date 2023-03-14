@@ -4,6 +4,12 @@ import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
 import ShowOrEditResource from "components/common/ShowOrEditResource";
 import ShowOrEditSectionT from "./ShowOrEditSectionT";
 
+export enum EditPosition {
+  SectionResource,
+  SectionTitle,
+  ResourceOut,
+}
+
 const defaultM: PageType = {
   title: "resource1",
   courseId: "1",
@@ -38,14 +44,14 @@ const defaultM: PageType = {
       resources: [
         {
           resourceId: "3",
-          title: "file1.py",
+          title: "sectionfile1",
           description: "",
           type: "",
           linkToResource: "",
         },
         {
           resourceId: "5",
-          title: "file2.py",
+          title: "file2",
           description: "hello 5 resource",
           type: "pdf",
           linkToResource: "pdf",
@@ -64,67 +70,76 @@ const defaultM: PageType = {
 
 const ShowOrEditPage: React.FC<{
   pageInfo: PageType;
-  handleSave: (newPages: PageType) => void | (() => void);
-  handleCloseEdit: () => void;
-  editing: boolean;
-}> = ({ pageInfo, handleSave, handleCloseEdit, editing }) => {
+}> = ({ pageInfo }) => {
   // TODO: replace to pageInfo
   const [newMaterials, setNewMaterials] = useState<PageType>(defaultM);
 
-  // edit resource outside of sections
-  const handleEditResourceOut = (newResource: ResourcesType) => {
-    setNewMaterials((prev) => {
-      const copy = { ...prev };
-      const resources = copy.resources;
-      const oldResourceIndex = resources.findIndex(
-        (re) => re.resourceId === newResource.resourceId,
-      );
-      resources.splice(oldResourceIndex, 1, newResource);
-      copy.resources = resources;
-      return copy;
-    });
+  const pageDataToBackend = (data: PageType) => {
+    // copy original data
+    const copy = { ...data };
+    const resources = copy.resources;
+    const sections = copy.sections;
+    // remove all linkToResource in resources and sections array
+    const resourcesWithoutLink = resources.map(({ linkToResource, ...rest }) => rest);
+    const sectionsWithoutLink = sections.map((section) => ({
+      ...section,
+      resources: section.resources.map(({ linkToResource, ...rest }) => rest),
+    }));
+    copy.resources = resourcesWithoutLink;
+    copy.sections = sectionsWithoutLink;
+    return copy;
   };
 
-  const saveEditedResources = () => {
-    handleSave(newMaterials);
+  // edit each resource outside of sections
+  const handleEditResource = (
+    newResource: ResourcesType,
+    position: EditPosition = EditPosition.SectionTitle,
+  ) => {
+    setNewMaterials((prev) => {
+      const copy = pageDataToBackend(prev);
+      // replace newResource
+      const oldResourceIndex = copy.resources.findIndex(
+        (re) => re.resourceId === newResource.resourceId,
+      );
+      copy.resources.splice(oldResourceIndex, 1, newResource);
+
+      return copy;
+    });
+    // TODO: call /page/{courseId}/{pageId} api here
+    console.log("send the whole data to backend");
   };
 
   return (
     <>
-      {/* Resources outside sections: show/edit mode*/}
+      {/* Resources outside*/}
       <div className="flex flex-col mb-4">
         {newMaterials.resources.map((resource, index) => (
           <ShowOrEditResource
             resource={resource}
-            key={index}
-            editing={editing}
-            handleEditResource={handleEditResourceOut}
+            key={`resource_out_${index}`}
+            handleEditResource={handleEditResource}
+            inSection={false}
           />
         ))}
       </div>
       {/* Sections */}
       {newMaterials.sections.map((section, index) => (
         <div key={`section_${index}`}>
-          <ShowOrEditSectionT title={section.title} editing={editing} />
+          <ShowOrEditSectionT title={section.title} handleEditResource={handleEditResource} />
+          {newMaterials.sections.map((section, sectionidx) => (
+            <div className="flex flex-col mb-4" key={`section_${sectionidx}`}>
+              {section.resources.map((resource, resourceIdx) => (
+                <ShowOrEditResource
+                  resource={resource}
+                  key={`${sectionidx}_${resourceIdx}`}
+                  handleEditResource={handleEditResource}
+                  inSection={true}
+                />
+              ))}
+            </div>
+          ))}
         </div>
       ))}
-      {/* edit mode */}
-      {editing && (
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="outlined"
-            onClick={() => {
-              setNewMaterials(defaultM);
-              handleCloseEdit();
-            }}
-          >
-            Cancel
-          </Button>
-          <Button variant="contained" onClick={saveEditedResources}>
-            Save
-          </Button>
-        </div>
-      )}
     </>
   );
 };
