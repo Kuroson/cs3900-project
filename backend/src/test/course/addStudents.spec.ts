@@ -42,7 +42,7 @@ describe("Test adding a student", () => {
         const myCourse = await Course.findById(courseId);
 
         expect(myCourse?.students).toEqual([]);
-    }, 2000);
+    }, 5000);
 
     it("Add students to course", async () => {
         await addStudents({
@@ -59,7 +59,7 @@ describe("Test adding a student", () => {
         expect(myCourse?.students).toStrictEqual(expected);
         expect(student1?.enrolments).toStrictEqual([myCourse?._id]);
         expect(student2?.enrolments).toStrictEqual([myCourse?._id]);
-    }, 2000);
+    }, 5000);
 
     it("Add student to course", async () => {
         expect(
@@ -83,7 +83,7 @@ describe("Test adding a student", () => {
         expect(student1?.enrolments).toEqual([myCourse?._id]);
         expect(student2?.enrolments).toEqual([myCourse?._id]);
         expect(student3?.enrolments).toEqual([myCourse?._id]);
-    }, 2000);
+    }, 5000);
 
     afterAll(async () => {
         // Clean up

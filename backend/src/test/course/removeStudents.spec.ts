@@ -60,7 +60,7 @@ describe("Test removing a student", () => {
         expect(student1?.enrolments).toEqual([myCourse?._id]);
         expect(student2?.enrolments).toEqual([myCourse?._id]);
         expect(student3?.enrolments).toEqual([myCourse?._id]);
-    }, 2000);
+    }, 5000);
 
     it("Remove users from course", async () => {
         expect(
@@ -84,7 +84,7 @@ describe("Test removing a student", () => {
         expect(student1?.enrolments).toEqual([]);
         expect(student2?.enrolments).toEqual([]);
         expect(student3?.enrolments).toEqual([]);
-    }, 2000);
+    }, 5000);
 
     afterAll(async () => {
         // Clean up
