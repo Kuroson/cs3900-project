@@ -90,7 +90,7 @@ export const addSection = async (queryBody: QueryPayload, firebase_uid: string) 
 
     // Add to page
     const currPage = await Page.findById(pageId);
-    if (currPage === null) throw new HttpException(500, "Cannot retrieve section");
+    if (currPage === null) throw new HttpException(500, "Cannot retrieve page");
 
     currPage.sections.push(sectionId);
 

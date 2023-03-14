@@ -35,7 +35,7 @@ export const addResourceController = async (
         const authUser = await verifyIdTokenValid(token);
 
         // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "title", "description"])) {
+        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "title"])) {
             // Body has been verified
             const queryBody = req.body;
 
@@ -50,7 +50,6 @@ export const addResourceController = async (
                     "courseId",
                     "pageId",
                     "title",
-                    "description",
                 ])}`,
             );
         }
