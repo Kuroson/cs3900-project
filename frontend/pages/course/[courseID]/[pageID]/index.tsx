@@ -216,7 +216,7 @@ const SectionPage = ({
 
           {/* First list out all the base resources */}
           <div className="bg-gray-300 rounded-xl px-[2.5%] py-[2.5%] mb-5">
-            <h1 className="text-2xl m-0 p-0">Page Resources</h1>
+            {/* <h1 className="text-2xl m-0 p-0">Page Resources</h1> */}
             <ResourcesDisplay resources={pageInfo.resources} />
           </div>
 
