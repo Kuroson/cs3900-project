@@ -77,7 +77,7 @@ const ShowOrEditResource: React.FC<{
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          {resource.fileType != null ? (
+          {resource.linkToResource !== "" ? (
             <div>TODO: show resource</div>
           ) : (
             <Button
@@ -97,7 +97,7 @@ const ShowOrEditResource: React.FC<{
           <h4 className="m-0">{resource.title}</h4>
           <p className="">{resource.description ?? ""}</p>
           {/* TODO: not sure how to show resource, need to be changed*/}
-          {resource.linkToResource != null && (
+          {resource.linkToResource != "" && (
             <div className="rounded-lg shadow-md px-5 py-3 w-fit">
               {/* read file linktoResource */}
               {resource.linkToResource}
@@ -106,7 +106,13 @@ const ShowOrEditResource: React.FC<{
         </div>
       )}
       <>
-        <IconButton color="primary" aria-label="edit" component="label" onClick={handleEditClick}>
+        <IconButton
+          color="primary"
+          aria-label="edit"
+          component="label"
+          onClick={handleEditClick}
+          disabled={editResource && title === ""}
+        >
           {editResource ? <DoneIcon /> : <EditIcon />}
         </IconButton>
         <IconButton color="error" aria-label="delete" component="label" onClick={handleRemove}>

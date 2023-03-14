@@ -3,6 +3,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
 import { ResourcesType, SectionsType } from "pages/admin/[courseId]/[pageId]";
+import { PROCESS_BACKEND_URL, apiPost } from "util/api";
 import { Feature } from "./ShowOrEditPage";
 
 const AddResource: React.FC<{
@@ -34,13 +35,14 @@ const AddResource: React.FC<{
       linkToResource: file, //todo: new
     };
     // TODO: send above to api and api return id then add it to newMaterials
-    const fakeId = "50";
-    newResource.resourceId = fakeId;
-    if (sectionId !== null || sectionId !== undefined) {
+
+    console.log("s");
+    if (sectionId !== null && sectionId !== undefined) {
       // add outside resource
       handleAddResource(Feature.AddSectionResource, newResource, undefined, sectionId);
     } else {
       // add outside resource
+      console.log("first");
       handleAddResource(Feature.AddResourceOut, newResource);
     }
 
@@ -87,7 +89,7 @@ const AddResource: React.FC<{
               <Button variant="outlined" color="error" onClick={clearForm}>
                 Cancel
               </Button>
-              <Button variant="contained" onClick={addNewResource}>
+              <Button variant="contained" onClick={addNewResource} disabled={title === ""}>
                 Add
               </Button>
             </div>

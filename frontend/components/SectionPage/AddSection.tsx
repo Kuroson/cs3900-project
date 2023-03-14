@@ -26,9 +26,6 @@ const AddSection: React.FC<{
       title: title,
       resources: [],
     };
-    // TODO: send above to api and api return id then add it to newMaterials
-    const fakeId = "50";
-    newSection.sectionId = fakeId;
     handleAddResource(Feature.AddSection, undefined, newSection);
     clearForm();
   };
@@ -49,7 +46,7 @@ const AddSection: React.FC<{
             <Button variant="outlined" color="error" onClick={clearForm}>
               Cancel
             </Button>
-            <Button variant="contained" onClick={addNewSection}>
+            <Button variant="contained" onClick={addNewSection} disabled={title === ""}>
               Add
             </Button>
           </div>

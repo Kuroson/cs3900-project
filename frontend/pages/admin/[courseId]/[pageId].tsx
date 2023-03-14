@@ -53,7 +53,7 @@ export type SectionsType = {
 };
 
 export type PageType = {
-  title: string;
+  title?: string;
   courseId: string;
   pageId: string;
   resources: ResourcesType[];
@@ -190,7 +190,7 @@ const SectionPage = ({
               Delete page
             </Button>
           </h1>
-          <ShowOrEditPage pageInfo={pageInfo} />
+          <ShowOrEditPage pageInfo={pageInfo} courseId={courseId ?? ""} authUser={authUser} />
         </div>
       </ContentContainer>
     </>
