@@ -4,14 +4,13 @@ import DoneIcon from "@mui/icons-material/Done";
 import EditIcon from "@mui/icons-material/Edit";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import { IconButton, TextField } from "@mui/material";
-import { ResourcesType } from "pages/admin/[courseId]/[pageId]";
 import TitleWithIcon from "components/common/TitleWithIcon";
 import { Feature } from "./ShowOrEditPage";
 
 const ShowOrEditSectionT: React.FC<{
   title: string;
   sectionId: string;
-  handleEditTitle: (newTitle: string, sectionId: string) => void;
+  handleEditTitle: (newTitle: string, sectionId: string, feature: Feature) => void;
 }> = ({ title, sectionId, handleEditTitle }) => {
   const [sectionTitle, setSectionTitle] = useState(title);
   const [editTitle, setEditTitle] = useState(false);
@@ -20,10 +19,14 @@ const ShowOrEditSectionT: React.FC<{
     // click tick
     if (editTitle && title !== sectionTitle) {
       // change title in whole data
-      handleEditTitle(sectionTitle, sectionId);
+      handleEditTitle(sectionTitle, sectionId, Feature.EditSectionTitle);
     }
 
     setEditTitle((prev) => !prev);
+  };
+
+  const handleDeleteSection = () => {
+    handleEditTitle(sectionTitle, sectionId, Feature.RemoveSection);
   };
 
   return (
@@ -52,7 +55,12 @@ const ShowOrEditSectionT: React.FC<{
         >
           {editTitle ? <DoneIcon /> : <EditIcon />}
         </IconButton>
-        <IconButton color="error" aria-label="delete" component="label">
+        <IconButton
+          color="error"
+          aria-label="delete"
+          component="label"
+          onClick={handleDeleteSection}
+        >
           <DeleteIcon />
         </IconButton>
       </div>

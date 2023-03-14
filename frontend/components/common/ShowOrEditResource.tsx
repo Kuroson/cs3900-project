@@ -46,7 +46,6 @@ const ShowOrEditResource: React.FC<{
 
   const handleRemove = () => {
     if (sectionId === null || sectionId === undefined) {
-      console.log("first");
       // remove outside resource
       handleEditResource(resource, Feature.RemoveResourceOut);
     } else {

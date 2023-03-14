@@ -10,6 +10,7 @@ export enum Feature {
   RemoveSection,
   RemoveSectionResource,
   RemoveResourceOut,
+  EditSectionTitle,
 }
 
 const defaultM: PageType = {
@@ -142,13 +143,20 @@ const ShowOrEditPage: React.FC<{
     });
   };
 
-  const handleEditTitle = (newTitle: string, sectionId: string) => {
+  // edit title and remove section
+  const handleEditTitle = (newTitle: string, sectionId: string, feature: Feature) => {
     // change materials showing on the page
     setNewMaterials((prev) => {
-      // change section title
       const copy = prev;
       const getIdx = copy.sections.findIndex((se) => se.sectionId === sectionId);
-      copy.sections[getIdx].title = newTitle;
+      if (feature === Feature.EditSectionTitle) {
+        // change section title
+        copy.sections[getIdx].title = newTitle;
+      } else {
+        // remove section
+        copy.sections.splice(getIdx, 1);
+      }
+
       // remove fileType and linkToResource
       setDateToBackend(pageDataToBackend(copy));
       return copy;
