@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -37,7 +38,7 @@ type courseInfo = {
 };
 type coursesInfoPayload = courseInfo;
 
-export type resources = {
+export type Resources = {
   resourceId: string;
   title: string;
   description?: string;
@@ -47,14 +48,14 @@ export type resources = {
 export type sections = {
   sectionId: string;
   title: string;
-  resources: resources[];
+  resources: Resources[];
 };
 
 export type pageInfo = {
   title: string;
   courseId: string;
   pageId: string;
-  resources: resources[];
+  resources: Resources[];
   sections: sections[];
 };
 type pageInfoPayload = pageInfo;
@@ -76,7 +77,7 @@ const page: pageInfo = {
   sections: [],
 };
 
-const ResourcesDisplay = ({ resources }: { resources: Array<resources> }): JSX.Element => {
+const ResourcesDisplay = ({ resources }: { resources: Array<Resources> }): JSX.Element => {
   return (
     <>
       {resources.map((resource) => {
@@ -85,13 +86,13 @@ const ResourcesDisplay = ({ resources }: { resources: Array<resources> }): JSX.E
             <Typography variant="h6" fontWeight="400">
               {resource.title}
             </Typography>
-            {resource.description && <div>{resource.description}</div>}
+            {resource.description ?? <div>{resource.description}</div>}
             {resource.linkToResource && (
               <div>
                 {resource.fileType.includes("image") ? (
                   // <div>IS AN IMAGE</div>
                   <div>
-                    <img src={resource.linkToResource} />
+                    <img src={resource.linkToResource} alt={resource.description} />
                   </div>
                 ) : (
                   // <div>ISN"T AN IMAGE</div>
@@ -209,7 +210,7 @@ const SectionPage = ({
           {/* Then list out all the sections */}
           {pageInfo.sections.map((section) => {
             return (
-              <div>
+              <div key={section.sectionId}>
                 <div
                   className="w-full flex py-2 flex-col"
                   style={{
