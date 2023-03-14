@@ -6,19 +6,21 @@ import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import { IconButton, TextField } from "@mui/material";
 import { ResourcesType } from "pages/admin/[courseId]/[pageId]";
 import TitleWithIcon from "components/common/TitleWithIcon";
-import { EditPosition } from "./ShowOrEditPage";
+import { Feature } from "./ShowOrEditPage";
 
 const ShowOrEditSectionT: React.FC<{
   title: string;
-  handleEditResource: (newResource: ResourcesType, position?: EditPosition) => void;
-}> = ({ title, handleEditResource }) => {
+  sectionId: string;
+  handleEditTitleToBackend: (newTitle: string, sectionId: string) => void;
+}> = ({ title, sectionId, handleEditTitleToBackend }) => {
   const [sectionTitle, setSectionTitle] = useState(title);
   const [editTitle, setEditTitle] = useState(false);
 
   const handleEditTitle = () => {
     // click tick
     if (editTitle && title !== sectionTitle) {
-      // edit whole data handleEditResource()
+      // change title in whole data
+      handleEditTitleToBackend(sectionTitle, sectionId);
     }
 
     setEditTitle((prev) => !prev);

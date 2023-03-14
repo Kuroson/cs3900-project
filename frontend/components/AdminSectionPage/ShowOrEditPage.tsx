@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
 import ShowOrEditResource from "components/common/ShowOrEditResource";
 import ShowOrEditSectionT from "./ShowOrEditSectionT";
 
-export enum EditPosition {
-  SectionResource,
-  SectionTitle,
-  ResourceOut,
+export enum Feature {
+  EditSectionResource,
+  EditResourceOut,
+  RemoveSection,
+  RemoveSectionResource,
+  RemoveResourceOut,
 }
 
 const defaultM: PageType = {
@@ -19,21 +21,21 @@ const defaultM: PageType = {
       resourceId: "3",
       title: "file1",
       description: "",
-      type: "",
+      fileType: "",
       linkToResource: "",
     },
     {
       resourceId: "5",
       title: "file2",
       description: "hello 5 resource",
-      type: "pdf",
+      fileType: "pdf",
       linkToResource: "pdf",
     },
     {
       resourceId: "6",
       title: "file3",
       description: "hello 6 resource",
-      type: "pdf",
+      fileType: "pdf",
       linkToResource: "pdf",
     },
   ],
@@ -46,21 +48,21 @@ const defaultM: PageType = {
           resourceId: "3",
           title: "sectionfile1",
           description: "",
-          type: "",
+          fileType: "",
           linkToResource: "",
         },
         {
           resourceId: "5",
           title: "file2",
           description: "hello 5 resource",
-          type: "pdf",
+          fileType: "pdf",
           linkToResource: "pdf",
         },
         {
           resourceId: "6",
           title: "file3",
           description: "hello 6 resource",
-          type: "pdf",
+          fileType: "pdf",
           linkToResource: "pdf",
         },
       ],
@@ -73,40 +75,75 @@ const ShowOrEditPage: React.FC<{
 }> = ({ pageInfo }) => {
   // TODO: replace to pageInfo
   const [newMaterials, setNewMaterials] = useState<PageType>(defaultM);
+  const [dataToBackend, setDateToBackend] = useState<PageType>();
 
+  // remove linkToResource and fileType
   const pageDataToBackend = (data: PageType) => {
     // copy original data
     const copy = { ...data };
     const resources = copy.resources;
     const sections = copy.sections;
     // remove all linkToResource in resources and sections array
-    const resourcesWithoutLink = resources.map(({ linkToResource, ...rest }) => rest);
+    const resourcesWithoutLink = resources.map(({ linkToResource, fileType, ...rest }) => rest);
     const sectionsWithoutLink = sections.map((section) => ({
       ...section,
-      resources: section.resources.map(({ linkToResource, ...rest }) => rest),
+      resources: section.resources.map(({ linkToResource, fileType, ...rest }) => rest),
     }));
     copy.resources = resourcesWithoutLink;
     copy.sections = sectionsWithoutLink;
     return copy;
   };
 
-  // edit each resource outside of sections
-  const handleEditResource = (
-    newResource: ResourcesType,
-    position: EditPosition = EditPosition.SectionTitle,
-  ) => {
-    setNewMaterials((prev) => {
-      const copy = pageDataToBackend(prev);
-      // replace newResource
-      const oldResourceIndex = copy.resources.findIndex(
-        (re) => re.resourceId === newResource.resourceId,
-      );
-      copy.resources.splice(oldResourceIndex, 1, newResource);
+  useEffect(() => {
+    // TODO: call /page/{courseId}/{pageId} api here, data is dataToBackend which without file
+    console.log("send the whole data to backend ");
+    console.log(dataToBackend);
+  }, [dataToBackend]);
 
+  // edit each resource outside of sections
+  const handleEditResourceToBackend = (
+    resource: ResourcesType,
+    feature: Feature,
+    sectionId?: string,
+  ) => {
+    // change materials showing on the page
+    setNewMaterials((prev) => {
+      // const copy = pageDataToBackend(prev);
+      const copy = { ...prev };
+      if (feature === Feature.EditResourceOut) {
+        // edit outside resource
+        const oldResourceIndex = copy.resources.findIndex(
+          (re) => re.resourceId === resource.resourceId,
+        );
+        copy.resources.splice(oldResourceIndex, 1, resource);
+      } else if (feature === Feature.EditSectionResource) {
+        // edit section resource
+        const sectionIndex = copy.sections.findIndex((se) => se.sectionId === sectionId);
+        const section = copy.sections[sectionIndex];
+        const oldResourceIndex = section.resources.findIndex(
+          (re) => re.resourceId === resource.resourceId,
+        );
+        section.resources.splice(oldResourceIndex, 1, resource);
+        copy.sections[sectionIndex] = section;
+      }
+
+      // remove fileType and linkToResource
+      setDateToBackend(pageDataToBackend(copy));
       return copy;
     });
-    // TODO: call /page/{courseId}/{pageId} api here
-    console.log("send the whole data to backend");
+  };
+
+  const handleEditTitleToBackend = (newTitle: string, sectionId: string) => {
+    // change materials showing on the page
+    setNewMaterials((prev) => {
+      // change section title
+      const copy = prev;
+      const getIdx = copy.sections.findIndex((se) => se.sectionId === sectionId);
+      copy.sections[getIdx].title = newTitle;
+      // remove fileType and linkToResource
+      setDateToBackend(pageDataToBackend(copy));
+      return copy;
+    });
   };
 
   return (
@@ -117,23 +154,26 @@ const ShowOrEditPage: React.FC<{
           <ShowOrEditResource
             resource={resource}
             key={`resource_out_${index}`}
-            handleEditResource={handleEditResource}
-            inSection={false}
+            handleEditResource={handleEditResourceToBackend}
           />
         ))}
       </div>
       {/* Sections */}
       {newMaterials.sections.map((section, index) => (
         <div key={`section_${index}`}>
-          <ShowOrEditSectionT title={section.title} handleEditResource={handleEditResource} />
+          <ShowOrEditSectionT
+            title={section.title}
+            sectionId={section.sectionId}
+            handleEditTitleToBackend={handleEditTitleToBackend}
+          />
           {newMaterials.sections.map((section, sectionidx) => (
             <div className="flex flex-col mb-4" key={`section_${sectionidx}`}>
               {section.resources.map((resource, resourceIdx) => (
                 <ShowOrEditResource
                   resource={resource}
                   key={`${sectionidx}_${resourceIdx}`}
-                  handleEditResource={handleEditResource}
-                  inSection={true}
+                  handleEditResource={handleEditResourceToBackend}
+                  sectionId={section.sectionId}
                 />
               ))}
             </div>

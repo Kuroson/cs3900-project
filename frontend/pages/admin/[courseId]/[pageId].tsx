@@ -43,7 +43,7 @@ export type ResourcesType = {
   resourceId: string;
   title: string;
   description?: string;
-  type: string;
+  fileType?: string;
   linkToResource?: string;
 };
 export type SectionsType = {

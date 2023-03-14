@@ -5,40 +5,38 @@ import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import EditIcon from "@mui/icons-material/Edit";
 import { Button, IconButton, TextField } from "@mui/material";
 import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
-import { EditPosition } from "components/AdminSectionPage/ShowOrEditPage";
-
-// export type resources = {
-//   resourceId: string;
-//   title: string;
-//   description?: string;
-//   type: string;
-//   linkToResource: string;
-// };
+import { Feature } from "components/AdminSectionPage/ShowOrEditPage";
 
 const ShowOrEditResource: React.FC<{
   resource: ResourcesType;
-  handleEditResource: (newResource: ResourcesType, position?: EditPosition) => void;
-  inSection: boolean;
-}> = ({ resource, handleEditResource, inSection }) => {
+  handleEditResource: (newResource: ResourcesType, feature: Feature, sectionId?: string) => void;
+  sectionId?: string;
+}> = ({ resource, handleEditResource, sectionId }) => {
   const [editResource, setEditResource] = useState(false);
   const [title, setTitle] = useState(resource.title);
   const [description, setDescription] = useState(resource.description);
 
   const handleEditClick = () => {
-    // finish edit - click tick
+    // click tick
     if (editResource) {
-      // no linkToResource for put api
       const newResource: ResourcesType = {
         resourceId: resource.resourceId,
         title: title,
         description: description,
-        type: resource.type, // todo
+        fileType: resource.fileType, //todo: new file
+        linkToResource: resource.linkToResource, //todo: new
       };
-      // show the changes in not edit mode
-      handleEditResource(newResource);
+      if (sectionId === null) {
+        // finish edit outside resource
+        handleEditResource(newResource, Feature.EditResourceOut);
+      } else {
+        // edit resource inside section
+        handleEditResource(newResource, Feature.EditSectionResource, sectionId);
+      }
       // TODO: call upload file api here if file changes
       console.log("if file changed, call api here");
     }
+
     setEditResource((prev) => !prev);
   };
 
@@ -65,7 +63,7 @@ const ShowOrEditResource: React.FC<{
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          {resource.type ? (
+          {resource.fileType != null ? (
             <div>TODO: show resource</div>
           ) : (
             <Button
