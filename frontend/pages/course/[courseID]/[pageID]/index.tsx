@@ -3,12 +3,12 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import GridViewIcon from "@mui/icons-material/GridView";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, SideNavbar } from "components";
 import { Routes } from "components/Layout/SideNavBar";
-import { PROCESS_BACKEND_URL, apiGet } from "util/api";
+import { PROCESS_BACKEND_URL, apiGet, apiUploadFile } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
 
@@ -41,7 +41,7 @@ export type resources = {
   resourceId: string;
   title: string;
   description?: string;
-  type: string;
+  fileType: string;
   linkToResource: string;
 };
 export type sections = {
@@ -76,6 +76,38 @@ const page: pageInfo = {
   sections: [],
 };
 
+const ResourcesDisplay = ({ resources }: { resources: Array<resources> }): JSX.Element => {
+  return (
+    <>
+      {resources.map((resource) => {
+        return (
+          <div key={resource.resourceId} style={{ marginBottom: "30px" }}>
+            <Typography variant="h6" fontWeight="400">
+              {resource.title}
+            </Typography>
+            {resource.description && <div>{resource.description}</div>}
+            {resource.linkToResource && (
+              <div>
+                {resource.fileType.includes("image") ? (
+                  // <div>IS AN IMAGE</div>
+                  <div>
+                    <img src={resource.linkToResource} />
+                  </div>
+                ) : (
+                  // <div>ISN"T AN IMAGE</div>
+                  <Button variant="contained" href={resource.linkToResource}>
+                    Download File
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
 const SectionPage = ({
   firstName,
   lastName,
@@ -87,6 +119,7 @@ const SectionPage = ({
 }: PageProps): JSX.Element => {
   const [courseInfo, setCourseInfo] = useState(course);
   const [pageInfo, setPageInfo] = useState(page);
+  const [file, setFile] = useState<File | null>(null);
   const authUser = useAuthUser();
   const router = useRouter();
   const courseRoutes: Routes[] = [
@@ -118,9 +151,6 @@ const SectionPage = ({
 
       if (data === null) throw new Error("This shouldn't have happened");
 
-      console.log("Course Info");
-      console.log(data); // TODO: remove
-
       setCourseInfo(data);
     };
 
@@ -139,6 +169,7 @@ const SectionPage = ({
 
       console.log("Page Info");
       console.log(data); // TODO: remove
+      console.log(await authUser.getIdToken());
 
       setPageInfo(data);
     };
@@ -171,6 +202,31 @@ const SectionPage = ({
           <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between">
             <span className="ml-4">{pageInfo.title}</span>
           </h1>
+
+          {/* First list out all the base resources */}
+          <ResourcesDisplay resources={pageInfo.resources} />
+
+          {/* Then list out all the sections */}
+          {pageInfo.sections.map((section) => {
+            return (
+              <div>
+                <div
+                  className="w-full flex py-2 flex-col"
+                  style={{
+                    backgroundColor: "lightGray",
+                    margin: "10px",
+                    padding: "10px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <Typography variant="h5" fontWeight="600">
+                    {section.title}
+                  </Typography>
+                  <ResourcesDisplay resources={section.resources} />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </ContentContainer>
     </>
