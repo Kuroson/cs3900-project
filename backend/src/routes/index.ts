@@ -8,6 +8,7 @@ import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
 import { getCourseController } from "./course/getCourse.route";
 import { getCoursesController } from "./course/getCourses.route";
+import { getStudentsController } from "./course/getStudents.route";
 import { removeStudentsController } from "./course/removeStudents.route";
 import { updateCourseController } from "./course/updateCourse.route";
 import { exampleController } from "./example.route";
@@ -43,6 +44,7 @@ indexRouter.get("/course/:courseCode", getCourseController);
 indexRouter.put("/course/:courseCode", updateCourseController);
 indexRouter.put("/course/students/add", addStudentsController);
 indexRouter.put("/course/students/remove", removeStudentsController);
+//indexRouter.get("/course/students/:courseCode", getStudentsController)
 
 // Page routes
 indexRouter.post("/page/:courseId", createPageController);
