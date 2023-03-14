@@ -100,31 +100,40 @@ const ShowOrEditPage: React.FC<{
     console.log(dataToBackend);
   }, [dataToBackend]);
 
-  // edit each resource outside of sections
-  const handleEditResourceToBackend = (
-    resource: ResourcesType,
-    feature: Feature,
-    sectionId?: string,
-  ) => {
+  // edit and remove each resource outside and inside of sections
+  const handleEditResource = (resource: ResourcesType, feature: Feature, sectionId?: string) => {
     // change materials showing on the page
     setNewMaterials((prev) => {
       // const copy = pageDataToBackend(prev);
       const copy = { ...prev };
-      if (feature === Feature.EditResourceOut) {
-        // edit outside resource
+      if (feature === Feature.EditResourceOut || feature === Feature.RemoveResourceOut) {
         const oldResourceIndex = copy.resources.findIndex(
           (re) => re.resourceId === resource.resourceId,
         );
-        copy.resources.splice(oldResourceIndex, 1, resource);
-      } else if (feature === Feature.EditSectionResource) {
+        if (feature === Feature.EditResourceOut) {
+          // edit outside resource
+          copy.resources.splice(oldResourceIndex, 1, resource);
+        } else {
+          // remove outside resource
+          copy.resources.splice(oldResourceIndex, 1);
+        }
+      } else if (
+        feature === Feature.EditSectionResource ||
+        feature === Feature.RemoveSectionResource
+      ) {
         // edit section resource
         const sectionIndex = copy.sections.findIndex((se) => se.sectionId === sectionId);
         const section = copy.sections[sectionIndex];
         const oldResourceIndex = section.resources.findIndex(
           (re) => re.resourceId === resource.resourceId,
         );
-        section.resources.splice(oldResourceIndex, 1, resource);
-        copy.sections[sectionIndex] = section;
+        if (feature === Feature.EditSectionResource) {
+          section.resources.splice(oldResourceIndex, 1, resource);
+          copy.sections[sectionIndex] = section;
+        } else {
+          section.resources.splice(oldResourceIndex, 1);
+          copy.sections[sectionIndex] = section;
+        }
       }
 
       // remove fileType and linkToResource
@@ -133,7 +142,7 @@ const ShowOrEditPage: React.FC<{
     });
   };
 
-  const handleEditTitleToBackend = (newTitle: string, sectionId: string) => {
+  const handleEditTitle = (newTitle: string, sectionId: string) => {
     // change materials showing on the page
     setNewMaterials((prev) => {
       // change section title
@@ -154,7 +163,7 @@ const ShowOrEditPage: React.FC<{
           <ShowOrEditResource
             resource={resource}
             key={`resource_out_${index}`}
-            handleEditResource={handleEditResourceToBackend}
+            handleEditResource={handleEditResource}
           />
         ))}
       </div>
@@ -164,7 +173,7 @@ const ShowOrEditPage: React.FC<{
           <ShowOrEditSectionT
             title={section.title}
             sectionId={section.sectionId}
-            handleEditTitleToBackend={handleEditTitleToBackend}
+            handleEditTitle={handleEditTitle}
           />
           {newMaterials.sections.map((section, sectionidx) => (
             <div className="flex flex-col mb-4" key={`section_${sectionidx}`}>
@@ -172,7 +181,7 @@ const ShowOrEditPage: React.FC<{
                 <ShowOrEditResource
                   resource={resource}
                   key={`${sectionidx}_${resourceIdx}`}
-                  handleEditResource={handleEditResourceToBackend}
+                  handleEditResource={handleEditResource}
                   sectionId={section.sectionId}
                 />
               ))}

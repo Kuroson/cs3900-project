@@ -11,16 +11,16 @@ import { Feature } from "./ShowOrEditPage";
 const ShowOrEditSectionT: React.FC<{
   title: string;
   sectionId: string;
-  handleEditTitleToBackend: (newTitle: string, sectionId: string) => void;
-}> = ({ title, sectionId, handleEditTitleToBackend }) => {
+  handleEditTitle: (newTitle: string, sectionId: string) => void;
+}> = ({ title, sectionId, handleEditTitle }) => {
   const [sectionTitle, setSectionTitle] = useState(title);
   const [editTitle, setEditTitle] = useState(false);
 
-  const handleEditTitle = () => {
+  const handleClickEditTitle = () => {
     // click tick
     if (editTitle && title !== sectionTitle) {
       // change title in whole data
-      handleEditTitleToBackend(sectionTitle, sectionId);
+      handleEditTitle(sectionTitle, sectionId);
     }
 
     setEditTitle((prev) => !prev);
@@ -44,7 +44,12 @@ const ShowOrEditSectionT: React.FC<{
       )}
 
       <div>
-        <IconButton color="primary" aria-label="edit" component="label" onClick={handleEditTitle}>
+        <IconButton
+          color="primary"
+          aria-label="edit"
+          component="label"
+          onClick={handleClickEditTitle}
+        >
           {editTitle ? <DoneIcon /> : <EditIcon />}
         </IconButton>
         <IconButton color="error" aria-label="delete" component="label">

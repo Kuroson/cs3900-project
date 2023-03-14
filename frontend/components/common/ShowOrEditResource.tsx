@@ -9,7 +9,11 @@ import { Feature } from "components/AdminSectionPage/ShowOrEditPage";
 
 const ShowOrEditResource: React.FC<{
   resource: ResourcesType;
-  handleEditResource: (newResource: ResourcesType, feature: Feature, sectionId?: string) => void;
+  handleEditResource: (
+    resource: ResourcesType,
+    feature: Feature,
+    sectionId?: string,
+  ) => void | (() => void);
   sectionId?: string;
 }> = ({ resource, handleEditResource, sectionId }) => {
   const [editResource, setEditResource] = useState(false);
@@ -26,7 +30,7 @@ const ShowOrEditResource: React.FC<{
         fileType: resource.fileType, //todo: new file
         linkToResource: resource.linkToResource, //todo: new
       };
-      if (sectionId === null) {
+      if (sectionId === null || sectionId === undefined) {
         // finish edit outside resource
         handleEditResource(newResource, Feature.EditResourceOut);
       } else {
@@ -38,6 +42,17 @@ const ShowOrEditResource: React.FC<{
     }
 
     setEditResource((prev) => !prev);
+  };
+
+  const handleRemove = () => {
+    if (sectionId === null || sectionId === undefined) {
+      console.log("first");
+      // remove outside resource
+      handleEditResource(resource, Feature.RemoveResourceOut);
+    } else {
+      // remove section resource
+      handleEditResource(resource, Feature.RemoveSectionResource, sectionId);
+    }
   };
 
   return (
@@ -95,7 +110,7 @@ const ShowOrEditResource: React.FC<{
         <IconButton color="primary" aria-label="edit" component="label" onClick={handleEditClick}>
           {editResource ? <DoneIcon /> : <EditIcon />}
         </IconButton>
-        <IconButton color="error" aria-label="delete" component="label">
+        <IconButton color="error" aria-label="delete" component="label" onClick={handleRemove}>
           <DeleteIcon />
         </IconButton>
       </>
