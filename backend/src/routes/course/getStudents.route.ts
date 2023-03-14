@@ -63,18 +63,23 @@ export const getStudents = async (courseId: string) => {
 
     const students = Array<StudentInfo>();
 
-    course.students.forEach(async (student_id) => {
-        const student = await User.findById(student_id);
-        if (student === null) throw new HttpException(500, "Failed to retrieve student");
+    const promiseList = course.students.map((student_id) => {
+        return new Promise<void>(async (resolve, reject): Promise<void> => {
+            const student = await User.findById(student_id);
+            if (student === null) throw new HttpException(500, "Failed to retrieve student");
 
-        const studentInfo = {
-            email: student.email,
-            first_name: student.first_name,
-            last_name: student.last_name,
-        };
+            const studentInfo = {
+                email: student.email,
+                first_name: student.first_name,
+                last_name: student.last_name,
+            };
 
-        students.push(studentInfo);
+            students.push(studentInfo);
+            return resolve();
+        });
     });
+
+    await Promise.all(promiseList);
 
     return {
         code: course.code,

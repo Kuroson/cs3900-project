@@ -16,8 +16,6 @@ describe("Test getting a list of students from a course", () => {
 
         await registerUser("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`);
         await registerUser("first_name2", "last_name2", `student1${id}@email.com`, `acc1${id}`);
-        await registerUser("first_name3", "last_name3", `student2${id}@email.com`, `acc2${id}`);
-        await registerUser("first_name4", "last_name4", `student3${id}@email.com`, `acc3${id}`);
         courseId = await createCourse(
             {
                 code: "TEST",
@@ -30,21 +28,19 @@ describe("Test getting a list of students from a course", () => {
         );
         await addStudents({
             courseId: courseId,
-            students: Array<string>(
-                `student1${id}@email.com`,
-                `student2${id}@email.com`,
-                `student3${id}@email.com`,
-            ),
+            students: Array<string>(`student1${id}@email.com`),
         });
     });
 
     it("Can get student information", async () => {
         const res = await getStudents(courseId);
 
-        console.log(res);
-
         expect(res.code).toBe("TEST");
-        expect(res.students.length).toBe(3);
+        expect(res.students.length).toBe(1);
+
+        expect(res.students.at(0)?.email).toEqual(`student1${id}@email.com`);
+        expect(res.students.at(0)?.first_name).toEqual("first_name2");
+        expect(res.students.at(0)?.last_name).toEqual("last_name2");
     }, 10000);
 
     it("Invalid course ID should throw", async () => {

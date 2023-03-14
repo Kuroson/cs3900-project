@@ -6,7 +6,7 @@ import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
 import { logger } from "@/utils/logger";
 import { v4 as uuidv4 } from "uuid";
-import initialiseMongoose from "../testUtil";
+import initialiseMongoose, { stringifyOutput } from "../testUtil";
 
 describe("Test adding a student", () => {
     const id = uuidv4();
@@ -79,7 +79,12 @@ describe("Test adding a student", () => {
         const student2 = await User.findOne({ email: `student2${id}@email.com` });
         const student3 = await User.findOne({ email: `student3${id}@email.com` });
 
-        expect(myCourse?.students).toEqual([student1?._id, student2?._id, student3?._id]);
+        const ourOutput = myCourse?.students.map((x) => stringifyOutput(x)) ?? []; // Parse each student id to string
+
+        expect(ourOutput.length).toBe(3);
+        expect(ourOutput).toContain(stringifyOutput(student1?._id));
+        expect(ourOutput).toContain(stringifyOutput(student2?._id));
+        expect(ourOutput).toContain(stringifyOutput(student3?._id));
         expect(student1?.enrolments).toEqual([myCourse?._id]);
         expect(student2?.enrolments).toEqual([myCourse?._id]);
         expect(student3?.enrolments).toEqual([myCourse?._id]);
