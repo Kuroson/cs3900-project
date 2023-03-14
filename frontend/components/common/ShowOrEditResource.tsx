@@ -15,7 +15,7 @@ const ShowOrEditResource: React.FC<{
     resource: ResourcesType,
     feature: Feature,
     sectionId?: string,
-  ) => string | (() => string);
+  ) => Promise<void> | (() => void);
   sectionId?: string;
 }> = ({ resource, handleEditResource, sectionId }) => {
   const authUser = useAuthUser();
@@ -54,8 +54,8 @@ const ShowOrEditResource: React.FC<{
         resourceId: resource.resourceId,
         title: title,
         description: description,
-        fileType: resource.fileType, //todo: new file
-        linkToResource: resource.linkToResource, //todo: new
+        fileType: resource.fileType, //todo: new file, currently is old file
+        linkToResource: resource.linkToResource, //todo: new, currently is old
       };
       let resourceId = "";
       if (sectionId === null || sectionId === undefined) {
