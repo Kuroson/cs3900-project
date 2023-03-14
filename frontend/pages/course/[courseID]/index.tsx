@@ -39,7 +39,7 @@ const StudentCoursePage = ({
       <SideNavbar
         firstName={userDetails.firstName}
         lastName={userDetails.lastName}
-        role={getRoleName(userDetails.role)}
+        role={getRoleName(1)} // userDetails.role)} // TODO: CHANGE BACK LATER
         avatarURL={userDetails.avatar}
         list={courseRoutes}
         showDashboardRoute

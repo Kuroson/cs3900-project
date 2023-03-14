@@ -88,10 +88,12 @@ const NavBar = ({
   routes,
   isCoursePage,
   courseId,
+  role,
 }: {
   routes: Routes[];
   isCoursePage: boolean;
   courseId?: string;
+  role?: string;
 }): JSX.Element => {
   const authUser = useAuthUser();
   const [open, setOpen] = useState(false);
@@ -173,7 +175,7 @@ const NavBar = ({
         );
       })}
       {/* TODO: check if user is admin as well */}
-      {isCoursePage && (
+      {isCoursePage && role === "Instructor" && (
         <Button variant="outlined" onClick={handleOpen}>
           Add New Page
         </Button>
@@ -258,6 +260,7 @@ export default function SideNavbar({
     name: "Dashboard",
     route: "/",
     Icon: <HomeIcon fontSize="large" color="primary" />,
+    hasLine: true,
   };
 
   const routesList: Routes[] = [
@@ -297,7 +300,12 @@ export default function SideNavbar({
                 avatarURL={avatarURL}
               />
             )}
-            <NavBar routes={routesList} isCoursePage={isCoursePage ?? false} courseId={courseId} />
+            <NavBar
+              routes={routesList}
+              isCoursePage={isCoursePage ?? false}
+              courseId={courseId}
+              role={role}
+            />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}
