@@ -7,6 +7,7 @@ import { Button } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, SideNavbar } from "components";
+import ShowOrEditMaterials from "components/AdminSectionPage/ShowOrEditMaterials";
 import { Routes } from "components/Layout/SideNavBar";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
@@ -37,27 +38,28 @@ type courseInfo = {
 };
 type coursesInfoPayload = courseInfo;
 
-export type resources = {
+export type ResourcesType = {
   resourceId: string;
   title: string;
   description?: string;
   type: string;
   linkToResource: string;
 };
-export type sections = {
+export type SectionsType = {
   sectionId: string;
   title: string;
-  resources: resources[];
+  resources: ResourcesType[];
 };
 
-export type pageInfo = {
+export type PageType = {
   title: string;
   courseId: string;
   pageId: string;
-  resources: resources[];
-  sections: sections[];
+  resources: ResourcesType[];
+  sections: SectionsType[];
 };
-type pageInfoPayload = pageInfo;
+
+type pageInfoPayload = PageType;
 
 const course: courseInfo = {
   code: "",
@@ -66,14 +68,6 @@ const course: courseInfo = {
   session: "",
   icon: "",
   pages: [],
-};
-
-const page: pageInfo = {
-  title: "Week1",
-  courseId: "1",
-  pageId: "1",
-  resources: [],
-  sections: [],
 };
 
 const SectionPage = ({
@@ -86,7 +80,14 @@ const SectionPage = ({
   pageId,
 }: PageProps): JSX.Element => {
   const [courseInfo, setCourseInfo] = useState(course);
-  const [pageInfo, setPageInfo] = useState(page);
+  const [pageInfo, setPageInfo] = useState<PageType>({
+    title: "",
+    courseId: "",
+    pageId: "",
+    resources: [],
+    sections: [],
+  });
+  const [edit, setEdit] = useState(false);
   const authUser = useAuthUser();
   const router = useRouter();
   const courseRoutes: Routes[] = [
@@ -110,6 +111,7 @@ const SectionPage = ({
 
   // Fetch all the course information
   useEffect(() => {
+    setEdit(false);
     const fetchCourseInfo = async () => {
       const [data, err] = await apiGet<any, coursesInfoPayload>(
         `${PROCESS_BACKEND_URL}/course/${courseId}`,
@@ -147,6 +149,17 @@ const SectionPage = ({
   }, [authUser, courseId, pageId]);
   // fetch all the section
 
+  const handleDeletePage = () => {
+    // call delete api here
+    router.push(`/admin/${courseId}`);
+  };
+
+  const handleSave = (newPages: PageType) => {
+    // call api to save edited resources
+    setPageInfo(newPages);
+    setEdit(false);
+  };
+
   return (
     <>
       <Head>
@@ -168,9 +181,38 @@ const SectionPage = ({
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between">
-            <span className="ml-4">{pageInfo.title}</span>
-            <Button>Edit</Button>
+            <div className="flex items-center gap-4">
+              <span className="ml-4">{pageInfo.title}</span>
+              {edit && (
+                <span className="bg-[#26a69a] p-1 rounded-[20px] font-bold text-white text-xs">
+                  Edit Mode
+                </span>
+              )}
+            </div>
+            <div>
+              <Button color="error" onClick={handleDeletePage}>
+                Delete
+              </Button>
+              {!edit && <Button onClick={() => setEdit((prev) => !prev)}>Edit</Button>}
+            </div>
           </h1>
+          {edit ? (
+            <ShowOrEditMaterials
+              pageInfo={pageInfo}
+              handleSave={handleSave}
+              handleCloseEdit={() => setEdit((prev) => !prev)}
+              editing={true}
+            />
+          ) : (
+            <ShowOrEditMaterials
+              pageInfo={pageInfo}
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              handleSave={() => {}}
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              handleCloseEdit={() => {}}
+              editing={false}
+            />
+          )}
         </div>
       </ContentContainer>
     </>
