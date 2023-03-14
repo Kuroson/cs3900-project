@@ -4,10 +4,12 @@ import { registerUser } from "@/routes/auth/register.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test adding a student", () => {
-    const id = Date.now();
+    const id = uuidv4();
+
     let courseId: string;
 
     beforeAll(async () => {
