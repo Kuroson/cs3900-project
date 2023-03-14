@@ -4,11 +4,11 @@ import { TextField } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
-import CourseTile from "components/CourseTile";
 import { Routes } from "components/Layout/SideNavBar";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName, getCourseURL } from "util/util";
+import CourseCard from "components/common/CourseCard";
 
 initAuth(); // SSR maybe, i think...
 
@@ -24,6 +24,15 @@ type EnrolmentsPayload = Nullable<{
   coursesEnrolled: Array<any>;
 }>;
 
+export type Course = {
+  courseId: string;
+  code: string;
+  title: string;
+  description: string;
+  session: string;
+  icon: string;
+};
+
 type HomePageProps = UserDetailsPayload & EnrolmentsPayload;
 
 const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }: HomePageProps): JSX.Element => {
@@ -31,11 +40,10 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
   console.log(firstName, lastName, email, role, avatar, coursesEnrolled);
 
   const studentRoutes: Routes[] = [
-    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
-    { name: "COMP1511", route: "/COMP1511" },
-    { name: "COMP6080", route: "/COMP6080" },
-    { name: "MTRN2500", route: "/MTRN2500" },
+    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> }
   ];
+
+
   return (
     <>
       <Head>
@@ -63,16 +71,10 @@ const HomePage = ({ firstName, lastName, email, role, avatar, coursesEnrolled }:
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-full justify-left items-left px-[5%]">
-        <div className="column-3">
-          {coursesEnrolled?.map(x => {
-            return <CourseTile 
-              courseName={x.title}
-              courseCode={x.code}
-              courseDescription={x.description}
-              courseURL={getCourseURL(x.code)}/>
-          })}
-        </div>
+        <div className="flex flex-wrap w-full mx-3">
+            {coursesEnrolled?.map((x, index) => {
+              return <CourseCard key={index} course={x} href={`/${x.courseId}`} />
+            })}
         </div>
       </ContentContainer>
       {/* <Footer /> */}

@@ -41,16 +41,14 @@ export const getUserDetails = async (email?: string): Promise<Nullable<ResponseP
 
 export const getStudentEnrolments = async (email?: string): Promise<Nullable<EnrolmentsPayload>> => {
     if (email === undefined) throw new HttpException(401, "Bad token. No email");
-
     logger.info(`Getting student enrolments for ${email}`);
-    //const res = await User.find({ email: "user2@githappens.com" }).exec(); //change this back to email
-    const res = await User.find({ email: email }).exec(); //change this back to email
+    const res = await User.find({ email: email }).exec();
     if (res.length === 0)
         throw new HttpException(400, `Email associated with token doesn't exist: ${email}`);
     const user = res.at(0);
     logger.info("got user");
     var courses = new Array<typeof Course>();
-    if (user?.enrolments !== null) {
+    if (user?.enrolments != null) {
         for (const c of user?.enrolments) {
             logger.info(`start of for loop ${c}`);
             var course = await Course.findOne({ _id: c }).exec();
