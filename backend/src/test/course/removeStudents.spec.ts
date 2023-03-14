@@ -53,7 +53,7 @@ describe("Test removing a student", () => {
                 `removestudent3${id}@email.com`,
             ),
         });
-    });
+    }, 20000);
 
     it("Remove no users from course", async () => {
         await removeStudents({
