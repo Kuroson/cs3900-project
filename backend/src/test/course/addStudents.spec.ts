@@ -54,9 +54,10 @@ describe("Test adding a student", () => {
         const student1 = await User.findOne({ email: `student1${id}@email.com` });
         const student2 = await User.findOne({ email: `student2${id}@email.com` });
 
-        const expected = [student1?._id, student2?._id];
-        expect(myCourse?.students.length).toBe(expected.length);
-        expect(myCourse?.students).toStrictEqual(expected);
+        const ourOutput = myCourse?.students.map((x) => stringifyOutput(x)) ?? []; // Parse each student id to string
+        expect(ourOutput.length).toBe(2);
+        expect(ourOutput).toContain(stringifyOutput(student1?._id));
+        expect(ourOutput).toContain(stringifyOutput(student2?._id));
         expect(student1?.enrolments).toStrictEqual([myCourse?._id]);
         expect(student2?.enrolments).toStrictEqual([myCourse?._id]);
     }, 5000);
