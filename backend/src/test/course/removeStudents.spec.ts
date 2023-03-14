@@ -4,13 +4,9 @@ import { registerUser } from "@/routes/auth/register.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { removeStudents } from "@/routes/course/removeStudents.route";
-<<<<<<< HEAD
-import initialiseMongoose from "../testUtil";
-=======
 import { updateCourse } from "@/routes/course/updateCourse.route";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { stringifyOutput } from "../testUtil";
->>>>>>> bf74c90d004d5109de845e8a2fc894b118011311
 
 describe("Test removing a student", () => {
     const id = uuidv4();

@@ -18,7 +18,7 @@ type ResponsePayload = {
 };
 
 type QueryPayload = {
-    courseCode: string;
+    courseId: string;
 };
 
 export const getStudentsController = async (
@@ -35,7 +35,7 @@ export const getStudentsController = async (
 
         // User has been verified
         // Get course id from url param
-        const ret_data = await getStudents(req.params.courseCode);
+        const ret_data = await getStudents(req.params.courseId);
         logger.info(ret_data);
         return res.status(200).json(ret_data);
     } catch (error) {
@@ -77,7 +77,7 @@ export const getStudents = async (courseId: string) => {
     });
 
     return {
-        code: courseId,
+        code: course.code,
         students: students,
     };
 };
