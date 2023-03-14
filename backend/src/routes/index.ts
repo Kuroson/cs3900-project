@@ -3,10 +3,13 @@ import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
 import { registerController } from "./auth/register.route";
+import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
 import { getCourseController } from "./course/getCourse.route";
 import { getCoursesController } from "./course/getCourses.route";
+import { getStudentsController } from "./course/getStudents.route";
+import { removeStudentsController } from "./course/removeStudents.route";
 import { updateCourseController } from "./course/updateCourse.route";
 import { exampleController } from "./example.route";
 import { downloadFileController } from "./file/downloadFile.route";
@@ -39,6 +42,9 @@ indexRouter.get("/course", getCoursesController);
 indexRouter.get("/course/all", getAllCoursesController);
 indexRouter.get("/course/:courseCode", getCourseController);
 indexRouter.put("/course/:courseCode", updateCourseController);
+indexRouter.put("/course/students/add", addStudentsController);
+indexRouter.put("/course/students/remove", removeStudentsController);
+indexRouter.get("/course/students/:courseId", getStudentsController);
 
 // Page routes
 indexRouter.post("/page/:courseId", createPageController);

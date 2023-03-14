@@ -56,6 +56,33 @@ export const apiPost = async <T extends Record<string, unknown>, U extends Recor
   }
 };
 
+export const apiPut = async <T extends Record<string, unknown>, U extends Record<string, unknown>>(
+  url: string,
+  token: string | null,
+  payload: T,
+): Promise<[U | null, null | Error | any]> => {
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token ?? "bad"}`,
+      },
+      body: JSON.stringify({ ...payload }),
+    });
+    if (!res.ok) {
+      const status = res.status;
+      const data = await res.json();
+      return [null, new HttpException(status, data.message)];
+    }
+    const data = await res.json();
+    return [data, null];
+  } catch (err) {
+    console.error("Error with posting to example");
+    return [null, err];
+  }
+};
+
 export const apiGet = async <T extends Record<string, string>, U extends Record<string, unknown>>(
   url: string,
   token: string | null,
