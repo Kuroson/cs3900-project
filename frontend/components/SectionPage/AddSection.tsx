@@ -61,7 +61,7 @@ const AddSection: React.FC<{
         startIcon={<AddIcon />}
         onClick={() => setShowForm(true)}
       >
-        Add Section
+        Section
       </Button>
     </div>
   );

@@ -223,6 +223,7 @@ const ShowOrEditPage: React.FC<{
           <AddResource handleAddResource={handleAddResource} sectionId={section.sectionId} />
         </div>
       ))}
+      <Divider />
       <AddSection handleAddResource={handleAddResource} />
     </>
   );

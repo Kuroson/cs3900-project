@@ -100,7 +100,7 @@ const AddResource: React.FC<{
         startIcon={<AddIcon />}
         onClick={() => setShowForm(true)}
       >
-        Add Resource
+        Resource
       </Button>
     </div>
   );
