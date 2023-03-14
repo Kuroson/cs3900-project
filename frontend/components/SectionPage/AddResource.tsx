@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
-import { ResourcesType } from "pages/admin/[courseId]/[pageId]";
+import { ResourcesType, SectionsType } from "pages/admin/[courseId]/[pageId]";
 import { Feature } from "./ShowOrEditPage";
 
 const AddResource: React.FC<{
-  handleAddResource: (newResource: ResourcesType, feature: Feature) => void;
-}> = ({ handleAddResource }) => {
+  handleAddResource: (
+    feature: Feature,
+    newResource?: ResourcesType,
+    newSection?: SectionsType,
+    sectionId?: string,
+  ) => void;
+  sectionId?: string;
+}> = ({ handleAddResource, sectionId }) => {
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -27,8 +33,17 @@ const AddResource: React.FC<{
       fileType: "", //todo: new file
       linkToResource: file, //todo: new
     };
-    // send above to api and api return id then add it to newMaterials
-    // call add resource api
+    // TODO: send above to api and api return id then add it to newMaterials
+    const fakeId = "50";
+    newResource.resourceId = fakeId;
+    if (sectionId !== null || sectionId !== undefined) {
+      // add outside resource
+      handleAddResource(Feature.AddSectionResource, newResource, undefined, sectionId);
+    } else {
+      // add outside resource
+      handleAddResource(Feature.AddResourceOut, newResource);
+    }
+
     clearForm();
   };
 

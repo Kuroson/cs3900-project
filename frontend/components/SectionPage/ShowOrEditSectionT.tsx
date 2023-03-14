@@ -30,7 +30,7 @@ const ShowOrEditSectionT: React.FC<{
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 mt-3">
       {editTitle ? (
         <TextField
           id="Section Title"

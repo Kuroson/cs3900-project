@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@mui/material";
-import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
+import { Button, Divider } from "@mui/material";
+import { PageType, ResourcesType, SectionsType } from "pages/admin/[courseId]/[pageId]";
 import ShowOrEditResource from "components/common/ShowOrEditResource";
 import AddResource from "./AddResource";
+import AddSection from "./AddSection";
 import ShowOrEditSectionT from "./ShowOrEditSectionT";
 
 export enum Feature {
@@ -80,6 +81,7 @@ const ShowOrEditPage: React.FC<{
 }> = ({ pageInfo }) => {
   // TODO: replace to pageInfo
   const [newMaterials, setNewMaterials] = useState<PageType>(defaultM);
+  console.log("🚀 ~ file: ShowOrEditPage.tsx:84 ~ newMaterials:", newMaterials);
   const [dataToBackend, setDateToBackend] = useState<PageType>();
 
   // remove linkToResource and fileType
@@ -151,7 +153,7 @@ const ShowOrEditPage: React.FC<{
   const handleEditTitle = (newTitle: string, sectionId: string, feature: Feature) => {
     // change materials showing on the page
     setNewMaterials((prev) => {
-      const copy = prev;
+      const copy = { ...prev };
       const getIdx = copy.sections.findIndex((se) => se.sectionId === sectionId);
       if (feature === Feature.EditSectionTitle) {
         // change section title
@@ -167,12 +169,31 @@ const ShowOrEditPage: React.FC<{
     });
   };
 
-  const handleAddResource = (newResource: ResourcesType, feature: Feature) => {};
+  const handleAddResource = (
+    feature: Feature,
+    newResource?: ResourcesType,
+    newSection?: SectionsType,
+    sectionId?: string,
+  ) => {
+    setNewMaterials((prev) => {
+      console.log(newSection);
+      const copy = { ...prev };
+      if (feature === Feature.AddResourceOut && newResource) {
+        copy.resources.push(newResource);
+      } else if (feature === Feature.AddSection && newSection) {
+        copy.sections.push(newSection);
+      } else if (feature === Feature.AddSectionResource && newResource) {
+        const idx = copy.sections.findIndex((se) => se.sectionId === sectionId);
+        copy.sections[idx].resources.push(newResource);
+      }
+      return copy;
+    });
+  };
 
   return (
     <>
       {/* Resources outside*/}
-      <div className="flex flex-col mb-4">
+      <div className="flex flex-col mb-7">
         {newMaterials.resources.map((resource, index) => (
           <ShowOrEditResource
             resource={resource}
@@ -180,30 +201,29 @@ const ShowOrEditPage: React.FC<{
             handleEditResource={handleEditResource}
           />
         ))}
+        <AddResource handleAddResource={handleAddResource} />
       </div>
-      <AddResource handleAddResource={handleAddResource} />
       {/* Sections */}
       {newMaterials.sections.map((section, index) => (
-        <div key={`section_${index}`}>
+        <div key={`section_${index}`} className="mb-7">
+          <Divider />
           <ShowOrEditSectionT
             title={section.title}
-            sectionId={section.sectionId}
+            sectionId={section.sectionId ?? ""}
             handleEditTitle={handleEditTitle}
           />
-          {newMaterials.sections.map((section, sectionidx) => (
-            <div className="flex flex-col mb-4" key={`section_${sectionidx}`}>
-              {section.resources.map((resource, resourceIdx) => (
-                <ShowOrEditResource
-                  resource={resource}
-                  key={`${sectionidx}_${resourceIdx}`}
-                  handleEditResource={handleEditResource}
-                  sectionId={section.sectionId}
-                />
-              ))}
-            </div>
+          {section.resources.map((resource, resourceIdx) => (
+            <ShowOrEditResource
+              resource={resource}
+              key={`${index}_${resourceIdx}`}
+              handleEditResource={handleEditResource}
+              sectionId={section.sectionId}
+            />
           ))}
+          <AddResource handleAddResource={handleAddResource} sectionId={section.sectionId} />
         </div>
       ))}
+      <AddSection handleAddResource={handleAddResource} />
     </>
   );
 };
