@@ -10,7 +10,7 @@ import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "nex
 import { ContentContainer, SideNavbar } from "components";
 import { Routes } from "components/Layout/SideNavBar";
 import ShowOrEditPage from "components/SectionPage/ShowOrEditPage";
-import { PROCESS_BACKEND_URL, apiGet } from "util/api";
+import { PROCESS_BACKEND_URL, apiDelete, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
 
@@ -148,8 +148,17 @@ const SectionPage = ({
   }, [authUser, courseId, pageId]);
   // fetch all the section
 
-  const handleDeletePage = () => {
-    // call delete api here
+  const handleDeletePage = async () => {
+    const [data, err] = await apiDelete<any, coursesInfoPayload>(
+      `${PROCESS_BACKEND_URL}/page/${courseId}`,
+      await authUser.getIdToken(),
+      { courseId: courseId, pageId: pageId },
+    );
+
+    if (err !== null) {
+      console.error(err);
+    }
+
     router.push(`/admin/${courseId}`);
   };
 

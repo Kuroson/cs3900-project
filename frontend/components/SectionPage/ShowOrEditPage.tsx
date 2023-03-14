@@ -81,7 +81,6 @@ const ShowOrEditPage: React.FC<{
 }> = ({ pageInfo }) => {
   // TODO: replace to pageInfo
   const [newMaterials, setNewMaterials] = useState<PageType>(defaultM);
-  console.log("🚀 ~ file: ShowOrEditPage.tsx:84 ~ newMaterials:", newMaterials);
   const [dataToBackend, setDateToBackend] = useState<PageType>();
 
   // remove linkToResource and fileType
