@@ -41,8 +41,8 @@ indexRouter.get("/course", getCoursesController);
 indexRouter.get("/course/all", getAllCoursesController);
 indexRouter.get("/course/:courseCode", getCourseController);
 indexRouter.put("/course/:courseCode", updateCourseController);
-indexRouter.put("/course/addStudents", addStudentsController);
-indexRouter.put("/course/removeStudents", removeStudentsController);
+indexRouter.put("/course/students/add", addStudentsController);
+indexRouter.put("/course/students/remove", removeStudentsController);
 
 // Page routes
 indexRouter.post("/page/:courseId", createPageController);

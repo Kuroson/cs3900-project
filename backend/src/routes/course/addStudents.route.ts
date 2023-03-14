@@ -21,6 +21,7 @@ export const addStudentsController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
 ) => {
+    logger.info("Steph code")
     try {
         if (req.headers.authorization === undefined)
             throw new HttpException(405, "No authorization header found");
