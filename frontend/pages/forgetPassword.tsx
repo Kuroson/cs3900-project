@@ -7,7 +7,7 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { GetStaticProps } from "next";
 import { AuthAction, withAuthUser } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
-import { PROCESS_BACKEND_URL } from "util/api";
+import { PROCESS_BACKEND_URL, PROCESS_FRONTEND_URL } from "util/api";
 import { isValidEmail } from "util/authVerficiation";
 
 type ForgetPasswordPageProps = {
@@ -105,7 +105,7 @@ const ForgetPasswordPage = (): JSX.Element => {
 
 export const getStaticProps: GetStaticProps<ForgetPasswordPageProps> = async () => {
   return {
-    props: { BACKEND_URL: PROCESS_BACKEND_URL },
+    props: { BACKEND_URL: PROCESS_FRONTEND_URL },
   };
 };
 
