@@ -16,6 +16,7 @@ describe("Test adding a student", () => {
         await registerUser("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`);
         await registerUser("first_name2", "last_name2", `student1${id}@email.com`, `acc1${id}`);
         await registerUser("first_name3", "last_name3", `student2${id}@email.com`, `acc2${id}`);
+        await registerUser("first_name4", "last_name4", `student3${id}@email.com`, `acc3${id}`);
         courseId = await createCourse(
             {
                 code: "TEST",
@@ -37,7 +38,7 @@ describe("Test adding a student", () => {
         const myCourse = await Course.findById(courseId);
 
         expect(myCourse?.students).toEqual([]);
-    }, 1000);
+    }, 2000);
 
     it("Add students to course", async () => {
         await addStudents({
@@ -46,11 +47,25 @@ describe("Test adding a student", () => {
         });
 
         const myCourse = await Course.findById(courseId);
+        const student1 = await User.findOne({ email: `student1${id}@email.com` });
+        const student2 = await User.findOne({ email: `student2${id}@email.com` });
 
-        console.log(myCourse);
+        expect(myCourse?.students).toEqual([student1?._id, student2?._id]);
+    }, 2000);
 
-        expect(myCourse?.students).toEqual([`student2${id}@email.com`, `student2${id}@email.com`]);
-    }, 1000);
+    it("Add invalid student to course", async () => {
+        expect(await addStudents({
+            courseId: courseId,
+            students: Array<string>(`fakeStudent@email.com`, `student3${id}@email.com`),
+        })).toEqual([`fakeStudent@email.com`])
+
+        const myCourse = await Course.findById(courseId);
+        const student1 = await User.findOne({ email: `student1${id}@email.com` });
+        const student2 = await User.findOne({ email: `student2${id}@email.com` });
+        const student3 = await User.findOne({ email: `student3${id}@email.com` });
+
+        expect(myCourse?.students).toEqual([student1?._id, student2?._id, student3?._id]);
+    }, 2000);
 
     afterAll(async () => {
         // Clean up
@@ -58,5 +73,6 @@ describe("Test adding a student", () => {
         await User.deleteOne({ firebase_uid: `acc${id}` }).exec();
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await User.deleteOne({ firebase_uid: `acc2${id}` }).exec();
+        await User.deleteOne({ firebase_uid: `acc3${id}` }).exec();
     });
 });

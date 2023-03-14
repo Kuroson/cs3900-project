@@ -69,16 +69,21 @@ export const addStudents = async (queryBody: QueryPayload) => {
     const course = await Course.findById(courseId);
     if (course === null) throw new HttpException(400, "Failed to retrieve course");
 
-    students.forEach(async (studentemail) => {
-        const user = await User.findOne({ email: studentemail });
+    const promiseList = students.map((studentemail) => {
+        return new Promise<void>(async (resolve, reject): Promise<void> => {
+            const user = await User.findOne({ email: studentemail });
 
-        if (user !== null) {
-            course.students.addToSet(user._id);
-            console.log(course.students);
-        } else {
-            invalidStudentEmails.push(studentemail);
-        }
+            if (user !== null) {
+                course.students.addToSet(user._id);
+            } else {
+                invalidStudentEmails.push(studentemail);
+            }
+            return resolve();
+        });
     });
+
+    await Promise.all(promiseList);
+
 
     await course.save().catch((err) => {
         throw new HttpException(500, "Failed to update course");
