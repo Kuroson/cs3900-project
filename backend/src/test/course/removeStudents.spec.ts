@@ -31,7 +31,7 @@ describe("Test removing a student", () => {
         await addStudents({
             courseId: courseId,
             students: Array<string>(
-                `fakeStudent@email.com`,
+                "fakeStudent@email.com",
                 `student1${id}@email.com`,
                 `student2${id}@email.com`,
                 `student3${id}@email.com`,
@@ -61,13 +61,13 @@ describe("Test removing a student", () => {
             await removeStudents({
                 courseId: courseId,
                 students: Array<string>(
-                    `fakeStudent@email.com`,
+                    "fakeStudent@email.com",
                     `student1${id}@email.com`,
                     `student2${id}@email.com`,
                     `student3${id}@email.com`,
                 ),
             }),
-        ).toEqual([`fakeStudent@email.com`]);
+        ).toEqual(["fakeStudent@email.com"]);
 
         const myCourse = await Course.findById(courseId);
         const student1 = await User.findOne({ email: `student1${id}@email.com` });
