@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
+import { useAuthUser } from "next-firebase-auth";
 import { ResourcesType, SectionsType } from "pages/admin/[courseId]/[pageId]";
-import { PROCESS_BACKEND_URL, apiPost } from "util/api";
+import { PROCESS_BACKEND_URL, apiPost, apiUploadFile } from "util/api";
 import ShowFile from "./ShowFile";
 import { Feature } from "./ShowOrEditPage";
 
@@ -16,37 +17,52 @@ const AddResource: React.FC<{
   ) => void;
   sectionId?: string;
 }> = ({ handleAddResource, sectionId }) => {
+  const authUser = useAuthUser();
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   const clearForm = () => {
     setShowForm(false);
     setTitle("");
     setDescription("");
-    setFile("");
+    setFile(null);
   };
 
-  const addNewResource = () => {
+  const addNewResource = async () => {
     const newResource: ResourcesType = {
       title: title,
       description: description,
-      fileType: "", //todo: new file
-      linkToResource: file, //todo: new
+      // fileType: "", //todo: new file
+      // linkToResource: file, //todo: new
     };
     // TODO: Upload file API
+    let resourceId = "";
     console.log("New Resource => if has file then call api here");
     if (sectionId !== null && sectionId !== undefined) {
       // add outside resource
-      handleAddResource(Feature.AddSectionResource, newResource, undefined, sectionId);
+      await handleAddResource(Feature.AddSectionResource, newResource, undefined, sectionId);
     } else {
       // add outside resource
-      console.log("first");
-      handleAddResource(Feature.AddResourceOut, newResource);
+      await handleAddResource(Feature.AddResourceOut, newResource);
+    }
+
+    // Upload file if added
+    // TODO: Not have this need to refresh page to show resource
+    if (file !== null && newResource.resourceId) {
+      apiUploadFile(`${PROCESS_BACKEND_URL}/file/upload`, await authUser.getIdToken(), file, {
+        resourceId: newResource.resourceId,
+      });
     }
 
     clearForm();
+  };
+
+  const handleAddFile = (e: any) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
   };
 
   return (
@@ -72,10 +88,7 @@ const AddResource: React.FC<{
             onChange={(e) => setDescription(e.target.value)}
           />
           <div className="flex justify-between max-w-[1000px]">
-            {file != "" ? (
-              // TODO: show resource
-              <ShowFile />
-            ) : (
+            <span>
               <Button
                 variant="outlined"
                 component="label"
@@ -83,9 +96,14 @@ const AddResource: React.FC<{
                 startIcon={<DriveFolderUploadIcon />}
               >
                 Upload Material
-                <input hidden accept="image/*" multiple type="file" />
+                <input hidden type="file" onChange={handleAddFile} />
               </Button>
-            )}
+              {file !== null && (
+                <p>
+                  <i>{file.name}</i>
+                </p>
+              )}
+            </span>
             <div className="flex gap-2">
               <Button variant="outlined" color="error" onClick={clearForm}>
                 Cancel

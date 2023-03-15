@@ -24,29 +24,6 @@ const ShowOrEditResource: React.FC<{
   const [description, setDescription] = useState(resource.description);
   const [file, setFile] = useState<File | null>(null);
 
-  // const uploadResource = async () => {
-  //   const [res, err] = await apiPost<CreatePagePayload, NewPagePayload>(
-  //     `${PROCESS_BACKEND_URL}/page/${courseId}`,
-  //     await authUser.getIdToken(),
-  //     {
-  //       courseId,
-  //       title: name,
-  //     },
-  //   );
-
-  //   if (err !== null) {
-  //     console.error(err);
-  //     if (err instanceof HttpException) {
-  //       toast.error(err.message);
-  //     } else {
-  //       toast.error(err);
-  //     }
-  //   }
-
-  //   if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
-  //   return res;
-  // };
-
   const handleEditClick = async () => {
     // click tick
     if (editResource) {
@@ -65,13 +42,13 @@ const ShowOrEditResource: React.FC<{
         // edit resource inside section
         handleEditResource(newResource, Feature.EditSectionResource, sectionId);
       }
-      // TODO: call upload file api here if file changes
-      console.log("if file changed, call api here");
 
       // Upload file if uploaded/changed
-      if (file !== null) {
+      // TODO: Not have this need to refresh page to show resource
+      // TODO: call backend for resource info and update resource here...
+      if (file !== null && resource.resourceId !== undefined) {
         apiUploadFile(`${PROCESS_BACKEND_URL}/file/upload`, await authUser.getIdToken(), file, {
-          resourceId,
+          resourceId: resource.resourceId,
         });
       }
     }
@@ -136,7 +113,6 @@ const ShowOrEditResource: React.FC<{
             startIcon={<DriveFolderUploadIcon />}
           >
             Upload New Material
-            {/* <input hidden accept="image/*" multiple type="file" /> */}
             <input hidden type="file" onChange={handleAddFile} />
           </Button>
         </div>

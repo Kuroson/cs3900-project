@@ -56,8 +56,8 @@ indexRouter.get("/page/:courseId", getPagesController);
 indexRouter.delete("/page/:courseId", deletePageController);
 indexRouter.put("/page/:courseId/:pageId", updatePageController);
 indexRouter.get("/page/:courseId/:pageId", getPageController);
-indexRouter.post("/page/:courseId/:pageId/resource", addResourceController);
-indexRouter.post("/page/:courseId/:pageId/section", addSectionController);
+indexRouter.put("/page/:courseId/:pageId/resource", addResourceController);
+indexRouter.put("/page/:courseId/:pageId/section", addSectionController);
 indexRouter.delete("/page/:courseId/:pageId/resource", deleteResourceController);
 indexRouter.delete("/page/:courseId/:pageId/section", deleteSectionController);
 
