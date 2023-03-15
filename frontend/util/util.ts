@@ -45,3 +45,7 @@ export type CoursePage = {
   resources: CourseResource[];
   pageId: string;
 };
+
+export const getCourseURL = (courseCode: string | null): string => {
+  return "/" + courseCode;
+};

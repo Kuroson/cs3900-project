@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import Head from "next/head";
 import HomeIcon from "@mui/icons-material/Home";
 import { TextField } from "@mui/material";
@@ -6,9 +7,10 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
 import { Routes } from "components/Layout/SideNavBar";
+import CourseCard from "components/common/CourseCard";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
-import { CourseGETResponse, Nullable, getRoleName } from "util/util";
+import { CourseGETResponse, Nullable, getCourseURL, getRoleName } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -18,7 +20,17 @@ export type UserDetailsPayload = Nullable<{
   email: string;
   role: number;
   avatar: string;
+  coursesEnrolled: Array<any>;
 }>;
+
+export type Course = {
+  courseId: string;
+  code: string;
+  title: string;
+  description: string;
+  session: string;
+  icon: string;
+};
 
 type HomePageProps = {
   userDetails: UserDetailsPayload;
@@ -29,6 +41,23 @@ const HomePage = ({ userDetails, courseRoutes }: HomePageProps): JSX.Element => 
   const authUser = useAuthUser();
   console.log(authUser);
   console.log(userDetails);
+
+  const studentRoutes: Routes[] = [
+    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
+  ];
+
+  const allCourses = userDetails.coursesEnrolled;
+  const [showedCourses, setShowedCourses] = useState(userDetails.coursesEnrolled);
+  const [code, setCode] = useState("");
+
+  // search course id
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (allCourses != null) {
+        setShowedCourses(allCourses.filter((course) => course.code.includes(code)));
+      }
+    }
+  };
 
   return (
     <>
@@ -42,21 +71,30 @@ const HomePage = ({ userDetails, courseRoutes }: HomePageProps): JSX.Element => 
         lastName={userDetails.lastName}
         role={getRoleName(userDetails.role)}
         avatarURL={userDetails.avatar}
-        list={courseRoutes}
-        showDashboardRoute
+        list={studentRoutes} //Only shows dashboard as per discussion
       />
       <ContentContainer>
-        <div className="flex flex-col w-full justify-center items-center px-[5%]">
+        <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
             <span className="ml-4">
               Welcome, {`${userDetails.firstName} ${userDetails.lastName}`}
             </span>
           </h1>
-          <div className="w-full flex flex-col">
-            <h2 className="text-2xl w-full ml-4 m-0">Course Overview</h2>
-            <div className="ml-4 pt-5">
-              <TextField id="outlined-search" label="Search field" type="search" />
-            </div>
+          <div className="flex justify-between mx-6">
+            <h2>Course Overview</h2>
+            <TextField
+              id="search course"
+              label="Search Course Code"
+              variant="outlined"
+              sx={{ width: "300px" }}
+              onKeyDown={handleKeyDown}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCode(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap w-full mx-3">
+            {showedCourses?.map((x, index) => {
+              return <CourseCard key={index} course={x} href={`/course/${x._id}`} />;
+            })}
           </div>
         </div>
       </ContentContainer>
@@ -87,7 +125,32 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
     // handle error
     return {
       props: {
-        userDetails: { email: null, firstName: null, lastName: null, role: null, avatar: null },
+        userDetails: {
+          email: null,
+          firstName: null,
+          lastName: null,
+          role: null,
+          avatar: null,
+          coursesEnrolled: null,
+        },
+        courseRoutes: [],
+      },
+    };
+  }
+
+  if (errUserData !== null || errCourseData !== null) {
+    console.error(errUserData ?? errCourseData);
+    // handle error
+    return {
+      props: {
+        userDetails: {
+          email: null,
+          firstName: null,
+          lastName: null,
+          role: null,
+          avatar: null,
+          coursesEnrolled: null,
+        },
         courseRoutes: [],
       },
     };

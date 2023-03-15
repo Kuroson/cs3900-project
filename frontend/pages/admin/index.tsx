@@ -22,9 +22,12 @@ type UserDetailsPayload = Nullable<{
   email: string;
   role: number;
   avatar: string;
+  coursesEnrolled: Array<any>;
 }>;
 
-type HomePageProps = UserDetailsPayload;
+type HomePageProps = {
+  userDetails: UserDetailsPayload;
+};
 
 export type CourseInfo = {
   courseId: string;
@@ -55,42 +58,43 @@ export const adminRoutes: Routes[] = [
   },
 ];
 
-const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
+const Admin = ({ userDetails }: HomePageProps): JSX.Element => {
   // const allCourses = courses;
-  const [showedCourses, setShowedCourses] = useState<coursesInfo>([]);
-  const [code, setCode] = useState("");
-  const [allCourses, setAllCourses] = useState<coursesInfo>([]);
   const authUser = useAuthUser();
   const router = useRouter();
-
+  const allCourses = userDetails.coursesEnrolled;
+  const [showedCourses, setShowedCourses] = useState(userDetails.coursesEnrolled);
+  const [code, setCode] = useState("");
   // search course id
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      setShowedCourses(allCourses.filter((course) => course.code.includes(code)));
+      if (allCourses != null) {
+        setShowedCourses(allCourses.filter((course) => course.code.includes(code)));
+      }
     }
   };
 
   // Fetch all this admin's courses
-  useEffect(() => {
-    const fetchData = async () => {
-      const [data, err] = await apiGet<any, coursesInfoPayload>(
-        `${PROCESS_BACKEND_URL}/course`,
-        await authUser.getIdToken(),
-        {},
-      );
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const [data, err] = await apiGet<any, coursesInfoPayload>(
+  //       `${PROCESS_BACKEND_URL}/course`,
+  //       await authUser.getIdToken(),
+  //       {},
+  //     );
 
-      if (err !== null) {
-        console.error(err);
-      }
+  //     if (err !== null) {
+  //       console.error(err);
+  //     }
 
-      if (data === null) throw new Error("This shouldn't have happened");
+  //     if (data === null) throw new Error("This shouldn't have happened");
 
-      setAllCourses(data.courses);
-      setShowedCourses(data.courses);
-    };
+  //     setAllCourses(data.courses);
+  //     setShowedCourses(data.courses);
+  //   };
 
-    fetchData().catch(console.error);
-  }, []);
+  //   fetchData().catch(console.error);
+  // }, []);
 
   return (
     <>
@@ -100,16 +104,18 @@ const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX
         <link rel="icon" href="/favicon.png" />
       </Head>
       <SideNavbar
-        firstName={firstName}
-        lastName={lastName}
-        role={getRoleName(role)}
-        avatarURL={avatar}
+        firstName={userDetails.firstName}
+        lastName={userDetails.lastName}
+        role={getRoleName(userDetails.role)}
+        avatarURL={userDetails.avatar}
         list={adminRoutes}
       />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
-            <span className="ml-4">Welcome, {`${firstName} ${lastName}`}</span>
+            <span className="ml-4">
+              Welcome, {`${userDetails.firstName} ${userDetails.lastName}`}
+            </span>
           </h1>
           {/* admin dashboard */}
           <div className="flex justify-between mx-6">
@@ -124,8 +130,8 @@ const Admin = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX
             />
           </div>
           <div className="flex flex-wrap w-full mx-3">
-            {showedCourses.map((course, index) => (
-              <CourseCard key={index} course={course} href={`/admin/${course.courseId}`} />
+            {showedCourses?.map((course, index) => (
+              <CourseCard key={index} course={course} href={`/admin/${course.code}`} />
             ))}
             <div
               className="flex flex-col rounded-lg shadow-md p-5 my-2 mx-5 w-[370px] h-[264px] cursor-pointer hover:shadow-lg items-center justify-center"
@@ -155,11 +161,14 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
     // handle error
     return {
       props: {
-        email: null,
-        firstName: null,
-        lastName: null,
-        role: null,
-        avatar: null,
+        userDetails: {
+          email: null,
+          firstName: null,
+          lastName: null,
+          role: null,
+          avatar: null,
+          coursesEnrolled: null,
+        },
       },
     };
   }
@@ -167,7 +176,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
   if (data === null) throw new Error("This shouldn't have happened");
   return {
     props: {
-      ...data,
+      userDetails: data,
     },
   };
 });
