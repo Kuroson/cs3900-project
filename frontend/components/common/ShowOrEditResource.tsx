@@ -9,11 +9,6 @@ import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
 import { Feature } from "components/SectionPage/ShowOrEditPage";
 import { PROCESS_BACKEND_URL, apiGet, apiPost, apiUploadFile } from "util/api";
 
-type FileDetailsPayload = {
-  linkToFile: string;
-  fileType: string;
-};
-
 const ShowOrEditResource: React.FC<{
   resource: ResourcesType;
   handleEditResource: (
@@ -30,6 +25,11 @@ const ShowOrEditResource: React.FC<{
   const [linkToResource, setLinkToResource] = useState(resource.linkToResource);
   const [fileType, setFileType] = useState(resource.fileType);
   const [file, setFile] = useState<File | null>(null);
+
+  type FileDetailsPayload = {
+    linkToFile: string;
+    fileType: string;
+  };
 
   const updateFileInfo = async (resourceId: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,8 +72,6 @@ const ShowOrEditResource: React.FC<{
       }
 
       // Upload file if uploaded/changed
-      // TODO: Not have this need to refresh page to show resource
-      // TODO: call backend for resource info and update resource here...
       if (file !== null && resource.resourceId !== undefined) {
         await apiUploadFile(
           `${PROCESS_BACKEND_URL}/file/upload`,
@@ -86,9 +84,6 @@ const ShowOrEditResource: React.FC<{
 
         // Call backend to get new resource
         const newFileInfo = await updateFileInfo(resource.resourceId);
-        console.log("newFileInfo");
-        console.log(newFileInfo);
-
         if (newFileInfo.linkToFile !== null && newFileInfo.fileType !== null) {
           resource.linkToResource = newFileInfo.linkToFile;
           resource.fileType = newFileInfo.fileType;

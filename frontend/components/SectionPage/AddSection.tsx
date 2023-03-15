@@ -35,8 +35,8 @@ const AddSection: React.FC<{
       {showForm && (
         <div className="my-4 flex flex-col gap-2">
           <TextField
-            id="Resource Title"
-            label="Resource Title"
+            id="Section Title"
+            label="Section Title"
             variant="outlined"
             sx={{ maxWidth: "500px" }}
             value={title}

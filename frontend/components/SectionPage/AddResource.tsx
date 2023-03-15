@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
 import { useAuthUser } from "next-firebase-auth";
 import { ResourcesType, SectionsType } from "pages/admin/[courseId]/[pageId]";
-import { PROCESS_BACKEND_URL, apiPost, apiUploadFile } from "util/api";
+import { PROCESS_BACKEND_URL, apiGet, apiPost, apiUploadFile } from "util/api";
 import ShowFile from "./ShowFile";
 import { Feature } from "./ShowOrEditPage";
 
@@ -18,6 +19,7 @@ const AddResource: React.FC<{
   sectionId?: string;
 }> = ({ handleAddResource, sectionId }) => {
   const authUser = useAuthUser();
+  const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -30,15 +32,38 @@ const AddResource: React.FC<{
     setFile(null);
   };
 
+  type FileDetailsPayload = {
+    linkToFile: string;
+    fileType: string;
+  };
+
+  const updateFileInfo = async (resourceId: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [data, err] = await apiGet<any, FileDetailsPayload>(
+      `${PROCESS_BACKEND_URL}/file/download/${resourceId}`,
+      await authUser.getIdToken(),
+      {},
+    );
+
+    if (err !== null) {
+      console.error(err);
+      // handle error
+      return {
+        linkToFile: null,
+        fileType: null,
+      };
+    }
+
+    if (data === null) throw new Error("This shouldn't have happened");
+    return data;
+  };
+
   const addNewResource = async () => {
     const newResource: ResourcesType = {
       title: title,
       description: description,
-      // fileType: "", //todo: new file
-      // linkToResource: file, //todo: new
     };
-    // TODO: Upload file API
-    let resourceId = "";
+    // Upload file API
     console.log("New Resource => if has file then call api here");
     if (sectionId !== null && sectionId !== undefined) {
       // add outside resource
@@ -49,11 +74,13 @@ const AddResource: React.FC<{
     }
 
     // Upload file if added
-    // TODO: Not have this need to refresh page to show resource
     if (file !== null && newResource.resourceId) {
       apiUploadFile(`${PROCESS_BACKEND_URL}/file/upload`, await authUser.getIdToken(), file, {
         resourceId: newResource.resourceId,
       });
+
+      // Refresh the page to show the resource
+      router.reload();
     }
 
     clearForm();
