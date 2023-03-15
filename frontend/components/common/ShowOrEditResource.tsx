@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useRouter } from "next/router";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
@@ -19,6 +20,7 @@ const ShowOrEditResource: React.FC<{
   sectionId?: string;
 }> = ({ resource, handleEditResource, sectionId }) => {
   const authUser = useAuthUser();
+  const router = useRouter();
   const [editResource, setEditResource] = useState(false);
   const [title, setTitle] = useState(resource.title);
   const [description, setDescription] = useState(resource.description);
@@ -103,6 +105,8 @@ const ShowOrEditResource: React.FC<{
       // remove section resource
       handleEditResource(resource, Feature.RemoveSectionResource, sectionId);
     }
+
+    router.reload();
   };
 
   const handleAddFile = (e: any) => {
@@ -167,7 +171,7 @@ const ShowOrEditResource: React.FC<{
         <div className="my-3">
           <h4 className="m-0">{title}</h4>
           <p className="">{description ?? ""}</p>
-          {linkToResource != "" && (
+          {linkToResource != "" && linkToResource !== undefined && (
             <div className="rounded-lg shadow-md px-5 py-3 w-fit">
               {/* read file linktoResource */}
               {fileType?.includes("image") ? (
