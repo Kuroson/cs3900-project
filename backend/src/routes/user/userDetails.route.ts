@@ -47,7 +47,7 @@ export const getStudentEnrolments = async (email?: string): Promise<Nullable<Enr
         throw new HttpException(400, `Email associated with token doesn't exist: ${email}`);
     const user = res.at(0);
     logger.info("got user");
-    var courses = new Array<typeof Course>();
+    var courses = new Array<any>();
     if (user?.enrolments != null) {
         for (const c of user?.enrolments) {
             logger.info(`start of for loop ${c}`);
