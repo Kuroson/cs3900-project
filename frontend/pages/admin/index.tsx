@@ -62,8 +62,10 @@ const Admin = ({ userDetails }: HomePageProps): JSX.Element => {
   // const allCourses = courses;
   const authUser = useAuthUser();
   const router = useRouter();
-  const allCourses = userDetails.coursesEnrolled;
-  const [showedCourses, setShowedCourses] = useState(userDetails.coursesEnrolled);
+
+  // const allCourses = userDetails.coursesEnrolled;
+  const [allCourses, setAllCourses] = useState<coursesInfo>([]);
+  const [showedCourses, setShowedCourses] = useState<coursesInfo>([]);
   const [code, setCode] = useState("");
   // search course id
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -75,26 +77,26 @@ const Admin = ({ userDetails }: HomePageProps): JSX.Element => {
   };
 
   // Fetch all this admin's courses
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const [data, err] = await apiGet<any, coursesInfoPayload>(
-  //       `${PROCESS_BACKEND_URL}/course`,
-  //       await authUser.getIdToken(),
-  //       {},
-  //     );
+  useEffect(() => {
+    const fetchData = async () => {
+      const [data, err] = await apiGet<any, coursesInfoPayload>(
+        `${PROCESS_BACKEND_URL}/course`,
+        await authUser.getIdToken(),
+        {},
+      );
 
-  //     if (err !== null) {
-  //       console.error(err);
-  //     }
+      if (err !== null) {
+        console.error(err);
+      }
 
-  //     if (data === null) throw new Error("This shouldn't have happened");
+      if (data === null) throw new Error("This shouldn't have happened");
 
-  //     setAllCourses(data.courses);
-  //     setShowedCourses(data.courses);
-  //   };
+      setAllCourses(data.courses);
+      setShowedCourses(data.courses);
+    };
 
-  //   fetchData().catch(console.error);
-  // }, []);
+    fetchData().catch(console.error);
+  }, []);
 
   return (
     <>
@@ -131,7 +133,7 @@ const Admin = ({ userDetails }: HomePageProps): JSX.Element => {
           </div>
           <div className="flex flex-wrap w-full mx-3">
             {showedCourses?.map((course, index) => (
-              <CourseCard key={index} course={course} href={`/admin/${course.code}`} />
+              <CourseCard key={index} course={course} href={`/admin/${course.courseId}`} />
             ))}
             <div
               className="flex flex-col rounded-lg shadow-md p-5 my-2 mx-5 w-[370px] h-[264px] cursor-pointer hover:shadow-lg items-center justify-center"
