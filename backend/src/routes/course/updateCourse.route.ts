@@ -4,6 +4,7 @@ import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
     courseId: string;
@@ -12,11 +13,11 @@ type ResponsePayload = {
 
 type QueryPayload = {
     courseId: string;
-    code: string;
-    title: string;
-    session: string;
-    description: string;
-    icon: string;
+    code?: string;
+    title?: string;
+    session?: string;
+    description?: string;
+    icon?: string;
 };
 
 export const updateCourseController = async (
@@ -45,7 +46,7 @@ export const updateCourseController = async (
             // Body has been verified
             const queryBody = req.body;
 
-            const courseId = await updateCourse(queryBody);
+            const courseId = await updateCourse(queryBody, authUser.uid);
 
             logger.info(`courseId: ${courseId}`);
             return res.status(200).json({ courseId });
@@ -78,17 +79,35 @@ export const updateCourseController = async (
  * QueryPayload defined above
  * @returns The ID of the course updated
  */
-export const updateCourse = async (queryBody: QueryPayload) => {
+export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
+    if (!(await checkAdmin(firebase_uid))) {
+        throw new HttpException(401, "Must be an admin to get all courses");
+    }
+
     const { courseId, code, title, session, description, icon } = queryBody;
 
     const myCourse = await Course.findById(courseId);
     if (myCourse === null) throw new HttpException(500, "Failed to retrieve course");
 
-    myCourse.code = code;
-    myCourse.title = title;
-    myCourse.session = session;
-    myCourse.description = description;
-    myCourse.icon = icon;
+    if (code !== undefined) {
+        myCourse.code = code;
+    }
+
+    if (title !== undefined) {
+        myCourse.title = title;
+    }
+
+    if (session !== undefined) {
+        myCourse.session = session;
+    }
+
+    if (description !== undefined) {
+        myCourse.description = description;
+    }
+
+    if (icon !== undefined) {
+        myCourse.icon = icon;
+    }
 
     const retCourseId = await myCourse
         .save()
@@ -96,12 +115,8 @@ export const updateCourse = async (queryBody: QueryPayload) => {
             return res._id;
         })
         .catch((err) => {
-            return null;
+            throw new HttpException(500, "Failed to update course");
         });
-
-    if (courseId === null) {
-        throw new HttpException(500, "Failed to update course");
-    }
 
     return retCourseId;
 };

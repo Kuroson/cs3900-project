@@ -56,6 +56,33 @@ export const apiPost = async <T extends Record<string, unknown>, U extends Recor
   }
 };
 
+export const apiPut = async <T extends Record<string, unknown>, U extends Record<string, unknown>>(
+  url: string,
+  token: string | null,
+  payload: T,
+): Promise<[U | null, null | Error | any]> => {
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token ?? "bad"}`,
+      },
+      body: JSON.stringify({ ...payload }),
+    });
+    if (!res.ok) {
+      const status = res.status;
+      const data = await res.json();
+      return [null, new HttpException(status, data.message)];
+    }
+    const data = await res.json();
+    return [data, null];
+  } catch (err) {
+    console.error("Error with posting to example");
+    return [null, err];
+  }
+};
+
 export const apiGet = async <T extends Record<string, string>, U extends Record<string, unknown>>(
   url: string,
   token: string | null,
@@ -125,4 +152,11 @@ export const apiUploadFile = async <
   }
 };
 
+// Link used for NextJS SSR
 export const PROCESS_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080";
+
+// Backend Link used specifically for clients
+export const PROCESS_FRONTEND_URL =
+  process.env.NEXT_PUBLIC_DOCKER !== undefined
+    ? "http://localhost:8080"
+    : process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080";

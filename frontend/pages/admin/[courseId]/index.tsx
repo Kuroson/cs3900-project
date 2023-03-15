@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import GridViewIcon from "@mui/icons-material/GridView";
@@ -33,19 +33,15 @@ type courseInfo = {
   icon: string;
   pages: Array<{ title: string; pageId: string }>;
 };
+type coursesInfoPayload = courseInfo;
 
 const course: courseInfo = {
-  code: "COMP1511",
-  title: "Programming Fundamentals",
-  description:
-    "An introduction to problem-solving via programming, which aims to have students develop proficiency in using a high level programming language. Topics: algorithms, program structures (statements, sequence, selection, iteration, functions), data types (numeric, character), data structures (arrays, tuples, pointers, lists), storage structures (memory, addresses), introduction to analysis of algorithms, testing, code quality, teamwork, and reflective practice. The course includes extensive practical work in labs and programming projects.",
-  session: "23T1",
+  code: "",
+  title: "",
+  description: "",
+  session: "",
   icon: "",
-  pages: [
-    { title: "Assignment", pageId: "3" },
-    { title: "Week1", pageId: "1" },
-    { title: "Week2", pageId: "2" },
-  ],
+  pages: [],
 };
 
 const CoursePage = ({
@@ -56,13 +52,13 @@ const CoursePage = ({
   avatar,
   courseId,
 }: PageProps): JSX.Element => {
-  const [courseInfo, setCourseInfo] = useState(course);
+  const [courseInfo, setCourseInfo] = useState<courseInfo>(course);
   const authUser = useAuthUser();
   const router = useRouter();
   const courseRoutes: Routes[] = [
     {
       name: "Home",
-      route: `/admin/${courseId}/home`,
+      route: `/admin/${courseId}`,
       Icon: <GridViewIcon fontSize="large" color="primary" />,
     },
     {
@@ -78,7 +74,26 @@ const CoursePage = ({
     route: `/admin/${courseId}/${page.pageId}`,
   }));
 
-  // fetch all the section
+  // Fetch all the course information
+  useEffect(() => {
+    const fetchData = async () => {
+      const [data, err] = await apiGet<any, coursesInfoPayload>(
+        `${PROCESS_BACKEND_URL}/course/${courseId}`,
+        await authUser.getIdToken(),
+        {},
+      );
+
+      if (err !== null) {
+        console.error(err);
+      }
+
+      if (data === null) throw new Error("This shouldn't have happened");
+
+      setCourseInfo(data);
+    };
+
+    fetchData().catch(console.error);
+  }, []);
 
   return (
     <>
@@ -96,6 +111,7 @@ const CoursePage = ({
         isCoursePage={true}
         courseCode={courseInfo.code}
         courseIcon={courseInfo.icon}
+        courseId={courseId}
       />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">

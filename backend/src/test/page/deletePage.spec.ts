@@ -28,15 +28,18 @@ describe("Test creating a page", () => {
     });
 
     it("Should remove page from course and database", async () => {
-        const pageId = await createPage({
-            title: "Test page",
-            courseId,
-        });
+        const pageId = await createPage(
+            {
+                title: "Test page",
+                courseId,
+            },
+            `acc${id}`,
+        );
 
         let myCourse = await Course.findById(courseId);
         expect(myCourse?.pages.length).toBe(1);
 
-        await deletePage({ courseId, pageId });
+        await deletePage({ courseId, pageId }, `acc${id}`);
 
         myCourse = await Course.findById(courseId);
         expect(myCourse?.pages.length).toBe(0);

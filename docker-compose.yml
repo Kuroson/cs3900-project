@@ -4,6 +4,7 @@ services:
   frontend:
     environment:
       - NEXT_PUBLIC_BACKEND_URL=http://backend:8080
+      - NEXT_PUBLIC_DOCKER=true
     image: 3900-githappens-frontend
     build: ./frontend
     restart: always

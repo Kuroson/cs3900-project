@@ -7,6 +7,7 @@ import { recallFileUrl, verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { Nullable, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 import { getPage } from "./getPage.route";
 
 type ResponseResourceInfo = {
@@ -67,7 +68,7 @@ export const updatePageController = async (
             // Body has been verified
             const queryBody = req.body;
 
-            const ret_data = await updatePage(queryBody);
+            const ret_data = await updatePage(queryBody, authUser.uid);
 
             logger.info(ret_data);
             return res.status(200).json(ret_data);
@@ -112,7 +113,11 @@ export const updatePageController = async (
  * @returns The state of the page in the same format passed, giving the sectionId
  * and resourceId of each section and page respectively.
  */
-export const updatePage = async (queryBody: QueryPayload) => {
+export const updatePage = async (queryBody: QueryPayload, firebase_uid: string) => {
+    if (!(await checkAdmin(firebase_uid))) {
+        throw new HttpException(401, "Must be an admin to get all courses");
+    }
+
     const { courseId, pageId, resources, sections } = queryBody;
 
     const myPage = await Page.findById(pageId);

@@ -9,6 +9,7 @@ import { checkAdmin } from "../admin/admin.route";
 type CourseInfo = {
     courseId: string;
     title: string;
+    code: string;
     description: string;
     session: string;
     icon: string;
@@ -51,9 +52,9 @@ export const getCoursesController = async (
 };
 
 /**
- * Finds all the courses that the given user has available to them. If this is
- * an admin, it will be all courses. If this is a student, this will be their
- * enrolled courses.
+ * Finds all the courses for a given user. If this is an admin/instructor it
+ * will be the courses they have created. If this is a student, this will be
+ * their enrolled courses.
  *
  * @param firebase_uid ID of the user to get their available courses for
  * @returns List of the user's courses
@@ -64,13 +65,18 @@ export const getCourses = async (firebase_uid: string) => {
     const courseList = new Array<CourseInfo>();
 
     if (isAdmin) {
-        // Get all courses
-        const allCourses = await Course.find();
+        // Get created courses
+        const user = await User.findOne({ firebase_uid });
+        if (user === null) throw new HttpException(500, "Failed to find user");
 
-        for (const course of allCourses) {
-            const courseDetails = {
+        for (const courseId of user.created_courses) {
+            const course = await Course.findById(courseId);
+            if (course === null) continue;
+
+            const courseDetails: CourseInfo = {
                 courseId: course._id,
                 title: course.title,
+                code: course.code,
                 description: "",
                 session: course.session,
                 icon: "",
@@ -96,9 +102,10 @@ export const getCourses = async (firebase_uid: string) => {
             const course = await Course.findById(courseId);
             if (course === null) continue;
 
-            const courseDetails = {
+            const courseDetails: CourseInfo = {
                 courseId: course._id,
                 title: course.title,
+                code: course.code,
                 description: "",
                 session: course.session,
                 icon: "",

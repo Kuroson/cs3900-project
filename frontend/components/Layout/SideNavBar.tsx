@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {
   Avatar,
@@ -15,7 +18,11 @@ import {
   TextField,
 } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
+import { useAuthUser } from "next-firebase-auth";
 import TitleWithIcon from "components/common/TitleWithIcon";
+import { HttpException } from "util/HttpExceptions";
+import { PROCESS_BACKEND_URL, apiGet, apiPost } from "util/api";
+import { Nullable } from "util/util";
 
 type SideNavBarProps = UserDetailsProps & {
   empty?: boolean;
@@ -23,6 +30,8 @@ type SideNavBarProps = UserDetailsProps & {
   isCoursePage?: boolean; // check if the current page is course page
   courseCode?: string;
   courseIcon?: string;
+  showDashboardRoute?: boolean;
+  courseId?: string;
 };
 
 type UserDetailsProps = {
@@ -31,6 +40,15 @@ type UserDetailsProps = {
   role?: string;
   avatarURL?: string | null;
 };
+
+type CreatePagePayload = Nullable<{
+  courseId: string;
+  title: string;
+}>;
+
+type NewPagePayload = Nullable<{
+  pageId: string;
+}>;
 
 export type Routes = {
   name: string;
@@ -69,35 +87,77 @@ const style = {
 const NavBar = ({
   routes,
   isCoursePage,
+  courseId,
+  role,
 }: {
   routes: Routes[];
   isCoursePage: boolean;
+  courseId?: string;
+  role?: string;
 }): JSX.Element => {
+  const authUser = useAuthUser();
   const [open, setOpen] = useState(false);
   const [radio, setRadio] = useState("");
-  const [sectionName, setSectionName] = useState("");
+  const [pageName, setPageName] = useState("");
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const routesNames = routes.map((route) => route.name);
+  const router = useRouter();
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadio((event.target as HTMLInputElement).value);
   };
 
-  const handleAddNewPage = () => {
+  const sendRequest = async (name: string) => {
+    // Send to backend
+    if (courseId === undefined) {
+      throw new Error("CourseId element does not exist"); // Should never get here
+    }
+
+    const [res, err] = await apiPost<CreatePagePayload, NewPagePayload>(
+      `${PROCESS_BACKEND_URL}/page/${courseId}`,
+      await authUser.getIdToken(),
+      {
+        courseId,
+        title: name,
+      },
+    );
+
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
+      }
+    }
+
+    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+    return res;
+  };
+
+  const handleAddNewPage = async () => {
     handleClose();
-    if (radio === "Other Section") {
+
+    // Add to page list
+    if (radio === "Other Page") {
+      const res = await sendRequest(pageName);
+      res.pageId;
+
       routes.push({
-        name: sectionName,
-        route: "/admin",
+        name: pageName,
+        route: `/admin/${courseId}/${res.pageId}`,
       });
     } else {
+      sendRequest(radio);
+
       routes.push({
-        name: radio,
-        route: "/admin",
+        name: pageName,
+        route: `/admin/${courseId}`,
       });
     }
-    setSectionName("");
+
+    setPageName("");
     setRadio("");
   };
 
@@ -106,6 +166,7 @@ const NavBar = ({
       {routes?.map(({ name, route, Icon, hasLine }, index) => {
         return (
           <div key={`nav-index-${index}`} className="w-full flex py-2 flex-col">
+            {/* TODO: href doesn't reload page and therefore doesn't call useEffect */}
             <Link href={route}>
               <TitleWithIcon text={name}>{Icon}</TitleWithIcon>
             </Link>
@@ -114,7 +175,7 @@ const NavBar = ({
         );
       })}
       {/* TODO: check if user is admin as well */}
-      {isCoursePage && (
+      {isCoursePage && role === "Instructor" && (
         <Button variant="outlined" onClick={handleOpen}>
           Add New Page
         </Button>
@@ -149,22 +210,22 @@ const NavBar = ({
               control={<Radio disabled={routesNames.includes("Forum")} />}
               label="Forum"
             />
-            <FormControlLabel value="Other Section" control={<Radio />} label="Other Section" />
+            <FormControlLabel value="Other Page" control={<Radio />} label="Other Page" />
             <TextField
-              disabled={radio !== "Other Section"}
-              id="Section Name"
-              label="Section Name"
+              disabled={radio !== "Other Page"}
+              id="Page Name"
+              label="Page Name"
               variant="standard"
               sx={{ marginLeft: "30px" }}
-              value={sectionName}
-              onChange={(e) => setSectionName(e.target.value)}
+              value={pageName}
+              onChange={(e) => setPageName(e.target.value)}
             />
           </RadioGroup>
           <Button
             variant="contained"
             sx={{ marginTop: "30px" }}
             onClick={handleAddNewPage}
-            disabled={radio === "Other Section" && sectionName === ""}
+            disabled={radio === "Other Page" && pageName === ""}
           >
             Add new page
           </Button>
@@ -184,6 +245,8 @@ export default function SideNavbar({
   isCoursePage,
   courseCode,
   courseIcon,
+  showDashboardRoute,
+  courseId,
 }: SideNavBarProps): JSX.Element {
   if (empty === true) {
     return <div></div>;
@@ -192,6 +255,18 @@ export default function SideNavbar({
   const handleOnClick = async () => {
     signOut(getAuth());
   };
+
+  const defaultDashboardRoute = {
+    name: "Dashboard",
+    route: "/",
+    Icon: <HomeIcon fontSize="large" color="primary" />,
+    hasLine: true,
+  };
+
+  const routesList: Routes[] = [
+    ...(showDashboardRoute === true ? [defaultDashboardRoute] : []),
+    ...list,
+  ];
 
   return (
     <div className="w-full">
@@ -225,7 +300,12 @@ export default function SideNavbar({
                 avatarURL={avatarURL}
               />
             )}
-            <NavBar routes={list} isCoursePage={isCoursePage ?? false} />
+            <NavBar
+              routes={routesList}
+              isCoursePage={isCoursePage ?? false}
+              courseId={courseId}
+              role={role}
+            />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}

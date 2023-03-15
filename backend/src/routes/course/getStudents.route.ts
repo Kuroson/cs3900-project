@@ -1,30 +1,27 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
-import Page from "@/models/page.model";
+import User from "@/models/user.model";
 import { verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { Request, Response } from "express";
 
-type PageInfo = {
-    pageId: string;
-    title: string;
+type StudentInfo = {
+    email: string;
+    first_name: string;
+    last_name: string;
 };
 
 type ResponsePayload = {
     code?: string;
-    title?: string;
-    description?: string;
-    session?: string;
-    icon?: string;
-    pages?: Array<PageInfo>;
+    students?: Array<StudentInfo>;
     message?: string;
 };
 
 type QueryPayload = {
-    courseCode: string;
+    courseId: string;
 };
 
-export const getCourseController = async (
+export const getStudentsController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
 ) => {
@@ -38,8 +35,7 @@ export const getCourseController = async (
 
         // User has been verified
         // Get course id from url param
-        const ret_data = await getCourse(req.params.courseCode);
-
+        const ret_data = await getStudents(req.params.courseId);
         logger.info(ret_data);
         return res.status(200).json(ret_data);
     } catch (error) {
@@ -55,38 +51,38 @@ export const getCourseController = async (
 };
 
 /**
- * Gets the information for a given course including its base info (title, code, etc.) and the pages
- * it contains
+ * Returns all the students in a given course
  *
  * @param courseId The ID of the course to be recalled
- * @returns Base information on the course based on return requirements in ResponsePayload
+ * @returns All students for a given courseId
  */
-export const getCourse = async (courseId: string) => {
-    const myCourse = await Course.findById(courseId);
+export const getStudents = async (courseId: string) => {
+    const course = await Course.findById(courseId);
 
-    if (myCourse === null) throw new HttpException(500, "Course does not exist");
+    if (course === null) throw new HttpException(500, "Course does not exist");
 
-    const courseInfo = {
-        code: myCourse.code,
-        title: myCourse.title,
-        description: myCourse.description,
-        session: myCourse.session,
-        icon: myCourse.icon,
-        pages: new Array<PageInfo>(),
-    };
+    const students = Array<StudentInfo>();
 
-    console.log(myCourse);
+    const promiseList = course.students.map((student_id) => {
+        return new Promise<void>(async (resolve, reject): Promise<void> => {
+            const student = await User.findById(student_id);
+            if (student === null) throw new HttpException(500, "Failed to retrieve student");
 
-    // Get each page info
-    for (const page of myCourse.pages) {
-        const myPage = await Page.findById(page);
-        if (myPage === null) throw new HttpException(500, "Failed to retrieve page");
+            const studentInfo = {
+                email: student.email,
+                first_name: student.first_name,
+                last_name: student.last_name,
+            };
 
-        courseInfo.pages.push({
-            title: myPage.title,
-            pageId: myPage._id,
+            students.push(studentInfo);
+            return resolve();
         });
-    }
+    });
 
-    return courseInfo;
+    await Promise.all(promiseList);
+
+    return {
+        code: course.code,
+        students: students,
+    };
 };

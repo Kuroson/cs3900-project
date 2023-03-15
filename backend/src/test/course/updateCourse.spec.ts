@@ -13,12 +13,15 @@ describe("Test recalling a course", () => {
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
+    });
+
+    beforeEach(async () => {
         courseId = await createCourse(
             {
                 code: "TEST",
                 title: "Test",
                 session: "T1",
-                description: "This is a test course",
+                description: "",
                 icon: "",
             },
             `acc${id}`,
@@ -26,14 +29,17 @@ describe("Test recalling a course", () => {
     });
 
     it("Can update course information", async () => {
-        await updateCourse({
-            courseId: courseId,
-            code: "TEST2",
-            title: "New Title",
-            session: "T2",
-            description: "This is updated info",
-            icon: "",
-        });
+        await updateCourse(
+            {
+                courseId: courseId,
+                code: "TEST2",
+                title: "New Title",
+                session: "T2",
+                description: "This is updated info",
+                icon: "",
+            },
+            `acc${id}`,
+        );
 
         const myCourse = await Course.findById(courseId);
 
@@ -46,20 +52,45 @@ describe("Test recalling a course", () => {
 
     it("Invalid course ID should throw", async () => {
         expect(
-            updateCourse({
-                courseId: "FAKE ID",
-                code: "TEST2",
-                title: "New Title",
-                session: "T2",
-                description: "This is updated info",
-                icon: "",
-            }),
+            updateCourse(
+                {
+                    courseId: "FAKE ID",
+                    code: "TEST2",
+                    title: "New Title",
+                    session: "T2",
+                    description: "This is updated info",
+                    icon: "",
+                },
+                `acc${id}`,
+            ),
         ).rejects.toThrow();
     }, 10000);
 
+    it("If only certain fields supplied, others are left unchanged", async () => {
+        await updateCourse(
+            {
+                courseId: courseId,
+                title: "New Title",
+                description: "This is updated info",
+            },
+            `acc${id}`,
+        );
+
+        const myCourse = await Course.findById(courseId);
+
+        expect(myCourse?.code).toBe("TEST");
+        expect(myCourse?.title).toBe("New Title");
+        expect(myCourse?.session).toBe("T1");
+        expect(myCourse?.description).toBe("This is updated info");
+        expect(myCourse?.icon).toBe("");
+    }, 10000);
+
+    afterEach(async () => {
+        await Course.findByIdAndDelete(courseId);
+    });
+
     afterAll(async () => {
         // Clean up
-        await Course.findByIdAndDelete(courseId);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
     });
 });

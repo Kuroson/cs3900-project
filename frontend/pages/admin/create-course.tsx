@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
@@ -7,7 +8,8 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, SideNavbar } from "components";
 import CourseCard from "components/common/CourseCard";
-import { PROCESS_BACKEND_URL, apiGet } from "util/api";
+import { HttpException } from "util/HttpExceptions";
+import { PROCESS_BACKEND_URL, apiGet, apiPost } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
 import { adminRoutes } from "./index";
@@ -22,12 +24,25 @@ type UserDetailsPayload = Nullable<{
   avatar: string;
 }>;
 
+type CreateCoursePayload = Nullable<{
+  code: string;
+  title: string;
+  description: string;
+  session: string;
+  icon: string;
+}>;
+
 type HomePageProps = UserDetailsPayload;
 
 const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProps): JSX.Element => {
   const authUser = useAuthUser();
   const router = useRouter();
   const [image, setImage] = useState<string>();
+  const [code, setCode] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [session, setSession] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [icon, setIcon] = useState<string>("");
 
   // upload image
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +56,33 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
   };
 
   // create course
-  // const handleCreateCourse = () => {};
+  const handleCreateCourse = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+
+    const [res, err] = await apiPost<CreateCoursePayload, any>(
+      `${PROCESS_BACKEND_URL}/course`,
+      await authUser.getIdToken(),
+      {
+        code,
+        title,
+        session,
+        description,
+        icon,
+      },
+    );
+
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
+      }
+    }
+
+    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+    router.push(`/admin/${res.courseId}`);
+  };
 
   return (
     <>
@@ -63,7 +104,7 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
         </div>
         <form
           className="flex flex-col items-center justify-center gap-6"
-          // onSubmit={handleCreateCourse}
+          onSubmit={handleCreateCourse}
         >
           <Avatar
             alt="Course"
@@ -75,10 +116,32 @@ const CreateCourse = ({ firstName, lastName, email, role, avatar }: HomePageProp
             <input hidden accept="image/*" multiple type="file" onChange={handleImageChange} />
           </Button>
           <div className="flex flex-col gap-6 w-[600px]">
-            <TextField id="Course ID" label="Course Code" variant="outlined" />
-            <TextField id="Title" label="Course Title" variant="outlined" />
-            <TextField id="Session" label="Course Session" variant="outlined" />
-            <TextField id="Description" label="Description" variant="outlined" multiline rows={9} />
+            <TextField
+              id="Course ID"
+              label="Course Code"
+              variant="outlined"
+              onChange={(e) => setCode(e.target.value)}
+            />
+            <TextField
+              id="Title"
+              label="Course Title"
+              variant="outlined"
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <TextField
+              id="Session"
+              label="Course Session"
+              variant="outlined"
+              onChange={(e) => setSession(e.target.value)}
+            />
+            <TextField
+              id="Description"
+              label="Description"
+              variant="outlined"
+              multiline
+              rows={9}
+              onChange={(e) => setDescription(e.target.value)}
+            />
             <Button variant="contained" fullWidth type="submit">
               Create
             </Button>
