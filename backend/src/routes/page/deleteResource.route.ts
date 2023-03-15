@@ -10,7 +10,6 @@ import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
-    resourceId?: string;
     message?: string;
 };
 
@@ -18,12 +17,10 @@ type QueryPayload = {
     courseId: string;
     pageId: string;
     sectionId?: string;
-    resourceId?: string;
-    title: string;
-    description?: string;
+    resourceId: string;
 };
 
-export const addResourceController = async (
+export const deleteResourceController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
 ) => {
@@ -36,21 +33,20 @@ export const addResourceController = async (
         const authUser = await verifyIdTokenValid(token);
 
         // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "title"])) {
+        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "resourceId"])) {
             // Body has been verified
             const queryBody = req.body;
 
-            const resourceId = await addResource(queryBody, authUser.uid);
+            await deleteResource(queryBody, authUser.uid);
 
-            logger.info(`resourceId: ${resourceId}`);
-            return res.status(200).json({ resourceId });
+            return res.status(200).json({});
         } else {
             throw new HttpException(
                 400,
                 `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
                     "courseId",
                     "pageId",
-                    "title",
+                    "resourceId",
                 ])}`,
             );
         }
@@ -73,71 +69,39 @@ export const addResourceController = async (
  * @param queryBody The page information in the format of QueryPayload defined above
  * @returns The ID of the new resource that has been created
  */
-export const addResource = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const deleteResource = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
         throw new HttpException(401, "Must be an admin to add a resource");
     }
 
-    const { courseId, pageId, sectionId, resourceId, title, description } = queryBody;
+    const { courseId, pageId, sectionId, resourceId } = queryBody;
 
-    if (resourceId !== undefined) {
-        const existingResource = await Resource.findById(resourceId).catch((err) => {
-            throw new HttpException(500, "Failed to fetch resource");
-        });
-        if (existingResource === null) throw new HttpException(500, "Failed to fetch resource");
-
-        existingResource.title = title;
-        if (description !== undefined) {
-            existingResource.description = description;
-        }
-
-        await existingResource.save().catch((err) => {
-            throw new HttpException(500, "Failed to update resource");
-        });
-        return;
-    }
-
-    const newResource = new Resource({
-        title,
-    });
-
-    if (description !== undefined) {
-        newResource.description = description;
-    }
-
-    const newResourceId = await newResource
-        .save()
-        .then((res) => {
-            return res._id;
-        })
-        .catch((err) => {
-            throw new HttpException(500, "Failed to save resource");
-        });
+    const existingResource = await Resource.findById(resourceId);
+    if (existingResource === null) throw new HttpException(500, "Failed to fetch resource");
 
     if (sectionId === undefined) {
-        // The resource goes on the base page
+        // Remove from page
         const currPage = await Page.findById(pageId);
-        if (currPage === null) throw new HttpException(500, "Cannot retrieve section");
+        if (currPage === null) throw new HttpException(500, "Failed to fetch page");
 
-        currPage.resources.push(newResourceId);
+        currPage.resources.remove(resourceId);
 
         await currPage.save().catch((err) => {
-            throw new HttpException(500, "Failed to save updated section");
+            throw new HttpException(500, "Failed to remove from page");
         });
     } else {
-        // The resource goes in a section
+        // Remove from section
         const currSection = await Section.findById(sectionId);
-        if (currSection === null) throw new HttpException(500, "Cannot retrieve section");
+        if (currSection === null) throw new HttpException(500, "Failed to fetch section");
 
-        currSection.resources.push(newResourceId);
+        currSection.resources.remove(resourceId);
 
         await currSection.save().catch((err) => {
-            throw new HttpException(500, "Failed to save updated section");
+            throw new HttpException(500, "Failed to remove from section");
         });
     }
 
-    const course = await Course.findById(courseId);
-    if (course === null) throw new HttpException(400, "Course does not exist");
-
-    return newResourceId;
+    await Resource.findByIdAndDelete(resourceId).catch((err) => {
+        throw new HttpException(500, "Failed to delete resource");
+    });
 };

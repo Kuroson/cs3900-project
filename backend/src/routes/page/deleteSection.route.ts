@@ -9,18 +9,16 @@ import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
-    sectionId?: string;
     message?: string;
 };
 
 type QueryPayload = {
     courseId: string;
     pageId: string;
-    sectionId?: string;
-    title: string;
+    sectionId: string;
 };
 
-export const addSectionController = async (
+export const deleteSectionController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
 ) => {
@@ -33,21 +31,20 @@ export const addSectionController = async (
         const authUser = await verifyIdTokenValid(token);
 
         // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "title"])) {
+        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "sectionId"])) {
             // Body has been verified
             const queryBody = req.body;
 
-            const sectionId = await addSection(queryBody, authUser.uid);
+            await deleteSection(queryBody, authUser.uid);
 
-            logger.info(`sectionId: ${sectionId}`);
-            return res.status(200).json({ sectionId });
+            return res.status(200).json({});
         } else {
             throw new HttpException(
                 400,
                 `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
                     "courseId",
                     "pageId",
-                    "title",
+                    "sectionId",
                 ])}`,
             );
         }
@@ -69,51 +66,25 @@ export const addSectionController = async (
  * @param queryBody The section information in the format of QueryPayload defined above
  * @returns The ID of the new section that has been created
  */
-export const addSection = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const deleteSection = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
         throw new HttpException(401, "Must be an admin to add a resource");
     }
 
-    const { courseId, pageId, sectionId, title } = queryBody;
+    const { courseId, pageId, sectionId } = queryBody;
 
-    if (sectionId !== undefined) {
-        const existingSection = await Section.findById(sectionId).catch((err) => {
-            throw new HttpException(500, "Failed to fetch section");
-        });
-        if (existingSection === null) throw new HttpException(500, "Failed to fetch section");
-
-        existingSection.title = title;
-        await existingSection.save().catch((err) => {
-            throw new HttpException(500, "Failed to update section");
-        });
-        return;
-    }
-
-    const newSection = new Section({
-        title,
-    });
-
-    const newSectionId = await newSection
-        .save()
-        .then((res) => {
-            return res._id;
-        })
-        .catch((err) => {
-            throw new HttpException(500, "Failed to create section");
-        });
-
-    // Add to page
+    // Remove from page
     const currPage = await Page.findById(pageId);
-    if (currPage === null) throw new HttpException(500, "Cannot retrieve page");
+    if (currPage === null) throw new HttpException(500, "Failed to fetch page");
 
-    currPage.sections.push(newSectionId);
+    currPage.sections.remove(sectionId);
 
     await currPage.save().catch((err) => {
-        throw new HttpException(500, "Failed to save updated section");
+        throw new HttpException(500, "Failed to remove from page");
     });
 
-    const course = await Course.findById(courseId);
-    if (course === null) throw new HttpException(400, "Course does not exist");
-
-    return newSectionId;
+    // Remove section
+    await Section.findByIdAndDelete(sectionId).catch((err) => {
+        throw new HttpException(500, "Failed to delete section");
+    });
 };

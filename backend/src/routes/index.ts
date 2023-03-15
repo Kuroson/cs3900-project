@@ -19,6 +19,8 @@ import { addResourceController } from "./page/addResource.route";
 import { addSectionController } from "./page/addSection.route";
 import { createPageController } from "./page/createPage.route";
 import { deletePageController } from "./page/deletePage.route";
+import { deleteResourceController } from "./page/deleteResource.route";
+import { deleteSectionController } from "./page/deleteSection.route";
 import { getPageController } from "./page/getPage.route";
 import { getPagesController } from "./page/getPages.route";
 import { updatePageController } from "./page/updatePage.route";
@@ -54,9 +56,11 @@ indexRouter.get("/page/:courseId", getPagesController);
 indexRouter.delete("/page/:courseId", deletePageController);
 indexRouter.put("/page/:courseId/:pageId", updatePageController);
 indexRouter.get("/page/:courseId/:pageId", getPageController);
-indexRouter.post("/page/:courseId/:pageId/resource", addResourceController);
-indexRouter.post("/page/:courseId/:pageId/section", addSectionController);
+indexRouter.put("/page/:courseId/:pageId/resource", addResourceController);
+indexRouter.put("/page/:courseId/:pageId/section", addSectionController);
+indexRouter.delete("/page/:courseId/:pageId/resource", deleteResourceController);
+indexRouter.delete("/page/:courseId/:pageId/section", deleteSectionController);
 
 // File routes
 indexRouter.post("/file/upload", firebaseUpload.single("file"), uploadFileController);
-indexRouter.get("/file/download", downloadFileController);
+indexRouter.get("/file/download/:resourceId", downloadFileController);

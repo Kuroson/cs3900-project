@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 
 type ResponsePayload = {
     linkToFile?: string;
+    fileType?: string;
     message?: string;
 };
 
@@ -27,32 +28,21 @@ export const downloadFileController = async (
         const authUser = await verifyIdTokenValid(token);
 
         // User has been verified
-        if (isValidBody<QueryPayload>(req.query, ["resourceId"])) {
-            // Body has been verified
-            const queryBody = req.query;
-            const { resourceId } = queryBody;
+        const resourceId = req.params.resourceId;
 
-            // Update in database
-            const storedName = await Resource.findById(resourceId)
-                .then((res) => {
-                    if (res === null) throw new HttpException(500, "Cannot find resource");
-                    if (res.stored_name === undefined)
-                        throw new HttpException(400, "Resource not uploaded");
-                    return res.stored_name;
-                })
-                .catch((err) => {
-                    throw new HttpException(500, "Failed to retrieve file");
-                });
+        // Fetch from database
+        const myFile = await Resource.findById(resourceId).catch((err) => {
+            throw new HttpException(500, "Failed to retrieve file");
+        });
+        if (myFile === null) throw new HttpException(500, "Cannot find resource");
 
-            const fileUrl = await recallFileUrl(storedName);
-
-            return res.status(200).json({ linkToFile: fileUrl });
-        } else {
-            throw new HttpException(
-                400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, ["resourceId"])}`,
-            );
+        if (myFile.stored_name === undefined || myFile.stored_name === "") {
+            return res.status(200).json({ linkToFile: "", fileType: "" });
         }
+
+        const fileUrl = await recallFileUrl(myFile.stored_name);
+
+        return res.status(200).json({ linkToFile: fileUrl, fileType: myFile.file_type });
     } catch (error) {
         if (error instanceof HttpException) {
             logger.error(error.getMessage());

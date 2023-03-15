@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import DeleteIcon from "@mui/icons-material/Delete";
 import GridViewIcon from "@mui/icons-material/GridView";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { Button } from "@mui/material";
@@ -8,7 +9,8 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, SideNavbar } from "components";
 import { Routes } from "components/Layout/SideNavBar";
-import { PROCESS_BACKEND_URL, apiGet } from "util/api";
+import ShowOrEditPage from "components/SectionPage/ShowOrEditPage";
+import { PROCESS_BACKEND_URL, apiDelete, apiGet } from "util/api";
 import initAuth from "util/firebase";
 import { Nullable, getRoleName } from "util/util";
 
@@ -37,27 +39,28 @@ type courseInfo = {
 };
 type coursesInfoPayload = courseInfo;
 
-export type resources = {
-  resourceId: string;
+export type ResourcesType = {
+  resourceId?: string;
   title: string;
   description?: string;
-  type: string;
-  linkToResource: string;
+  fileType?: string;
+  linkToResource?: string;
 };
-export type sections = {
-  sectionId: string;
+export type SectionsType = {
+  sectionId?: string;
   title: string;
-  resources: resources[];
+  resources: ResourcesType[];
 };
 
-export type pageInfo = {
-  title: string;
+export type PageType = {
+  title?: string;
   courseId: string;
   pageId: string;
-  resources: resources[];
-  sections: sections[];
+  resources: ResourcesType[];
+  sections: SectionsType[];
 };
-type pageInfoPayload = pageInfo;
+
+type pageInfoPayload = PageType;
 
 const course: courseInfo = {
   code: "",
@@ -66,14 +69,6 @@ const course: courseInfo = {
   session: "",
   icon: "",
   pages: [],
-};
-
-const page: pageInfo = {
-  title: "Week1",
-  courseId: "1",
-  pageId: "1",
-  resources: [],
-  sections: [],
 };
 
 const SectionPage = ({
@@ -86,7 +81,13 @@ const SectionPage = ({
   pageId,
 }: PageProps): JSX.Element => {
   const [courseInfo, setCourseInfo] = useState(course);
-  const [pageInfo, setPageInfo] = useState(page);
+  const [pageInfo, setPageInfo] = useState<PageType>({
+    title: "",
+    courseId: "",
+    pageId: "",
+    resources: [],
+    sections: [],
+  });
   const authUser = useAuthUser();
   const router = useRouter();
   const courseRoutes: Routes[] = [
@@ -147,6 +148,20 @@ const SectionPage = ({
   }, [authUser, courseId, pageId]);
   // fetch all the section
 
+  const handleDeletePage = async () => {
+    const [data, err] = await apiDelete<any, coursesInfoPayload>(
+      `${PROCESS_BACKEND_URL}/page/${courseId}`,
+      await authUser.getIdToken(),
+      { courseId: courseId, pageId: pageId },
+    );
+
+    if (err !== null) {
+      console.error(err);
+    }
+
+    router.push(`/admin/${courseId}`);
+  };
+
   return (
     <>
       <Head>
@@ -168,9 +183,14 @@ const SectionPage = ({
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between">
-            <span className="ml-4">{pageInfo.title}</span>
-            <Button>Edit</Button>
+            <div className="flex items-center gap-4">
+              <span className="ml-4">{pageInfo.title}</span>
+            </div>
+            <Button color="error" onClick={handleDeletePage} startIcon={<DeleteIcon />}>
+              Delete page
+            </Button>
           </h1>
+          <ShowOrEditPage pageInfo={pageInfo} courseId={courseId ?? ""} authUser={authUser} />
         </div>
       </ContentContainer>
     </>
