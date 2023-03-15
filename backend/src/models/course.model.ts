@@ -22,7 +22,7 @@ export interface Course extends Document {
 
 const courseSchema: Schema = new Schema<Course>({
     title: { type: String, required: true },
-    code: { type: String, required: true},
+    code: { type: String, required: true },
     description: { type: String },
     session: { type: String, required: true },
     icon: { type: String },

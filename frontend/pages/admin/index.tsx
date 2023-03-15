@@ -70,7 +70,7 @@ const Admin = ({ userDetails }: HomePageProps): JSX.Element => {
     if (e.key === "Enter") {
       if (allCourses != null) {
         setShowedCourses(allCourses.filter((course) => course.code.includes(code)));
-      }    
+      }
     }
   };
 
@@ -113,7 +113,9 @@ const Admin = ({ userDetails }: HomePageProps): JSX.Element => {
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE]">
-            <span className="ml-4">Welcome, {`${userDetails.firstName} ${userDetails.lastName}`}</span>
+            <span className="ml-4">
+              Welcome, {`${userDetails.firstName} ${userDetails.lastName}`}
+            </span>
           </h1>
           {/* admin dashboard */}
           <div className="flex justify-between mx-6">
@@ -159,7 +161,14 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
     // handle error
     return {
       props: {
-        userDetails: { email: null, firstName: null, lastName: null, role: null, avatar: null, coursesEnrolled: null },
+        userDetails: {
+          email: null,
+          firstName: null,
+          lastName: null,
+          role: null,
+          avatar: null,
+          coursesEnrolled: null,
+        },
       },
     };
   }

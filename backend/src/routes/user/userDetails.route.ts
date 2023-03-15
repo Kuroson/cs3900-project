@@ -1,11 +1,11 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Course from "@/models/course.model";
 import User from "@/models/user.model";
 import { verifyIdToken, verifyIdTokenValid } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { Nullable } from "@/utils/util";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import Course from "@/models/course.model";
 
 type ErrorPayload = {
     message: string;
@@ -21,7 +21,7 @@ type ResponsePayload = {
 
 type EnrolmentsPayload = {
     coursesEnrolled: Array<typeof Course>;
-}
+};
 export const getUserDetails = async (email?: string): Promise<Nullable<ResponsePayload>> => {
     if (email === undefined) throw new HttpException(401, "Bad token. No email");
 
@@ -39,7 +39,9 @@ export const getUserDetails = async (email?: string): Promise<Nullable<ResponseP
     };
 };
 
-export const getStudentEnrolments = async (email?: string): Promise<Nullable<EnrolmentsPayload>> => {
+export const getStudentEnrolments = async (
+    email?: string,
+): Promise<Nullable<EnrolmentsPayload>> => {
     if (email === undefined) throw new HttpException(401, "Bad token. No email");
     logger.info(`Getting student enrolments for ${email}`);
     const res = await User.find({ email: email }).exec();
@@ -61,11 +63,9 @@ export const getStudentEnrolments = async (email?: string): Promise<Nullable<Enr
     } else {
         return {
             coursesEnrolled: null,
-        }
+        };
     }
-    
 };
-
 
 export const userDetailsController = async (
     req: Request,

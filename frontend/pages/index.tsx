@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import Head from "next/head";
 import HomeIcon from "@mui/icons-material/Home";
 import { TextField } from "@mui/material";
@@ -6,11 +7,10 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
 import { Routes } from "components/Layout/SideNavBar";
+import CourseCard from "components/common/CourseCard";
 import { PROCESS_BACKEND_URL, apiGet } from "util/api";
 import initAuth from "util/firebase";
-import { CourseGETResponse, Nullable, getRoleName, getCourseURL } from "util/util";
-import CourseCard from "components/common/CourseCard";
-import { useState } from "react";
+import { CourseGETResponse, Nullable, getCourseURL, getRoleName } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -43,13 +43,13 @@ const HomePage = ({ userDetails, courseRoutes }: HomePageProps): JSX.Element => 
   console.log(userDetails);
 
   const studentRoutes: Routes[] = [
-    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> }
+    { name: "Dashboard", route: "/", Icon: <HomeIcon fontSize="large" color="primary" /> },
   ];
 
   const allCourses = userDetails.coursesEnrolled;
   const [showedCourses, setShowedCourses] = useState(userDetails.coursesEnrolled);
   const [code, setCode] = useState("");
-  
+
   // search course id
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -91,12 +91,12 @@ const HomePage = ({ userDetails, courseRoutes }: HomePageProps): JSX.Element => 
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCode(e.target.value)}
             />
           </div>
-        <div className="flex flex-wrap w-full mx-3">
+          <div className="flex flex-wrap w-full mx-3">
             {showedCourses?.map((x, index) => {
-              return <CourseCard key={index} course={x} href={`/course/${x._id}`} />
+              return <CourseCard key={index} course={x} href={`/course/${x._id}`} />;
             })}
+          </div>
         </div>
-      </div>
       </ContentContainer>
       {/* <Footer /> */}
     </>
@@ -125,7 +125,14 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
     // handle error
     return {
       props: {
-        userDetails: { email: null, firstName: null, lastName: null, role: null, avatar: null, coursesEnrolled: null },
+        userDetails: {
+          email: null,
+          firstName: null,
+          lastName: null,
+          role: null,
+          avatar: null,
+          coursesEnrolled: null,
+        },
         courseRoutes: [],
       },
     };
@@ -136,7 +143,14 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = withAuthUse
     // handle error
     return {
       props: {
-        userDetails: { email: null, firstName: null, lastName: null, role: null, avatar: null, coursesEnrolled: null },
+        userDetails: {
+          email: null,
+          firstName: null,
+          lastName: null,
+          role: null,
+          avatar: null,
+          coursesEnrolled: null,
+        },
         courseRoutes: [],
       },
     };

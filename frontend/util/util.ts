@@ -48,4 +48,4 @@ export type CoursePage = {
 
 export const getCourseURL = (courseCode: string | null): string => {
   return "/" + courseCode;
-}
+};
