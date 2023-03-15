@@ -280,7 +280,7 @@ export default function SideNavbar({
             {isCoursePage ?? false ? (
               <div className="flex flex-col items-center justify-center gap-2 my-2">
                 <Link href="/admin" className="mr-8">
-                  <TitleWithIcon text="Dashborad">
+                  <TitleWithIcon text="Dashboard">
                     <ArrowBackIosIcon />
                   </TitleWithIcon>
                 </Link>
