@@ -49,11 +49,11 @@ export const getStudentEnrolments = async (
         throw new HttpException(400, `Email associated with token doesn't exist: ${email}`);
     const user = res.at(0);
     logger.info("got user");
-    var courses = new Array<any>();
+    const courses = new Array<any>();
     if (user?.enrolments != null) {
         for (const c of user?.enrolments) {
             logger.info(`start of for loop ${c}`);
-            var course = await Course.findOne({ _id: c }).exec();
+            const course = await Course.findOne({ _id: c }).exec();
             courses.push(course);
             logger.info(`Course is ${course}`);
         }
