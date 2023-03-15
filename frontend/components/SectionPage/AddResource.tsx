@@ -75,7 +75,7 @@ const AddResource: React.FC<{
 
     // Upload file if added
     if (file !== null && newResource.resourceId) {
-      apiUploadFile(`${PROCESS_BACKEND_URL}/file/upload`, await authUser.getIdToken(), file, {
+      await apiUploadFile(`${PROCESS_BACKEND_URL}/file/upload`, await authUser.getIdToken(), file, {
         resourceId: newResource.resourceId,
       });
 
