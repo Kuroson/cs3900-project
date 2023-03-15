@@ -93,7 +93,7 @@ const HomePage = ({ userDetails, courseRoutes }: HomePageProps): JSX.Element => 
           </div>
         <div className="flex flex-wrap w-full mx-3">
             {showedCourses?.map((x, index) => {
-              return <CourseCard key={index} course={x} href={`/course/${x.code}`} />
+              return <CourseCard key={index} course={x} href={`/course/${x._id}`} />
             })}
         </div>
       </div>
