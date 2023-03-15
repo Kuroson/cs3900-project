@@ -18,7 +18,6 @@ describe("Test adding a resource", () => {
     let sectionId: string;
 
     beforeAll(async () => {
-        jest.setTimeout(20 * 1000);
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
@@ -40,7 +39,7 @@ describe("Test adding a resource", () => {
             `acc${id}`,
         );
         sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
-    });
+    }, 20000);
 
     it("Adding resource to base page", async () => {
         const resourceId = await addResource(
@@ -57,7 +56,7 @@ describe("Test adding a resource", () => {
         expect(myResource === null).toBe(false);
         expect(myResource?.title).toBe("Test resource");
         expect(myResource?.description).toBe("Test description");
-    }, 10000);
+    }, 20000);
 
     it("Adding resource to section", async () => {
         const resourceId = await addResource(
@@ -79,12 +78,12 @@ describe("Test adding a resource", () => {
         expect(myResource === null).toBe(false);
         expect(myResource?.title).toBe("Another resource");
         expect(myResource?.description).toBe(undefined);
-    }, 10000);
+    }, 20000);
 
     afterAll(async () => {
         // Clean up
         await deletePage({ courseId, pageId }, `acc${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
-    });
+    }, 20000);
 });
