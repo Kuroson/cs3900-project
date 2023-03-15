@@ -62,7 +62,6 @@ const ShowOrEditResource: React.FC<{
         fileType: resource.fileType, //todo: new file, currently is old file
         linkToResource: resource.linkToResource, //todo: new, currently is old
       };
-      let resourceId = "";
       if (sectionId === null || sectionId === undefined) {
         // finish edit outside resource
         handleEditResource(newResource, Feature.EditResourceOut);
