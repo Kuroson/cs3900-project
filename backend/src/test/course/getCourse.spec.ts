@@ -23,7 +23,7 @@ describe("Test recalling a course", () => {
             },
             `acc${id}`,
         );
-    });
+    }, 20000);
 
     it("Can recall course information", async () => {
         const myCourse = await getCourse(courseId);

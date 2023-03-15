@@ -51,7 +51,7 @@ describe("Test checking if user has access to a course", () => {
         await myUser.save().catch(() => {
             throw new Error("Failed to save updated user for test");
         });
-    });
+    }, 20000);
 
     it("Admin should have access", async () => {
         const canAccess = await checkAccess(`acc1${id}`, courseId);

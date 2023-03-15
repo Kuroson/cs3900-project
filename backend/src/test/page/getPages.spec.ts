@@ -25,7 +25,7 @@ describe("Test geting course pages", () => {
             },
             `acc${id}`,
         );
-    });
+    }, 20000);
 
     it("Should retrieve page after added", async () => {
         const pageId = await createPage(

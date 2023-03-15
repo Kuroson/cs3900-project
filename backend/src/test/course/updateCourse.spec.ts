@@ -13,7 +13,7 @@ describe("Test recalling a course", () => {
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
-    });
+    }, 20000);
 
     beforeEach(async () => {
         courseId = await createCourse(
@@ -26,7 +26,7 @@ describe("Test recalling a course", () => {
             },
             `acc${id}`,
         );
-    });
+    }, 20000);
 
     it("Can update course information", async () => {
         await updateCourse(

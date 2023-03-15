@@ -19,7 +19,7 @@ describe("Test adding a resource", () => {
     let sectionId: string;
 
     beforeAll(async () => {
-        jest.setTimeout(20 * 1000);
+        // jest.setTimeout(20 * 1000);
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
@@ -41,7 +41,7 @@ describe("Test adding a resource", () => {
             `acc${id}`,
         );
         sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
-    });
+    }, 20000);
 
     it("Removing resource from base page", async () => {
         const resourceId = await addResource(

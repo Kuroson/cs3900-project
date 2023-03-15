@@ -30,7 +30,7 @@ describe("Test getting a list of students from a course", () => {
             courseId: courseId,
             students: Array<string>(`student1${id}@email.com`),
         });
-    });
+    }, 20000);
 
     it("Can get student information", async () => {
         const res = await getStudents(courseId);

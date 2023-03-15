@@ -16,7 +16,7 @@ describe("Test removing a section from a page", () => {
     let pageId: string;
 
     beforeAll(async () => {
-        jest.setTimeout(20 * 1000);
+        // jest.setTimeout(20 * 1000);
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
@@ -37,7 +37,7 @@ describe("Test removing a section from a page", () => {
             },
             `acc${id}`,
         );
-    });
+    }, 20000);
 
     it("Should remove section", async () => {
         const sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);

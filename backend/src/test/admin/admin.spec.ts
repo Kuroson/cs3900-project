@@ -12,7 +12,7 @@ describe("Test checking if user is admin", () => {
         // Creates users for testing
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`);
         await registerUser("first_name", "last_name", `user${id}@email.com`, `acc2${id}`);
-    });
+    }, 20000);
 
     it("Should be an admin", async () => {
         const isAdmin = await checkAdmin(`acc1${id}`);

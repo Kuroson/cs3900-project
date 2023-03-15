@@ -25,7 +25,7 @@ describe("Test creating a page", () => {
             },
             `acc${id}`,
         );
-    });
+    }, 20000);
 
     it("Should remove page from course and database", async () => {
         const pageId = await createPage(

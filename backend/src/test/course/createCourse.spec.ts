@@ -11,7 +11,7 @@ describe("Test creating a course", () => {
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
-    });
+    }, 20000);
 
     it("Should create a new course in the database", async () => {
         const courseId = await createCourse(

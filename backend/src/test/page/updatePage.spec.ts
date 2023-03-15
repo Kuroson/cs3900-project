@@ -26,7 +26,7 @@ describe("Test updating a page", () => {
             },
             `acc${id}`,
         );
-    });
+    }, 20000);
 
     beforeEach(async () => {
         pageId = await createPage(
