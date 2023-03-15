@@ -63,4 +63,4 @@ indexRouter.delete("/page/:courseId/:pageId/section", deleteSectionController);
 
 // File routes
 indexRouter.post("/file/upload", firebaseUpload.single("file"), uploadFileController);
-indexRouter.get("/file/download", downloadFileController);
+indexRouter.get("/file/download/:resourceId", downloadFileController);

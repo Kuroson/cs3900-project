@@ -7,7 +7,12 @@ import { Button, IconButton, TextField } from "@mui/material";
 import { useAuthUser } from "next-firebase-auth";
 import { PageType, ResourcesType } from "pages/admin/[courseId]/[pageId]";
 import { Feature } from "components/SectionPage/ShowOrEditPage";
-import { PROCESS_BACKEND_URL, apiPost, apiUploadFile } from "util/api";
+import { PROCESS_BACKEND_URL, apiGet, apiPost, apiUploadFile } from "util/api";
+
+type FileDetailsPayload = {
+  linkToFile: string;
+  fileType: string;
+};
 
 const ShowOrEditResource: React.FC<{
   resource: ResourcesType;
@@ -22,7 +27,30 @@ const ShowOrEditResource: React.FC<{
   const [editResource, setEditResource] = useState(false);
   const [title, setTitle] = useState(resource.title);
   const [description, setDescription] = useState(resource.description);
+  const [linkToResource, setLinkToResource] = useState(resource.linkToResource);
+  const [fileType, setFileType] = useState(resource.fileType);
   const [file, setFile] = useState<File | null>(null);
+
+  const updateFileInfo = async (resourceId: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [data, err] = await apiGet<any, FileDetailsPayload>(
+      `${PROCESS_BACKEND_URL}/file/download/${resourceId}`,
+      await authUser.getIdToken(),
+      {},
+    );
+
+    if (err !== null) {
+      console.error(err);
+      // handle error
+      return {
+        linkToFile: null,
+        fileType: null,
+      };
+    }
+
+    if (data === null) throw new Error("This shouldn't have happened");
+    return data;
+  };
 
   const handleEditClick = async () => {
     // click tick
@@ -47,9 +75,26 @@ const ShowOrEditResource: React.FC<{
       // TODO: Not have this need to refresh page to show resource
       // TODO: call backend for resource info and update resource here...
       if (file !== null && resource.resourceId !== undefined) {
-        apiUploadFile(`${PROCESS_BACKEND_URL}/file/upload`, await authUser.getIdToken(), file, {
-          resourceId: resource.resourceId,
-        });
+        await apiUploadFile(
+          `${PROCESS_BACKEND_URL}/file/upload`,
+          await authUser.getIdToken(),
+          file,
+          {
+            resourceId: resource.resourceId,
+          },
+        );
+
+        // Call backend to get new resource
+        const newFileInfo = await updateFileInfo(resource.resourceId);
+        console.log("newFileInfo");
+        console.log(newFileInfo);
+
+        if (newFileInfo.linkToFile !== null && newFileInfo.fileType !== null) {
+          resource.linkToResource = newFileInfo.linkToFile;
+          resource.fileType = newFileInfo.fileType;
+          setLinkToResource(newFileInfo.linkToFile);
+          setFileType(newFileInfo.fileType);
+        }
       }
     }
 
@@ -95,39 +140,46 @@ const ShowOrEditResource: React.FC<{
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          {resource.linkToResource !== "" && (
+          {linkToResource !== "" && (
             // Show resource
             <div>
-              {resource.fileType?.includes("image") ? (
-                <img src={resource.linkToResource} />
+              {fileType?.includes("image") ? (
+                <img src={linkToResource} />
               ) : (
-                <Button href={resource.linkToResource}>Download existing resource</Button>
+                <Button href={linkToResource}>Download existing resource</Button>
               )}
             </div>
           )}
 
-          <Button
-            variant="contained"
-            component="label"
-            sx={{ width: "250px" }}
-            startIcon={<DriveFolderUploadIcon />}
-          >
-            Upload New Material
-            <input hidden type="file" onChange={handleAddFile} />
-          </Button>
+          <div className="flex justify-start max-w-[1000px]">
+            <Button
+              variant="contained"
+              component="label"
+              sx={{ width: "250px" }}
+              startIcon={<DriveFolderUploadIcon />}
+            >
+              Upload New Material
+              <input hidden type="file" onChange={handleAddFile} />
+            </Button>
+            {file !== null && (
+              <p className="pl-5">
+                <i>{file.name}</i>
+              </p>
+            )}
+          </div>
         </div>
       ) : (
         // read mode
         <div className="my-3">
-          <h4 className="m-0">{resource.title}</h4>
-          <p className="">{resource.description ?? ""}</p>
-          {resource.linkToResource != "" && (
+          <h4 className="m-0">{title}</h4>
+          <p className="">{description ?? ""}</p>
+          {linkToResource != "" && (
             <div className="rounded-lg shadow-md px-5 py-3 w-fit">
               {/* read file linktoResource */}
-              {resource.fileType?.includes("image") ? (
-                <img src={resource.linkToResource} />
+              {fileType?.includes("image") ? (
+                <img src={linkToResource} />
               ) : (
-                <Button href={resource.linkToResource}>Download resource</Button>
+                <Button href={linkToResource}>Download resource</Button>
               )}
             </div>
           )}
