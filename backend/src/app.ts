@@ -23,6 +23,8 @@ app.use(errorMiddleware);
 
 const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/?retryWrites=true&w=majority`;
 
+export const startupTime = new Date();
+
 connect(mongoDBURI)
     .then((res) => {
         logger.info("Connected to MongoDB");
