@@ -3,10 +3,17 @@ import User from "@/models/user.model";
 import { checkAccess } from "@/routes/admin/access.route";
 import { registerUser } from "@/routes/auth/register.route";
 import { v4 as uuidv4 } from "uuid";
-import initialiseMongoose from "../testUtil";
+import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test checking if user has access to a course", () => {
     const id = uuidv4();
+
+    const userData = [
+        genUserTestOnly("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`),
+        genUserTestOnly("first_name", "last_name", `user${id}@email.com`, `acc2${id}`),
+        genUserTestOnly("first_name", "last_name", `user2${id}@email.com`, `acc3${id}`),
+    ];
+
     let courseId = "";
     let adminId = "";
 
@@ -14,9 +21,7 @@ describe("Test checking if user has access to a course", () => {
         await initialiseMongoose();
 
         // Creates users for testing
-        await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`);
-        await registerUser("first_name", "last_name", `user${id}@email.com`, `acc2${id}`);
-        await registerUser("first_name", "last_name", `user2${id}@email.com`, `acc3${id}`);
+        await registerMultipleUsersTestingOnly(userData);
 
         // Create course (with admin as creator)
         adminId = await User.findOne({ firebase_uid: `acc1${id}` })
@@ -70,10 +75,7 @@ describe("Test checking if user has access to a course", () => {
     });
 
     afterAll(async () => {
-        // Clean up
-        User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
-        User.deleteOne({ firebase_uid: `acc2${id}` }).exec();
-        User.deleteOne({ firebase_uid: `acc3${id}` }).exec();
-        Course.deleteOne({ title: "Test course", session: "T1", creator: adminId }).exec();
+        await User.deleteMany({ firebase_uid: userData.map((x) => x.firebaseUID) }).exec();
+        await Course.deleteOne({ title: "Test course", session: "T1", creator: adminId }).exec();
     });
 });
