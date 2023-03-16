@@ -3,15 +3,15 @@ import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test recalling a course", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
-
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
     });
 

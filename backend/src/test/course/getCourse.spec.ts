@@ -3,10 +3,11 @@ import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { getCourse } from "@/routes/course/getCourse.route";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test recalling a course", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
 
     beforeAll(async () => {

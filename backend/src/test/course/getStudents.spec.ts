@@ -5,17 +5,23 @@ import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { getCourse } from "@/routes/course/getCourse.route";
 import { getStudents } from "@/routes/course/getStudents.route";
-import initialiseMongoose from "../testUtil";
+import { v4 as uuidv4 } from "uuid";
+import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test getting a list of students from a course", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
+
+    const userData = [
+        genUserTestOnly("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`),
+        genUserTestOnly("first_name2", "last_name2", `student1${id}@email.com`, `acc1${id}`),
+    ];
 
     beforeAll(async () => {
         await initialiseMongoose();
 
-        await registerUser("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`);
-        await registerUser("first_name2", "last_name2", `student1${id}@email.com`, `acc1${id}`);
+        await registerMultipleUsersTestingOnly(userData);
+
         courseId = await createCourse(
             {
                 code: "TEST",
@@ -26,9 +32,10 @@ describe("Test getting a list of students from a course", () => {
             },
             `acc${id}`,
         );
+
         await addStudents({
             courseId: courseId,
-            students: Array<string>(`student1${id}@email.com`),
+            students: [`student1${id}@email.com`],
         });
     });
 
@@ -50,6 +57,6 @@ describe("Test getting a list of students from a course", () => {
     afterAll(async () => {
         // Clean up
         await Course.findByIdAndDelete(courseId);
-        await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        await User.deleteMany({ email: userData.map((x) => x.email) }).exec();
     });
 });
