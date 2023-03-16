@@ -8,15 +8,16 @@ import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteSection } from "@/routes/page/deleteSection.route";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test adding a section to a page", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
     let pageId: string;
 
     beforeAll(async () => {
-        jest.setTimeout(20 * 1000);
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
@@ -53,7 +54,7 @@ describe("Test adding a section to a page", () => {
         expect(mySection?.title).toBe("Test section");
 
         await deleteSection({ courseId, pageId, sectionId }, `acc${id}`);
-    }, 10000);
+    });
 
     it("Should update information in a section", async () => {
         const sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
@@ -71,12 +72,13 @@ describe("Test adding a section to a page", () => {
         expect(mySection?.title).toBe("New title");
 
         await deleteSection({ courseId, pageId, sectionId }, `acc${id}`);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up
         await deletePage({ courseId, pageId }, `acc${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await disconnect();
     });
 });

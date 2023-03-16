@@ -15,15 +15,22 @@ type QueryPayload = {
     email: string;
 };
 
+/**
+ * Register a new user with the given details
+ * @param firstName
+ * @param lastName
+ * @param email
+ * @param firebaseUID
+ * @throws { HttpException } if it fails to write new user to database
+ * @returns
+ */
 export const registerUser = async (
     firstName: string,
     lastName: string,
     email: string,
     firebaseUID: string,
 ): Promise<void> => {
-    logger.info(
-        `Registering user ${firstName} ${lastName} with email ${email} and firebaseUID ${firebaseUID}`,
-    );
+    logger.info(`Registering user, email: ${email}, firebaseUID: ${firebaseUID}`);
 
     const role = email.toLowerCase().includes("admin") ? INSTRUCTOR_ROLE : STUDENT_ROLE;
 

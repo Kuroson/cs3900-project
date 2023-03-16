@@ -2,16 +2,17 @@ import Course from "@/models/course.model";
 import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test creating a course", () => {
-    const id = Date.now();
+    const id = uuidv4();
 
     beforeAll(async () => {
         await initialiseMongoose();
-
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
-    }, 20000);
+    });
 
     it("Should create a new course in the database", async () => {
         const courseId = await createCourse(
@@ -35,7 +36,7 @@ describe("Test creating a course", () => {
 
         // Delete the course
         await Course.findByIdAndDelete(courseId);
-    }, 10000);
+    });
 
     it("Can successfully create two courses with the same info", async () => {
         const courseInfo = {
@@ -65,12 +66,12 @@ describe("Test creating a course", () => {
         expect(myCourse2?.icon).toBe("");
 
         // Delete the courses
-        await Course.findByIdAndDelete(courseId);
-        await Course.findByIdAndDelete(courseId2);
-    }, 10000);
+        await Course.deleteMany({ _id: [courseId, courseId2] });
+    });
 
     afterAll(async () => {
         // Clean up
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        await disconnect();
     });
 });

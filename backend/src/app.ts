@@ -23,14 +23,16 @@ app.use(errorMiddleware);
 
 const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/?retryWrites=true&w=majority`;
 
+export const startupTime = new Date();
 set("strictQuery", true); // Suppress Mongoose deprecation warning for v7
 
 connect(mongoDBURI)
-    .then((res) => {
+    .then(() => {
         logger.info("Connected to MongoDB");
     })
     .catch((err) => {
         logger.error("Failed to connected to MongoDB");
+        logger.error(err);
         exit(1);
     });
 

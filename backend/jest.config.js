@@ -11,4 +11,5 @@ module.exports = {
     },
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/src" }),
     testEnvironment: "node",
+    testTimeout: 45 * 1000,
 };

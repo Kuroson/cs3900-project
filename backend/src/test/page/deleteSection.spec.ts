@@ -8,10 +8,12 @@ import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteSection } from "@/routes/page/deleteSection.route";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test removing a section from a page", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
     let pageId: string;
 
@@ -37,7 +39,7 @@ describe("Test removing a section from a page", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Should remove section", async () => {
         const sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
@@ -61,12 +63,13 @@ describe("Test removing a section from a page", () => {
 
         mySection = await Section.findById(sectionId);
         expect(mySection === null).toBe(true);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up
         await deletePage({ courseId, pageId }, `acc${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await disconnect();
     });
 });

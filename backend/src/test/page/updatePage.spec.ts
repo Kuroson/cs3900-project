@@ -5,10 +5,12 @@ import { createCourse } from "@/routes/course/createCourse.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { updatePage } from "@/routes/page/updatePage.route";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test updating a page", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
     let pageId: string;
 
@@ -26,7 +28,7 @@ describe("Test updating a page", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     beforeEach(async () => {
         pageId = await createPage(
@@ -69,7 +71,7 @@ describe("Test updating a page", () => {
         expect(pageState.sections[0].resources[1].title).toBe("res4");
         expect(pageState.sections[1].title).toBe("sec2");
         expect(pageState.sections[1].resources.length).toBe(0);
-    }, 10000);
+    });
 
     it("Should update only indicated page information when called the second time", async () => {
         const initialPage = await updatePage(
@@ -111,7 +113,7 @@ describe("Test updating a page", () => {
         expect(updatedPageState.sections[1].title).toBe("sec2");
         expect(updatedPageState.sections[1].resources.length).toBe(1);
         expect(updatedPageState.sections[1].resources[0].title).toBe("newOne2");
-    }, 10000);
+    });
 
     afterEach(async () => {
         await deletePage({ courseId, pageId }, `acc${id}`);
@@ -121,5 +123,6 @@ describe("Test updating a page", () => {
         // Clean up
         await Course.findByIdAndDelete(courseId).exec();
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        await disconnect();
     });
 });

@@ -10,17 +10,18 @@ import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteResource } from "@/routes/page/deleteResource.route";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test adding a resource", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
     let pageId: string;
     let sectionId: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
-
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
         courseId = await createCourse(
             {
@@ -40,7 +41,7 @@ describe("Test adding a resource", () => {
             `acc${id}`,
         );
         sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
-    }, 20000);
+    });
 
     it("Adding resource to base page", async () => {
         const resourceId = await addResource(
@@ -59,7 +60,7 @@ describe("Test adding a resource", () => {
         expect(myResource?.description).toBe("Test description");
 
         await deleteResource({ courseId, pageId, resourceId }, `acc${id}`);
-    }, 20000);
+    });
 
     it("Adding resource to section", async () => {
         const resourceId = await addResource(
@@ -83,7 +84,7 @@ describe("Test adding a resource", () => {
         expect(myResource?.description).toBe(undefined);
 
         await deleteResource({ courseId, pageId, sectionId, resourceId }, `acc${id}`);
-    }, 20000);
+    });
 
     it("Updating resource information", async () => {
         const resourceId = await addResource(
@@ -123,12 +124,13 @@ describe("Test adding a resource", () => {
         expect(myResource?.description).toBe("Now has a description");
 
         await deleteResource({ courseId, pageId, resourceId }, `acc${id}`);
-    }, 20000);
+    });
 
     afterAll(async () => {
         // Clean up
         await deletePage({ courseId, pageId }, `acc${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
-    }, 20000);
+        await disconnect();
+    });
 });

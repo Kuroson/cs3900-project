@@ -3,17 +3,18 @@ import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test recalling a course", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
-
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
-    }, 20000);
+    });
 
     beforeEach(async () => {
         courseId = await createCourse(
@@ -26,7 +27,7 @@ describe("Test recalling a course", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Can update course information", async () => {
         await updateCourse(
@@ -48,7 +49,7 @@ describe("Test recalling a course", () => {
         expect(myCourse?.session).toBe("T2");
         expect(myCourse?.description).toBe("This is updated info");
         expect(myCourse?.icon).toBe("");
-    }, 10000);
+    });
 
     it("Invalid course ID should throw", async () => {
         expect(
@@ -64,7 +65,7 @@ describe("Test recalling a course", () => {
                 `acc${id}`,
             ),
         ).rejects.toThrow();
-    }, 10000);
+    });
 
     it("If only certain fields supplied, others are left unchanged", async () => {
         await updateCourse(
@@ -83,7 +84,7 @@ describe("Test recalling a course", () => {
         expect(myCourse?.session).toBe("T1");
         expect(myCourse?.description).toBe("This is updated info");
         expect(myCourse?.icon).toBe("");
-    }, 10000);
+    });
 
     afterEach(async () => {
         await Course.findByIdAndDelete(courseId);
@@ -92,5 +93,6 @@ describe("Test recalling a course", () => {
     afterAll(async () => {
         // Clean up
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        await disconnect();
     });
 });

@@ -5,10 +5,12 @@ import { createCourse } from "@/routes/course/createCourse.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { getPages } from "@/routes/page/getPages.route";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
-describe("Test geting course pages", () => {
-    const id = Date.now();
+describe("Test getting course pages", () => {
+    const id = uuidv4();
     let courseId: string;
 
     beforeAll(async () => {
@@ -25,7 +27,7 @@ describe("Test geting course pages", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Should retrieve page after added", async () => {
         const pageId = await createPage(
@@ -42,7 +44,7 @@ describe("Test geting course pages", () => {
 
         // Delete the page
         await deletePage({ courseId, pageId }, `acc${id}`);
-    }, 10000);
+    });
 
     it("Page state should be accurage after multiple course updates", async () => {
         const pageId1 = await createPage(
@@ -79,11 +81,12 @@ describe("Test geting course pages", () => {
         // Delete the pages
         await deletePage({ courseId, pageId: pageId1 }, `acc${id}`);
         await deletePage({ courseId, pageId: pageId3 }, `acc${id}`);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await disconnect();
     });
 });

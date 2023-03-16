@@ -2,10 +2,19 @@ import Course from "@/models/course.model";
 import User from "@/models/user.model";
 import { checkAccess } from "@/routes/admin/access.route";
 import { registerUser } from "@/routes/auth/register.route";
-import initialiseMongoose from "../testUtil";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
+import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test checking if user has access to a course", () => {
-    const id = Date.now();
+    const id = uuidv4();
+
+    const userData = [
+        genUserTestOnly("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`),
+        genUserTestOnly("first_name", "last_name", `user${id}@email.com`, `acc2${id}`),
+        genUserTestOnly("first_name", "last_name", `user2${id}@email.com`, `acc3${id}`),
+    ];
+
     let courseId = "";
     let adminId = "";
 
@@ -13,9 +22,7 @@ describe("Test checking if user has access to a course", () => {
         await initialiseMongoose();
 
         // Creates users for testing
-        await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`);
-        await registerUser("first_name", "last_name", `user${id}@email.com`, `acc2${id}`);
-        await registerUser("first_name", "last_name", `user2${id}@email.com`, `acc3${id}`);
+        await registerMultipleUsersTestingOnly(userData);
 
         // Create course (with admin as creator)
         adminId = await User.findOne({ firebase_uid: `acc1${id}` })
@@ -51,28 +58,26 @@ describe("Test checking if user has access to a course", () => {
         await myUser.save().catch(() => {
             throw new Error("Failed to save updated user for test");
         });
-    }, 20000);
+    });
 
     it("Admin should have access", async () => {
         const canAccess = await checkAccess(`acc1${id}`, courseId);
         expect(canAccess).toBe(true);
-    }, 10000);
+    });
 
     it("Student should not have access", async () => {
         const canAccess = await checkAccess(`acc2${id}`, courseId);
         expect(canAccess).toBe(false);
-    }, 10000);
+    });
 
     it("Student should have access if they are enrolled", async () => {
         const canAccess = await checkAccess(`acc3${id}`, courseId);
         expect(canAccess).toBe(true);
-    }, 10000);
+    });
 
     afterAll(async () => {
-        // Clean up
-        User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
-        User.deleteOne({ firebase_uid: `acc2${id}` }).exec();
-        User.deleteOne({ firebase_uid: `acc3${id}` }).exec();
-        Course.deleteOne({ title: "Test course", session: "T1", creator: adminId }).exec();
+        await User.deleteMany({ firebase_uid: userData.map((x) => x.firebaseUID) }).exec();
+        await Course.deleteOne({ title: "Test course", session: "T1", creator: adminId }).exec();
+        await disconnect();
     });
 });

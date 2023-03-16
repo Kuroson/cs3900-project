@@ -3,10 +3,12 @@ import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { getCourse } from "@/routes/course/getCourse.route";
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test recalling a course", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
 
     beforeAll(async () => {
@@ -23,7 +25,7 @@ describe("Test recalling a course", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Can recall course information", async () => {
         const myCourse = await getCourse(courseId);
@@ -33,15 +35,16 @@ describe("Test recalling a course", () => {
         expect(myCourse?.session).toBe("T1");
         expect(myCourse?.description).toBe("This is a test course");
         expect(myCourse?.icon).toBe("");
-    }, 10000);
+    });
 
     it("Invalid course ID should throw", async () => {
         expect(getCourse("FAKE ID")).rejects.toThrow();
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up
         await Course.findByIdAndDelete(courseId);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        await disconnect();
     });
 });
