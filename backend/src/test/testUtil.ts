@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /* eslint-disable max-len */
+import { HttpException } from "@/exceptions/HttpException";
+import User, { INSTRUCTOR_ROLE, STUDENT_ROLE } from "@/models/user.model";
+import { logger } from "@/utils/logger";
 import validateEnv from "@utils/validateEnv";
 import { connect, set } from "mongoose";
 
@@ -20,3 +23,55 @@ export const stringifyOutput = (a: any) => {
 };
 
 export default initialiseMongoose;
+
+type RegisterMultipleUsersPayload = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    firebaseUID: string;
+};
+
+export const genUserTestOnly = (
+    firstName: string,
+    lastName: string,
+    email: string,
+    firebaseUID: string,
+): RegisterMultipleUsersPayload => {
+    return {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        firebaseUID: firebaseUID,
+    };
+};
+
+/**
+ * Testing function to register multiple users
+ * @param userData user data as an array
+ */
+export const registerMultipleUsersTestingOnly = async (
+    userData: RegisterMultipleUsersPayload[],
+): Promise<void> => {
+    const parsedUserData = userData.map((x) => {
+        const role = x.email.toLowerCase().includes("admin") ? INSTRUCTOR_ROLE : STUDENT_ROLE;
+        const userData = {
+            firebase_uid: x.firebaseUID,
+            first_name: x.firstName,
+            last_name: x.lastName,
+            email: x.email,
+            enrolments: [],
+            role: role,
+            avatar: "", // TODO
+        };
+        return userData;
+    });
+
+    await User.insertMany(parsedUserData)
+        .then((res) => {
+            return res;
+        })
+        .catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Could not create new user", err);
+        });
+};
