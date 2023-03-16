@@ -2,10 +2,11 @@
 
 /* eslint-disable max-len */
 import validateEnv from "@utils/validateEnv";
-import { connect } from "mongoose";
+import { connect, set } from "mongoose";
 
 const initialiseMongoose = async () => {
     const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/?retryWrites=true&w=majority`;
+    set("strictQuery", true); // Suppress Mongoose deprecation warning for v7
     await connect(mongoDBURI);
 };
 
