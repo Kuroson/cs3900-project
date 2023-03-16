@@ -2,6 +2,7 @@ import Course from "@/models/course.model";
 import User from "@/models/user.model";
 import { checkAccess } from "@/routes/admin/access.route";
 import { registerUser } from "@/routes/auth/register.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
@@ -77,5 +78,6 @@ describe("Test checking if user has access to a course", () => {
     afterAll(async () => {
         await User.deleteMany({ firebase_uid: userData.map((x) => x.firebaseUID) }).exec();
         await Course.deleteOne({ title: "Test course", session: "T1", creator: adminId }).exec();
+        await disconnect();
     });
 });

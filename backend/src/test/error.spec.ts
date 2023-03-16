@@ -1,3 +1,4 @@
+import { disconnect } from "mongoose";
 import request from "supertest";
 import { app } from "../app";
 
@@ -9,5 +10,9 @@ describe("Error page", () => {
             .then((res) => {
                 expect(res.body).toEqual({ message: "Route does not exist" });
             });
+    });
+
+    afterAll(async () => {
+        await disconnect();
     });
 });

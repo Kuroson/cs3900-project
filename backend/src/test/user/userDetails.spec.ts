@@ -2,6 +2,7 @@ import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { getUserDetails } from "@/routes/user/userDetails.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -31,6 +32,7 @@ describe("Test user details", () => {
 
     afterAll(async () => {
         // Clean up
-        User.deleteOne({ email: email1 }).exec();
+        await User.deleteOne({ email: email1 }).exec();
+        await disconnect();
     });
 });

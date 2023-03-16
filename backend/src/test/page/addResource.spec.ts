@@ -10,6 +10,7 @@ import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteResource } from "@/routes/page/deleteResource.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -130,5 +131,6 @@ describe("Test adding a resource", () => {
         await deletePage({ courseId, pageId }, `acc${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await disconnect();
     });
 });

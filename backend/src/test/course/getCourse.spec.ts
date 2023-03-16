@@ -3,6 +3,7 @@ import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { getCourse } from "@/routes/course/getCourse.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -44,5 +45,6 @@ describe("Test recalling a course", () => {
         // Clean up
         await Course.findByIdAndDelete(courseId);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        await disconnect();
     });
 });

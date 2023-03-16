@@ -5,6 +5,7 @@ import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { getCourse } from "@/routes/course/getCourse.route";
 import { getStudents } from "@/routes/course/getStudents.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
@@ -58,5 +59,6 @@ describe("Test getting a list of students from a course", () => {
         // Clean up
         await Course.findByIdAndDelete(courseId);
         await User.deleteMany({ email: userData.map((x) => x.email) }).exec();
+        await disconnect();
     });
 });

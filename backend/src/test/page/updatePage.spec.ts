@@ -5,6 +5,7 @@ import { createCourse } from "@/routes/course/createCourse.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { updatePage } from "@/routes/page/updatePage.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -122,5 +123,6 @@ describe("Test updating a page", () => {
         // Clean up
         await Course.findByIdAndDelete(courseId).exec();
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        await disconnect();
     });
 });

@@ -1,5 +1,6 @@
 import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
@@ -42,8 +43,10 @@ describe("Test creation of new User", () => {
     afterAll(async () => {
         // Clean up
         // const testRegex = new RegExp(/\b[\w\.-]+@test\.com\b/);
-        User.deleteOne({ email: email1 }).exec();
-        User.deleteOne({ email: email2 }).exec();
+        await User.deleteOne({ email: email1 }).exec();
+        await User.deleteOne({ email: email2 }).exec();
+
+        await disconnect();
     });
 });
 
@@ -73,5 +76,7 @@ describe("Test function - Create multiple users", () => {
 
     afterAll(async () => {
         await User.deleteMany({ email: userData.map((x) => x.email) });
+
+        await disconnect();
     });
 });

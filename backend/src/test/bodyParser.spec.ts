@@ -1,4 +1,5 @@
 import { isValidBody } from "@/utils/util";
+import { disconnect } from "mongoose";
 
 describe("Test Util Body Parser", () => {
     type Payload = {
@@ -34,5 +35,9 @@ describe("Test Util Body Parser", () => {
     it("Keys are not strings", () => {
         const body = { name: "John", age: 20, 1: 1 };
         expect(isValidBody<Payload>(body, ["name", "age"])).toBe(true);
+    });
+
+    afterAll(async () => {
+        await disconnect();
     });
 });

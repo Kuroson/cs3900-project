@@ -8,6 +8,7 @@ import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteSection } from "@/routes/page/deleteSection.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -69,5 +70,6 @@ describe("Test removing a section from a page", () => {
         await deletePage({ courseId, pageId }, `acc${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await disconnect();
     });
 });

@@ -5,6 +5,7 @@ import { createCourse } from "@/routes/course/createCourse.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { getPages } from "@/routes/page/getPages.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -86,5 +87,6 @@ describe("Test getting course pages", () => {
         // Clean up
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await disconnect();
     });
 });

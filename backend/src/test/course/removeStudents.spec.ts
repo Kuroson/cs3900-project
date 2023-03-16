@@ -5,6 +5,7 @@ import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { removeStudents } from "@/routes/course/removeStudents.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
+import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, {
     genUserTestOnly,
@@ -103,5 +104,6 @@ describe("Test removing a student", () => {
         // Clean up
         await Course.findByIdAndDelete(courseId);
         await User.deleteMany({ email: userData.map((x) => x.email) }).exec();
+        await disconnect();
     });
 });
