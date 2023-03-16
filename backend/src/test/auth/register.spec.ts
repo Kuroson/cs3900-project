@@ -42,10 +42,7 @@ describe("Test creation of new User", () => {
 
     afterAll(async () => {
         // Clean up
-        // const testRegex = new RegExp(/\b[\w\.-]+@test\.com\b/);
-        await User.deleteOne({ email: email1 }).exec();
-        await User.deleteOne({ email: email2 }).exec();
-
+        await User.deleteMany({ email: [email1, email2] }).exec();
         await disconnect();
     });
 });
