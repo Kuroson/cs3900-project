@@ -31,6 +31,14 @@ type RegisterMultipleUsersPayload = {
     firebaseUID: string;
 };
 
+/**
+ * Handy function to generate element for registerMultipleUsersTestingOnly
+ * @param firstName
+ * @param lastName
+ * @param email
+ * @param firebaseUID
+ * @returns
+ */
 export const genUserTestOnly = (
     firstName: string,
     lastName: string,
