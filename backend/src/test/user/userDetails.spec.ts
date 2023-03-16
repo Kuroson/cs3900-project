@@ -2,15 +2,16 @@ import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
 import { registerUser } from "@/routes/auth/register.route";
 import { getUserDetails } from "@/routes/user/userDetails.route";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test user details", () => {
+    const id = uuidv4();
+    const email1 = `jest-${id}@delete.com`;
+
     beforeAll(async () => {
         await initialiseMongoose();
     });
-
-    const id = Date.now();
-    const email1 = `jest-${id}@delete.com`;
 
     it("Create new user then get details", async () => {
         await registerUser(`firstJest${id}`, `lastJest${id}`, email1, id.toString());
