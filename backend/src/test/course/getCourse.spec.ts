@@ -23,7 +23,7 @@ describe("Test recalling a course", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Can recall course information", async () => {
         const myCourse = await getCourse(courseId);
@@ -33,11 +33,11 @@ describe("Test recalling a course", () => {
         expect(myCourse?.session).toBe("T1");
         expect(myCourse?.description).toBe("This is a test course");
         expect(myCourse?.icon).toBe("");
-    }, 10000);
+    });
 
     it("Invalid course ID should throw", async () => {
         expect(getCourse("FAKE ID")).rejects.toThrow();
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up

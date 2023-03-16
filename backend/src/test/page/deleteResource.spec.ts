@@ -41,7 +41,7 @@ describe("Test adding a resource", () => {
             `acc${id}`,
         );
         sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
-    }, 20000);
+    });
 
     it("Removing resource from base page", async () => {
         const resourceId = await addResource(
@@ -68,7 +68,7 @@ describe("Test adding a resource", () => {
 
         myResource = await Resource.findById(resourceId);
         expect(myResource === null).toBe(true);
-    }, 10000);
+    });
 
     it("Adding resource to section", async () => {
         const resourceId = await addResource(

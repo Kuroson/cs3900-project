@@ -3,13 +3,13 @@ import { registerUser } from "@/routes/auth/register.route";
 import initialiseMongoose from "../testUtil";
 
 describe("Test creation of new User", () => {
-    beforeAll(async () => {
-        await initialiseMongoose();
-    }, 20000);
-
     const id = Date.now();
     const email1 = `jest-${id}@delete.com`;
     const email2 = `admin-${id}@delete.com`;
+
+    beforeAll(async () => {
+        await initialiseMongoose();
+    });
 
     it("Should create new user", async () => {
         await registerUser(`firstJest${id}`, `lastJest${id}`, email1, id.toString());
@@ -21,7 +21,7 @@ describe("Test creation of new User", () => {
         expect(user?.first_name).toBe(`firstJest${id}`);
         expect(user?.last_name).toBe(`lastJest${id}`);
         expect(user?.role).toBe(1); // Non admin
-    }, 10000);
+    });
 
     it("Instructor if admin is in email", async () => {
         const id = Date.now();
@@ -39,7 +39,7 @@ describe("Test creation of new User", () => {
 
     afterAll(async () => {
         // Clean up
-        const testRegex = new RegExp(/\b[\w\.-]+@test\.com\b/);
+        // const testRegex = new RegExp(/\b[\w\.-]+@test\.com\b/);
         User.deleteOne({ email: email1 }).exec();
         User.deleteOne({ email: email2 }).exec();
     });

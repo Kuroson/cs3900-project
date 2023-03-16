@@ -2,10 +2,11 @@ import Course from "@/models/course.model";
 import User from "@/models/user.model";
 import { checkAccess } from "@/routes/admin/access.route";
 import { registerUser } from "@/routes/auth/register.route";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test checking if user has access to a course", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId = "";
     let adminId = "";
 
@@ -51,22 +52,22 @@ describe("Test checking if user has access to a course", () => {
         await myUser.save().catch(() => {
             throw new Error("Failed to save updated user for test");
         });
-    }, 20000);
+    });
 
     it("Admin should have access", async () => {
         const canAccess = await checkAccess(`acc1${id}`, courseId);
         expect(canAccess).toBe(true);
-    }, 10000);
+    });
 
     it("Student should not have access", async () => {
         const canAccess = await checkAccess(`acc2${id}`, courseId);
         expect(canAccess).toBe(false);
-    }, 10000);
+    });
 
     it("Student should have access if they are enrolled", async () => {
         const canAccess = await checkAccess(`acc3${id}`, courseId);
         expect(canAccess).toBe(true);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up

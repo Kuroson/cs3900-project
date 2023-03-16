@@ -7,7 +7,7 @@ import initialiseMongoose from "../testUtil";
 describe("Test user details", () => {
     beforeAll(async () => {
         await initialiseMongoose();
-    }, 20000);
+    });
 
     const id = Date.now();
     const email1 = `jest-${id}@delete.com`;

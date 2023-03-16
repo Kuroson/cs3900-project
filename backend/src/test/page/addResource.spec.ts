@@ -40,7 +40,7 @@ describe("Test adding a resource", () => {
             `acc${id}`,
         );
         sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
-    }, 20000);
+    });
 
     it("Adding resource to base page", async () => {
         const resourceId = await addResource(
@@ -59,7 +59,7 @@ describe("Test adding a resource", () => {
         expect(myResource?.description).toBe("Test description");
 
         await deleteResource({ courseId, pageId, resourceId }, `acc${id}`);
-    }, 20000);
+    });
 
     it("Adding resource to section", async () => {
         const resourceId = await addResource(
@@ -83,7 +83,7 @@ describe("Test adding a resource", () => {
         expect(myResource?.description).toBe(undefined);
 
         await deleteResource({ courseId, pageId, sectionId, resourceId }, `acc${id}`);
-    }, 20000);
+    });
 
     it("Updating resource information", async () => {
         const resourceId = await addResource(
@@ -123,12 +123,12 @@ describe("Test adding a resource", () => {
         expect(myResource?.description).toBe("Now has a description");
 
         await deleteResource({ courseId, pageId, resourceId }, `acc${id}`);
-    }, 20000);
+    });
 
     afterAll(async () => {
         // Clean up
         await deletePage({ courseId, pageId }, `acc${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
-    }, 20000);
+    });
 });

@@ -25,7 +25,7 @@ describe("Test creating a page", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Should remove page from course and database", async () => {
         const pageId = await createPage(
@@ -46,7 +46,7 @@ describe("Test creating a page", () => {
 
         const myPage = await Page.findById(pageId);
         expect(myPage).toBe(null);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up

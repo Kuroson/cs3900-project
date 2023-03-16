@@ -13,7 +13,7 @@ describe("Test recalling a course", () => {
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
-    }, 20000);
+    });
 
     beforeEach(async () => {
         courseId = await createCourse(
@@ -26,7 +26,7 @@ describe("Test recalling a course", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Can update course information", async () => {
         await updateCourse(
@@ -48,7 +48,7 @@ describe("Test recalling a course", () => {
         expect(myCourse?.session).toBe("T2");
         expect(myCourse?.description).toBe("This is updated info");
         expect(myCourse?.icon).toBe("");
-    }, 10000);
+    });
 
     it("Invalid course ID should throw", async () => {
         expect(
@@ -64,7 +64,7 @@ describe("Test recalling a course", () => {
                 `acc${id}`,
             ),
         ).rejects.toThrow();
-    }, 10000);
+    });
 
     it("If only certain fields supplied, others are left unchanged", async () => {
         await updateCourse(
@@ -83,7 +83,7 @@ describe("Test recalling a course", () => {
         expect(myCourse?.session).toBe("T1");
         expect(myCourse?.description).toBe("This is updated info");
         expect(myCourse?.icon).toBe("");
-    }, 10000);
+    });
 
     afterEach(async () => {
         await Course.findByIdAndDelete(courseId);

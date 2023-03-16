@@ -26,7 +26,7 @@ describe("Test updating a page", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     beforeEach(async () => {
         pageId = await createPage(
@@ -69,7 +69,7 @@ describe("Test updating a page", () => {
         expect(pageState.sections[0].resources[1].title).toBe("res4");
         expect(pageState.sections[1].title).toBe("sec2");
         expect(pageState.sections[1].resources.length).toBe(0);
-    }, 10000);
+    });
 
     it("Should update only indicated page information when called the second time", async () => {
         const initialPage = await updatePage(
@@ -111,7 +111,7 @@ describe("Test updating a page", () => {
         expect(updatedPageState.sections[1].title).toBe("sec2");
         expect(updatedPageState.sections[1].resources.length).toBe(1);
         expect(updatedPageState.sections[1].resources[0].title).toBe("newOne2");
-    }, 10000);
+    });
 
     afterEach(async () => {
         await deletePage({ courseId, pageId }, `acc${id}`);

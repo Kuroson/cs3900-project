@@ -37,7 +37,7 @@ describe("Test removing a section from a page", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Should remove section", async () => {
         const sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
@@ -61,7 +61,7 @@ describe("Test removing a section from a page", () => {
 
         mySection = await Section.findById(sectionId);
         expect(mySection === null).toBe(true);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up

@@ -10,11 +10,9 @@ import initialiseMongoose, { stringifyOutput } from "../testUtil";
 
 describe("Test adding a student", () => {
     const id = uuidv4();
-
     let courseId: string;
 
     beforeAll(async () => {
-        // logger.transports["scaZXinfo"].silent = true;
         await initialiseMongoose();
 
         await registerUser("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`);
@@ -31,7 +29,7 @@ describe("Test adding a student", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Add no users to course", async () => {
         await addStudents({
@@ -42,7 +40,7 @@ describe("Test adding a student", () => {
         const myCourse = await Course.findById(courseId);
 
         expect(myCourse?.students).toEqual([]);
-    }, 5000);
+    });
 
     it("Add students to course", async () => {
         await addStudents({
@@ -60,7 +58,7 @@ describe("Test adding a student", () => {
         expect(ourOutput).toContain(stringifyOutput(student2?._id));
         expect(student1?.enrolments).toStrictEqual([myCourse?._id]);
         expect(student2?.enrolments).toStrictEqual([myCourse?._id]);
-    }, 5000);
+    });
 
     it("Add student to course", async () => {
         expect(
@@ -89,7 +87,7 @@ describe("Test adding a student", () => {
         expect(student1?.enrolments).toEqual([myCourse?._id]);
         expect(student2?.enrolments).toEqual([myCourse?._id]);
         expect(student3?.enrolments).toEqual([myCourse?._id]);
-    }, 5000);
+    });
 
     afterAll(async () => {
         // Clean up

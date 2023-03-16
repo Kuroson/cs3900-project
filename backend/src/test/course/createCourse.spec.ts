@@ -11,7 +11,7 @@ describe("Test creating a course", () => {
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
-    }, 20000);
+    });
 
     it("Should create a new course in the database", async () => {
         const courseId = await createCourse(
@@ -35,7 +35,7 @@ describe("Test creating a course", () => {
 
         // Delete the course
         await Course.findByIdAndDelete(courseId);
-    }, 10000);
+    });
 
     it("Can successfully create two courses with the same info", async () => {
         const courseInfo = {
@@ -67,7 +67,7 @@ describe("Test creating a course", () => {
         // Delete the courses
         await Course.findByIdAndDelete(courseId);
         await Course.findByIdAndDelete(courseId2);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up

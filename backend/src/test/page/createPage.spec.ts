@@ -25,7 +25,7 @@ describe("Test creating a page", () => {
             },
             `acc${id}`,
         );
-    }, 20000);
+    });
 
     it("Should create a new page within the database", async () => {
         const pageId = await createPage(

@@ -16,7 +16,6 @@ describe("Test adding a section to a page", () => {
     let pageId: string;
 
     beforeAll(async () => {
-        jest.setTimeout(20 * 1000);
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
@@ -53,7 +52,7 @@ describe("Test adding a section to a page", () => {
         expect(mySection?.title).toBe("Test section");
 
         await deleteSection({ courseId, pageId, sectionId }, `acc${id}`);
-    }, 10000);
+    });
 
     it("Should update information in a section", async () => {
         const sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
@@ -71,7 +70,7 @@ describe("Test adding a section to a page", () => {
         expect(mySection?.title).toBe("New title");
 
         await deleteSection({ courseId, pageId, sectionId }, `acc${id}`);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up
