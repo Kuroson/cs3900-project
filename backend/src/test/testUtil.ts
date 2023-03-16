@@ -5,7 +5,8 @@ import validateEnv from "@utils/validateEnv";
 import { connect, set } from "mongoose";
 
 const initialiseMongoose = async () => {
-    const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/?retryWrites=true&w=majority`;
+    const MONGO_DB_NAME = "jestTesting";
+    const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
     set("strictQuery", true); // Suppress Mongoose deprecation warning for v7
     await connect(mongoDBURI);
 };
