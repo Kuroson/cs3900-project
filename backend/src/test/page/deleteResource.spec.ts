@@ -10,16 +10,16 @@ import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteResource } from "@/routes/page/deleteResource.route";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test adding a resource", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
     let pageId: string;
     let sectionId: string;
 
     beforeAll(async () => {
-        // jest.setTimeout(20 * 1000);
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
@@ -100,7 +100,7 @@ describe("Test adding a resource", () => {
 
         myResource = await Resource.findById(resourceId);
         expect(myResource === null).toBe(true);
-    }, 10000);
+    });
 
     afterAll(async () => {
         // Clean up

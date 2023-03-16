@@ -8,10 +8,11 @@ import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteSection } from "@/routes/page/deleteSection.route";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test removing a section from a page", () => {
-    const id = Date.now();
+    const id = uuidv4();
     let courseId: string;
     let pageId: string;
 

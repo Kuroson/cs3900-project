@@ -5,10 +5,11 @@ import { createCourse } from "@/routes/course/createCourse.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { getPages } from "@/routes/page/getPages.route";
+import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
-describe("Test geting course pages", () => {
-    const id = Date.now();
+describe("Test getting course pages", () => {
+    const id = uuidv4();
     let courseId: string;
 
     beforeAll(async () => {
