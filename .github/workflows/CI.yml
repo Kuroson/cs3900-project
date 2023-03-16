@@ -52,7 +52,7 @@ jobs:
           FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
-        run: yarn jest --silent
+        run: yarn test -t
   backend-docker:
     runs-on: ubuntu-latest
     needs: [backend]
