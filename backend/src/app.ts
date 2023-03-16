@@ -26,11 +26,12 @@ const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.
 export const startupTime = new Date();
 
 connect(mongoDBURI)
-    .then((res) => {
+    .then(() => {
         logger.info("Connected to MongoDB");
     })
     .catch((err) => {
         logger.error("Failed to connected to MongoDB");
+        logger.error(err);
         exit(1);
     });
 
