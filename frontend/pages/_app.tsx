@@ -8,6 +8,7 @@ import * as loginAuthSSR from "pages/login";
 import * as signupAuthSSR from "pages/signup";
 import { Layout } from "components";
 import styles from "components/Layout/Layout.module.scss";
+import { UserProvider } from "util/UserContext";
 import initAuth from "util/firebase";
 import Custom404 from "./404";
 
@@ -39,9 +40,11 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
     <>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-          <Layout className={renderWithoutBars ? styles.loginLayout : styles.mainContent}>
-            <Component {...pageProps} />
-          </Layout>
+          <UserProvider>
+            <Layout className={renderWithoutBars ? styles.loginLayout : styles.mainContent}>
+              <Component {...pageProps} />
+            </Layout>
+          </UserProvider>
         </ThemeProvider>
       </StyledEngineProvider>
       <ToastContainer

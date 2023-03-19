@@ -3,13 +3,13 @@ import Page from "@/models/page.model";
 import Resource from "@/models/resource.model";
 import Section from "@/models/section.model";
 import User from "@/models/user.model";
-import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { addResource } from "@/routes/page/addResource.route";
 import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteResource } from "@/routes/page/deleteResource.route";
+import { registerUser } from "@/routes/user/register.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
@@ -34,19 +34,28 @@ describe("Test adding a resource", () => {
             },
             `acc${id}`,
         );
-        pageId = await createPage(
+        pageId = await createPage(courseId, "New section", `acc${id}`);
+        sectionId = await addSection(
             {
                 courseId,
-                title: "New section",
+                pageId,
+                title: "Test section",
+                sectionId: null,
             },
             `acc${id}`,
         );
-        sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
     });
 
     it("Removing resource from base page", async () => {
         const resourceId = await addResource(
-            { courseId, pageId, title: "Test resource", description: "Test description" },
+            {
+                courseId,
+                pageId,
+                title: "Test resource",
+                description: "Test description",
+                sectionId: null,
+                resourceId: null,
+            },
             `acc${id}`,
         );
 
@@ -60,7 +69,15 @@ describe("Test adding a resource", () => {
         expect(myResource?.title).toBe("Test resource");
         expect(myResource?.description).toBe("Test description");
 
-        await deleteResource({ courseId, pageId, resourceId }, `acc${id}`);
+        await deleteResource(
+            {
+                courseId,
+                pageId,
+                resourceId,
+                sectionId: null,
+            },
+            `acc${id}`,
+        );
 
         myPage = await Page.findById(pageId);
 
@@ -78,6 +95,8 @@ describe("Test adding a resource", () => {
                 pageId,
                 sectionId,
                 title: "Another resource",
+                resourceId: null,
+                description: "",
             },
             `acc${id}`,
         );
@@ -90,7 +109,7 @@ describe("Test adding a resource", () => {
         let myResource = await Resource.findById(resourceId);
         expect(myResource === null).toBe(false);
         expect(myResource?.title).toBe("Another resource");
-        expect(myResource?.description).toBe(undefined);
+        expect(myResource?.description).toBe("");
 
         await deleteResource({ courseId, pageId, sectionId, resourceId }, `acc${id}`);
 

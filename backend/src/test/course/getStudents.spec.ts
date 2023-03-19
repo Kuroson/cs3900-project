@@ -1,9 +1,8 @@
+import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
 import User from "@/models/user.model";
-import { registerUser } from "@/routes/auth/register.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
-import { getCourse } from "@/routes/course/getCourse.route";
 import { getStudents } from "@/routes/course/getStudents.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
@@ -13,14 +12,15 @@ describe("Test getting a list of students from a course", () => {
     const id = uuidv4();
     let courseId: string;
 
+    const admin = genUserTestOnly("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`);
+
     const userData = [
-        genUserTestOnly("first_name1", "last_name1", `admin${id}@email.com`, `acc${id}`),
+        admin,
         genUserTestOnly("first_name2", "last_name2", `student1${id}@email.com`, `acc1${id}`),
     ];
 
     beforeAll(async () => {
         await initialiseMongoose();
-
         await registerMultipleUsersTestingOnly(userData);
 
         courseId = await createCourse(
@@ -34,25 +34,22 @@ describe("Test getting a list of students from a course", () => {
             `acc${id}`,
         );
 
-        await addStudents({
-            courseId: courseId,
-            students: [`student1${id}@email.com`],
-        });
+        await addStudents(courseId, [`student1${id}@email.com`], admin.firebaseUID);
     });
 
     it("Can get student information", async () => {
-        const res = await getStudents(courseId);
-
-        expect(res.code).toBe("TEST");
-        expect(res.students.length).toBe(1);
-
-        expect(res.students.at(0)?.email).toEqual(`student1${id}@email.com`);
-        expect(res.students.at(0)?.first_name).toEqual("first_name2");
-        expect(res.students.at(0)?.last_name).toEqual("last_name2");
+        const students = await getStudents(courseId);
+        expect(students.length).toBe(1);
+        expect(students.at(0)?.email).toEqual(`student1${id}@email.com`);
+        expect(students.at(0)?.first_name).toEqual("first_name2");
+        expect(students.at(0)?.last_name).toEqual("last_name2");
     });
 
     it("Invalid course ID should throw", async () => {
-        expect(getCourse("FAKE ID")).rejects.toThrow();
+        await expect(getStudents("FAKE ID")).rejects.toThrow(HttpException);
+        await getStudents("FAKE ID").catch((err) => {
+            expect(err.status).toBe(400);
+        });
     });
 
     afterAll(async () => {

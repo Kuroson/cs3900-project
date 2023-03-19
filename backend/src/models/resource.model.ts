@@ -10,20 +10,20 @@ import { Document, Schema, Types, model } from "mongoose";
  * file_type and stored_name are optional as they are only added to the resource
  * when the file is actually uploaded.
  */
-export interface Resource extends Document {
+export interface ResourceInterface extends Document {
     title: string;
     description?: string;
     file_type?: string;
     stored_name?: string;
 }
 
-const resourceSchema: Schema = new Schema<Resource>({
+const resourceSchema: Schema = new Schema<ResourceInterface>({
     title: { type: String, required: true },
     description: { type: String },
     file_type: { type: String },
     stored_name: { type: String },
 });
 
-const Resource = model<Resource & Document>("Resource", resourceSchema);
+const Resource = model<ResourceInterface & Document>("Resource", resourceSchema);
 
 export default Resource;

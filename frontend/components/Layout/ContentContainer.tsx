@@ -1,5 +1,3 @@
-import Container from "@mui/material/Container";
-import { Box } from "@mui/system";
 import styles from "./Layout.module.scss";
 
 type ContentContainerProps = {

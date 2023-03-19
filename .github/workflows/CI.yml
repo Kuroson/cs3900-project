@@ -53,18 +53,6 @@ jobs:
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
         run: yarn test -t
-  backend-docker:
-    runs-on: ubuntu-latest
-    needs: [backend]
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/staging'
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build Docker Image
-        run: |
-          docker build . --file Dockerfile
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -98,25 +86,49 @@ jobs:
           NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
           NEXT_PUBLIC_COOKIE_SECURE: false
         run: yarn build
-      # - name: Cypress e2e
-      #   env:
-      #     FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
-      #     COOKIE_SECRET_CURRENT: "whatever"
-      #     COOKIE_SECRET_PREVIOUS: "whateverPrev"
-      #     NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-      #     FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
-      #     NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
-      #     NEXT_PUBLIC_COOKIE_SECURE: false
-      #   run: yarn e2e:headless
-  frontend-docker:
+  e2e-testing:
     runs-on: ubuntu-latest
-    needs: [frontend]
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/staging'
-    defaults:
-      run:
-        working-directory: ./frontend
+    needs: [frontend, backend]
+    strategy:
+      matrix:
+        node-version: [18.x]
     steps:
       - uses: actions/checkout@v3
-      - name: Build Docker Image
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: ./frontend/yarn.lock
+      - name: Install frontend dependencies
+        working-directory: "./frontend"
+        run: yarn
+      - name: Dump backend env
+        working-directory: "./backend"
+        env:
+          FIREBASE_PRIVATE_KEY: ${{ secrets.BACKEND_FIREBASE_PRIVATE_KEY }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+          MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+          MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+        run: env >> .env
+      - name: Dump frontend env
+        working-directory: "./frontend"
+        env:
+          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+          COOKIE_SECRET_CURRENT: "whatever"
+          COOKIE_SECRET_PREVIOUS: "whateverPrev"
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+          NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
+          NEXT_PUBLIC_COOKIE_SECURE: false
+        run: env >> .env.local
+      - name: Docker compose build
+        run: docker-compose build
+      - name: Cypress e2e
+        working-directory: "./frontend"
         run: |
-          docker build . --file Dockerfile
+          yarn start-server-and-test "docker-compose -f \"../docker-compose.yml\" up" http://localhost:3000 cypress:headless
+      - name: Stop docker-compose
+        if: always()
+        run: docker-compose down

@@ -1,10 +1,9 @@
+import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
 import User from "@/models/user.model";
-import { registerUser } from "@/routes/auth/register.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { removeStudents } from "@/routes/course/removeStudents.route";
-import { updateCourse } from "@/routes/course/updateCourse.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, {
@@ -17,9 +16,23 @@ describe("Test removing a student", () => {
     const id = uuidv4();
     let courseId: string;
 
+    const admin = genUserTestOnly(
+        "first_name1",
+        "last_name1",
+        `removeadmin${id}@email.com`,
+        `acc${id}`,
+    );
+
+    const student = genUserTestOnly(
+        "first_name2",
+        "last_name2",
+        `removestudent1${id}@email.com`,
+        `acc1${id}`,
+    );
+
     const userData = [
-        genUserTestOnly("first_name1", "last_name1", `removeadmin${id}@email.com`, `acc${id}`),
-        genUserTestOnly("first_name2", "last_name2", `removestudent1${id}@email.com`, `acc1${id}`),
+        admin,
+        student,
         genUserTestOnly("first_name3", "last_name3", `removestudent2${id}@email.com`, `acc2${id}`),
         genUserTestOnly("first_name4", "last_name4", `removestudent3${id}@email.com`, `acc3${id}`),
     ];
@@ -37,22 +50,20 @@ describe("Test removing a student", () => {
             },
             `acc${id}`,
         );
-        await addStudents({
-            courseId: courseId,
-            students: Array<string>(
+        await addStudents(
+            courseId,
+            [
                 "fakeRemoveStudent@email.com",
                 `removestudent1${id}@email.com`,
                 `removestudent2${id}@email.com`,
                 `removestudent3${id}@email.com`,
-            ),
-        });
+            ],
+            admin.firebaseUID,
+        );
     });
 
     it("Remove no users from course", async () => {
-        await removeStudents({
-            courseId: courseId,
-            students: Array<string>(),
-        });
+        await removeStudents(courseId, [], admin.firebaseUID);
 
         const myCourse = await Course.findById(courseId);
         const students = await User.find({
@@ -75,15 +86,16 @@ describe("Test removing a student", () => {
 
     it("Remove users from course", async () => {
         expect(
-            await removeStudents({
-                courseId: courseId,
-                students: Array<string>(
+            await removeStudents(
+                courseId,
+                [
                     "fakeRemoveStudent@email.com",
                     `removestudent1${id}@email.com`,
                     `removestudent2${id}@email.com`,
                     `removestudent3${id}@email.com`,
-                ),
-            }),
+                ],
+                admin.firebaseUID,
+            ),
         ).toEqual(["fakeRemoveStudent@email.com"]);
 
         const myCourse = await Course.findById(courseId);
@@ -98,6 +110,58 @@ describe("Test removing a student", () => {
 
         expect(myCourse?.students).toEqual([]);
         expect(students.every((x) => x.enrolments.length === 0)).toBe(true);
+    });
+
+    it("Remove users from course with invalid course id", async () => {
+        await expect(
+            removeStudents(
+                "invalidCourseId",
+                [
+                    `removestudent1${id}@email.com`,
+                    `removestudent2${id}@email.com`,
+                    `removestudent3${id}@email.com`,
+                ],
+                admin.firebaseUID,
+            ),
+        ).rejects.toThrow(HttpException);
+
+        await removeStudents(
+            "invalidCourseId",
+            [
+                `removestudent1${id}@email.com`,
+                `removestudent2${id}@email.com`,
+                `removestudent3${id}@email.com`,
+            ],
+            admin.firebaseUID,
+        ).catch((err) => {
+            expect(err.status).toBe(400);
+        });
+    });
+
+    it("Student attempts to remove students from course", async () => {
+        await expect(
+            removeStudents(
+                courseId,
+                [
+                    `removestudent1${id}@email.com`,
+                    `removestudent2${id}@email.com`,
+                    `removestudent3${id}@email.com`,
+                ],
+                student.firebaseUID,
+            ),
+        ).rejects.toThrow(HttpException);
+
+        await removeStudents(
+            courseId,
+            [
+                `removestudent1${id}@email.com`,
+                `removestudent2${id}@email.com`,
+                `removestudent3${id}@email.com`,
+            ],
+            student.firebaseUID,
+        ).catch((err) => {
+            expect(err.status).toBe(403);
+        });
     });
 
     afterAll(async () => {

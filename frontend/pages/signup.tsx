@@ -6,9 +6,10 @@ import { TextField } from "@mui/material";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { GetStaticProps } from "next";
 import { AuthAction, withAuthUser } from "next-firebase-auth";
-import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
+import { ContentContainer, EmptyNavBar } from "components";
 import { HttpException } from "util/HttpExceptions";
-import { PROCESS_BACKEND_URL, PROCESS_FRONTEND_URL, apiPost } from "util/api";
+import { CLIENT_BACKEND_URL, apiPost } from "util/api/api";
+import { registerNewUser } from "util/api/userApi";
 import { isValidEmail, isValidPassword } from "util/authVerficiation";
 
 type PasswordRequirementsProps = {
@@ -52,20 +53,10 @@ const PasswordRequirements = ({
 };
 
 type SignUpPageProps = {
-  BACKEND_URL: string;
+  CLIENT_BACKEND_URL: string;
 };
 
-type APIPayload = {
-  firstName: string;
-  lastName: string;
-  email: string;
-};
-
-type APIResponse = {
-  message: string;
-};
-
-const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
+const SignUpPage = ({ CLIENT_BACKEND_URL }: SignUpPageProps): JSX.Element => {
   const [email, setEmail] = React.useState("");
   const [emailError, setEmailError] = React.useState(false);
 
@@ -110,6 +101,8 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
     }
     // Everything should be valid after this
     setLoading(true);
+    let errorCreation = false;
+
     const authUser = await createUserWithEmailAndPassword(getAuth(), email, password)
       .then((res) => {
         console.log(res);
@@ -130,20 +123,22 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
           console.error(err);
           toast.error("Error Uncaught");
         }
+        errorCreation = true;
       });
 
-    const payload: APIPayload = {
+    if (errorCreation || authUser) {
+      setLoading(false);
+      return; // Don't continue, error
+    }
+
+    const payload = {
       firstName,
       lastName,
       email,
     };
 
-    const [res, err] = await apiPost<APIPayload, APIResponse>(
-      `${BACKEND_URL}/auth/register`,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (authUser as any).user?.accessToken,
-      payload,
-    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [res, err] = await registerNewUser((authUser as any).user?.accessToken, payload);
 
     if (err !== null) {
       if (err instanceof HttpException) {
@@ -167,7 +162,7 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
         <meta name="description" content="Sign Up" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <SideNavbar empty={true} list={[]} />
+      <EmptyNavBar />
       <ContentContainer>
         <form
           className="w-full h-full flex flex-col items-center pt-[6rem]"
@@ -270,7 +265,7 @@ const SignUpPage = ({ BACKEND_URL }: SignUpPageProps): JSX.Element => {
 
 export const getStaticProps: GetStaticProps<SignUpPageProps> = async () => {
   return {
-    props: { BACKEND_URL: PROCESS_FRONTEND_URL },
+    props: { CLIENT_BACKEND_URL: CLIENT_BACKEND_URL },
   };
 };
 

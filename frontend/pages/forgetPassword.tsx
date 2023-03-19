@@ -2,16 +2,16 @@ import React from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { LoadingButton } from "@mui/lab";
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { GetStaticProps } from "next";
 import { AuthAction, withAuthUser } from "next-firebase-auth";
-import { ContentContainer, Footer, LeftSideBar, SideNavbar } from "components";
-import { PROCESS_BACKEND_URL, PROCESS_FRONTEND_URL } from "util/api";
+import { ContentContainer, EmptyNavBar } from "components";
+import { CLIENT_BACKEND_URL } from "util/api/api";
 import { isValidEmail } from "util/authVerficiation";
 
 type ForgetPasswordPageProps = {
-  BACKEND_URL: string;
+  CLIENT_BACKEND_URL: string;
 };
 
 const ForgetPasswordPage = (): JSX.Element => {
@@ -63,7 +63,7 @@ const ForgetPasswordPage = (): JSX.Element => {
         <link rel="icon" href="/favicon.png" />
         <meta name="description" content="Forget password page" />
       </Head>
-      <SideNavbar empty={true} list={[]} />
+      <EmptyNavBar />
       <ContentContainer>
         <form
           className="w-full h-full flex flex-col items-center pt-[6rem]"
@@ -105,7 +105,7 @@ const ForgetPasswordPage = (): JSX.Element => {
 
 export const getStaticProps: GetStaticProps<ForgetPasswordPageProps> = async () => {
   return {
-    props: { BACKEND_URL: PROCESS_FRONTEND_URL },
+    props: { CLIENT_BACKEND_URL },
   };
 };
 

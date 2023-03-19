@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { ContentContainer, LeftSideBar, SideNavbar } from "components";
+import { ContentContainer, EmptyNavBar } from "components";
 
 export default function Custom404() {
   return (
@@ -8,7 +8,7 @@ export default function Custom404() {
         <title>404 - Page Not Found</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <SideNavbar empty={true} list={[]} />
+      <EmptyNavBar />
       <ContentContainer>
         <div className="w-full h-full flex items-center justify-center flex-col text-black">
           <h1 className="text-7xl font-bold">404</h1>
@@ -16,7 +16,6 @@ export default function Custom404() {
           <p className="text-base">The page you were looking for could not be found.</p>
         </div>
       </ContentContainer>
-      <LeftSideBar />
     </>
   );
 }

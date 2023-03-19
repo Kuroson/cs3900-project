@@ -6,8 +6,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { TextField } from "@mui/material";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { AuthAction, withAuthUser } from "next-firebase-auth";
-import { ContentContainer, Footer, SideNavbar } from "components";
-import LeftSideBar from "components/Layout/Footer/LeftSideBar";
+import { ContentContainer, EmptyNavBar } from "components";
 
 const LoginPage = (): JSX.Element => {
   const [email, setEmail] = React.useState("");
@@ -47,7 +46,7 @@ const LoginPage = (): JSX.Element => {
         <meta name="description" content="Login Page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <SideNavbar empty={true} list={[]} />
+      <EmptyNavBar />
       <ContentContainer>
         <form
           className="w-full h-full flex flex-col items-center pt-[6rem]"

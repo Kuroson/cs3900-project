@@ -1,14 +1,14 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
 import Page from "@/models/page.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
-    message?: string;
+    message: string;
 };
 
 type QueryPayload = {
@@ -16,33 +16,29 @@ type QueryPayload = {
     pageId: string;
 };
 
+/**
+ * DELETE /page
+ * Deletes a page specified by courseId in body
+ * @param req
+ * @param res
+ * @returns
+ */
 export const deletePageController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
-
-        // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["pageId", "courseId"])) {
+        const authUser = await checkAuth(req);
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["pageId", "courseId"];
+        if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
             const queryBody = req.body;
-
             await deletePage(queryBody, authUser.uid);
-
-            return res.status(200).json({});
+            return res.status(200).json({ message: "Success" });
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
-                    "pageId",
-                    "courseId",
-                ])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, KEYS_TO_CHECK)}`,
             );
         }
     } catch (error) {
@@ -60,23 +56,25 @@ export const deletePageController = async (
 /**
  * Deletes the given page from the given course, deleting the page itself and
  * removes it from the course
- *
  * @param queryBody The arguments of course and page IDs to be deleted
+ * @throws { HttpException }
  */
-export const deletePage = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const deletePage = async (queryBody: QueryPayload, firebase_uid: string): Promise<void> => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to get all courses");
+        throw new HttpException(403, "Must be admin to delete course");
     }
-
     const { courseId, pageId } = queryBody;
 
-    const course = await Course.findById(courseId);
-    if (course === null) throw new HttpException(400, "Course does not exist");
+    // Find and remove page from course
+    const course = await Course.findById(courseId).catch(() => null);
+    if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
 
     // Remove from course and overall
     course.pages.remove(pageId);
     await course.save().catch((err) => {
-        throw new HttpException(500, "Failed to remove page from course");
+        throw new HttpException(500, "Failed to remove page from course", err);
     });
-    await Page.findByIdAndDelete(pageId);
+    await Page.findByIdAndDelete(pageId).catch((err) => {
+        throw new HttpException(500, `Failed to delete page of ${pageId}`, err);
+    });
 };

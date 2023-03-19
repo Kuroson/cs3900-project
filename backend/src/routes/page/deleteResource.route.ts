@@ -1,53 +1,54 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course.model";
 import Page from "@/models/page.model";
 import Resource from "@/models/resource.model";
 import Section from "@/models/section.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
-    message?: string;
+    message: string;
 };
 
 type QueryPayload = {
     courseId: string;
     pageId: string;
-    sectionId?: string;
+    sectionId: string | null;
     resourceId: string;
 };
 
+/**
+ * DELETE /page/remove/resource
+ * Attempts to remove a resource
+ * @param req
+ * @param res
+ * @returns
+ */
 export const deleteResourceController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
-
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const authUser = await checkAuth(req as any);
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
+            "courseId",
+            "pageId",
+            "resourceId",
+            "sectionId",
+        ];
         // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "resourceId"])) {
+        if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
             const queryBody = req.body;
-
             await deleteResource(queryBody, authUser.uid);
-
-            return res.status(200).json({});
+            return res.status(200).json({ message: "Success" });
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
-                    "courseId",
-                    "pageId",
-                    "resourceId",
-                ])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, KEYS_TO_CHECK)}`,
             );
         }
     } catch (error) {
@@ -69,35 +70,40 @@ export const deleteResourceController = async (
  * @param queryBody The page information in the format of QueryPayload defined above
  * @returns The ID of the new resource that has been created
  */
-export const deleteResource = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const deleteResource = async (
+    queryBody: QueryPayload,
+    firebase_uid: string,
+): Promise<void> => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to add a resource");
+        throw new HttpException(403, "Must be an admin to add a resource");
     }
 
     const { courseId, pageId, sectionId, resourceId } = queryBody;
 
-    const existingResource = await Resource.findById(resourceId);
-    if (existingResource === null) throw new HttpException(500, "Failed to fetch resource");
+    const existingResource = await Resource.findById(resourceId).catch(() => null);
+    if (existingResource === null)
+        throw new HttpException(400, `Failed to fetch resource of ${resourceId}`);
 
-    if (sectionId === undefined) {
+    if (sectionId === null) {
         // Remove from page
-        const currPage = await Page.findById(pageId);
-        if (currPage === null) throw new HttpException(500, "Failed to fetch page");
+        const currPage = await Page.findById(pageId).catch(() => null);
+        if (currPage === null) throw new HttpException(400, `Failed to fetch page of ${pageId}`);
 
         currPage.resources.remove(resourceId);
 
         await currPage.save().catch((err) => {
-            throw new HttpException(500, "Failed to remove from page");
+            throw new HttpException(500, "Failed to remove from page", err);
         });
     } else {
         // Remove from section
-        const currSection = await Section.findById(sectionId);
-        if (currSection === null) throw new HttpException(500, "Failed to fetch section");
+        const currSection = await Section.findById(sectionId).catch(() => null);
+        if (currSection === null)
+            throw new HttpException(400, `Failed to fetch section of ${sectionId}`);
 
         currSection.resources.remove(resourceId);
 
         await currSection.save().catch((err) => {
-            throw new HttpException(500, "Failed to remove from section");
+            throw new HttpException(500, "Failed to remove from section", err);
         });
     }
 

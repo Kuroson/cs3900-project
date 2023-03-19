@@ -2,12 +2,12 @@ import Course from "@/models/course.model";
 import Page from "@/models/page.model";
 import Section from "@/models/section.model";
 import User from "@/models/user.model";
-import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { addSection } from "@/routes/page/addSection.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteSection } from "@/routes/page/deleteSection.route";
+import { registerUser } from "@/routes/user/register.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
@@ -32,17 +32,19 @@ describe("Test removing a section from a page", () => {
             },
             `acc${id}`,
         );
-        pageId = await createPage(
-            {
-                courseId,
-                title: "New section",
-            },
-            `acc${id}`,
-        );
+        pageId = await createPage(courseId, "New section", `acc${id}`);
     });
 
     it("Should remove section", async () => {
-        const sectionId = await addSection({ courseId, pageId, title: "Test section" }, `acc${id}`);
+        const sectionId = await addSection(
+            {
+                courseId,
+                pageId,
+                title: "Test section",
+                sectionId: null,
+            },
+            `acc${id}`,
+        );
 
         let myPage = await Page.findById(pageId);
 

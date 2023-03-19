@@ -1,56 +1,43 @@
 import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { getMissingBodyIDs, isValidBody } from "@/utils/util";
+import { ErrorResponsePayload } from "@/utils/util";
 import { Request, Response } from "express";
 
 type ResponsePayload = {
     isAdmin: boolean;
-    message?: string;
 };
 
 type QueryPayload = Record<string, never>;
 
+/**
+ * GET /admin
+ * Check if user is an admin based on JWT authorization token
+ * @param req
+ * @param res
+ * @returns
+ */
 export const adminController = async (
     req: Request<QueryPayload>,
-    res: Response<ResponsePayload>,
+    res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
+        const authUser = await checkAuth(req); // User has been verified
 
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
-        // User has been verified
-        if (isValidBody<QueryPayload>(req.body, [])) {
-            // Body has been verified
-            const queryBody = req.body;
+        // Get user from database to check permissions
+        const isAdmin = await checkAdmin(authUser.uid);
 
-            // Get user from database to check permissions
-            const isAdmin = await checkAdmin(authUser.uid);
-
-            logger.info(`isAdmin: ${isAdmin}`);
-            return res.status(200).json({ isAdmin });
-        } else {
-            throw new HttpException(
-                400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [])}`,
-            );
-        }
+        logger.info(`isAdmin: ${isAdmin}`);
+        return res.status(200).json({ isAdmin });
     } catch (error) {
         if (error instanceof HttpException) {
             logger.error(error.getMessage());
             logger.error(error.originalError);
-            return res
-                .status(error.getStatusCode())
-                .json({ message: error.getMessage(), isAdmin: false });
+            return res.status(error.getStatusCode()).json({ message: error.getMessage() });
         } else {
             logger.error(error);
-            return res
-                .status(500)
-                .json({ message: "Internal server error. Error was not caught", isAdmin: false });
+            return res.status(500).json({ message: "Internal server error. Error was not caught" });
         }
     }
 };

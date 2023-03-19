@@ -1,38 +1,30 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course.model";
-import User from "@/models/user.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import Course, { CourseInterface } from "@/models/course.model";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
+import { ErrorResponsePayload } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
-type CourseInfo = {
-    courseId: string;
-    title: string;
-    code: string;
-    description: string;
-    session: string;
-    icon: string;
-};
-
 type ResponsePayload = {
-    courses?: Array<CourseInfo>;
-    message?: string;
+    courses: Array<CourseInterface>;
 };
 
 type QueryPayload = Record<string, never>;
 
+/**
+ * GET course/all
+ * Gets all the courses in the system. User must be an admin
+ * @param req
+ * @param res
+ * @returns
+ */
 export const getAllCoursesController = async (
     req: Request<QueryPayload>,
-    res: Response<ResponsePayload>,
+    res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
+        const authUser = await checkAuth(req);
 
         // User has been verified
         const myCourses = await getAllCourses(authUser.uid);
@@ -56,37 +48,13 @@ export const getAllCoursesController = async (
  * and admin.
  *
  * @param firebase_uid ID of the user to get their available courses for
+ * @throws { HttpException } User is not an admin
  * @returns List of the user's courses
  */
-export const getAllCourses = async (firebase_uid: string) => {
+export const getAllCourses = async (firebase_uid: string): Promise<CourseInterface[]> => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to get all courses");
+        throw new HttpException(403, "Must be an admin to get all courses");
     }
-
-    const courseList = new Array<CourseInfo>();
-
     const allCourses = await Course.find();
-
-    for (const course of allCourses) {
-        const courseDetails: CourseInfo = {
-            courseId: course._id,
-            title: course.title,
-            code: course.code,
-            description: "",
-            session: course.session,
-            icon: "",
-        };
-
-        if (course.description !== undefined) {
-            courseDetails.description = course.description;
-        }
-
-        if (course.icon !== undefined) {
-            courseDetails.icon = course.icon;
-        }
-
-        courseList.push(courseDetails);
-    }
-
-    return courseList;
+    return allCourses;
 };

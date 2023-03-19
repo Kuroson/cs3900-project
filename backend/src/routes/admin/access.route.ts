@@ -1,35 +1,39 @@
 import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { getMissingBodyIDs, isValidBody } from "@/utils/util";
+import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 
 type ResponsePayload = {
     canAccess: boolean;
-    message?: string;
 };
 
 type QueryPayload = {
+    // objectId of the course in MongoDB
     courseId: string;
 };
 
+/**
+ * GET /admin/access
+ * Checks whether a user should be able to access a given course
+ * `courseId` is a query parameter and should be passed in the URL
+ * @param req
+ * @param res
+ * @returns
+ */
 export const accessController = async (
     req: Request<QueryPayload>,
-    res: Response<ResponsePayload>,
+    res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
+        const authUser = await checkAuth(req);
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId"];
 
         // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["courseId"])) {
+        if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
             // Body has been verified
-            const queryBody = req.body;
+            const queryBody = req.query;
             const { courseId } = queryBody;
 
             const canAccess = await checkAccess(authUser.uid, courseId);
@@ -39,21 +43,17 @@ export const accessController = async (
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.query, KEYS_TO_CHECK)}`,
             );
         }
     } catch (error) {
         if (error instanceof HttpException) {
             logger.error(error.getMessage());
             logger.error(error.originalError);
-            return res
-                .status(error.getStatusCode())
-                .json({ message: error.getMessage(), canAccess: false });
+            return res.status(error.getStatusCode()).json({ message: error.getMessage() });
         } else {
             logger.error(error);
-            return res
-                .status(500)
-                .json({ message: "Internal server error. Error was not caught", canAccess: false });
+            return res.status(500).json({ message: "Internal server error. Error was not caught" });
         }
     }
 };

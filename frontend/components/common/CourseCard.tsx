@@ -1,9 +1,14 @@
 import React from "react";
 import Link from "next/link";
-import { Avatar, Card, CardContent, Typography } from "@mui/material";
-import { CourseInfo } from "pages/admin";
+import { Avatar } from "@mui/material";
+import { BasicCourseInfo } from "models/course.model";
 
-const CourseCard: React.FC<{ course: CourseInfo; href: string }> = ({ course, href }) => {
+type CourseCardProps = {
+  course: BasicCourseInfo;
+  href: string;
+};
+
+const CourseCard: React.FC<CourseCardProps> = ({ course, href }): JSX.Element => {
   return (
     <Link
       href={href}
@@ -11,12 +16,12 @@ const CourseCard: React.FC<{ course: CourseInfo; href: string }> = ({ course, hr
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Avatar alt="Course" src={course.icon || "Course"} />
+          <Avatar alt="Course" src={course.icon ?? "Course"} />
           <h3>{course.code}</h3>
         </div>
         <span className="bg-[#b0e3de] p-1 rounded-md font-bold text-white">{course.session}</span>
       </div>
-      <h4 className="my-0">{course.title}</h4>
+      <h4 className="my-1.5">{course.title}</h4>
       <p className="h-[150px] overflow-hidden">{course.description}</p>
     </Link>
   );

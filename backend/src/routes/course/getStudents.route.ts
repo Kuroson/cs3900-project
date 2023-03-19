@@ -1,43 +1,48 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
-import User from "@/models/user.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import { UserInterface } from "@/models/user.model";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
+import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 
-type StudentInfo = {
-    email: string;
-    first_name: string;
-    last_name: string;
-};
+type StudentInfo = Omit<UserInterface, "enrolments" | "created_courses">;
 
 type ResponsePayload = {
-    code?: string;
-    students?: Array<StudentInfo>;
-    message?: string;
+    students: Array<StudentInfo>;
 };
 
 type QueryPayload = {
     courseId: string;
 };
 
+/**
+ * GET /course/students
+ * Returns all the students in a given course
+ * TODO Figure out who can use this method. Currently, anyone with a valid JWT token
+ * @param req
+ * @param res
+ * @returns
+ */
 export const getStudentsController = async (
     req: Request<QueryPayload>,
-    res: Response<ResponsePayload>,
+    res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
-
-        // User has been verified
+        const authUser = await checkAuth(req);
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId"];
         // Get course id from url param
-        const ret_data = await getStudents(req.params.courseId);
-        logger.info(ret_data);
-        return res.status(200).json(ret_data);
+
+        if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
+            const { courseId } = req.query;
+            const students = await getStudents(courseId);
+            return res.status(200).json({ students: [...students] });
+        } else {
+            throw new HttpException(
+                400,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.query, KEYS_TO_CHECK)}`,
+            );
+        }
     } catch (error) {
         if (error instanceof HttpException) {
             logger.error(error.getMessage());
@@ -54,35 +59,14 @@ export const getStudentsController = async (
  * Returns all the students in a given course
  *
  * @param courseId The ID of the course to be recalled
+ * @throws { HttpException } if the course doesn't exist
  * @returns All students for a given courseId
  */
-export const getStudents = async (courseId: string) => {
-    const course = await Course.findById(courseId);
-
-    if (course === null) throw new HttpException(500, "Course does not exist");
-
-    const students = Array<StudentInfo>();
-
-    const promiseList = course.students.map((student_id) => {
-        return new Promise<void>(async (resolve, reject): Promise<void> => {
-            const student = await User.findById(student_id);
-            if (student === null) throw new HttpException(500, "Failed to retrieve student");
-
-            const studentInfo = {
-                email: student.email,
-                first_name: student.first_name,
-                last_name: student.last_name,
-            };
-
-            students.push(studentInfo);
-            return resolve();
-        });
-    });
-
-    await Promise.all(promiseList);
-
-    return {
-        code: course.code,
-        students: students,
-    };
+export const getStudents = async (courseId: string): Promise<StudentInfo[]> => {
+    // 1. Find the course
+    const course = await Course.findById(courseId, "students")
+        .populate("students", "_id email firebase_uid first_name last_name role avatar")
+        .catch(() => null);
+    if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
+    return course.students;
 };

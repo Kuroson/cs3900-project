@@ -1,14 +1,13 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { getMissingBodyIDs, isValidBody } from "@/utils/util";
+import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
     courseId: string;
-    message?: string;
 };
 
 type QueryPayload = {
@@ -20,29 +19,23 @@ type QueryPayload = {
     icon?: string;
 };
 
+/**
+ * PUT /course/update
+ * Update a course with new information
+ * @param req
+ * @param res
+ * @returns
+ */
 export const updateCourseController = async (
     req: Request<QueryPayload>,
-    res: Response<ResponsePayload>,
+    res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
+        const authUser = await checkAuth(req);
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId"];
 
         // User has been verified
-        if (
-            isValidBody<QueryPayload>(req.body, [
-                "courseId",
-                "code",
-                "title",
-                "session",
-                "description",
-                "icon",
-            ])
-        ) {
+        if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
             const queryBody = req.body;
 
@@ -77,6 +70,7 @@ export const updateCourseController = async (
  *
  * @param queryBody Fields that should be updated for the course in the format of
  * QueryPayload defined above
+ * @throws { HttpException } If user is not admin, or courseId is invalid
  * @returns The ID of the course updated
  */
 export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
@@ -86,8 +80,9 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
 
     const { courseId, code, title, session, description, icon } = queryBody;
 
-    const myCourse = await Course.findById(courseId);
-    if (myCourse === null) throw new HttpException(500, "Failed to retrieve course");
+    const myCourse = await Course.findById(courseId).exec();
+
+    if (myCourse === null) throw new HttpException(400, `Failed to retrieve course of ${courseId}`);
 
     if (code !== undefined) {
         myCourse.code = code;
@@ -115,7 +110,7 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
             return res._id;
         })
         .catch((err) => {
-            throw new HttpException(500, "Failed to update course");
+            throw new HttpException(500, "Failed to update course", err);
         });
 
     return retCourseId;

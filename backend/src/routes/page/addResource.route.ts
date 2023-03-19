@@ -3,55 +3,61 @@ import Course from "@/models/course.model";
 import Page from "@/models/page.model";
 import Resource from "@/models/resource.model";
 import Section from "@/models/section.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { getMissingBodyIDs, isValidBody } from "@/utils/util";
+import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
-    resourceId?: string;
-    message?: string;
+    resourceId: string;
 };
 
 type QueryPayload = {
     courseId: string;
     pageId: string;
-    sectionId?: string;
-    resourceId?: string;
     title: string;
-    description?: string;
+    sectionId: string | null;
+    resourceId: string | null; // This value will exist if we are updating a resource
+    description: string;
 };
 
+/**
+ * PUT /page/add/resource
+ * Updates or adds a new resource based on the passed in data.
+ * Updates if resourceId is passed in, otherwise adds a new resource.
+ * Adds a new resource to the base page unless sectionId is passed in
+ * @param req
+ * @param res
+ * @returns
+ */
 export const addResourceController = async (
     req: Request<QueryPayload>,
-    res: Response<ResponsePayload>,
+    res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const authUser = await checkAuth(req as any);
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
+            "courseId",
+            "pageId",
+            "title",
+            "resourceId",
+            "description",
+            "sectionId",
+        ];
 
         // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "title"])) {
+        if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
             const queryBody = req.body;
-
             const resourceId = await addResource(queryBody, authUser.uid);
-
             logger.info(`resourceId: ${resourceId}`);
             return res.status(200).json({ resourceId });
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
-                    "courseId",
-                    "pageId",
-                    "title",
-                ])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, KEYS_TO_CHECK)}`,
             );
         }
     } catch (error) {
@@ -69,75 +75,72 @@ export const addResourceController = async (
 /**
  * Adds a new resource to a given page for a course. It can optionally be added under
  * a section.
- *
  * @param queryBody The page information in the format of QueryPayload defined above
+ * @throws { HttpException }
  * @returns The ID of the new resource that has been created
  */
 export const addResource = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to add a resource");
+        throw new HttpException(403, "Must be an admin to add a resource");
     }
 
     const { courseId, pageId, sectionId, resourceId, title, description } = queryBody;
 
-    if (resourceId !== undefined) {
-        const existingResource = await Resource.findById(resourceId).catch((err) => {
-            throw new HttpException(500, "Failed to fetch resource");
-        });
-        if (existingResource === null) throw new HttpException(500, "Failed to fetch resource");
+    const course = await Course.findById(courseId).catch(() => null);
+    if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
+
+    if (resourceId !== null) {
+        // We are editing an existing resource
+        const existingResource = await Resource.findById(resourceId).catch(() => null);
+
+        if (existingResource === null)
+            throw new HttpException(400, `Failed to find resource matching id ${resourceId}`);
 
         existingResource.title = title;
-        if (description !== undefined) {
-            existingResource.description = description;
-        }
+        existingResource.description = description ?? "";
 
         await existingResource.save().catch((err) => {
-            throw new HttpException(500, "Failed to update resource");
+            throw new HttpException(500, "Failed to update resource", err);
         });
         return;
     }
 
+    // Otherwise, create a new resource
     const newResource = new Resource({
         title,
+        description: description ?? "",
     });
-
-    if (description !== undefined) {
-        newResource.description = description;
-    }
 
     const newResourceId = await newResource
         .save()
-        .then((res) => {
-            return res._id;
-        })
+        .then((res) => res._id)
         .catch((err) => {
-            throw new HttpException(500, "Failed to save resource");
+            throw new HttpException(500, "Failed to save resource", err);
         });
 
-    if (sectionId === undefined) {
+    // Add it to the base of the page
+    if (sectionId === null) {
         // The resource goes on the base page
-        const currPage = await Page.findById(pageId);
+        const currPage = await Page.findById(pageId).catch(() => null);
         if (currPage === null) throw new HttpException(500, "Cannot retrieve section");
 
-        currPage.resources.push(newResourceId);
+        currPage.resources.addToSet(newResourceId);
 
         await currPage.save().catch((err) => {
-            throw new HttpException(500, "Failed to save updated section");
+            throw new HttpException(500, "Failed to save updated section", err);
         });
     } else {
         // The resource goes in a section
-        const currSection = await Section.findById(sectionId);
-        if (currSection === null) throw new HttpException(500, "Cannot retrieve section");
+        const currSection = await Section.findById(sectionId).catch(() => null);
+        if (currSection === null)
+            throw new HttpException(400, `Cannot retrieve section of ${sectionId}`);
 
-        currSection.resources.push(newResourceId);
+        currSection.resources.addToSet(newResourceId);
 
         await currSection.save().catch((err) => {
-            throw new HttpException(500, "Failed to save updated section");
+            throw new HttpException(500, "Failed to save updated section", err);
         });
     }
-
-    const course = await Course.findById(courseId);
-    if (course === null) throw new HttpException(400, "Course does not exist");
 
     return newResourceId;
 };

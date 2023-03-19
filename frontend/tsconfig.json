@@ -16,6 +16,6 @@
     "incremental": true,
     "baseUrl": "./"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "styles", "components", "util"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "styles", "components", "util", "models"],
   "exclude": ["node_modules", "cypress/support/**/*"]
 }

@@ -1,10 +1,10 @@
 import Course from "@/models/course.model";
 import Page from "@/models/page.model";
 import User from "@/models/user.model";
-import { registerUser } from "@/routes/auth/register.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
+import { registerUser } from "@/routes/user/register.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
@@ -30,13 +30,7 @@ describe("Test creating a page", () => {
     });
 
     it("Should remove page from course and database", async () => {
-        const pageId = await createPage(
-            {
-                title: "Test page",
-                courseId,
-            },
-            `acc${id}`,
-        );
+        const pageId = await createPage(courseId, "Test page", `acc${id}`);
 
         let myCourse = await Course.findById(courseId);
         expect(myCourse?.pages.length).toBe(1);

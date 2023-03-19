@@ -1,5 +1,5 @@
 import { Document, Schema, Types, model } from "mongoose";
-import { Course } from "./course.model";
+import { CourseInterface } from "./course.model";
 
 export const STUDENT_ROLE = "1";
 export const INSTRUCTOR_ROLE = "0";
@@ -11,18 +11,18 @@ export const INSTRUCTOR_ROLE = "0";
  * The firebase_uid should come from registration in firebase
  * Users can be enrolled in courses which is added to their enrollment list
  */
-export interface User extends Document {
+export interface UserInterface extends Document {
     firebase_uid: string;
     email: string;
     first_name: string;
     last_name: string;
     role: number; // 0=instructor, 1=student
-    enrolments: Types.DocumentArray<Course["_id"]>;
-    created_courses: Types.DocumentArray<Course["_id"]>;
+    enrolments: Types.DocumentArray<CourseInterface["_id"]>;
+    created_courses: Types.DocumentArray<CourseInterface["_id"]>;
     avatar?: string;
 }
 
-const userSchema: Schema = new Schema<User>({
+const userSchema: Schema = new Schema<UserInterface>({
     firebase_uid: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     first_name: { type: String, required: true },
@@ -33,6 +33,16 @@ const userSchema: Schema = new Schema<User>({
     avatar: String,
 });
 
-const User = model<User & Document>("User", userSchema);
+const User = model<UserInterface & Document>("User", userSchema);
 
 export default User;
+
+export const isRoleAdmin = (role: number) => {
+    return role === 0;
+};
+
+export type UserInterfaceFull = Omit<Omit<UserInterface, "enrolments">, "created_courses"> & {
+    // Omit the two arrays of ids and replace them with the full objects
+    enrolments: CourseInterface[];
+    created_courses: CourseInterface[];
+};

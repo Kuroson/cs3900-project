@@ -1,14 +1,13 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course.model";
 import Page from "@/models/page.model";
 import Resource from "@/models/resource.model";
-import Section, { Section as SectionType } from "@/models/section.model";
-import { recallFileUrl, verifyIdTokenValid } from "@/utils/firebase";
+import Section, { SectionInterface } from "@/models/section.model";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { Nullable, getMissingBodyIDs, isValidBody } from "@/utils/util";
+import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
-import { getPage } from "./getPage.route";
+import { PageData, getPage } from "../course/getCoursePage.route";
 
 type ResponseResourceInfo = {
     resourceId: string;
@@ -24,12 +23,9 @@ type ResponseSectionInfo = {
     resources: Array<ResponseResourceInfo>;
 };
 
-type ResponsePayload = {
-    courseId?: string;
-    pageId?: string;
-    resources?: Array<ResponseResourceInfo>;
-    sections?: Array<ResponseSectionInfo>;
-    message?: string;
+type ResponsePayload = PageData & {
+    courseId: string;
+    pageId: string;
 };
 
 type QueryResourceInfo = {
@@ -51,36 +47,41 @@ type QueryPayload = {
     sections: Array<QuerySectionInfo>;
 };
 
+/**
+ * PUT /page/update
+ * Update a page with new details
+ * @param req
+ * @param res
+ * @returns
+ */
 export const updatePageController = async (
     req: Request<QueryPayload>,
-    res: Response<ResponsePayload>,
+    res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const authUser = await checkAuth(req as any);
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
+            "courseId",
+            "pageId",
+            "resources",
+            "sections",
+        ];
 
         // User has been verified
-        if (isValidBody<QueryPayload>(req.body, ["courseId", "pageId", "resources", "sections"])) {
+        if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
             const queryBody = req.body;
-
-            const ret_data = await updatePage(queryBody, authUser.uid);
-
-            logger.info(ret_data);
-            return res.status(200).json(ret_data);
+            const data = await updatePage(queryBody, authUser.uid);
+            return res.status(200).json({
+                courseId: queryBody.courseId,
+                pageId: queryBody.pageId,
+                ...data,
+            });
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
-                    "courseId",
-                    "pageId",
-                    "resources",
-                    "sections",
-                ])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, KEYS_TO_CHECK)}`,
             );
         }
     } catch (error) {
@@ -110,18 +111,22 @@ export const updatePageController = async (
  * and when given it indicates that this is an existing section or resource.
  *
  * @param queryBody Parameters for the page that are to be updated
+ * @throws { HttpException } if user is not admin or pageId is invalid
  * @returns The state of the page in the same format passed, giving the sectionId
  * and resourceId of each section and page respectively.
  */
-export const updatePage = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const updatePage = async (
+    queryBody: QueryPayload,
+    firebase_uid: string,
+): Promise<PageData> => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to get all courses");
+        throw new HttpException(403, "Must be an admin to get all courses");
     }
 
     const { courseId, pageId, resources, sections } = queryBody;
 
-    const myPage = await Page.findById(pageId);
-    if (myPage === null) throw new HttpException(400, "Page does not exist");
+    const myPage = await Page.findById(pageId).catch(() => null);
+    if (myPage === null) throw new HttpException(400, `Page of ${pageId} does not exist`);
 
     // Move through resources and add new ones
     for (const resource of resources) {
@@ -138,11 +143,9 @@ export const updatePage = async (queryBody: QueryPayload, firebase_uid: string) 
 
         const newResourceId = await newResource
             .save()
-            .then((res) => {
-                return res._id;
-            })
+            .then((res) => res._id)
             .catch((err) => {
-                throw new HttpException(500, "Failed to save resource");
+                throw new HttpException(500, "Failed to save resource", err);
             });
 
         myPage.resources.push(newResourceId);
@@ -151,12 +154,13 @@ export const updatePage = async (queryBody: QueryPayload, firebase_uid: string) 
     // Move through sections and add new ones (and accompanying resources)
     for (const section of sections) {
         const { title, sectionId } = section;
-        let currSection: SectionType | null = null;
+        let currSection: SectionInterface | null = null;
         if (sectionId === undefined) {
             currSection = new Section({ title });
         } else {
-            currSection = await Section.findById(sectionId);
-            if (currSection === null) throw new HttpException(500, "Cannot retrieve section");
+            currSection = await Section.findById(sectionId).catch(() => null);
+            if (currSection === null)
+                throw new HttpException(500, `Cannot retrieve section of ${sectionId}`);
         }
 
         for (const resource of section.resources) {
@@ -172,7 +176,7 @@ export const updatePage = async (queryBody: QueryPayload, firebase_uid: string) 
             }
 
             await newResource.save().catch((err) => {
-                throw new HttpException(500, "Failed to save resource");
+                throw new HttpException(500, "Failed to save resource", err);
             });
 
             currSection.resources.push(newResource);
@@ -180,11 +184,9 @@ export const updatePage = async (queryBody: QueryPayload, firebase_uid: string) 
 
         const currSectionId = await currSection
             .save()
-            .then((res) => {
-                return res._id;
-            })
+            .then((res) => res._id)
             .catch((err) => {
-                throw new HttpException(500, "Failed to save section");
+                throw new HttpException(500, "Failed to save section", err);
             });
 
         if (sectionId === undefined) {
@@ -194,7 +196,7 @@ export const updatePage = async (queryBody: QueryPayload, firebase_uid: string) 
 
     // Save updated page
     await myPage.save().catch((err) => {
-        throw new HttpException(500, "Failed to save page");
+        throw new HttpException(500, "Failed to save page", err);
     });
 
     return await getPage(pageId, courseId);

@@ -1,7 +1,7 @@
 import ContentContainer from "./ContentContainer";
-import Footer from "./Footer/Footer";
-import LeftSideBar from "./Footer/LeftSideBar";
 import Layout from "./Layout";
-import SideNavbar from "./SideNavBar";
+import AdminNavBar from "./NavBars/AdminNavBar";
+import EmptyNavBar from "./NavBars/EmptyNavBar";
+import StudentNavBar from "./NavBars/StudentNavBar";
 
-export { ContentContainer, SideNavbar, Footer, Layout, LeftSideBar };
+export { ContentContainer, Layout, StudentNavBar, EmptyNavBar, AdminNavBar };

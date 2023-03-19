@@ -1,15 +1,14 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course.model";
 import User from "@/models/user.model";
-import { verifyIdTokenValid } from "@/utils/firebase";
+import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { getMissingBodyIDs, isValidBody } from "@/utils/util";
+import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
     courseId: string;
-    message?: string;
 };
 
 type QueryPayload = {
@@ -20,22 +19,29 @@ type QueryPayload = {
     icon: string;
 };
 
+/**
+ * GET /course/create
+ * Creates a course in the database based on the body
+ * @param req
+ * @param res
+ * @returns
+ */
 export const createCourseController = async (
     req: Request<QueryPayload>,
-    res: Response<ResponsePayload>,
+    res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        if (req.headers.authorization === undefined)
-            throw new HttpException(405, "No authorization header found");
-
-        // Verify token
-        const token = req.headers.authorization.split(" ")[1];
-        const authUser = await verifyIdTokenValid(token);
+        const authUser = await checkAuth(req);
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
+            "code",
+            "title",
+            "session",
+            "description",
+            "icon",
+        ];
 
         // User has been verified
-        if (
-            isValidBody<QueryPayload>(req.body, ["code", "title", "session", "description", "icon"])
-        ) {
+        if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
             const queryBody = req.body;
 
@@ -46,27 +52,17 @@ export const createCourseController = async (
         } else {
             throw new HttpException(
                 400,
-                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, [
-                    "code",
-                    "title",
-                    "session",
-                    "description",
-                    "icon",
-                ])}`,
+                `Missing body keys: ${getMissingBodyIDs<QueryPayload>(req.body, KEYS_TO_CHECK)}`,
             );
         }
     } catch (error) {
         if (error instanceof HttpException) {
             logger.error(error.getMessage());
             logger.error(error.originalError);
-            return res
-                .status(error.getStatusCode())
-                .json({ message: error.getMessage(), courseId: "" });
+            return res.status(error.getStatusCode()).json({ message: error.getMessage() });
         } else {
             logger.error(error);
-            return res
-                .status(500)
-                .json({ message: "Internal server error. Error was not caught", courseId: "" });
+            return res.status(500).json({ message: "Internal server error. Error was not caught" });
         }
     }
 };
@@ -78,6 +74,7 @@ export const createCourseController = async (
  *
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
+ * @throws { HttpException } Not an admin, or invalid user in database
  * @returns The ID of the course that has been created
  */
 export const createCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
@@ -113,7 +110,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
             return res._id;
         })
         .catch((err) => {
-            throw new HttpException(500, "Failed to save new course");
+            throw new HttpException(500, "Failed to save new course", err);
         });
 
     if (courseId === null) {
@@ -123,7 +120,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
     admin.created_courses.push(courseId);
 
     await admin.save().catch((err) => {
-        throw new HttpException(500, "Failed to save user");
+        throw new HttpException(500, "Failed to save user", err);
     });
 
     return courseId;
