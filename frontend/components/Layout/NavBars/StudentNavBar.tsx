@@ -22,7 +22,9 @@ const UserDetailsSection = ({ first_name, last_name, role, avatar }: UserDetails
       </div>
       <div className="flex flex-col pl-2 justify-center items-center">
         <span className="font-bold text-start w-full">{`${first_name} ${last_name}`}</span>
-        <span className="text-start w-full">{getRoleText(role)}</span>
+        <span className="text-start w-full" id="userRole">
+          {getRoleText(role)}
+        </span>
       </div>
     </div>
   );

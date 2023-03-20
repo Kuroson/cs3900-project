@@ -7,7 +7,7 @@ import { Avatar, Button, TextField } from "@mui/material";
 import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer } from "components";
+import { AdminNavBar, ContentContainer, Loading } from "components";
 import { defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
@@ -17,22 +17,6 @@ import initAuth from "util/firebase";
 import { Nullable } from "util/util";
 
 initAuth(); // SSR maybe, i think...
-
-type UserDetailsPayload = Nullable<{
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: number;
-  avatar: string;
-}>;
-
-type CreateCoursePayload = Nullable<{
-  code: string;
-  title: string;
-  description: string;
-  session: string;
-  icon: string;
-}>;
 
 const CreateCourse = (): JSX.Element => {
   const user = useUser();
@@ -50,39 +34,12 @@ const CreateCourse = (): JSX.Element => {
 
   React.useEffect(() => {
     // Build user data for user context
-    const fetchUserData = async () => {
-      const [resUserData, errUserData] = await getUserDetails(
-        await authUser.getIdToken(),
-        authUser.email ?? "bad",
-        "client",
-      );
-
-      if (errUserData !== null) {
-        throw errUserData;
-      }
-
-      if (resUserData === null) throw new Error("This shouldn't have happened");
-      return resUserData;
-    };
-
-    if (user.userDetails === null) {
-      fetchUserData()
-        .then((res) => {
-          if (user.setUserDetails !== undefined) {
-            user.setUserDetails(res.userDetails);
-          }
-        })
-        .then(() => setLoading(false))
-        .catch((err) => {
-          toast.error("failed to fetch shit");
-        });
-    } else {
+    if (user.userDetails !== null) {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user.userDetails]);
 
-  if (loading || user.userDetails === null) return <div>Loading...</div>;
+  if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
   // upload image
