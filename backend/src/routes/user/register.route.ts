@@ -40,6 +40,7 @@ export const registerUser = async (
         last_name: lastName,
         email: email,
         enrolments: [],
+        created_courses: [],
         role: role,
         avatar: "", // TODO
     });
