@@ -1,4 +1,5 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Enrolment from "@/models/course/enrolment/enrolment.model";
 import User, { UserInterfaceFull, isRoleAdmin } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -82,6 +83,7 @@ export const userDetailsController = async (
     res: Response<ResponsePayload | ErrorPayload>,
 ) => {
     try {
+        Enrolment; // Import enrolments for mongoose bug
         if (req.method !== "GET") throw new HttpException(405, "Method not allowed");
 
         const authUser = await checkAuth(req);
