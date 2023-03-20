@@ -42,7 +42,7 @@ describe("Login tests", () => {
     cy.get("#outlined-confirm-password-input").focus().type(password);
     cy.get("#submit-form-button").click();
     cy.wait(2000);
-    cy.location("pathname").should("eq", "/");
+    cy.location("pathname").should("eq", "/instructor");
     cy.get("h1").contains("Welcome, Cypress Testing");
     cy.get("#userRole").contains("Instructor");
   });

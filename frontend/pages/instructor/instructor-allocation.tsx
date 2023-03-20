@@ -2,7 +2,8 @@ import React from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { UserDetails } from "models/user.model";
-import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
+import { GetServerSideProps } from "next";
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
 import { defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import { useUser } from "util/UserContext";
@@ -47,6 +48,20 @@ const InstructorAllocationPage = (): JSX.Element => {
     </>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ AuthUser }) => {
+  const [res, err] = await getUserDetails(await AuthUser.getIdToken(), AuthUser.email ?? "", "ssr");
+
+  if (res?.userDetails === null || res?.userDetails.role !== 0) {
+    return { notFound: true };
+  }
+
+  return {
+    props: {},
+  };
+});
 
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,

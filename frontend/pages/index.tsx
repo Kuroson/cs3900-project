@@ -6,7 +6,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import { TextField } from "@mui/material";
 import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
-import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
+import { GetServerSideProps } from "next";
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
 import CourseCard from "components/common/CourseCard";
@@ -108,6 +109,26 @@ const HomePage = (): JSX.Element => {
     </>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ AuthUser }) => {
+  const [res, err] = await getUserDetails(await AuthUser.getIdToken(), AuthUser.email ?? "", "ssr");
+
+  if (res?.userDetails !== null && res?.userDetails.role === 0) {
+    // Instructor
+    return {
+      redirect: {
+        destination: "/instructor",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+});
 
 export default withAuthUser<HomePageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
