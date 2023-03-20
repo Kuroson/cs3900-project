@@ -71,22 +71,17 @@ export const registerController = async (
 ) => {
     try {
         if (req.method !== "POST") throw new HttpException(405, "Method not allowed");
-
         const authUser = await checkAuth(req);
         const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["firstName", "lastName", "email"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
-            const queryBody = req.body; // Body has been verified
-            const { firstName, lastName, email } = queryBody;
-
-            if (email !== authUser.email) {
-                logger.warning(`Emails do not match for ${authUser.uid}`);
+            const { firstName, lastName, email } = req.body;
+            if (email.toLowerCase() !== authUser.email) {
+                logger.info(`Emails do not match for ${authUser.uid}`);
                 throw new HttpException(401, "Email does not match email from JWT token");
             }
-
-            await registerUser(firstName, lastName, email, authUser.uid);
-
+            await registerUser(firstName, lastName, authUser.email, authUser.uid);
             return res.status(200).json({ message: "Success" });
         } else {
             throw new HttpException(
@@ -100,7 +95,6 @@ export const registerController = async (
             logger.error(error.originalError);
             return res.status(error.getStatusCode()).json({ message: error.getMessage() });
         } else {
-            logger.error(error);
             return res.status(500).json({ message: "Internal server error. Error was not caught" });
         }
     }

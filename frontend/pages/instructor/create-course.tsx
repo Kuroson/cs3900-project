@@ -4,9 +4,17 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Button, TextField } from "@mui/material";
+import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
-import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer } from "components";
+import { GetServerSideProps } from "next";
+import {
+  AuthAction,
+  useAuthUser,
+  withAuthUser,
+  withAuthUserSSR,
+  withAuthUserTokenSSR,
+} from "next-firebase-auth";
+import { AdminNavBar, ContentContainer, Loading } from "components";
 import { defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
@@ -16,22 +24,6 @@ import initAuth from "util/firebase";
 import { Nullable } from "util/util";
 
 initAuth(); // SSR maybe, i think...
-
-type UserDetailsPayload = Nullable<{
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: number;
-  avatar: string;
-}>;
-
-type CreateCoursePayload = Nullable<{
-  code: string;
-  title: string;
-  description: string;
-  session: string;
-  icon: string;
-}>;
 
 const CreateCourse = (): JSX.Element => {
   const user = useUser();
@@ -49,42 +41,16 @@ const CreateCourse = (): JSX.Element => {
 
   React.useEffect(() => {
     // Build user data for user context
-    const fetchUserData = async () => {
-      const [resUserData, errUserData] = await getUserDetails(
-        await authUser.getIdToken(),
-        authUser.email ?? "bad",
-        "client",
-      );
-
-      if (errUserData !== null) {
-        throw errUserData;
-      }
-
-      if (resUserData === null) throw new Error("This shouldn't have happened");
-      return resUserData;
-    };
-
-    if (user.userDetails === null) {
-      fetchUserData()
-        .then((res) => {
-          if (user.setUserDetails !== undefined) {
-            user.setUserDetails(res.userDetails);
-          }
-        })
-        .then(() => setLoading(false))
-        .catch((err) => {
-          toast.error("failed to fetch shit");
-        });
-    } else {
+    if (user.userDetails !== null) {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user.userDetails]);
 
-  if (loading || user.userDetails === null) return <div>Loading...</div>;
+  if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
   // upload image
+  // TODO: Icons don't do anything atm. Probably should upload them to firebase storage and have a permanent public URL
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const reader = new FileReader();
@@ -124,6 +90,22 @@ const CreateCourse = (): JSX.Element => {
     }
     if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
     setButtonLoading(false);
+    // Update global state with new course
+    const newCourse: BasicCourseInfo = {
+      _id: res.courseId,
+      code: code,
+      title: title,
+      session: session,
+    };
+    toast.success("Course created successfully");
+    if (userDetails === null) {
+      // Don't do it, bc its null?
+    }
+
+    user.setUserDetails({
+      ...userDetails,
+      created_courses: [...userDetails.created_courses, newCourse],
+    });
     router.push(`/instructor/${res.courseId}`);
   };
 
@@ -188,6 +170,20 @@ const CreateCourse = (): JSX.Element => {
     </>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ AuthUser }) => {
+  const [res, err] = await getUserDetails(await AuthUser.getIdToken(), AuthUser.email ?? "", "ssr");
+
+  if (res?.userDetails === null || res?.userDetails.role !== 0) {
+    return { notFound: true };
+  }
+
+  return {
+    props: {},
+  };
+});
 
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,

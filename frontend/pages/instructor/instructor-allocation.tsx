@@ -2,8 +2,9 @@ import React from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { UserDetails } from "models/user.model";
-import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer } from "components";
+import { GetServerSideProps } from "next";
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
+import { AdminNavBar, ContentContainer, Loading } from "components";
 import { defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import { useUser } from "util/UserContext";
 import { getUserDetails } from "util/api/userApi";
@@ -13,45 +14,17 @@ initAuth(); // SSR maybe, i think...
 
 const InstructorAllocationPage = (): JSX.Element => {
   const user = useUser();
+  const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
 
-  // const allCourses = courses;
-  const authUser = useAuthUser();
   React.useEffect(() => {
     // Build user data for user context
-    const fetchUserData = async () => {
-      const [resUserData, errUserData] = await getUserDetails(
-        await authUser.getIdToken(),
-        authUser.email ?? "bad",
-        "client",
-      );
-
-      if (errUserData !== null) {
-        throw errUserData;
-      }
-
-      if (resUserData === null) throw new Error("This shouldn't have happened");
-      return resUserData;
-    };
-
-    if (user.userDetails === null) {
-      fetchUserData()
-        .then((res) => {
-          if (user.setUserDetails !== undefined) {
-            user.setUserDetails(res.userDetails);
-          }
-        })
-        .then(() => setLoading(false))
-        .catch((err) => {
-          toast.error("failed to fetch shit");
-        });
-    } else {
+    if (user.userDetails !== null) {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user.userDetails]);
 
-  if (loading || user.userDetails === null) return <div>Loading...</div>;
+  if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
   return (
@@ -75,6 +48,20 @@ const InstructorAllocationPage = (): JSX.Element => {
     </>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ AuthUser }) => {
+  const [res, err] = await getUserDetails(await AuthUser.getIdToken(), AuthUser.email ?? "", "ssr");
+
+  if (res?.userDetails === null || res?.userDetails.role !== 0) {
+    return { notFound: true };
+  }
+
+  return {
+    props: {},
+  };
+});
 
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,

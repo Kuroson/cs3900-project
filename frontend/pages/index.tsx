@@ -6,8 +6,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import { TextField } from "@mui/material";
 import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
-import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
-import { ContentContainer, StudentNavBar } from "components";
+import { GetServerSideProps } from "next";
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
+import { ContentContainer, Loading, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
 import CourseCard from "components/common/CourseCard";
 import { useUser } from "util/UserContext";
@@ -31,50 +32,21 @@ type HomePageProps = {
 
 const HomePage = (): JSX.Element => {
   const user = useUser();
+  const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails !== null);
   const [searchCode, setSearchCode] = useState("");
   const [showedCourses, setShowedCourses] = useState<BasicCourseInfo[]>(
     user.userDetails?.enrolments ?? [],
   );
-  const authUser = useAuthUser();
-  console.log(authUser);
 
   React.useEffect(() => {
-    // Build user data for user context
-    const fetchUserData = async () => {
-      const [resUserData, errUserData] = await getUserDetails(
-        await authUser.getIdToken(),
-        authUser.email ?? "bad",
-        "client",
-      );
-
-      if (errUserData !== null) {
-        throw errUserData;
-      }
-
-      if (resUserData === null) throw new Error("This shouldn't have happened");
-      return resUserData;
-    };
-
-    if (user.userDetails === null) {
-      fetchUserData()
-        .then((res) => {
-          if (user.setUserDetails !== undefined) {
-            user.setUserDetails(res.userDetails);
-            setShowedCourses(res.userDetails.enrolments);
-          }
-        })
-        .then(() => setLoading(false))
-        .catch((err) => {
-          toast.error("failed to fetch shit");
-        });
-    } else {
+    if (user.userDetails !== null) {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setShowedCourses(user.userDetails?.enrolments ?? []);
+  }, [user.userDetails]);
 
-  if (loading || user.userDetails === null) return <div>Loading...</div>;
+  if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
   // search course id
@@ -137,6 +109,26 @@ const HomePage = (): JSX.Element => {
     </>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ AuthUser }) => {
+  const [res, err] = await getUserDetails(await AuthUser.getIdToken(), AuthUser.email ?? "", "ssr");
+
+  if (res?.userDetails !== null && res?.userDetails.role === 0) {
+    // Instructor
+    return {
+      redirect: {
+        destination: "/instructor",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+});
 
 export default withAuthUser<HomePageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,

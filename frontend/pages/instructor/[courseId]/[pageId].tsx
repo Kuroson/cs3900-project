@@ -17,6 +17,7 @@ import {
   AddNewSection,
   AdminNavBar,
   ContentContainer,
+  Loading,
   PageSections,
   ResourcesSection,
 } from "components";
@@ -52,39 +53,12 @@ const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.El
 
   React.useEffect(() => {
     // Build user data for user context
-    const fetchUserData = async () => {
-      const [resUserData, errUserData] = await getUserDetails(
-        await authUser.getIdToken(),
-        authUser.email ?? "bad",
-        "client",
-      );
-
-      if (errUserData !== null) {
-        throw errUserData;
-      }
-
-      if (resUserData === null) throw new Error("This shouldn't have happened");
-      return resUserData;
-    };
-
-    if (user.userDetails === null) {
-      fetchUserData()
-        .then((res) => {
-          if (user.setUserDetails !== undefined) {
-            user.setUserDetails(res.userDetails);
-          }
-        })
-        .then(() => setLoading(false))
-        .catch((err) => {
-          toast.error("failed to fetch shit");
-        });
-    } else {
+    if (user.userDetails !== null) {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user.userDetails]);
 
-  if (loading || user.userDetails === null) return <div>Loading...</div>;
+  if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
   const navRoutes: Routes[] = [

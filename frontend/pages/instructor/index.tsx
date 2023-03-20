@@ -6,8 +6,15 @@ import AddIcon from "@mui/icons-material/Add";
 import { TextField } from "@mui/material";
 import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
-import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer } from "components";
+import { GetServerSideProps } from "next";
+import {
+  AuthAction,
+  useAuthUser,
+  withAuthUser,
+  withAuthUserSSR,
+  withAuthUserTokenSSR,
+} from "next-firebase-auth";
+import { AdminNavBar, ContentContainer, Loading } from "components";
 import { defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import CourseCard from "components/common/CourseCard";
 import { useUser } from "util/UserContext";
@@ -18,51 +25,23 @@ initAuth(); // SSR maybe, i think...
 
 const Admin = (): JSX.Element => {
   const user = useUser();
+  const authUser = useAuthUser();
+  const router = useRouter();
   const [loading, setLoading] = React.useState(user.userDetails === null);
   const [showedCourses, setShowedCourses] = useState<BasicCourseInfo[]>(
     user.userDetails?.created_courses ?? [],
   );
   const [searchCode, setSearchCode] = useState("");
 
-  // const allCourses = courses;
-  const authUser = useAuthUser();
-  const router = useRouter();
   React.useEffect(() => {
     // Build user data for user context
-    const fetchUserData = async () => {
-      const [resUserData, errUserData] = await getUserDetails(
-        await authUser.getIdToken(),
-        authUser.email ?? "bad",
-        "client",
-      );
-
-      if (errUserData !== null) {
-        throw errUserData;
-      }
-
-      if (resUserData === null) throw new Error("This shouldn't have happened");
-      return resUserData;
-    };
-
-    if (user.userDetails === null) {
-      fetchUserData()
-        .then((res) => {
-          if (user.setUserDetails !== undefined) {
-            user.setUserDetails(res.userDetails);
-          }
-          setShowedCourses(res.userDetails.created_courses);
-        })
-        .then(() => setLoading(false))
-        .catch((err) => {
-          toast.error("failed to fetch shit");
-        });
-    } else {
+    if (user.userDetails !== null) {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setShowedCourses(user.userDetails?.created_courses ?? []);
+  }, [user.userDetails]);
 
-  if (loading || user.userDetails === null) return <div>Loading...</div>;
+  if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
   // search course id
@@ -119,6 +98,20 @@ const Admin = (): JSX.Element => {
     </>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ AuthUser }) => {
+  const [res, err] = await getUserDetails(await AuthUser.getIdToken(), AuthUser.email ?? "", "ssr");
+
+  if (res?.userDetails === null || res?.userDetails.role !== 0) {
+    return { notFound: true };
+  }
+
+  return {
+    props: {},
+  };
+});
 
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,

@@ -3,29 +3,11 @@ import { getAuth, signOut } from "firebase/auth";
 import { UserDetails, getRoleText } from "models/user.model";
 import { useUser } from "util/UserContext";
 import NavBar, { Routes } from "./NavBar";
+import UserDetailsSection from "./UserDetailSection";
 
 type SideNavBarProps = {
   userDetails: UserDetails;
   routes: Routes[];
-};
-
-/**
- * User avatar
- */
-const UserDetailsSection = ({ first_name, last_name, role, avatar }: UserDetails): JSX.Element => {
-  return (
-    <div className="mt-5 flex flex-row justify-center">
-      <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
-        <span className="text-2xl font-bold">
-          {(first_name?.charAt(0) ?? "") + (last_name?.charAt(0) ?? "")}
-        </span>
-      </div>
-      <div className="flex flex-col pl-2 justify-center items-center">
-        <span className="font-bold text-start w-full">{`${first_name} ${last_name}`}</span>
-        <span className="text-start w-full">{getRoleText(role)}</span>
-      </div>
-    </div>
-  );
 };
 
 export default function StudentNavBar({ userDetails, routes }: SideNavBarProps): JSX.Element {
