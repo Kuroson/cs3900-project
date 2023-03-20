@@ -1,5 +1,6 @@
 import { UserInterface } from "@/models/user.model";
 import { Document, Schema, Types, model } from "mongoose";
+import { CourseInterface } from "../course.model";
 import { AssignmentSubmissionInterface } from "./assignmentSubmission.model";
 import { QuizAttemptInterface } from "./quizAttempt";
 import { WorkloadCompletionInterface } from "./workloadCompletion.model";
@@ -12,6 +13,7 @@ import { WorkloadCompletionInterface } from "./workloadCompletion.model";
  */
 export interface EnrolmentInterface extends Document {
     student: UserInterface["_id"];
+    course: CourseInterface["_id"];
     quizAttempts: Types.DocumentArray<QuizAttemptInterface["_id"]>;
     assignmentSubmissions: Types.DocumentArray<AssignmentSubmissionInterface["_id"]>;
     workloadCompletion: Types.DocumentArray<WorkloadCompletionInterface["_id"]>;
@@ -19,6 +21,7 @@ export interface EnrolmentInterface extends Document {
 
 const enrolmentSchema: Schema = new Schema<EnrolmentInterface>({
     student: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    course: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     quizAttempts: [{ type: Schema.Types.ObjectId, ref: "QuizAttempt", required: true }],
     assignmentSubmissions: [
         { type: Schema.Types.ObjectId, ref: "AssignmentSubmission", required: true },

@@ -6,13 +6,13 @@ import { TaskInterface } from "./Task.model";
  */
 export interface WeekInterface extends Document {
     title: string;
-    overview: string;
+    description?: string;
     tasks: Types.DocumentArray<TaskInterface["_id"]>;
 }
 
 const weekSchema: Schema = new Schema<WeekInterface>({
     title: { type: String, required: true },
-    overview: { type: String, required: true },
+    description: { type: String },
     tasks: [{ type: Schema.Types.ObjectId, ref: "Task", required: true }],
 });
 

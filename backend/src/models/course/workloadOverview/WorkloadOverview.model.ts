@@ -6,12 +6,12 @@ import { WeekInterface } from "./week.model";
  * each week that students can view.
  */
 export interface WorkloadOverviewInterface extends Document {
-    description: string;
+    description?: string;
     weeks: Types.DocumentArray<WeekInterface["_id"]>;
 }
 
 const workloadOverviewSchema: Schema = new Schema<WorkloadOverviewInterface>({
-    description: { type: String, required: true },
+    description: { type: String },
     weeks: [{ type: Schema.Types.ObjectId, ref: "Week", required: true }],
 });
 

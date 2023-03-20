@@ -1,5 +1,6 @@
 import { Document, Schema, Types, model } from "mongoose";
 import { CourseInterface } from "./course/course.model";
+import { EnrolmentInterface } from "./course/enrolment/enrolment.model";
 
 export const STUDENT_ROLE = "1";
 export const INSTRUCTOR_ROLE = "0";
@@ -17,7 +18,7 @@ export interface UserInterface extends Document {
     first_name: string;
     last_name: string;
     role: number; // 0=instructor, 1=student
-    enrolments: Types.DocumentArray<CourseInterface["_id"]>;
+    enrolments: Types.DocumentArray<EnrolmentInterface["_id"]>;
     created_courses: Types.DocumentArray<CourseInterface["_id"]>;
     avatar?: string;
 }
@@ -28,7 +29,7 @@ const userSchema: Schema = new Schema<UserInterface>({
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
     role: { type: Number, required: true },
-    enrolments: [{ type: Schema.Types.ObjectId, ref: "Course", required: true }],
+    enrolments: [{ type: Schema.Types.ObjectId, ref: "Enrolment", required: true }],
     created_courses: [{ type: Schema.Types.ObjectId, ref: "Course", required: true }],
     avatar: String,
 });

@@ -9,8 +9,8 @@ import { QuestionInterface } from "../quiz/question.model";
  */
 export interface QuestionResponseInterface extends Document {
     question: QuestionInterface["_id"];
-    choice: ChoiceInterface["_id"];
-    answer: string;
+    choice?: ChoiceInterface["_id"];
+    answer?: string;
     mark: number;
 }
 

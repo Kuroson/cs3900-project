@@ -6,7 +6,7 @@ import { QuestionInterface } from "./question.model";
  */
 export interface QuizInterface extends Document {
     title: string;
-    description: string;
+    description?: string;
     open: string; // Stringified datetime object
     close: string; // Stringified datetime object
     maxGrade: number;
@@ -15,7 +15,7 @@ export interface QuizInterface extends Document {
 
 const quizSchema: Schema = new Schema<QuizInterface>({
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     open: { type: String, required: true },
     close: { type: String, required: true },
     maxGrade: { type: Number, required: true },

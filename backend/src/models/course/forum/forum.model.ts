@@ -5,14 +5,12 @@ import { PostInterface } from "./post.model";
  * This is the course forum that can contain many posts from students.
  */
 export interface ForumInterface extends Document {
-    title: string;
-    description: string;
+    description?: string;
     posts: Types.DocumentArray<PostInterface["_id"]>;
 }
 
 const forumSchema: Schema = new Schema<ForumInterface>({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     posts: [{ type: Schema.Types.ObjectId, ref: "Post", required: true }],
 });
 

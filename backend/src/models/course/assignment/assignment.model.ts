@@ -5,7 +5,7 @@ import { Document, Schema, Types, model } from "mongoose";
  */
 export interface AssignmentInterface extends Document {
     title: string;
-    description: string;
+    description?: string;
     deadline: string;
     marksAvailable: number;
     tags: Types.Array<string>;
@@ -13,7 +13,7 @@ export interface AssignmentInterface extends Document {
 
 const assignmentSchema: Schema = new Schema<AssignmentInterface>({
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     deadline: { type: String, required: true },
     marksAvailable: { type: Number, required: true },
     tags: [{ type: String, required: true }],
