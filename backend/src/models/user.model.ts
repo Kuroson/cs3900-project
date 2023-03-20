@@ -1,5 +1,5 @@
 import { Document, Schema, Types, model } from "mongoose";
-import { CourseInterface } from "./course.model";
+import { CourseInterface } from "./course/course.model";
 
 export const STUDENT_ROLE = "1";
 export const INSTRUCTOR_ROLE = "0";

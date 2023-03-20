@@ -1,7 +1,7 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Page from "@/models/page.model";
-import Resource from "@/models/resource.model";
-import Section, { SectionInterface } from "@/models/section.model";
+import Page from "@/models/course/page/page.model";
+import Resource from "@/models/course/page/resource.model";
+import Section, { SectionInterface } from "@/models/course/page/section.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";

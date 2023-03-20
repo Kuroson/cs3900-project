@@ -1,4 +1,4 @@
-import Course from "@/models/course.model";
+import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { checkAccess } from "@/routes/admin/access.route";
 import { disconnect } from "mongoose";

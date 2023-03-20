@@ -1,4 +1,4 @@
-import Course from "@/models/course.model";
+import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";

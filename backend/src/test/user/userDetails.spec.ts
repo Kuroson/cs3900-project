@@ -1,5 +1,5 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course.model";
+import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { getUserDetails } from "@/routes/user/userDetails.route";

@@ -1,8 +1,8 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course, { CourseInterface } from "@/models/course.model";
-import { PageInterface } from "@/models/page.model";
-import { ResourceInterface } from "@/models/resource.model";
-import { SectionInterface } from "@/models/section.model";
+import Course, { CourseInterface } from "@/models/course/course.model";
+import { PageInterface } from "@/models/course/page/page.model";
+import { ResourceInterface } from "@/models/course/page/resource.model";
+import { SectionInterface } from "@/models/course/page/section.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";

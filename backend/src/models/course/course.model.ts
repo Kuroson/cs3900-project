@@ -1,6 +1,6 @@
 import { Document, Schema, Types, model } from "mongoose";
-import { PageInterface } from "./page.model";
-import { UserInterface } from "./user.model";
+import { UserInterface } from "../user.model";
+import { PageInterface } from "./page/page.model";
 
 /**
  * Model to represent a course in the system
@@ -16,8 +16,8 @@ export interface CourseInterface extends Document {
     session: string;
     icon?: string;
     creator: UserInterface["_id"];
-    pages: Types.DocumentArray<PageInterface["_id"]>;
     students: Types.DocumentArray<UserInterface["_id"]>;
+    pages: Types.DocumentArray<PageInterface["_id"]>;
 }
 
 const courseSchema: Schema = new Schema<CourseInterface>({
@@ -27,8 +27,8 @@ const courseSchema: Schema = new Schema<CourseInterface>({
     session: { type: String, required: true },
     icon: { type: String },
     creator: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    pages: [{ type: Schema.Types.ObjectId, ref: "Page" }],
     students: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    pages: [{ type: Schema.Types.ObjectId, ref: "Page" }],
 });
 
 const Course = model<CourseInterface & Document>("Course", courseSchema);
