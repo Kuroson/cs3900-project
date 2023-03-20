@@ -4,6 +4,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Button, TextField } from "@mui/material";
+import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer } from "components";
@@ -85,6 +86,7 @@ const CreateCourse = (): JSX.Element => {
   const userDetails = user.userDetails as UserDetails;
 
   // upload image
+  // TODO: Icons don't do anything atm. Probably should upload them to firebase storage and have a permanent public URL
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const reader = new FileReader();
@@ -124,6 +126,22 @@ const CreateCourse = (): JSX.Element => {
     }
     if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
     setButtonLoading(false);
+    // Update global state with new course
+    const newCourse: BasicCourseInfo = {
+      _id: res.courseId,
+      code: code,
+      title: title,
+      session: session,
+    };
+    toast.success("Course created successfully");
+    if (userDetails === null) {
+      // Don't do it, bc its null?
+    }
+
+    user.setUserDetails({
+      ...userDetails,
+      created_courses: [...userDetails.created_courses, newCourse],
+    });
     router.push(`/instructor/${res.courseId}`);
   };
 
