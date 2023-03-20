@@ -1,5 +1,7 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
+import Forum from "@/models/course/forum/forum.model";
+import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -95,6 +97,22 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
             throw new HttpException(500, "Invalid user in database");
         });
 
+    const courseForum = await new Forum({
+        posts: [],
+    })
+        .save()
+        .catch((err) => {
+            throw new HttpException(500, "Failed to make forum for course");
+        });
+
+    const courseWorkloadOverview = await new WorkloadOverview({
+        weeks: [],
+    })
+        .save()
+        .catch((err) => {
+            throw new HttpException(500, "Failed to make workload overview for course");
+        });
+
     const myCourse = new Course({
         title,
         code,
@@ -102,6 +120,14 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         session,
         icon,
         creator: admin._id,
+        enrolments: [],
+        pages: [],
+        onlineClasses: [],
+        forum: courseForum._id,
+        quizzes: [],
+        assignments: [],
+        workloadOverview: courseWorkloadOverview._id,
+        tags: [],
     });
 
     const courseId = await myCourse
