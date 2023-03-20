@@ -18,6 +18,7 @@ export interface CourseInterface extends Document {
     creator: UserInterface["_id"];
     students: Types.DocumentArray<UserInterface["_id"]>;
     pages: Types.DocumentArray<PageInterface["_id"]>;
+    tags: Types.Array<string>;
 }
 
 const courseSchema: Schema = new Schema<CourseInterface>({
@@ -29,6 +30,7 @@ const courseSchema: Schema = new Schema<CourseInterface>({
     creator: { type: Schema.Types.ObjectId, ref: "User", required: true },
     students: [{ type: Schema.Types.ObjectId, ref: "User" }],
     pages: [{ type: Schema.Types.ObjectId, ref: "Page" }],
+    tags: [{ type: String, required: true }],
 });
 
 const Course = model<CourseInterface & Document>("Course", courseSchema);

@@ -10,8 +10,8 @@ export interface AssignmentSubmissionInterface extends Document {
     storedName: string;
     mark: number;
     comments: string;
-    successfulTags: Types.Array<string>;
-    improvementTags: Types.Array<string>;
+    successfulTags: Types.Array<string>; // Should come from the list of tags stored in the course object
+    improvementTags: Types.Array<string>; // Should come from the list of tags stored in the course object
 }
 
 const assignmentSubmissionSchema: Schema = new Schema<AssignmentSubmissionInterface>({

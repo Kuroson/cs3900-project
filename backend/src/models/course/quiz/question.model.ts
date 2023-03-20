@@ -15,7 +15,7 @@ export interface QuestionInterface extends Document {
     type: number;
     marks: number;
     choices: Types.DocumentArray<ChoiceInterface["_id"]>;
-    tags: Types.Array<string>;
+    tags: Types.Array<string>; // Should come from the list of tags stored in the course object
 }
 
 const questionSchema: Schema = new Schema<QuestionInterface>({
