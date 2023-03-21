@@ -22,7 +22,7 @@ import { AdminNavBar, ContentContainer, Loading } from "components";
 import { Routes, defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
-import { createNewCourse } from "util/api/courseApi";
+import { UpdateCoursePayloadRequest, createNewCourse, updateCourse } from "util/api/courseApi";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
@@ -45,10 +45,14 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
   const [title, setTitle] = useState<string>("");
   const [session, setSession] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [tags, setTags] = useState<string>("");
   const [icon, setIcon] = useState<string>("");
   const [buttonLoading, setButtonLoading] = React.useState(false);
 
   React.useEffect(() => {
+    console.log("courseData");
+    console.log(courseData);
+
     // Build user data for user context
     if (user.userDetails !== null) {
       setLoading(false);
@@ -71,22 +75,42 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
   };
 
   // create course
-  const handleCreateCourse = async (e: React.SyntheticEvent) => {
+  const handleUpdateCourse = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    if ([code, title, session, description].some((x) => x.length === 0)) {
-      toast.error("Please fill out all fields");
+    if ([code, title, session, description, tags].every((x) => x.length === 0)) {
+      toast.error("Please update at least one field");
       return;
     }
-    const dataPayload = {
-      code,
-      title,
-      session,
-      description,
-      icon,
+    let dataPayload: UpdateCoursePayloadRequest = {
+      courseId: courseData._id,
     };
+
+    if (code !== "") {
+      dataPayload.code = code;
+    }
+
+    if (title !== "") {
+      dataPayload.title = title;
+    }
+
+    if (session !== "") {
+      dataPayload.session = session;
+    }
+
+    if (description !== "") {
+      dataPayload.description = description;
+    }
+
+    if (tags !== "") {
+      const sendTags = tags.split(",");
+      dataPayload.tags = sendTags;
+    }
+
+    console.log(dataPayload);
+
     setButtonLoading(true);
-    const [res, err] = await createNewCourse(await authUser.getIdToken(), dataPayload, "client");
+    const [res, err] = await updateCourse(await authUser.getIdToken(), dataPayload, "client");
     if (err !== null) {
       console.error(err);
       if (err instanceof HttpException) {
@@ -99,22 +123,8 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
     }
     if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
     setButtonLoading(false);
-    // Update global state with new course
-    const newCourse: BasicCourseInfo = {
-      _id: res.courseId,
-      code: code,
-      title: title,
-      session: session,
-    };
-    toast.success("Course created successfully");
-    if (userDetails === null) {
-      // Don't do it, bc its null?
-    }
+    toast.success("Course updated successfully");
 
-    user.setUserDetails({
-      ...userDetails,
-      created_courses: [...userDetails.created_courses, newCourse],
-    });
     router.push(`/instructor/${res.courseId}`);
   };
 
@@ -156,11 +166,12 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
       <AdminNavBar userDetails={userDetails} routes={navRoutes} courseData={courseData} />
       <ContentContainer>
         <div className="py-5 px-9">
-          <h1>Create Course</h1>
+          <h1>Update Course</h1>
+          <p>Update any desired items in the course</p>
         </div>
         <form
           className="flex flex-col items-center justify-center gap-6"
-          onSubmit={handleCreateCourse}
+          onSubmit={handleUpdateCourse}
         >
           <Avatar
             alt="Course"
@@ -198,8 +209,19 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
               rows={9}
               onChange={(e) => setDescription(e.target.value)}
             />
+            <TextField
+              id="Tags"
+              label="Tags"
+              variant="outlined"
+              multiline
+              rows={5}
+              onChange={(e) => setTags(e.target.value)}
+            />
+            <p style={{ textAlign: "right" }}>
+              <i>Enter tags as comma separated list</i>
+            </p>
             <LoadingButton variant="contained" fullWidth type="submit" loading={buttonLoading}>
-              Create
+              Update
             </LoadingButton>
           </div>
         </form>
