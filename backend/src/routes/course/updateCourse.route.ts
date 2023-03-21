@@ -17,6 +17,7 @@ type QueryPayload = {
     session?: string;
     description?: string;
     icon?: string;
+    tags?: Array<string>;
 };
 
 /**
@@ -78,7 +79,7 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
         throw new HttpException(401, "Must be an admin to get all courses");
     }
 
-    const { courseId, code, title, session, description, icon } = queryBody;
+    const { courseId, code, title, session, description, icon, tags } = queryBody;
 
     const myCourse = await Course.findById(courseId).exec();
 
@@ -102,6 +103,10 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
 
     if (icon !== undefined) {
         myCourse.icon = icon;
+    }
+
+    if (tags !== undefined && tags.length !== 0) {
+        tags.forEach((tag) => myCourse.tags.push(tag));
     }
 
     const retCourseId = await myCourse

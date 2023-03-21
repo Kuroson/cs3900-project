@@ -45,6 +45,32 @@ export const createNewCourse = (
   );
 };
 
+export type UpdateCoursePayloadRequest = {
+  courseId: string;
+  code?: string;
+  title?: string;
+  session?: string;
+  description?: string;
+  icon?: string;
+  tags?: Array<string>;
+};
+
+type UpdateCoursePayloadResponse = {
+  courseId: string;
+};
+
+export const updateCourse = (
+  token: string | null,
+  payload: UpdateCoursePayloadRequest,
+  type: BackendLinkType,
+) => {
+  return apiPut<UpdateCoursePayloadRequest, UpdateCoursePayloadResponse>(
+    `${getBackendLink(type)}/course/update`,
+    token,
+    payload,
+  );
+};
+
 type AddStudentPayloadRequest = {
   courseId: string;
   studentEmails: Array<string>;

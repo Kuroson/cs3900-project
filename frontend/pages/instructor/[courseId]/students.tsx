@@ -5,6 +5,7 @@ import Head from "next/head";
 import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
@@ -126,6 +127,11 @@ const AddStudentsPage = ({ courseData }: AddStudentPageProps): JSX.Element => {
       name: "Home",
       route: `/instructor/${courseData._id}`,
       icon: <GridViewIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Course Info",
+      route: `/instructor/${courseData._id}/settings`,
+      icon: <SettingsIcon fontSize="large" color="primary" />,
     },
     {
       name: "Students",
