@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Course from "@/models/course.model";
+import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { getPage } from "@/routes/course/getCoursePage.route";

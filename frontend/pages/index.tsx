@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import HomeIcon from "@mui/icons-material/Home";
 import { TextField } from "@mui/material";
-import { BasicCourseInfo } from "models/course.model";
+import { UserEnrolmentInformation } from "models/enrolment.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
@@ -35,7 +35,7 @@ const HomePage = (): JSX.Element => {
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails !== null);
   const [searchCode, setSearchCode] = useState("");
-  const [showedCourses, setShowedCourses] = useState<BasicCourseInfo[]>(
+  const [showedCourses, setShowedCourses] = useState<UserEnrolmentInformation[]>(
     user.userDetails?.enrolments ?? [],
   );
 
@@ -54,7 +54,7 @@ const HomePage = (): JSX.Element => {
     if (e.key === "Enter") {
       if (userDetails.enrolments !== undefined) {
         setShowedCourses([
-          ...userDetails.enrolments.filter((course) => course.code.includes(searchCode)),
+          ...userDetails.enrolments.filter((course) => course.course.code.includes(searchCode)),
         ]);
       }
     }
@@ -64,7 +64,7 @@ const HomePage = (): JSX.Element => {
     { name: "Dashboard", route: "/", icon: <HomeIcon fontSize="large" color="primary" /> },
     ...userDetails.enrolments.map((x) => {
       return {
-        name: x.code,
+        name: x.course.code,
         route: `/course/${x._id}`,
         // Icon: <HomeIcon fontSize="large" color="primary" />,
       };
@@ -101,7 +101,7 @@ const HomePage = (): JSX.Element => {
           </div>
           <div className="flex flex-wrap w-full mx-3">
             {showedCourses?.map((x, index) => {
-              return <CourseCard key={index} course={x} href={`/course/${x._id}`} />;
+              return <CourseCard key={index} course={x.course} href={`/course/${x.course._id}`} />;
             })}
           </div>
         </div>

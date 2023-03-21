@@ -1,5 +1,5 @@
-import Course from "@/models/course.model";
-import Page from "@/models/page.model";
+import Course from "@/models/course/course.model";
+import Page from "@/models/course/page/page.model";
 import User from "@/models/user.model";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { createPage } from "@/routes/page/createPage.route";

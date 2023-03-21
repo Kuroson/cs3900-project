@@ -1,5 +1,5 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Resource from "@/models/resource.model";
+import Resource from "@/models/course/page/resource.model";
 import { recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";

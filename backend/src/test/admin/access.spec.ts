@@ -1,4 +1,6 @@
-import Course from "@/models/course.model";
+import Course from "@/models/course/course.model";
+import Forum from "@/models/course/forum/forum.model";
+import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import User from "@/models/user.model";
 import { checkAccess } from "@/routes/admin/access.route";
 import { disconnect } from "mongoose";
@@ -33,11 +35,29 @@ describe("Test checking if user has access to a course", () => {
                 throw new Error("Failed to get admin for test");
             });
 
+        const courseForum = await new Forum({
+            posts: [],
+        })
+            .save()
+            .catch((err) => {
+                throw new Error("Failed to create forum for test");
+            });
+
+        const courseWorkloadOverview = await new WorkloadOverview({
+            weeks: [],
+        })
+            .save()
+            .catch((err) => {
+                throw new Error("Failed to create workload overview for test");
+            });
+
         const myCourse = new Course({
             title: "Test course",
             code: "TEST",
             session: "T1",
             creator: adminId,
+            forum: courseForum,
+            workloadOverview: courseWorkloadOverview,
         });
 
         courseId = await myCourse
