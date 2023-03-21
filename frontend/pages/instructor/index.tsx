@@ -47,9 +47,9 @@ const Admin = (): JSX.Element => {
   // search course id
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      if (userDetails.enrolments !== undefined) {
+      if (userDetails.created_courses !== undefined) {
         setShowedCourses([
-          ...userDetails.enrolments.filter((course) => course.code.includes(searchCode)),
+          ...userDetails.created_courses.filter((course) => course.code.includes(searchCode)),
         ]);
       }
     }

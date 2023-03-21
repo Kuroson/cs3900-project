@@ -24,9 +24,31 @@ export interface CourseInterface extends MongooseDocument {
   tags: Array<string>;
 }
 
-export type BasicCourseInfo = Omit<CourseInterface, "creator" | "pages" | "students">;
+export type BasicCourseInfo = Omit<
+  CourseInterface,
+  | "creator"
+  | "students"
+  | "pages"
+  | "onlineClasses"
+  | "forum"
+  | "quizzes"
+  | "assignments"
+  | "workloadOverview"
+  | "tags"
+>;
 
-export type UserCourseInformation = Omit<CourseInterface, "students" | "pages" | "creator"> & {
+export type UserCourseInformation = Omit<
+  CourseInterface,
+  | "creator"
+  | "students"
+  | "pages"
+  | "onlineClasses"
+  | "forum"
+  | "quizzes"
+  | "assignments"
+  | "workloadOverview"
+  | "tags"
+> & {
   pages: PageFull[];
 };
 
