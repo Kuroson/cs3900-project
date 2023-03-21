@@ -14,8 +14,14 @@ export interface CourseInterface extends MongooseDocument {
   session: string;
   icon?: string;
   creator: MongooseId;
-  pages: Array<MongooseId>;
   students: Array<MongooseId>;
+  pages: Array<MongooseId>;
+  onlineClasses: Array<MongooseId>;
+  forum: MongooseId;
+  quizzes: Array<MongooseId>;
+  assignments: Array<MongooseId>;
+  workloadOverview: MongooseId;
+  tags: Array<string>;
 }
 
 export type BasicCourseInfo = Omit<CourseInterface, "creator" | "pages" | "students">;

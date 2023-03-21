@@ -38,7 +38,16 @@ export const getUserDetails = async (
 ): Promise<UserInterfaceFull> => {
     // 1. Get the user details of the firebase authUser;
     const requester = await User.findOne({ email: authUserEmail })
-        .populate("enrolments", "_id course")
+        .populate({
+            path: "enrolments",
+            model: "Enrolment",
+            select: "_id course",
+            populate: {
+                path: "course",
+                model: "Course",
+                select: "_id title code description session icon",
+            },
+        })
         // Because only admins have this array filled,its ok to probably just request everything
         .populate("created_courses")
         .exec();
@@ -59,7 +68,16 @@ export const getUserDetails = async (
 
     // 2. Get the user details of the requested user
     const userLookup = await User.findOne({ email: email })
-        .populate("enrolments", "_id course")
+        .populate({
+            path: "enrolments",
+            model: "Enrolment",
+            select: "_id course",
+            populate: {
+                path: "course",
+                model: "Course",
+                select: "_id title code description session icon",
+            },
+        })
         .populate("created_courses")
         .exec();
 

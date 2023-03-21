@@ -1,5 +1,6 @@
-import { CourseInterface, MongooseDocument, MongooseId } from "models";
+import { MongooseDocument, MongooseId } from "models";
 import { BasicCourseInfo } from "./course.model";
+import { UserEnrolmentInformation } from "./enrolment.model";
 
 export const STUDENT_ROLE = "1";
 export const INSTRUCTOR_ROLE = "0";
@@ -16,7 +17,7 @@ export interface UserInterface extends MongooseDocument {
 }
 
 export type UserDetails = Omit<UserInterface, "enrolments" | "created_courses"> & {
-  enrolments: BasicCourseInfo[];
+  enrolments: UserEnrolmentInformation[];
   created_courses: BasicCourseInfo[];
 };
 

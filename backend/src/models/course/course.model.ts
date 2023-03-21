@@ -22,7 +22,7 @@ export interface CourseInterface extends Document {
     session: string;
     icon?: string;
     creator: UserInterface["_id"];
-    enrolments: Types.DocumentArray<EnrolmentInterface["_id"]>;
+    students: Types.DocumentArray<EnrolmentInterface["_id"]>;
     pages: Types.DocumentArray<PageInterface["_id"]>;
     onlineClasses: Types.DocumentArray<OnlineClassInterface["_id"]>;
     forum: ForumInterface["_id"];
@@ -39,7 +39,7 @@ const courseSchema: Schema = new Schema<CourseInterface>({
     session: { type: String, required: true },
     icon: { type: String },
     creator: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    enrolments: [{ type: Schema.Types.ObjectId, ref: "Enrolment", required: true }],
+    students: [{ type: Schema.Types.ObjectId, ref: "Enrolment", required: true }],
     pages: [{ type: Schema.Types.ObjectId, ref: "Page", required: true }],
     onlineClasses: [{ type: Schema.Types.ObjectId, ref: "OnlineClass", required: true }],
     forum: { type: Schema.Types.ObjectId, ref: "Forum", required: true },

@@ -120,7 +120,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         session,
         icon,
         creator: admin._id,
-        enrolments: [],
+        students: [],
         pages: [],
         onlineClasses: [],
         forum: courseForum._id,

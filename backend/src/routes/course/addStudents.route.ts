@@ -1,5 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
+import Enrolment from "@/models/course/enrolment/enrolment.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -85,15 +86,28 @@ export const addStudents = async (courseId, studentEmails, firebaseUID): Promise
             const user = await User.findOne({ email: email });
 
             if (user !== null) {
-                course.students.addToSet(user._id);
-                user.enrolments.addToSet(course._id);
-                await user.save().catch((err) => {
-                    // throw new HttpException(500, "Failed to update specific user", err);
-                    // Just add to invalidEmails
-                    invalidEmails.push(email);
-                    logger.error(`Failed to update enrolments for ${email}.`);
-                    logger.error(err);
-                });
+                // Create new enrolment
+                new Enrolment({
+                    student: user._id,
+                    course: course._id,
+                })
+                    .save()
+                    .then(async (res) => {
+                        course.students.addToSet(res._id);
+                        user.enrolments.addToSet(res._id);
+                        await user.save().catch((err) => {
+                            // Add to invalidEmails
+                            invalidEmails.push(email);
+                            logger.error(`Failed to update enrolments for ${email}.`);
+                            logger.error(err);
+                        });
+                    })
+                    .catch((err) => {
+                        // Add to invalidEmails
+                        invalidEmails.push(email);
+                        logger.error(`Failed to update enrolments for ${email}.`);
+                        logger.error(err);
+                    });
             } else {
                 invalidEmails.push(email);
             }
