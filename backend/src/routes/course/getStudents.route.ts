@@ -6,7 +6,7 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 
-type StudentInfo = Omit<UserInterface, "enrolments" | "created_courses">;
+type StudentInfo = { student: Omit<UserInterface, "enrolments" | "created_courses"> };
 
 type ResponsePayload = {
     students: Array<StudentInfo>;
@@ -65,7 +65,17 @@ export const getStudentsController = async (
 export const getStudents = async (courseId: string): Promise<StudentInfo[]> => {
     // 1. Find the course
     const course = await Course.findById(courseId, "students")
-        .populate("students", "_id email firebase_uid first_name last_name role avatar")
+        // .populate("students", "_id email firebase_uid first_name last_name role avatar")
+        .populate({
+            path: "students",
+            model: "Enrolment",
+            select: "student",
+            populate: {
+                path: "student",
+                model: "User",
+                select: "_id email firebase_uid first_name last_name role avatar",
+            },
+        })
         .catch(() => null);
     if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
     return course.students;

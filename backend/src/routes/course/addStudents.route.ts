@@ -86,8 +86,18 @@ export const addStudents = async (courseId, studentEmails, firebaseUID): Promise
             const user = await User.findOne({ email: email });
 
             if (user !== null) {
+                // TODO: check if the enrolment already exists
+                const enrolment = await Enrolment.findOne({
+                    student: user._id,
+                    course: course._id,
+                });
+                if (enrolment !== null) {
+                    // Student is already enrolled
+                    return resolve();
+                }
+
                 // Create new enrolment
-                new Enrolment({
+                await new Enrolment({
                     student: user._id,
                     course: course._id,
                 })

@@ -40,9 +40,9 @@ describe("Test getting a list of students from a course", () => {
     it("Can get student information", async () => {
         const students = await getStudents(courseId);
         expect(students.length).toBe(1);
-        expect(students.at(0)?.email).toEqual(`student1${id}@email.com`);
-        expect(students.at(0)?.first_name).toEqual("first_name2");
-        expect(students.at(0)?.last_name).toEqual("last_name2");
+        expect(students.at(0)?.student.email).toEqual(`student1${id}@email.com`);
+        expect(students.at(0)?.student.first_name).toEqual("first_name2");
+        expect(students.at(0)?.student.last_name).toEqual("last_name2");
     });
 
     it("Invalid course ID should throw", async () => {
