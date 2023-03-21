@@ -107,8 +107,6 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
       dataPayload.tags = sendTags;
     }
 
-    console.log(dataPayload);
-
     setButtonLoading(true);
     const [res, err] = await updateCourse(await authUser.getIdToken(), dataPayload, "client");
     if (err !== null) {

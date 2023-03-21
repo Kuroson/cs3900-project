@@ -64,7 +64,7 @@ export const updateCourse = (
   payload: UpdateCoursePayloadRequest,
   type: BackendLinkType,
 ) => {
-  return apiPost<UpdateCoursePayloadRequest, UpdateCoursePayloadResponse>(
+  return apiPut<UpdateCoursePayloadRequest, UpdateCoursePayloadResponse>(
     `${getBackendLink(type)}/course/update`,
     token,
     payload,
