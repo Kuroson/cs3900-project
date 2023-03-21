@@ -50,9 +50,6 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
   const [buttonLoading, setButtonLoading] = React.useState(false);
 
   React.useEffect(() => {
-    console.log("courseData");
-    console.log(courseData);
-
     // Build user data for user context
     if (user.userDetails !== null) {
       setLoading(false);
@@ -82,7 +79,7 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
       toast.error("Please update at least one field");
       return;
     }
-    let dataPayload: UpdateCoursePayloadRequest = {
+    const dataPayload: UpdateCoursePayloadRequest = {
       courseId: courseData._id,
     };
 

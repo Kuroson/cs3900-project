@@ -85,7 +85,7 @@ export const verifyIdTokenValid = async (token: string) => {
  * @throws { HttpException } if token is invalid or expired or authorization header doesn't exist
  * @returns
  */
-export const checkAuth = async (req: Request) => {
+export const checkAuth = async (req: Request<Record<string, any>>) => {
     if (req.headers.authorization === undefined)
         throw new HttpException(401, "No authorization header found");
 
