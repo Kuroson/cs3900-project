@@ -21,7 +21,10 @@ import { deleteResourceController } from "./page/deleteResource.route";
 import { deleteSectionController } from "./page/deleteSection.route";
 import { getPagesController } from "./page/getPages.route";
 import { updatePageController } from "./page/updatePage.route";
+import { createQuestionController } from "./quiz/createQuestion.route";
 import { createQuizController } from "./quiz/createQuiz.route";
+import { deleteQuestionController } from "./quiz/deleteQuestion.route";
+import { updateQuizController } from "./quiz/updateQuiz.route";
 import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
 
@@ -64,3 +67,6 @@ indexRouter.get("/file", downloadFileController);
 
 // Quiz routes
 indexRouter.post("/quiz/create", createQuizController);
+indexRouter.put("/quiz/update", updateQuizController);
+indexRouter.post("/quiz/question/create", createQuestionController);
+indexRouter.delete("/quiz/question/delete", deleteQuestionController);
