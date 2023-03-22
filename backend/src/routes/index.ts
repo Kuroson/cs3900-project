@@ -21,6 +21,7 @@ import { deleteResourceController } from "./page/deleteResource.route";
 import { deleteSectionController } from "./page/deleteSection.route";
 import { getPagesController } from "./page/getPages.route";
 import { updatePageController } from "./page/updatePage.route";
+import { createQuizController } from "./quiz/createQuiz.route";
 import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
 
@@ -60,3 +61,6 @@ indexRouter.delete("/page/removes/section", deleteSectionController);
 // File routes
 indexRouter.post("/file/upload", firebaseUpload.single("file"), uploadFileController);
 indexRouter.get("/file", downloadFileController);
+
+// Quiz routes
+indexRouter.post("/quiz/create", createQuizController);
