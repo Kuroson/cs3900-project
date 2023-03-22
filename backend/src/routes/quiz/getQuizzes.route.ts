@@ -12,7 +12,7 @@ import { checkAdmin } from "../admin/admin.route";
 type QuizInfo = {
     quizId: string;
     title: string;
-    isResponded: string;
+    isResponded: boolean;
     open: string;
     close: string;
 };
@@ -32,7 +32,7 @@ type QueryPayload = {
  * @param res
  * @returns
  */
-export const updateQuizController = async (
+export const getQuizzesController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
@@ -45,7 +45,7 @@ export const updateQuizController = async (
             // Body has been verified
             const queryBody = req.query;
 
-            const quizzes = await updateQuiz(queryBody, authUser.uid);
+            const quizzes = await getQuizzes(queryBody, authUser.uid);
 
             logger.info(`quizzes: ${quizzes}`);
             return res.status(200).json({ quizzes });
@@ -75,7 +75,7 @@ export const updateQuizController = async (
  * @throws { HttpException } Course recall failed
  * @returns The list of quizzes with the required information
  */
-export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) => {
     const { courseId } = queryBody;
 
     const course = await Course.findById(courseId)
@@ -131,13 +131,15 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
             });
         }
 
-        const quizInfo = {
+        const quizInfo: QuizInfo = {
             quizId: quiz._id,
             title: quiz.title,
             open: quiz.open,
             close: quiz.close,
             isResponded,
         };
+
+        quizzes.push(quizInfo);
     });
 
     return quizzes;

@@ -100,7 +100,7 @@ export const createQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         description,
         open,
         close,
-        maxGrade: maxMarks,
+        maxMarks,
         quesions: [],
     })
         .save()

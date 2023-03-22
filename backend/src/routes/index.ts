@@ -24,6 +24,8 @@ import { updatePageController } from "./page/updatePage.route";
 import { createQuestionController } from "./quiz/createQuestion.route";
 import { createQuizController } from "./quiz/createQuiz.route";
 import { deleteQuestionController } from "./quiz/deleteQuestion.route";
+import { getQuestionsController } from "./quiz/getQuestions.route";
+import { getQuizzesController } from "./quiz/getQuizzes.route";
 import { updateQuizController } from "./quiz/updateQuiz.route";
 import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
@@ -66,6 +68,8 @@ indexRouter.post("/file/upload", firebaseUpload.single("file"), uploadFileContro
 indexRouter.get("/file", downloadFileController);
 
 // Quiz routes
+indexRouter.get("/quiz/list", getQuizzesController);
+indexRouter.get("/quiz/questions", getQuestionsController);
 indexRouter.post("/quiz/create", createQuizController);
 indexRouter.put("/quiz/update", updateQuizController);
 indexRouter.post("/quiz/question/create", createQuestionController);

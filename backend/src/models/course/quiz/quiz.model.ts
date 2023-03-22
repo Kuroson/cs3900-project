@@ -1,5 +1,5 @@
 import { Document, Schema, Types, model } from "mongoose";
-import { QuestionInterface } from "./question.model";
+import { QuestionInterface, QuestionInterfaceFull } from "./question.model";
 
 /**
  * This is a quiz within the course that is set as an assessment.
@@ -9,7 +9,7 @@ export interface QuizInterface extends Document {
     description?: string;
     open: string; // Stringified datetime object
     close: string; // Stringified datetime object
-    maxGrade: number;
+    maxMarks: number;
     questions: Types.DocumentArray<QuestionInterface["_id"]>;
 }
 
@@ -18,10 +18,15 @@ const quizSchema: Schema = new Schema<QuizInterface>({
     description: { type: String },
     open: { type: String, required: true },
     close: { type: String, required: true },
-    maxGrade: { type: Number, required: true },
+    maxMarks: { type: Number, required: true },
     questions: [{ type: Schema.Types.ObjectId, ref: "Choice", required: true }],
 });
 
 const Quiz = model<QuizInterface & Document>("Quiz", quizSchema);
 
 export default Quiz;
+
+export type QuizInterfaceFull = Omit<QuizInterface, "questions"> & {
+    // Omit the two arrays of ids and replace them with the full objects
+    questions: QuestionInterfaceFull[];
+};

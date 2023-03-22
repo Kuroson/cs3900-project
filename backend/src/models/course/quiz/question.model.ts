@@ -33,3 +33,8 @@ export default Question;
 export const isMultipleChoice = (questionType: number) => {
     return questionType == 0;
 };
+
+export type QuestionInterfaceFull = Omit<QuestionInterface, "choices"> & {
+    // Omit the two arrays of ids and replace them with the full objects
+    choices: ChoiceInterface[];
+};
