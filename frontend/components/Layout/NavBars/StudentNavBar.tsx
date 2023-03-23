@@ -1,5 +1,7 @@
+import HomeIcon from "@mui/icons-material/Home";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
+import { UserCourseInformation } from "models/course.model";
 import { UserDetails, getRoleText } from "models/user.model";
 import { useUser } from "util/UserContext";
 import NavBar, { Routes } from "./NavBar";
@@ -7,10 +9,15 @@ import UserDetailsSection from "./UserDetailSection";
 
 type SideNavBarProps = {
   userDetails: UserDetails;
-  routes: Routes[];
+  routes?: Routes[];
+  courseData?: UserCourseInformation;
 };
 
-export default function StudentNavBar({ userDetails, routes }: SideNavBarProps): JSX.Element {
+export default function StudentNavBar({
+  userDetails,
+  routes,
+  courseData,
+}: SideNavBarProps): JSX.Element {
   const user = useUser();
 
   const handleOnClick = async () => {
@@ -19,6 +26,21 @@ export default function StudentNavBar({ userDetails, routes }: SideNavBarProps):
       user.setUserDetails(null);
     }
   };
+  console.log(courseData);
+  const studentRoutes: Routes[] = [
+    {
+      name: "Dashboard",
+      route: "/",
+      icon: <HomeIcon fontSize="large" color="primary" />,
+      hasLine: true,
+    },
+    ...(courseData?.pages ?? []).map((x) => {
+      return {
+        name: x.title,
+        route: `/course/${courseData?._id}/${x._id}`,
+      };
+    }),
+  ];
 
   return (
     <div className="w-full">
@@ -27,7 +49,11 @@ export default function StudentNavBar({ userDetails, routes }: SideNavBarProps):
           <div>
             {/* Top */}
             <UserDetailsSection {...userDetails} />
-            <NavBar routes={routes} role={getRoleText(userDetails.role)} isCoursePage={false} />
+            <NavBar
+              routes={routes ?? studentRoutes}
+              role={getRoleText(userDetails.role)}
+              isCoursePage={false}
+            />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}

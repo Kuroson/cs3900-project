@@ -53,7 +53,7 @@ const NavBar = ({ routes, isCoursePage, role }: NavBarProps): JSX.Element => {
     );
   } else {
     return (
-      <div className="w-full flex flex-col items-center justify-center mt-4 pl-2">
+      <div className="w-full flex flex-col items-center justify-center mt-4 ml-4">
         {routes.map(({ name, route, icon, hasLine }, index) => {
           return (
             <div key={`nav-index-${index}`} className="w-full flex py-2 flex-col">

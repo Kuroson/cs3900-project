@@ -3,10 +3,6 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import DeleteIcon from "@mui/icons-material/Delete";
-import GridViewIcon from "@mui/icons-material/GridView";
-import HomeIcon from "@mui/icons-material/Home";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import SettingsIcon from "@mui/icons-material/Settings";
 import { Button } from "@mui/material";
 import { ResourceInterface } from "models";
 import { UserCourseInformation } from "models/course.model";
@@ -62,34 +58,6 @@ const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.El
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
-  const navRoutes: Routes[] = [
-    {
-      name: "Dashboard",
-      route: "/instructor",
-      icon: <HomeIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Home",
-      route: `/instructor/${courseData._id}`,
-      icon: <GridViewIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Course Info",
-      route: `/instructor/${courseData._id}/settings`,
-      icon: <SettingsIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Students",
-      route: `/instructor/${courseData._id}/students`,
-      icon: <PeopleAltIcon fontSize="large" color="primary" />,
-      hasLine: true,
-    },
-    ...courseData.pages.map((page) => ({
-      name: page.title,
-      route: `/instructor/${courseData._id}/${page._id}`,
-    })),
-  ];
-
   const handleDeletePage = async () => {
     const [data, err] = await deletePage(
       await authUser.getIdToken(),
@@ -110,12 +78,7 @@ const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.El
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar
-        userDetails={userDetails}
-        routes={navRoutes}
-        courseData={courseData}
-        showAddPage={true}
-      />
+      <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between pt-3">
