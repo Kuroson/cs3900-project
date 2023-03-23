@@ -39,21 +39,6 @@ const StudentCoursePage = ({ courseData }: StudentCoursePageProps): JSX.Element 
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
-  const studentRoutes: Routes[] = [
-    {
-      name: "Dashboard",
-      route: "/",
-      icon: <HomeIcon fontSize="large" color="primary" />,
-      hasLine: true,
-    },
-    ...courseData.pages.map((x): Routes => {
-      return {
-        name: x.title,
-        route: `/course/${courseData._id}/${x._id}`,
-      };
-    }),
-  ];
-
   return (
     <>
       <Head>
@@ -61,7 +46,7 @@ const StudentCoursePage = ({ courseData }: StudentCoursePageProps): JSX.Element 
         <meta name="description" content={courseData.description} />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <StudentNavBar userDetails={userDetails} routes={studentRoutes} />
+      <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE] mt-5">

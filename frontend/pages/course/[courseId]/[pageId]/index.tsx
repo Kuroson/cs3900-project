@@ -3,7 +3,6 @@ import React from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import Link from "next/link";
-import HomeIcon from "@mui/icons-material/Home";
 import { Button, Typography } from "@mui/material";
 import { ResourceInterface } from "models";
 import { UserCourseInformation } from "models/course.model";
@@ -86,21 +85,6 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
-  const studentRoutes: Routes[] = [
-    {
-      name: "Dashboard",
-      route: "/",
-      icon: <HomeIcon fontSize="large" color="primary" />,
-      hasLine: true,
-    },
-    ...courseData.pages.map((x) => {
-      return {
-        name: x.title,
-        route: `/course/${courseData._id}/${x._id}`,
-      };
-    }),
-  ];
-
   return (
     <>
       <Head>
@@ -108,7 +92,7 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <StudentNavBar userDetails={userDetails} routes={studentRoutes} />
+      <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between pt-5">
