@@ -1,6 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
+import GridViewIcon from "@mui/icons-material/GridView";
+import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import SettingsIcon from "@mui/icons-material/Settings";
 import {
   Button,
   FormControl,
@@ -23,7 +27,7 @@ import UserDetailsSection from "./UserDetailSection";
 
 type AdminNavBar = {
   userDetails: UserDetails;
-  routes: Routes[];
+  routes?: Routes[];
   courseData?: UserCourseInformation;
   showAddPage?: boolean;
 };
@@ -58,8 +62,8 @@ const style = {
 
 export default function AdminNavBar({
   userDetails,
-  routes,
   courseData,
+  routes,
   showAddPage,
 }: AdminNavBar): JSX.Element {
   const user = useUser();
@@ -68,7 +72,55 @@ export default function AdminNavBar({
   const [open, setOpen] = React.useState(false);
   const [radio, setRadio] = React.useState("");
   const [pageName, setPageName] = React.useState("");
-  const [dynamicRoutes, setDynamicRoutes] = React.useState(routes);
+
+  const navRoutes: Routes[] = [
+    {
+      name: "Dashboard",
+      route: "/instructor",
+      icon: <HomeIcon fontSize="large" color="primary" />,
+      hasLine: true,
+    },
+    {
+      name: "Home",
+      route: `/instructor/${courseData?._id}`,
+      icon: <GridViewIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Course Info",
+      route: `/instructor/${courseData?._id}/settings`,
+      icon: <SettingsIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Students",
+      route: `/instructor/${courseData?._id}/students`,
+      icon: <PeopleAltIcon fontSize="large" color="primary" />,
+      hasLine: true,
+    },
+    ...(courseData?.pages ?? []).map((page) => {
+      if (page.title === "Quiz") {
+        return {
+          name: page.title,
+          route: `/instructor/${courseData?._id}/Quiz`,
+        };
+      } else if (page.title === "Assignment") {
+        return {
+          name: page.title,
+          route: `/instructor/${courseData?._id}/Assignment`,
+        };
+      } else if (page.title === "Forum") {
+        return {
+          name: page.title,
+          route: `/instructor/${courseData?._id}/Forum`,
+        };
+      }
+      return {
+        name: page.title,
+        route: `/instructor/${courseData?._id}/${page._id}`,
+      };
+    }),
+  ];
+
+  const [dynamicRoutes, setDynamicRoutes] = React.useState(routes ?? navRoutes);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -90,7 +142,7 @@ export default function AdminNavBar({
     const [res, err] = await createNewPage(
       await authUser.getIdToken(),
       courseData?._id ?? "",
-      pageName,
+      name,
       "client",
     );
     if (err !== null) {
@@ -110,7 +162,6 @@ export default function AdminNavBar({
     e.preventDefault();
     console.warn("here");
     // Add to page list
-    // TODO do the rest later
     if (radio === "Other Page") {
       const res = await sendRequest(pageName);
       setDynamicRoutes([
@@ -121,12 +172,14 @@ export default function AdminNavBar({
         },
       ]);
     } else {
-      // TODO
-      // sendRequest(radio);
-      // routes.push({
-      //   name: pageName,
-      //   route: `/instructor/${courseId}`,
-      // });
+      await sendRequest(radio);
+      setDynamicRoutes([
+        ...dynamicRoutes,
+        {
+          name: radio,
+          route: `/instructor/${courseData?._id ?? "123"}/${radio}`,
+        },
+      ]);
     }
 
     setPageName("");

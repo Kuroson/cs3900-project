@@ -2,10 +2,6 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import GridViewIcon from "@mui/icons-material/GridView";
-import HomeIcon from "@mui/icons-material/Home";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import SettingsIcon from "@mui/icons-material/Settings";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Button, TextField } from "@mui/material";
 import { BasicCourseInfo, UserCourseInformation } from "models/course.model";
@@ -123,34 +119,6 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
     router.push(`/instructor/${res.courseId}`);
   };
 
-  const navRoutes: Routes[] = [
-    {
-      name: "Dashboard",
-      route: "/instructor",
-      icon: <HomeIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Home",
-      route: `/instructor/${courseData._id}`,
-      icon: <GridViewIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Course Info",
-      route: `/instructor/${courseData._id}/settings`,
-      icon: <SettingsIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Students",
-      route: `/instructor/${courseData._id}/students`,
-      icon: <PeopleAltIcon fontSize="large" color="primary" />,
-      hasLine: true,
-    },
-    ...courseData.pages.map((page) => ({
-      name: page.title,
-      route: `/instructor/${courseData._id}/${page._id}`,
-    })),
-  ];
-
   return (
     <>
       <Head>
@@ -158,7 +126,7 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar userDetails={userDetails} routes={navRoutes} courseData={courseData} />
+      <AdminNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
         <div className="py-5 px-9">
           <h1>Update Course</h1>

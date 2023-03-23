@@ -2,10 +2,6 @@
 import React from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
-import GridViewIcon from "@mui/icons-material/GridView";
-import HomeIcon from "@mui/icons-material/Home";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import SettingsIcon from "@mui/icons-material/Settings";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
@@ -117,34 +113,6 @@ const AddStudentsPage = ({ courseData }: AddStudentPageProps): JSX.Element => {
     setButtonLoading(false);
   };
 
-  const navRoutes: Routes[] = [
-    {
-      name: "Dashboard",
-      route: "/instructor",
-      icon: <HomeIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Home",
-      route: `/instructor/${courseData._id}`,
-      icon: <GridViewIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Course Info",
-      route: `/instructor/${courseData._id}/settings`,
-      icon: <SettingsIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Students",
-      route: `/instructor/${courseData._id}/students`,
-      icon: <PeopleAltIcon fontSize="large" color="primary" />,
-      hasLine: true,
-    },
-    ...courseData.pages.map((page) => ({
-      name: page.title,
-      route: `/instructor/${courseData._id}/${page._id}`,
-    })),
-  ];
-
   return (
     <>
       <Head>
@@ -152,7 +120,7 @@ const AddStudentsPage = ({ courseData }: AddStudentPageProps): JSX.Element => {
         <meta name="description" content="Add students to a page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar userDetails={userDetails} routes={navRoutes} courseData={courseData} />
+      <AdminNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE] pt-3">
