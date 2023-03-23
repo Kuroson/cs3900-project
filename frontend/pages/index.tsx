@@ -59,13 +59,13 @@ const HomePage = (): JSX.Element => {
       }
     }
   };
-
+  console.log(userDetails.enrolments);
   const studentRoutes: Routes[] = [
     { name: "Dashboard", route: "/", icon: <HomeIcon fontSize="large" color="primary" /> },
     ...userDetails.enrolments.map((x) => {
       return {
         name: x.course.code,
-        route: `/course/${x._id}`,
+        route: `/course/${x.course._id}`,
         // Icon: <HomeIcon fontSize="large" color="primary" />,
       };
     }),
