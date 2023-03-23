@@ -1,7 +1,7 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Choice from "@/models/course/quiz/choice.model";
-import Question, { EXTENDED_REPONSE, MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
+import Question from "@/models/course/quiz/question.model";
 import Quiz from "@/models/course/quiz/quiz.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -99,12 +99,12 @@ export const createQuestion = async (queryBody: QueryPayload, firebase_uid: stri
         throw new HttpException(500, "Failed to fetch course");
     }
 
-    if (!(tag in course.tags)) {
+    if (!course.tags.includes(tag)) {
         throw new HttpException(400, "Tag not in course tags");
     }
 
     // Check type is valid
-    if (!(type in ["choice", "open"])) {
+    if (!["choice", "open"].includes(type)) {
         throw new HttpException(400, "Invalid question type");
     }
 
@@ -124,16 +124,16 @@ export const createQuestion = async (queryBody: QueryPayload, firebase_uid: stri
         throw new HttpException(500, "Failed to fetch quiz");
     }
 
-    const myQuestion = await new Question({
+    const myQuestion = new Question({
         text,
-        type: type === "choice" ? MULTIPLE_CHOICE : EXTENDED_REPONSE,
+        type: type,
         marks,
         choices: [],
         tag,
     });
 
-    if (choices !== undefined) {
-        choices.forEach(async (choice) => {
+    if (type === "choice" && choices !== undefined) {
+        for (const choice of choices) {
             const myChoice = await new Choice({
                 text: choice.text,
                 correct: choice.correct,
@@ -149,10 +149,10 @@ export const createQuestion = async (queryBody: QueryPayload, firebase_uid: stri
             }
 
             myQuestion.choices.push(myChoice._id);
-        });
+        }
     }
 
-    myQuestion.save().catch((err) => {
+    await myQuestion.save().catch((err) => {
         logger.error(err);
         throw new HttpException(500, "Failed to save question");
     });

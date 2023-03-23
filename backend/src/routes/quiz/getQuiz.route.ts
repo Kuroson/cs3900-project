@@ -119,7 +119,7 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
 
     const ret_data: ResponsePayload = {
         title: quiz.title,
-        description: quiz.description ? quiz.description : "",
+        description: quiz.description !== undefined ? quiz.description : "",
         maxMarks: quiz.maxMarks,
         open: quiz.open,
         close: quiz.close,
@@ -138,22 +138,25 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
     const afterDue = now > close;
 
     // Add questions and responses
-    quiz.questions.forEach(async (question) => {
+    let marksAwarded = 0;
+    let marksTotal = 0;
+    for (const question of quiz.questions) {
         const questionResponse = await getQuestionResponse(question._id, attemptId);
 
         const questionInfo: QuestionInfo = {
             text: question.text,
             type: question.type,
-            markTotal: question.markTotal,
+            markTotal: question.marks,
             tag: question.tag,
         };
 
         // Responses and choices varies based on type of question
         if (question.type === MULTIPLE_CHOICE) {
-            question.choices.forEach((choice) => {
+            questionInfo.choices = [];
+            for (const choice of question.choices) {
                 const choiceInfo: ChoiceInfo = {
                     text: choice.text,
-                    chosen: choice._id === questionResponse.choice,
+                    chosen: choice._id.equals(questionResponse.choice),
                 };
 
                 if (afterDue) {
@@ -161,8 +164,8 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
                     questionInfo.markAwarded = questionResponse.mark;
                 }
 
-                questionInfo.choices?.push(choiceInfo);
-            });
+                questionInfo.choices.push(choiceInfo);
+            }
         } else {
             questionInfo.response = questionResponse.answer;
 
@@ -171,16 +174,23 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
             }
         }
 
+        marksAwarded += questionResponse.mark;
+        marksTotal += question.marks;
+
         if (ret_data.questions === undefined) {
             ret_data.questions = [];
         }
         ret_data.questions.push(questionInfo);
-    });
+    }
+
+    if (afterDue) {
+        ret_data.marksAwarded = (marksAwarded / marksTotal) * quiz.maxMarks;
+    }
 
     return ret_data;
 };
 
-const getAttempt = async (courseId: string, quizId: string, firebase_uid: string) => {
+export const getAttempt = async (courseId: string, quizId: string, firebase_uid: string) => {
     // Get enrolment
     const enrolment = await Enrolment.findOne({
         course: courseId,
@@ -199,8 +209,8 @@ const getAttempt = async (courseId: string, quizId: string, firebase_uid: string
         throw new HttpException(500, "Failed to fetch enrolment");
     }
 
-    for (let attempt of enrolment.quizAttempts) {
-        if (attempt.quiz === quizId) {
+    for (const attempt of enrolment.quizAttempts) {
+        if (attempt.quiz.equals(quizId)) {
             return attempt._id;
         }
     }
@@ -211,7 +221,7 @@ const getQuestionResponse = async (questionId: string, attemptId: string) => {
     const attempt = await QuizAttempt.findById(attemptId)
         .populate({
             path: "responses",
-            model: "QestionResponse",
+            model: "QuestionResponse",
         })
         .catch((err) => {
             logger.error(err);
@@ -222,7 +232,7 @@ const getQuestionResponse = async (questionId: string, attemptId: string) => {
     }
 
     for (const question of attempt.responses) {
-        if (question.question === questionId) {
+        if (question.question.equals(questionId)) {
             return question;
         }
     }

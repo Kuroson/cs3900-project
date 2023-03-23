@@ -5,6 +5,7 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { getAttempt } from "./getQuiz.route";
 
 type ResponsePayload = QuizInterfaceStudent;
 
@@ -60,7 +61,8 @@ export const startQuizController = async (
  *
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
- * @throws { HttpException } Quiz recall failed, save fail, not within quiz open and close times
+ * @throws { HttpException } Quiz recall failed, save fail, not within quiz open and close times,
+ * quiz already attempted
  * @returns Information about the given quiz
  */
 export const startQuiz = async (queryBody: QueryPayload, firebase_uid: string) => {
@@ -69,6 +71,11 @@ export const startQuiz = async (queryBody: QueryPayload, firebase_uid: string) =
     }
 
     const { quizId, courseId } = queryBody;
+
+    // Fail if quiz already attempted
+    if (await getAttempt(courseId, quizId, firebase_uid)) {
+        throw new HttpException(400, "Quiz already attempted");
+    }
 
     // Get the quiz with subset of fields
     const quiz = await Quiz.findById(quizId).populate({

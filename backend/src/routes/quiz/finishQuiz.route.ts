@@ -10,8 +10,9 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { getAttempt } from "./getQuiz.route";
 
-type ResponsePayload = {};
+type ResponsePayload = Record<string, never>;
 
 type ResponseInfo = {
     questionId: string;
@@ -72,6 +73,7 @@ export const finishQuizController = async (
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
  * @throws { HttpException } Quiz recall failed, save fail, not within quiz open and close times,
+ * quiz already attempted
  * answer not given, wrong answer type given
  */
 export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) => {
@@ -89,7 +91,7 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(400, "Student not enrolled in course");
     }
 
-    const attempt = await new QuizAttempt({
+    const attempt = new QuizAttempt({
         quiz: quizId,
         mark: 0,
         responses: [],
@@ -116,8 +118,13 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(400, "Quiz already closed");
     }
 
+    // Fail if quiz already attempted
+    if (await getAttempt(courseId, quizId, firebase_uid)) {
+        throw new HttpException(400, "Quiz already attempted");
+    }
+
     // Go through and mark questions (and do required checks)
-    responses.forEach(async (response) => {
+    for (const response of responses) {
         // Get question
         const question = await Question.findById(response.questionId).catch((err) => {
             logger.error(err);
@@ -154,6 +161,7 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
                 throw new HttpException(500, "Failed to recall choice");
             }
 
+            questionResponse.choice = choice._id;
             if (choice.correct) {
                 questionResponse.mark = question.marks;
                 attempt.mark += question.marks;
@@ -162,8 +170,16 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
             questionResponse.answer = response.answer;
         }
 
-        attempt.responses.push(questionResponse);
-    });
+        await questionResponse
+            .save()
+            .then((res) => {
+                attempt.responses.push(res._id);
+            })
+            .catch((err) => {
+                logger.error(err);
+                throw new HttpException(500, "Failed to save response");
+            });
+    }
 
     const attemptId = await attempt
         .save()

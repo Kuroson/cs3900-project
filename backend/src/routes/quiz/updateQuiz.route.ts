@@ -32,14 +32,7 @@ export const updateQuizController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
-            "quizId",
-            "title",
-            "description",
-            "maxMarks",
-            "open",
-            "close",
-        ];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["quizId"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
@@ -103,7 +96,7 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     }
 
     if (maxMarks !== undefined) {
-        quiz.maxGrade = maxMarks;
+        quiz.maxMarks = maxMarks;
     }
 
     if (open !== undefined) {

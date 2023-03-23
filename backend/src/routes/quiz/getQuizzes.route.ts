@@ -95,7 +95,7 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
 
     const quizzes: Array<QuizInfo> = [];
 
-    course.quizzes.forEach(async (quiz) => {
+    for (const quiz of course.quizzes) {
         const isAdmin = await checkAdmin(firebase_uid);
 
         const user = await User.findOne({ firebase_uid }).catch((err) => {
@@ -140,7 +140,7 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
         };
 
         quizzes.push(quizInfo);
-    });
+    }
 
     return quizzes;
 };
