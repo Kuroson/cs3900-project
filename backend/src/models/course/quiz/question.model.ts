@@ -1,5 +1,5 @@
 import { Document, Schema, Types, model } from "mongoose";
-import { ChoiceInterface } from "./choice.model";
+import { ChoiceInterface, ChoiceInterfaceStudent } from "./choice.model";
 
 export const MULTIPLE_CHOICE = 0;
 export const EXTENDED_REPONSE = 1;
@@ -35,6 +35,11 @@ export const isMultipleChoice = (questionType: number) => {
 };
 
 export type QuestionInterfaceFull = Omit<QuestionInterface, "choices"> & {
-    // Omit the two arrays of ids and replace them with the full objects
+    // Omit the array of ids and replace them with the full objects
     choices: ChoiceInterface[];
+};
+
+export type QuestionInterfaceStudent = Omit<Omit<QuestionInterface, "choices">, "tag"> & {
+    // Omit the array of ids and replace them with the full objects
+    choices: ChoiceInterfaceStudent[];
 };

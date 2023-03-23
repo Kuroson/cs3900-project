@@ -1,38 +1,39 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Quiz, { QuizInterfaceFull } from "@/models/course/quiz/quiz.model";
+import Quiz, { QuizInterfaceStudent } from "@/models/course/quiz/quiz.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
+import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
-type ResponsePayload = QuizInterfaceFull;
+type ResponsePayload = QuizInterfaceStudent;
 
 type QueryPayload = {
+    courseId: string;
     quizId: string;
 };
 
 /**
- * GET /quiz/questions
- * Gets a list of all questions in the quiz
+ * GET /quiz/start
+ * Starts the quiz for a student, getting the questions
  * @param req
  * @param res
  * @returns
  */
-export const getQuestionsController = async (
+export const startQuizController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["quizId"];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId", "quizId"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
             // Body has been verified
             const queryBody = req.query;
 
-            const ret_data = await getQuestions(queryBody, authUser.uid);
+            const ret_data = await startQuiz(queryBody, authUser.uid);
 
             return res.status(200).json(ret_data);
         } else {
@@ -54,31 +55,46 @@ export const getQuestionsController = async (
 };
 
 /**
- * Gets all the questions in the given quiz for the admin, including all the denoted info
+ * Starts the quiz for the student, giving back a view of all the questions in the quiz. This
+ * has all the answer information emitted.
  *
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
- * @throws { HttpException } Course recall failed
- * @returns The list of questions with the required information
+ * @throws { HttpException } Quiz recall failed, save fail, not within quiz open and close times
+ * @returns Information about the given quiz
  */
-export const getQuestions = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const startQuiz = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
         throw new HttpException(401, "Must be an admin to get all courses");
     }
 
-    const { quizId } = queryBody;
+    const { quizId, courseId } = queryBody;
 
+    // Get the quiz with subset of fields
     const quiz = await Quiz.findById(quizId).populate({
         path: "questions",
         model: "Question",
+        select: "_id text type marks choices",
         populate: {
             path: "choices",
             model: "Choice",
+            select: "text",
         },
     });
 
     if (quiz === null) {
         throw new HttpException(500, "Failed to recall quiz");
+    }
+
+    // Fail if quiz after due date or quiz not open
+    const open = new Date(Date.parse(quiz.open));
+    const close = new Date(Date.parse(quiz.close));
+    const now = new Date();
+
+    if (now < open) {
+        throw new HttpException(400, "Quiz not open yet");
+    } else if (now > close) {
+        throw new HttpException(400, "Quiz already closed");
     }
 
     return quiz;

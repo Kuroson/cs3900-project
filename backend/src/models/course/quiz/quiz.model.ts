@@ -1,5 +1,9 @@
 import { Document, Schema, Types, model } from "mongoose";
-import { QuestionInterface, QuestionInterfaceFull } from "./question.model";
+import {
+    QuestionInterface,
+    QuestionInterfaceFull,
+    QuestionInterfaceStudent,
+} from "./question.model";
 
 /**
  * This is a quiz within the course that is set as an assessment.
@@ -27,6 +31,11 @@ const Quiz = model<QuizInterface & Document>("Quiz", quizSchema);
 export default Quiz;
 
 export type QuizInterfaceFull = Omit<QuizInterface, "questions"> & {
-    // Omit the two arrays of ids and replace them with the full objects
+    // Omit the array of ids and replace them with the full objects
     questions: QuestionInterfaceFull[];
+};
+
+export type QuizInterfaceStudent = Omit<QuizInterface, "questions"> & {
+    // Omit the array of ids and replace them with the full objects
+    questions: QuestionInterfaceStudent[];
 };

@@ -7,15 +7,13 @@ import { QuestionResponseInterface } from "./questionResponse.model";
  */
 export interface QuizAttemptInterface extends Document {
     quiz: QuizInterface["_id"];
-    underway: boolean;
-    mark?: number;
+    mark: number;
     responses: Types.DocumentArray<QuestionResponseInterface["_id"]>;
 }
 
 const quizAttemptSchema: Schema = new Schema<QuizAttemptInterface>({
     quiz: { type: Schema.Types.ObjectId, ref: "Quiz", required: true },
-    underway: { type: Boolean, required: true },
-    mark: { type: Number },
+    mark: { type: Number, required: true },
     responses: [{ type: Schema.Types.ObjectId, ref: "QuestionResponse", required: true }],
 });
 
