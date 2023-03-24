@@ -1,20 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import AddIcon from "@mui/icons-material/Add";
 import dayjs from "dayjs";
 import { UserCourseInformation } from "models/course.model";
-import { CreateQuizType, QuizType } from "models/quiz.model";
+import { CreateQuizType, QuizListType } from "models/quiz.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
 import Card from "components/common/Card";
 import AddNewQuiz from "components/quiz/AddNewQuiz";
+import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
-import { createNewQuiz } from "util/api/quizApi";
+import { createNewQuiz, getListOfQuizzes } from "util/api/quizApi";
 import initAuth from "util/firebase";
 
 initAuth(); // SSR maybe, i think...
@@ -23,12 +24,12 @@ type QuizProps = {
   courseData: UserCourseInformation;
 };
 
-const quizzes: QuizType[] = [
+const quizzes: QuizListType[] = [
   {
     quizId: "1",
     title: "Quiz1",
     open: dayjs().format(),
-    close: dayjs().add(1, "day").format(),
+    close: dayjs().add(30, "minute").format(),
   },
   {
     quizId: "2",
@@ -43,26 +44,61 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
-  const [quizList, setQuizList] = useState<QuizType[]>(quizzes);
+  const [quizList, setQuizList] = useState<QuizListType[]>(quizzes);
   const [addNewQuiz, setAddNewQuiz] = useState(false);
   const [openQuiz, setOpenQuiz] = useState(false);
 
   const handleAddNewQuiz = async (newQuiz: CreateQuizType) => {
-    // const quizId = await createNewQuiz(await authUser.getIdToken(), newQuiz, "client");
+    // TODO: backend
+    // const [res, err] = await createNewQuiz(await authUser.getIdToken(), newQuiz, "client");
+    // if (err !== null) {
+    //   console.error(err);
+    //   if (err instanceof HttpException) {
+    //     toast.error(err.message);
+    //   } else {
+    //     toast.error(err);
+    //   }
+    //   return;
+    // }
+    // if (res === null) throw new Error("Response and error are null");
 
     const quiz = {
-      quizId: "3",
+      quizId: "3", // res.quizId
       title: newQuiz.title,
       open: newQuiz.open,
       close: newQuiz.close,
     };
+    console.log("🚀 ~ file: Quiz.tsx:71 ~ handleAddNewQuiz ~ quiz:", quiz);
 
     setQuizList((prev) => [...prev, quiz]);
     setAddNewQuiz(false);
     toast.success("Quiz created successfully");
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // TODO
+    const getQuizzes = async () => {
+      const [res, err] = await getListOfQuizzes(
+        await authUser.getIdToken(),
+        courseData._id,
+        "client",
+      );
+      if (err !== null) {
+        console.error(err);
+        if (err instanceof HttpException) {
+          toast.error(err.message);
+        } else {
+          toast.error(err);
+        }
+        return;
+      }
+      if (res === null) throw new Error("Response and error are null");
+      setQuizList(res.quizzes);
+    };
+    // getQuizzes();
+  }, [authUser, courseData._id]);
+
+  useEffect(() => {
     // Build user data for user context
     if (user.userDetails !== null) {
       setLoading(false);
@@ -94,7 +130,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
                   <Card text={quiz.title} close={quiz.close} key={quiz.quizId} isQuiz={true} />
                 ))}
                 <div
-                  className="flex flex-col rounded-lg items-center justify-center gap-2 shadow-md p-5 my-2 mx-5 w-[300px] h-[200px] cursor-pointer hover:shadow-lg"
+                  className="flex flex-col rounded-lg items-center justify-center gap-2 shadow-md p-5 my-2 mx-5 w-[350px] h-[160px] cursor-pointer hover:shadow-lg"
                   onClick={() => setAddNewQuiz((prev) => !prev)}
                 >
                   <AddIcon color="primary" fontSize="large" />

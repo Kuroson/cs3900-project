@@ -4,9 +4,8 @@ import { Button, TextField } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { CreateQuizType, QuizType } from "models/quiz.model";
+import { CreateQuizType } from "models/quiz.model";
 import TitleWithIcon from "components/common/TitleWithIcon";
-import { createNewQuiz } from "util/api/quizApi";
 
 const AddNewQuiz: React.FC<{
   handleAddNewQuiz: (newQuiz: CreateQuizType) => void;
@@ -17,7 +16,6 @@ const AddNewQuiz: React.FC<{
   const [description, setDescription] = useState("");
   const [maxMarks, setMaxMarks] = useState(0);
   const [openTime, setOpenTime] = useState<Dayjs>(dayjs());
-  // console.log("🚀 ~ file: ShowQuizzes.tsx:81 ~ openTime:", typeof openTime?.format());
   const [closeTime, setCloseTime] = useState<Dayjs>(dayjs().add(1, "day"));
 
   const addNewQuiz = async () => {
