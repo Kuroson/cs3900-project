@@ -94,10 +94,6 @@ export const getQuizController = async (
  * @returns Object of quiz information
  */
 export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => {
-    if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to get all courses");
-    }
-
     const { courseId, quizId } = queryBody;
 
     const quiz = await Quiz.findById(quizId)

@@ -77,10 +77,6 @@ export const finishQuizController = async (
  * answer not given, wrong answer type given
  */
 export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) => {
-    if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to get all courses");
-    }
-
     const { courseId, quizId, responses } = queryBody;
 
     // Create attempt for student

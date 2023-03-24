@@ -4,7 +4,6 @@ import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
-import { checkAdmin } from "../admin/admin.route";
 import { getAttempt } from "./getQuiz.route";
 
 type ResponsePayload = QuizInterfaceStudent;
@@ -66,10 +65,6 @@ export const startQuizController = async (
  * @returns Information about the given quiz
  */
 export const startQuiz = async (queryBody: QueryPayload, firebase_uid: string) => {
-    if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to get all courses");
-    }
-
     const { quizId, courseId } = queryBody;
 
     // Fail if quiz already attempted
