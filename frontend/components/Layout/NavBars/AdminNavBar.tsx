@@ -108,6 +108,7 @@ export default function AdminNavBar({
           route: `/instructor/${courseData?._id}/Assignment`,
         };
       } else if (page.title === "Forum") {
+        // TODO: forum route
         return {
           name: page.title,
           route: `/instructor/${courseData?._id}/Forum`,

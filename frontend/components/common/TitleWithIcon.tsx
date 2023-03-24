@@ -3,7 +3,7 @@ import React from "react";
 import { Typography } from "@mui/material";
 
 type PropsType = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   text: string;
 };
 
