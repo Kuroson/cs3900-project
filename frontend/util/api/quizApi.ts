@@ -1,4 +1,4 @@
-import { CreateQuizType, QuizListType } from "models/quiz.model";
+import { CreateQuizType, QuizInfoTypeAdmin, QuizListType } from "models/quiz.model";
 import { BackendLinkType, apiGet, apiPost } from "./api";
 import { getBackendLink } from "./userApi";
 
@@ -26,8 +26,16 @@ export const createNewQuiz = (
   type: BackendLinkType,
 ) => {
   return apiPost<CreateQuizType, { quizId: string }>(
-    `${getBackendLink(type)}/page/create`,
+    `${getBackendLink(type)}/quiz/create`,
     token,
     quiz,
+  );
+};
+
+export const getQuizInfoAdmin = (token: string | null, quizId: string, type: BackendLinkType) => {
+  return apiGet<{ quizId: string }, QuizInfoTypeAdmin>(
+    `${getBackendLink(type)}/quiz/questions`,
+    token,
+    { quizId: quizId },
   );
 };

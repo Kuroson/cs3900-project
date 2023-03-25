@@ -11,7 +11,9 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
 import Card from "components/common/Card";
+import PageHeader from "components/common/PageHeader";
 import AddNewQuiz from "components/quiz/AddNewQuiz";
+import AdminQuiz from "components/quiz/AdminQuiz";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
@@ -35,7 +37,7 @@ const quizzes: QuizListType[] = [
     quizId: "2",
     title: "Quiz2",
     open: dayjs().format(),
-    close: dayjs().add(1, "day").format(),
+    close: dayjs().subtract(1, "day").format(),
   },
 ];
 
@@ -47,6 +49,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
   const [quizList, setQuizList] = useState<QuizListType[]>(quizzes);
   const [addNewQuiz, setAddNewQuiz] = useState(false);
   const [openQuiz, setOpenQuiz] = useState(false);
+  const [currentQuiz, setCurrentQuiz] = useState("");
 
   const handleAddNewQuiz = async (newQuiz: CreateQuizType) => {
     // TODO: backend
@@ -68,7 +71,6 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
       open: newQuiz.open,
       close: newQuiz.close,
     };
-    console.log("🚀 ~ file: Quiz.tsx:71 ~ handleAddNewQuiz ~ quiz:", quiz);
 
     setQuizList((prev) => [...prev, quiz]);
     setAddNewQuiz(false);
@@ -112,7 +114,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
     <>
       <Head>
         <title>Quiz</title>
-        <meta name="description" content="Add students to a page" />
+        <meta name="description" content="Quiz" />
         <link rel="icon" href="/favicon.png" />
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
@@ -120,14 +122,19 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
         <div className="flex flex-col w-full px-[5%]">
           {!openQuiz && !addNewQuiz && (
             <>
-              <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between pt-3">
-                <div className="flex items-center gap-4">
-                  <span className="ml-4">Quiz</span>
-                </div>
-              </h1>
+              <PageHeader title="Quiz" />
               <div className="flex flex-wrap mt-10">
                 {quizList.map((quiz) => (
-                  <Card text={quiz.title} close={quiz.close} key={quiz.quizId} isQuiz={true} />
+                  <Card
+                    text={quiz.title}
+                    close={quiz.close}
+                    key={quiz.quizId}
+                    isQuiz={true}
+                    handleOpen={() => {
+                      setOpenQuiz((prev) => !prev);
+                      setCurrentQuiz(quiz.quizId);
+                    }}
+                  />
                 ))}
                 <div
                   className="flex flex-col rounded-lg items-center justify-center gap-2 shadow-md p-5 my-2 mx-5 w-[350px] h-[160px] cursor-pointer hover:shadow-lg"
@@ -144,6 +151,9 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
               closeQuiz={() => setAddNewQuiz((prev) => !prev)}
               courseId={courseData._id}
             />
+          )}
+          {openQuiz && (
+            <AdminQuiz quizId={currentQuiz} handleClose={() => setOpenQuiz((prev) => !prev)} />
           )}
         </div>
       </ContentContainer>

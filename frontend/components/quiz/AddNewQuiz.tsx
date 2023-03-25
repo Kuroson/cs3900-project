@@ -5,6 +5,7 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { CreateQuizType } from "models/quiz.model";
+import PageHeader from "components/common/PageHeader";
 import TitleWithIcon from "components/common/TitleWithIcon";
 
 const AddNewQuiz: React.FC<{
@@ -32,11 +33,7 @@ const AddNewQuiz: React.FC<{
 
   return (
     <>
-      <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between pt-3">
-        <div className="flex items-center gap-4">
-          <span className="ml-4">Add New Quiz</span>
-        </div>
-      </h1>
+      <PageHeader title="Add New Quiz" />
       <div className="mt-7 mx-auto flex flex-col gap-9 w-full max-w-[800px]">
         <TextField
           id="quiz name"
