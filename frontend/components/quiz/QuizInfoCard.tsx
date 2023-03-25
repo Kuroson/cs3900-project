@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import RuleIcon from "@mui/icons-material/Rule";
-import { Button } from "@mui/material";
+import { Box, Button, Modal } from "@mui/material";
 import dayjs from "dayjs";
 import { QuizBasicInfo } from "models/quiz.model";
 import ShowTimeLeft from "components/common/ShowTimeLeft";
 import TitleWithIcon from "components/common/TitleWithIcon";
+import AddNewQuiz from "./AddOrEditQuiz";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 1000,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 20,
+};
 
 // common for student and admin
 const QuizInfoCard: React.FC<{
@@ -14,6 +27,8 @@ const QuizInfoCard: React.FC<{
   isAdmin: boolean;
   handleEditInfo: (newInfo: QuizBasicInfo) => void;
 }> = ({ info, isAdmin, handleEditInfo }) => {
+  const [isEditing, setIsEditing] = useState(false);
+
   return (
     <div className="shadow-md p-4 rounded-lg outline outline-1 outline-gray-400 flex gap-2 flex-col">
       <div className="flex justify-between">
@@ -34,8 +49,27 @@ const QuizInfoCard: React.FC<{
       >
         <RuleIcon color="primary" />
       </TitleWithIcon>
-      <p className="m-4">{info.description}</p>
-      {isAdmin && <Button variant="contained">Edit Quiz Infomation</Button>}
+      <p className="m-4 break-all text-lg">{info.description}</p>
+      {/* Just for admin -> edit information */}
+      {isAdmin && (
+        <Button variant="contained" onClick={() => setIsEditing((prev) => !prev)}>
+          Edit Quiz Infomation
+        </Button>
+      )}
+      <Modal
+        open={isEditing}
+        onClose={() => setIsEditing((prev) => !prev)}
+        aria-labelledby="edit quiz information"
+        aria-describedby="edit quiz information"
+      >
+        <Box sx={style}>
+          <AddNewQuiz
+            closeQuiz={() => setIsEditing((prev) => !prev)}
+            info={info}
+            isEditing={true}
+          />
+        </Box>
+      </Modal>
     </div>
   );
 };

@@ -4,31 +4,40 @@ import { Button, TextField } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { CreateQuizType } from "models/quiz.model";
+import { CreateQuizType, QuizBasicInfo } from "models/quiz.model";
 import PageHeader from "components/common/PageHeader";
 import TitleWithIcon from "components/common/TitleWithIcon";
 
-const AddNewQuiz: React.FC<{
-  handleAddNewQuiz: (newQuiz: CreateQuizType) => void;
+// Add or edit quiz info for admin
+const AddOrEditQuiz: React.FC<{
+  handleAddNewQuiz?: (newQuiz: CreateQuizType) => void;
   closeQuiz: () => void;
-  courseId: string;
-}> = ({ handleAddNewQuiz, closeQuiz, courseId }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [maxMarks, setMaxMarks] = useState(0);
-  const [openTime, setOpenTime] = useState<Dayjs>(dayjs());
-  const [closeTime, setCloseTime] = useState<Dayjs>(dayjs().add(1, "day"));
+  courseId?: string;
+  info?: QuizBasicInfo;
+  isEditing: boolean;
+}> = ({ handleAddNewQuiz, closeQuiz, courseId, info, isEditing }) => {
+  const [title, setTitle] = useState(info?.title ?? "");
+  const [description, setDescription] = useState(info?.description ?? "");
+  const [maxMarks, setMaxMarks] = useState(info?.maxMarks ?? 0);
+  const [openTime, setOpenTime] = useState<Dayjs>(
+    info?.open != null ? dayjs.utc(info.open).local() : dayjs(),
+  );
+  const [closeTime, setCloseTime] = useState<Dayjs>(
+    info?.close != null ? dayjs.utc(info.close).local() : dayjs().add(1, "day"),
+  );
 
   const addNewQuiz = async () => {
     const newQuiz: CreateQuizType = {
-      courseId: courseId,
+      courseId: courseId ?? "",
       title: title,
       description: description,
       maxMarks: maxMarks,
       open: openTime.format(),
       close: closeTime.format(),
     };
-    handleAddNewQuiz(newQuiz);
+    if (handleAddNewQuiz) {
+      handleAddNewQuiz(newQuiz);
+    }
   };
 
   return (
@@ -109,4 +118,4 @@ const AddNewQuiz: React.FC<{
   );
 };
 
-export default AddNewQuiz;
+export default AddOrEditQuiz;

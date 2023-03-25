@@ -12,7 +12,7 @@ import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "nex
 import { AdminNavBar, ContentContainer, Loading } from "components";
 import Card from "components/common/Card";
 import PageHeader from "components/common/PageHeader";
-import AddNewQuiz from "components/quiz/AddNewQuiz";
+import AddNewQuiz from "components/quiz/AddOrEditQuiz";
 import AdminQuiz from "components/quiz/AdminQuiz";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
@@ -150,6 +150,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
               handleAddNewQuiz={handleAddNewQuiz}
               closeQuiz={() => setAddNewQuiz((prev) => !prev)}
               courseId={courseData._id}
+              isEditing={false}
             />
           )}
           {openQuiz && (
