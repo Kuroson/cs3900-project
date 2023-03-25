@@ -47,7 +47,6 @@ export type UserCourseInformation = Omit<
   | "quizzes"
   | "assignments"
   | "workloadOverview"
-  | "tags"
 > & {
   pages: PageFull[];
 };
