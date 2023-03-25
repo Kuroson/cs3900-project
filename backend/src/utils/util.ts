@@ -1,3 +1,7 @@
+import { HttpException } from "@/exceptions/HttpException";
+import User from "@/models/user.model";
+import { logger } from "./logger";
+
 /**
  * Checks if the body contains all the fields specified in `fields`
  * @param body request body
@@ -25,6 +29,26 @@ export const getMissingBodyIDs = <T extends Record<string, unknown>>(
     fields: Array<keyof T>,
 ): string => {
     return fields.filter((key) => !Object.keys(body).includes(key as string)).join(", ");
+};
+
+/**
+ * Gets the _id of a given user from their firebase id
+ * @param firebase_uid the unique firebase identifier of the user
+ * @throws HttpException: failed to recall user
+ * @returns the mongoDB id of the user
+ */
+export const getUserId = async (firebase_uid: string) => {
+    return await User.findOne({ firebase_uid })
+        .then((res) => {
+            if (res === null) {
+                throw new HttpException(500, "Failed to recall user");
+            }
+            return res._id;
+        })
+        .catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Failed to recall user");
+        });
 };
 
 export type UserInfo = {

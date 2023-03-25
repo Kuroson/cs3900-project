@@ -1,6 +1,6 @@
 import { Document, Schema, Types, model } from "mongoose";
 import { QuizInterface } from "../quiz/quiz.model";
-import { QuestionResponseInterface } from "./questionResponse";
+import { QuestionResponseInterface } from "./questionResponse.model";
 
 /**
  * This is the attempt of a student for a given quiz within a course.

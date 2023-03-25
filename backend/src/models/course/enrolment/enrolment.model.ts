@@ -2,7 +2,7 @@ import { UserInterface } from "@/models/user.model";
 import { Document, Schema, Types, model } from "mongoose";
 import { CourseInterface } from "../course.model";
 import { AssignmentSubmissionInterface } from "./assignmentSubmission.model";
-import { QuizAttemptInterface } from "./quizAttempt";
+import { QuizAttemptInterface } from "./quizAttempt.model";
 import { WorkloadCompletionInterface } from "./workloadCompletion.model";
 
 /**
