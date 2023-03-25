@@ -2,12 +2,11 @@ import { HttpException } from "@/exceptions/HttpException";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import QuizAttempt from "@/models/course/enrolment/quizAttempt.model";
 import { MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
-import Quiz, { QuizInterfaceFull } from "@/models/course/quiz/quiz.model";
+import Quiz from "@/models/course/quiz/quiz.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
-import { checkAdmin } from "../admin/admin.route";
 
 type ChoiceInfo = {
     text: string;

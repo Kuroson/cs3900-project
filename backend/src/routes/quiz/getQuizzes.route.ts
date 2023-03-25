@@ -1,7 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
-import Quiz from "@/models/course/quiz/quiz.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -12,7 +11,7 @@ import { checkAdmin } from "../admin/admin.route";
 type QuizInfo = {
     quizId: string;
     title: string;
-    isResponded: boolean;
+    isResponded?: boolean;
     open: string;
     close: string;
 };
@@ -106,7 +105,13 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
             throw new HttpException(500, "Cannot fetch user");
         }
 
-        let isResponded = true;
+        const quizInfo: QuizInfo = {
+            quizId: quiz._id,
+            title: quiz.title,
+            open: quiz.open,
+            close: quiz.close,
+        };
+
         if (!isAdmin) {
             // Get student enrolment and see if they have completed the quiz
             const enrolment = await Enrolment.findOne({
@@ -126,18 +131,10 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
                 throw new HttpException(500, "Cannot fetch enrolment");
             }
 
-            isResponded = enrolment.quizAttempts.some((attempt) => {
+            quizInfo.isResponded = enrolment.quizAttempts.some((attempt) => {
                 return attempt._id === quiz._id && attempt.underway === false;
             });
         }
-
-        const quizInfo: QuizInfo = {
-            quizId: quiz._id,
-            title: quiz.title,
-            open: quiz.open,
-            close: quiz.close,
-            isResponded,
-        };
 
         quizzes.push(quizInfo);
     }
