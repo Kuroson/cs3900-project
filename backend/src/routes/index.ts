@@ -3,6 +3,7 @@ import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
 import { createAssignmentController } from "./assignment/createAssignment.route";
+import { getAssignmentController } from "./assignment/getAssignment.route";
 import { getAssignmentsController } from "./assignment/getAssignments.route";
 import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
@@ -85,4 +86,5 @@ indexRouter.post("/quiz/finish", finishQuizController);
 
 // Assignment routes
 indexRouter.get("/assignment/list", getAssignmentsController);
+indexRouter.get("/assignment", getAssignmentController);
 indexRouter.post("/assignment/create", createAssignmentController);
