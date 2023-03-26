@@ -73,12 +73,13 @@ export const createAssignmentController = async (
  *
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
- * @throws { HttpException } Save error, course not available, tags not in course
+ * @throws { HttpException } Save error, course not available, tags not in course.
+ * no tags given
  * @returns The ID of the assignment that has been created
  */
 export const createAssignment = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to create quiz");
+        throw new HttpException(401, "Must be an admin to create assignment");
     }
 
     const { courseId, title, description, deadline, marksAvailable, tags } = queryBody;
@@ -103,6 +104,10 @@ export const createAssignment = async (queryBody: QueryPayload, firebase_uid: st
 
     if (description !== undefined) {
         myAssignment.description = description;
+    }
+
+    if (tags.length === 0) {
+        throw new HttpException(400, "Must give tags for assignment");
     }
 
     for (const tag of tags) {

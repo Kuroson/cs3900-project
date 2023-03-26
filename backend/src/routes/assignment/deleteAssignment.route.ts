@@ -7,7 +7,7 @@ import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/ut
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
-type ResponsePayload = {};
+type ResponsePayload = Record<string, never>;
 
 type QueryPayload = {
     courseId: string;
@@ -64,7 +64,7 @@ export const deleteAssignmentController = async (
  */
 export const deleteAssignment = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to create quiz");
+        throw new HttpException(401, "Must be an admin to delete assignment");
     }
 
     const { courseId, assignmentId } = queryBody;
