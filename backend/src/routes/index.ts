@@ -2,6 +2,7 @@ import { firebaseUpload } from "@/utils/firebase";
 import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
+import { createAssignmentController } from "./assignment/createAssignment.route";
 import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
@@ -80,3 +81,6 @@ indexRouter.post("/quiz/question/create", createQuestionController);
 indexRouter.delete("/quiz/question/delete", deleteQuestionController);
 indexRouter.get("/quiz/start", startQuizController);
 indexRouter.post("/quiz/finish", finishQuizController);
+
+// Assignment routes
+indexRouter.post("/assignment/create", createAssignmentController);
