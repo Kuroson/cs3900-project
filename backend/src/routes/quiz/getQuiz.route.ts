@@ -1,6 +1,7 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
-import QuizAttempt from "@/models/course/enrolment/quizAttempt.model";
+import Enrolment, { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
+import { QuestionResponseInterface } from "@/models/course/enrolment/questionResponse.model";
+import QuizAttempt, { QuizAttemptInterface } from "@/models/course/enrolment/quizAttempt.model";
 import { MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
 import Quiz from "@/models/course/quiz/quiz.model";
 import { checkAuth } from "@/utils/firebase";
@@ -136,7 +137,10 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
     let marksAwarded = 0;
     let marksTotal = 0;
     for (const question of quiz.questions) {
-        const questionResponse = await getQuestionResponse(question._id, attemptId);
+        const questionResponse: QuestionResponseInterface = await getQuestionResponse(
+            question._id,
+            attemptId,
+        );
 
         const questionInfo: QuestionInfo = {
             text: question.text,
@@ -187,7 +191,13 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
 
 export const getAttempt = async (courseId: string, quizId: string, firebase_uid: string) => {
     // Get enrolment
-    const enrolment = await Enrolment.findOne({
+    type quizEnrolmentType =
+        | (Omit<EnrolmentInterface, "quizAttempts"> & {
+              quizAttempts: Array<Omit<QuizAttemptInterface, "mark" | "responses">>;
+          })
+        | null;
+
+    const enrolment: quizEnrolmentType = await Enrolment.findOne({
         course: courseId,
         student: await getUserId(firebase_uid),
     })
@@ -205,7 +215,8 @@ export const getAttempt = async (courseId: string, quizId: string, firebase_uid:
     }
 
     for (const attempt of enrolment.quizAttempts) {
-        if (attempt.quiz.equals(quizId)) {
+        const isQuiz: boolean = attempt.quiz.equals(quizId);
+        if (isQuiz) {
             return attempt._id;
         }
     }
@@ -213,7 +224,13 @@ export const getAttempt = async (courseId: string, quizId: string, firebase_uid:
 };
 
 const getQuestionResponse = async (questionId: string, attemptId: string) => {
-    const attempt = await QuizAttempt.findById(attemptId)
+    type quizAttemptType =
+        | (Omit<QuizAttemptInterface, "responses"> & {
+              responses: Array<QuestionResponseInterface>;
+          })
+        | null;
+
+    const attempt: quizAttemptType = await QuizAttempt.findById(attemptId)
         .populate({
             path: "responses",
             model: "QuestionResponse",
@@ -227,9 +244,11 @@ const getQuestionResponse = async (questionId: string, attemptId: string) => {
     }
 
     for (const question of attempt.responses) {
-        if (question.question.equals(questionId)) {
+        const isQuestion: boolean = question.question.equals(questionId);
+        if (isQuestion) {
             return question;
         }
     }
+
     throw new HttpException(500, "Question response not present");
 };

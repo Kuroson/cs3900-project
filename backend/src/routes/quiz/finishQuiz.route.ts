@@ -3,7 +3,7 @@ import Enrolment from "@/models/course/enrolment/enrolment.model";
 import QuestionResponse from "@/models/course/enrolment/questionResponse.model";
 import QuizAttempt from "@/models/course/enrolment/quizAttempt.model";
 import Choice from "@/models/course/quiz/choice.model";
-import Question, { EXTENDED_REPONSE, MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
+import Question, { EXTENDED_RESPONSE, MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
 import Quiz from "@/models/course/quiz/quiz.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -115,7 +115,7 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     }
 
     // Fail if quiz already attempted
-    if (await getAttempt(courseId, quizId, firebase_uid)) {
+    if ((await getAttempt(courseId, quizId, firebase_uid)) !== null) {
         throw new HttpException(400, "Quiz already attempted");
     }
 
@@ -135,7 +135,7 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
             throw new HttpException(400, "Must give either response or choice for question");
         } else if (question.type === MULTIPLE_CHOICE && response.choiceId === undefined) {
             throw new HttpException(400, "Must give choice for multiple choice question");
-        } else if (question.type === EXTENDED_REPONSE && response.answer === undefined) {
+        } else if (question.type === EXTENDED_RESPONSE && response.answer === undefined) {
             throw new HttpException(400, "Must give response for open response question");
         }
 
