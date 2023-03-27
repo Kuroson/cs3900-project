@@ -76,7 +76,7 @@ export const updateCourseController = async (
  */
 export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to get all courses");
+        throw new HttpException(401, "Must be an admin to update course");
     }
 
     const { courseId, code, title, session, description, icon, tags } = queryBody;
@@ -106,7 +106,8 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
     }
 
     if (tags !== undefined && tags.length !== 0) {
-        tags.forEach((tag) => myCourse.tags.push(tag));
+        myCourse.tags.length = 0;
+        tags.forEach((tag) => myCourse.tags.addToSet(tag));
     }
 
     const retCourseId = await myCourse

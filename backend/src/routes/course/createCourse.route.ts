@@ -81,7 +81,7 @@ export const createCourseController = async (
  */
 export const createCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to get all courses");
+        throw new HttpException(401, "Must be an admin to create course");
     }
 
     const { code, title, session, description, icon } = queryBody;
