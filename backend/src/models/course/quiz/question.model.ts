@@ -1,8 +1,9 @@
 import { Document, Schema, Types, model } from "mongoose";
 import { ChoiceInterface, ChoiceInterfaceStudent } from "./choice.model";
 
-export const MULTIPLE_CHOICE = "choice";
-export const EXTENDED_REPONSE = "open";
+export type QUESTION_TYPES = "choice" | "open";
+export const MULTIPLE_CHOICE: QUESTION_TYPES = "choice";
+export const EXTENDED_RESPONSE: QUESTION_TYPES = "open";
 
 /**
  * This is a single question within a quiz. The question can be one of two
@@ -12,7 +13,7 @@ export const EXTENDED_REPONSE = "open";
  */
 export interface QuestionInterface extends Document {
     text: string;
-    type: string;
+    type: QUESTION_TYPES;
     marks: number;
     choices: Types.DocumentArray<ChoiceInterface["_id"]>;
     tag: string; // Should come from the list of tags stored in the course object
