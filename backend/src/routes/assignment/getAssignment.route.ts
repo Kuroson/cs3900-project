@@ -3,7 +3,7 @@ import Assignment from "@/models/course/assignment/assignment.model";
 import AssignmentSubmission, {
     AssignmentSubmissionInterface,
 } from "@/models/course/enrolment/assignmentSubmission.model";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
+import Enrolment, { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
 import { checkAuth, recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
@@ -167,7 +167,13 @@ const getAssignmentSubmission = async (
 ) => {
     // Get enrolment
     AssignmentSubmission;
-    const enrolment = await Enrolment.findOne({
+    type assignmentEnrolmentType =
+        | (Omit<EnrolmentInterface, "assignmentSubmissions"> & {
+              assignmentSubmissions: Array<AssignmentSubmissionInterface>;
+          })
+        | null;
+
+    const enrolment: assignmentEnrolmentType = await Enrolment.findOne({
         student: await getUserId(firebase_uid),
         course: courseId,
     })
@@ -184,7 +190,8 @@ const getAssignmentSubmission = async (
     }
 
     for (const submission of enrolment.assignmentSubmissions) {
-        if (submission.assignment.equals(assignmentId)) {
+        const isAssignment: boolean = submission.assignment.equals(assignmentId);
+        if (isAssignment) {
             return submission;
         }
     }

@@ -65,10 +65,10 @@ export const submitAssignmentController = async (
  * @throws { HttpException } Save/recall error
  * @returns Ret data based on ResponsePayload above
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const submitAssignment = async (
     queryBody: QueryPayload,
     firebase_uid: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     file: any,
 ) => {
     const { courseId, assignmentId, title } = queryBody;
