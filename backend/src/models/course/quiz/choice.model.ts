@@ -16,3 +16,5 @@ const choiceSchema: Schema = new Schema<ChoiceInterface>({
 const Choice = model<ChoiceInterface & Document>("Choice", choiceSchema);
 
 export default Choice;
+
+export type ChoiceInterfaceStudent = Omit<ChoiceInterface, "correct">;

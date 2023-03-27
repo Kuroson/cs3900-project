@@ -120,7 +120,7 @@ export const updatePage = async (
     firebase_uid: string,
 ): Promise<PageData> => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(403, "Must be an admin to get all courses");
+        throw new HttpException(403, "Must be an admin to update page");
     }
 
     const { courseId, pageId, resources, sections } = queryBody;
