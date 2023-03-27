@@ -6,6 +6,7 @@ import { createAssignmentController } from "./assignment/createAssignment.route"
 import { deleteAssignmentController } from "./assignment/deleteAssignment.route";
 import { getAssignmentController } from "./assignment/getAssignment.route";
 import { getAssignmentsController } from "./assignment/getAssignments.route";
+import { submitAssignmentController } from "./assignment/submitAssignment.route";
 import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
@@ -90,3 +91,4 @@ indexRouter.get("/assignment/list", getAssignmentsController);
 indexRouter.get("/assignment", getAssignmentController);
 indexRouter.post("/assignment/create", createAssignmentController);
 indexRouter.delete("/assignment/delete", deleteAssignmentController);
+indexRouter.post("/assignment/submit", firebaseUpload.single("file"), submitAssignmentController);

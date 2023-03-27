@@ -1,9 +1,14 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Assignment from "@/models/course/assignment/assignment.model";
-import { checkAuth } from "@/utils/firebase";
+import AssignmentSubmission, {
+    AssignmentSubmissionInterface,
+} from "@/models/course/enrolment/assignmentSubmission.model";
+import Enrolment from "@/models/course/enrolment/enrolment.model";
+import { checkAuth, recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 
 type SubmissionInfo = {
     title: string;
@@ -107,7 +112,81 @@ export const getAssignment = async (queryBody: QueryPayload, firebase_uid: strin
         ret_data.tags.push(tag);
     }
 
-    // TODO: Add attempt
+    // If student and has submission, get it
+    const isAdmin = await checkAdmin(firebase_uid);
+    if (isAdmin) {
+        return ret_data;
+    }
+
+    const submission: AssignmentSubmissionInterface | null = await getAssignmentSubmission(
+        courseId,
+        firebase_uid,
+        assignmentId,
+    );
+
+    if (submission === null) {
+        return ret_data;
+    }
+
+    const submissionInfo: SubmissionInfo = {
+        title: submission.title,
+        linkToSubmission: await recallFileUrl(submission.storedName),
+    };
+
+    if (submission.mark !== undefined) {
+        submissionInfo.mark = submission.mark;
+    }
+
+    if (submission.comments !== undefined) {
+        submissionInfo.comments = submission.comments;
+    }
+
+    if (submission.successfulTags !== undefined) {
+        submissionInfo.successTags = [];
+        for (const tag of submission.successfulTags) {
+            submissionInfo.successTags.push(tag);
+        }
+    }
+
+    if (submission.improvementTags !== undefined) {
+        submissionInfo.improvementTags = [];
+        for (const tag of submission.improvementTags) {
+            submissionInfo.improvementTags.push(tag);
+        }
+    }
+
+    ret_data.submission = submissionInfo;
 
     return ret_data;
+};
+
+const getAssignmentSubmission = async (
+    courseId: string,
+    firebase_uid: string,
+    assignmentId: string,
+) => {
+    // Get enrolment
+    AssignmentSubmission;
+    const enrolment = await Enrolment.findOne({
+        student: await getUserId(firebase_uid),
+        course: courseId,
+    })
+        .populate({
+            path: "assignmentSubmissions",
+            model: "AssignmentSubmission",
+        })
+        .catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Failed to fetch enrolment");
+        });
+    if (enrolment === null) {
+        throw new HttpException(500, "Failed to fetch enrolment");
+    }
+
+    for (const submission of enrolment.assignmentSubmissions) {
+        if (submission.assignment.equals(assignmentId)) {
+            return submission;
+        }
+    }
+    return null;
 };
