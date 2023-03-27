@@ -68,7 +68,7 @@ export const startQuiz = async (queryBody: QueryPayload, firebase_uid: string) =
     const { quizId, courseId } = queryBody;
 
     // Fail if quiz already attempted
-    if (await getAttempt(courseId, quizId, firebase_uid)) {
+    if ((await getAttempt(courseId, quizId, firebase_uid)) !== null) {
         throw new HttpException(400, "Quiz already attempted");
     }
 
