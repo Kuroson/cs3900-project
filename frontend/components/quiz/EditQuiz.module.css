@@ -1,0 +1,9 @@
+.wrapper {
+  margin: auto;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 800px;
+}/*# sourceMappingURL=EditQuiz.module.css.map */

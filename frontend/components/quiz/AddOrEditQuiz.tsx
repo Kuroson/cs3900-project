@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { CreateQuizType, QuizBasicInfo } from "models/quiz.model";
 import PageHeader from "components/common/PageHeader";
 import TitleWithIcon from "components/common/TitleWithIcon";
+import styles from "./EditQuiz.module.scss";
 
 // Add or edit quiz info for admin
 const AddOrEditQuiz: React.FC<{
@@ -15,7 +16,8 @@ const AddOrEditQuiz: React.FC<{
   courseId?: string;
   info?: QuizBasicInfo;
   isEditing: boolean;
-}> = ({ handleAddNewQuiz, closeQuiz, courseId, info, isEditing }) => {
+  handleEditInfo: (newInfo: QuizBasicInfo) => void;
+}> = ({ handleAddNewQuiz, closeQuiz, courseId, info, isEditing, handleEditInfo }) => {
   const [title, setTitle] = useState(info?.title ?? "");
   const [description, setDescription] = useState(info?.description ?? "");
   const [maxMarks, setMaxMarks] = useState(info?.maxMarks ?? 0);
@@ -26,7 +28,7 @@ const AddOrEditQuiz: React.FC<{
     info?.close != null ? dayjs.utc(info.close).local() : dayjs().add(1, "day"),
   );
 
-  const addNewQuiz = async () => {
+  const addNewQuiz = () => {
     const newQuiz: CreateQuizType = {
       courseId: courseId ?? "",
       title: title,
@@ -42,8 +44,18 @@ const AddOrEditQuiz: React.FC<{
 
   return (
     <>
-      <PageHeader title="Add New Quiz" />
-      <div className="mt-7 mx-auto flex flex-col gap-9 w-full max-w-[800px]">
+      <PageHeader title={isEditing ? "Edit Quiz" : "Add New Quiz"} />
+      <Box
+        sx={{
+          margin: "auto",
+          marginTop: "20px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          width: "100%",
+          maxWidth: "800px",
+        }}
+      >
         <TextField
           id="quiz name"
           variant="outlined"
@@ -105,15 +117,34 @@ const AddOrEditQuiz: React.FC<{
             </div>
           </div>
         </LocalizationProvider>
-        <div className="flex gap-2 max-w-[800px] justify-end">
+        <Box sx={{ display: "flex", gap: "10px", maxWidth: "800px", justifyContent: "end" }}>
           <Button variant="outlined" onClick={closeQuiz}>
             Cancel
           </Button>
-          <Button variant="contained" disabled={!title} onClick={addNewQuiz}>
-            Add Quiz
-          </Button>
-        </div>
-      </div>
+          {!isEditing ? (
+            <Button variant="contained" disabled={!title} onClick={addNewQuiz}>
+              Add Quiz
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              disabled={!title}
+              onClick={() => {
+                handleEditInfo({
+                  title: title,
+                  open: openTime.format(),
+                  close: closeTime.format(),
+                  description: description,
+                  maxMarks: maxMarks,
+                });
+                closeQuiz();
+              }}
+            >
+              Edit Quiz
+            </Button>
+          )}
+        </Box>
+      </Box>
     </>
   );
 };

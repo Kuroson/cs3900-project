@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { QuizBasicInfo, QuizInfoTypeAdmin } from "models/quiz.model";
 import { useAuthUser } from "next-firebase-auth";
 import PageHeader from "components/common/PageHeader";
-import { getQuizInfoAdmin } from "util/api/quizApi";
+import { getQuizInfoAdmin, updateQuizAdmin } from "util/api/quizApi";
 import QuizInfoCard from "./QuizInfoCard";
 
 const quiz: QuizInfoTypeAdmin = {
@@ -39,7 +39,18 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void }> = ({
   }, [authUser, quizId]);
 
   // edit quiz info
-  const handleEditInfo = (newInfo: QuizBasicInfo) => {
+  const handleEditInfo = async (newInfo: QuizBasicInfo) => {
+    // TODO
+    // const [res, err] = await updateQuizAdmin(
+    //   await authUser.getIdToken(),
+    //   { ...newInfo, quizId: quizId },
+    //   "client",
+    // );
+    // if (err !== null) {
+    //   console.error(err);
+    // }
+
+    // if (res === null) throw new Error("Response and error are null");
     setquizInfo((prev) => ({
       questions: prev?.questions ?? [],
       title: newInfo.title,

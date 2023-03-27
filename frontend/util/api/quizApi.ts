@@ -1,5 +1,5 @@
-import { CreateQuizType, QuizInfoTypeAdmin, QuizListType } from "models/quiz.model";
-import { BackendLinkType, apiGet, apiPost } from "./api";
+import { CreateQuizType, QuizBasicInfo, QuizInfoTypeAdmin, QuizListType } from "models/quiz.model";
+import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
 
 export const getListOfQuizzes = (token: string | null, courseId: string, type: BackendLinkType) => {
@@ -37,5 +37,17 @@ export const getQuizInfoAdmin = (token: string | null, quizId: string, type: Bac
     `${getBackendLink(type)}/quiz/questions`,
     token,
     { quizId: quizId },
+  );
+};
+
+export const updateQuizAdmin = (
+  token: string | null,
+  newInfo: QuizBasicInfo & { quizId: string },
+  type: BackendLinkType,
+) => {
+  return apiPut<QuizBasicInfo & { quizId: string }, { quizId: string }>(
+    `${getBackendLink(type)}/quiz/update`,
+    token,
+    newInfo,
   );
 };

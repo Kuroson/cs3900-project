@@ -7,19 +7,7 @@ import dayjs from "dayjs";
 import { QuizBasicInfo } from "models/quiz.model";
 import ShowTimeLeft from "components/common/ShowTimeLeft";
 import TitleWithIcon from "components/common/TitleWithIcon";
-import AddNewQuiz from "./AddOrEditQuiz";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 1000,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-  borderRadius: 20,
-};
+import AddOrEditQuiz from "./AddOrEditQuiz";
 
 // common for student and admin
 const QuizInfoCard: React.FC<{
@@ -62,11 +50,25 @@ const QuizInfoCard: React.FC<{
         aria-labelledby="edit quiz information"
         aria-describedby="edit quiz information"
       >
-        <Box sx={style}>
-          <AddNewQuiz
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "100vw",
+            maxWidth: "700px",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 20,
+          }}
+        >
+          <AddOrEditQuiz
             closeQuiz={() => setIsEditing((prev) => !prev)}
             info={info}
             isEditing={true}
+            handleEditInfo={handleEditInfo}
           />
         </Box>
       </Modal>
