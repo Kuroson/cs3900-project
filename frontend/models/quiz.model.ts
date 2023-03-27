@@ -26,6 +26,7 @@ export type QuizBasicInfo = {
 
 // admin
 export type QuizQuestionTypeAdmin = {
+  _id?: string;
   text: string;
   type: string;
   marks: number;

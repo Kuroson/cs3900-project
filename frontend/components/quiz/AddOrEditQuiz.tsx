@@ -16,7 +16,7 @@ const AddOrEditQuiz: React.FC<{
   courseId?: string;
   info?: QuizBasicInfo;
   isEditing: boolean;
-  handleEditInfo: (newInfo: QuizBasicInfo) => void;
+  handleEditInfo?: (newInfo: QuizBasicInfo) => void;
 }> = ({ handleAddNewQuiz, closeQuiz, courseId, info, isEditing, handleEditInfo }) => {
   const [title, setTitle] = useState(info?.title ?? "");
   const [description, setDescription] = useState(info?.description ?? "");
@@ -130,6 +130,7 @@ const AddOrEditQuiz: React.FC<{
               variant="contained"
               disabled={!title}
               onClick={() => {
+                if (!handleEditInfo) return;
                 handleEditInfo({
                   title: title,
                   open: openTime.format(),
