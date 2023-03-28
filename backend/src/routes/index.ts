@@ -34,6 +34,7 @@ import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
 import { createTaskController } from "./workloadOverview/createTask.route";
 import { createWeekController } from "./workloadOverview/createWeek.route";
+import { getWeekController } from "./workloadOverview/getWeek.route";
 
 export const indexRouter = Router();
 
@@ -86,3 +87,4 @@ indexRouter.post("/quiz/finish", finishQuizController);
 //Workload Overview routes
 indexRouter.post("/workload/week/create", createWeekController);
 indexRouter.post("/workload/task/create", createTaskController);
+indexRouter.get("/workload/week", getWeekController);
