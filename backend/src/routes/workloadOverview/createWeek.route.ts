@@ -1,4 +1,5 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Course from "@/models/course/course.model";
 import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
@@ -63,25 +64,38 @@ export const createWeekController = async (
 
 /**
  * Creates a new Week in the given workload overview
- * @param workloadOverviewId
+ * @param courseId
  * @param title
  * @param description
  * @param firebase_uid
  * @returns
  */
 export const createWeek = async (
-    workloadOverviewId: string,
+    courseId: string,
     title: string,
     description: string,
     firebase_uid: string,
 ): Promise<string> => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(403, "Must be an admin to create a week for worfload overview");
+        throw new HttpException(403, "Must be an admin to create a week for workload overview");
     }
 
-    const workloadOverview = await WorkloadOverview.findById(workloadOverviewId).catch((err) => {
-        throw new HttpException(400, `Workload Overview, ${workloadOverviewId}, does not exist`);
-    });
+    // Get the course
+    const course = await Course.findById(courseId).catch(() => null);
+    if (course == null) {
+        throw new HttpException(400, `Course, ${courseId}, does not exist`);
+    }
+
+    // Get the workload Overview
+    const workloadOverview = await WorkloadOverview.findById(course.workloadOverview).catch(
+        () => null,
+    );
+    if (workloadOverview == null) {
+        throw new HttpException(
+            400,
+            `Workload Overview, ${course.workloadOverview}, does not exist`,
+        );
+    }
 
     const newWeek = new Week({
         title: title,
@@ -98,11 +112,11 @@ export const createWeek = async (
             throw new HttpException(500, "Failed to create week", err);
         });
 
-    //Add task to the week
-    workloadOverview?.weeks.push(weekId);
+    // Add week to the workload Overview
+    workloadOverview.weeks.push(weekId);
 
-    await workloadOverview?.save().catch((err) => {
-        throw new HttpException(500, "Failed to add week to workload overview", err);
+    await workloadOverview.save().catch((err) => {
+        throw new HttpException(500, "Failed to add week to workload overview for course", err);
     });
 
     return weekId;

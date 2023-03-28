@@ -32,6 +32,8 @@ import { startQuizController } from "./quiz/startQuiz.route";
 import { updateQuizController } from "./quiz/updateQuiz.route";
 import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
+import { createTaskController } from "./workloadOverview/createTask.route";
+import { createWeekController } from "./workloadOverview/createWeek.route";
 
 export const indexRouter = Router();
 
@@ -80,3 +82,7 @@ indexRouter.post("/quiz/question/create", createQuestionController);
 indexRouter.delete("/quiz/question/delete", deleteQuestionController);
 indexRouter.get("/quiz/start", startQuizController);
 indexRouter.post("/quiz/finish", finishQuizController);
+
+//Workload Overview routes
+indexRouter.post("/workload/week/create", createWeekController);
+indexRouter.post("/workload/task/create", createTaskController);
