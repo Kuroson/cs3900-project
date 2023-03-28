@@ -15,6 +15,23 @@ type SideNavBarProps = {
   courseData?: UserCourseInformation;
 };
 
+type CourseDetailsProps = {
+  code: string;
+};
+
+const CourseDetails = ({ code }: CourseDetailsProps): JSX.Element => {
+  return (
+    <div className="mt-5 flex flex-row justify-center">
+      <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
+        <span className="text-3xl font-bold">{code.charAt(0) ?? ""}</span>
+      </div>
+      <div className="flex flex-col pl-2 justify-center items-center">
+        <span className="font-bold text-start w-full text-2xl">{code}</span>
+      </div>
+    </div>
+  );
+};
+
 export default function StudentNavBar({
   userDetails,
   routes,
@@ -78,7 +95,8 @@ export default function StudentNavBar({
         <div className="w-full flex flex-col justify-between h-[calc(100%_-_4rem)]">
           <div>
             {/* Top */}
-            <UserDetailsSection {...userDetails} />
+            {courseData === undefined && <UserDetailsSection {...userDetails} />}
+            {courseData !== undefined && <CourseDetails code={courseData?.code ?? ""} />}
             <NavBar
               routes={routes ?? studentRoutes}
               role={getRoleText(userDetails.role)}
