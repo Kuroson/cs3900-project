@@ -19,7 +19,12 @@ import { QuizBasicInfo, QuizInfoTypeAdmin } from "models/quiz.model";
 import { useAuthUser } from "next-firebase-auth";
 import PageHeader from "components/common/PageHeader";
 import { HttpException } from "util/HttpExceptions";
-import { createNewQuestion, getQuizInfoAdmin, updateQuizAdmin } from "util/api/quizApi";
+import {
+  createNewQuestion,
+  deleteQuestion,
+  getQuizInfoAdmin,
+  updateQuizAdmin,
+} from "util/api/quizApi";
 import QuizInfoCard from "./QuizInfoCard";
 import ShowAnswer from "./ShowAnswer";
 
@@ -173,6 +178,32 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
     setChoices([]);
   };
 
+  const handleDeleteQuestion = async (questionId: string, idx: number) => {
+    // TODO
+    // const [res, err] = await deleteQuestion(
+    //   await authUser.getIdToken(),
+    //   {
+    //     quizId: quizId,
+    //     questionId: questionId
+    //   },
+    //   "client",
+    // );
+    // if (err !== null) {
+    //   console.error(err);
+    //   if (err instanceof HttpException) {
+    //     toast.error(err.message);
+    //   } else {
+    //     toast.error("Failed to delete question");
+    //   }
+    //   return;
+    // }
+    // toast.success("Deleted question successfully");
+    setQuizInfo((prev) => {
+      prev.questions.splice(idx, 1);
+      return { ...prev };
+    });
+  };
+
   return (
     <>
       <PageHeader title={quizInfo?.title ?? ""}>
@@ -193,7 +224,12 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
           handleEditInfo={handleEditInfo}
         />
         {quizInfo.questions.map((question, idx) => (
-          <ShowAnswer key={`answer+${idx}`} questionInfo={question} isAdmin={true} />
+          <ShowAnswer
+            key={`answer+${idx}`}
+            questionInfo={question}
+            isAdmin={true}
+            handleDelete={() => handleDeleteQuestion(question._id ?? "", idx)}
+          />
         ))}
         <Button onClick={() => setAddQuestionModal((prev) => !prev)} variant="outlined">
           Add Question

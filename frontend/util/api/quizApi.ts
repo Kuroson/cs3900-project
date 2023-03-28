@@ -5,7 +5,7 @@ import {
   QuizListType,
   QuizQuestionType,
 } from "models/quiz.model";
-import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
+import { BackendLinkType, apiDelete, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
 
 export const getListOfQuizzes = (token: string | null, courseId: string, type: BackendLinkType) => {
@@ -67,5 +67,17 @@ export const createNewQuestion = (
     `${getBackendLink(type)}/quiz/question/create`,
     token,
     newQuestion,
+  );
+};
+
+export const deleteQuestion = (
+  token: string | null,
+  ids: { quizId: string; questionId: string },
+  type: BackendLinkType,
+) => {
+  return apiDelete<{ quizId: string; questionId: string }, { message: string }>(
+    `${getBackendLink(type)}/quiz/question/delete`,
+    token,
+    ids,
   );
 };

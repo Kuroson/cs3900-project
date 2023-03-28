@@ -1,16 +1,18 @@
 import React from "react";
-import { Checkbox, TextField } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Checkbox, IconButton, TextField } from "@mui/material";
 import { QuizQuestionType } from "models/quiz.model";
 import Tag from "components/common/Tag";
 
 const label = { inputProps: { "aria-label": "Checkbox choice" } };
-const ShowAnswer: React.FC<{ questionInfo: QuizQuestionType; isAdmin: boolean }> = ({
-  questionInfo,
-  isAdmin,
-}) => {
+const ShowAnswer: React.FC<{
+  questionInfo: QuizQuestionType;
+  isAdmin: boolean;
+  handleDelete: () => void;
+}> = ({ questionInfo, isAdmin, handleDelete }) => {
   return (
     <div>
-      <div className="flex gap-3">
+      <div className="flex gap-3 items-center">
         {questionInfo.tag && <Tag text={questionInfo.tag} color="bg-[#1e88e5]" />}
         <Tag
           text={`Marks: ${
@@ -18,6 +20,9 @@ const ShowAnswer: React.FC<{ questionInfo: QuizQuestionType; isAdmin: boolean }>
           } ${String(questionInfo.marks)}`}
           color="bg-[#78909c]"
         />
+        <IconButton aria-label="delete" onClick={handleDelete}>
+          <DeleteIcon color="error" />
+        </IconButton>
       </div>
       <p className="text-xl mb-2">{questionInfo.text}</p>
       {questionInfo.type === "choice" ? (
