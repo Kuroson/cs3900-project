@@ -15,7 +15,7 @@ import {
   TextField,
 } from "@mui/material";
 import dayjs from "dayjs";
-import { QuizBasicInfo, QuizInfoTypeAdmin } from "models/quiz.model";
+import { QuizBasicInfo, QuizInfoType } from "models/quiz.model";
 import { useAuthUser } from "next-firebase-auth";
 import PageHeader from "components/common/PageHeader";
 import { HttpException } from "util/HttpExceptions";
@@ -28,7 +28,7 @@ import {
 import QuizInfoCard from "./QuizInfoCard";
 import ShowAnswer from "./ShowAnswer";
 
-const quiz: QuizInfoTypeAdmin = {
+const quiz: QuizInfoType = {
   title: "Quiz1",
   open: dayjs().format(),
   close: dayjs().add(30, "minute").format(),
@@ -70,7 +70,7 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
   courseId,
 }) => {
   const authUser = useAuthUser();
-  const [quizInfo, setQuizInfo] = useState<QuizInfoTypeAdmin>({
+  const [quizInfo, setQuizInfo] = useState<QuizInfoType>({
     title: "",
     open: "",
     close: "",

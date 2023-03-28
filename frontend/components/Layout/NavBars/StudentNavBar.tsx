@@ -1,4 +1,6 @@
+import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
+import StorefrontIcon from "@mui/icons-material/Storefront";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import { UserCourseInformation } from "models/course.model";
@@ -34,10 +36,38 @@ export default function StudentNavBar({
       icon: <HomeIcon fontSize="large" color="primary" />,
       hasLine: true,
     },
-    ...(courseData?.pages ?? []).map((x) => {
+    {
+      name: "Home",
+      route: "/", //TODO
+      icon: <GridViewIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Marketplace",
+      route: "/", //TODO
+      icon: <StorefrontIcon fontSize="large" color="primary" />,
+      hasLine: true,
+    },
+    ...(courseData?.pages ?? []).map((page) => {
+      if (page.title === "Quiz") {
+        return {
+          name: page.title,
+          route: `/course/${courseData?._id}/Quiz`,
+        };
+      } else if (page.title === "Assignment") {
+        return {
+          name: page.title,
+          route: `/course/${courseData?._id}/Assignment`,
+        };
+      } else if (page.title === "Forum") {
+        // TODO: forum route
+        return {
+          name: page.title,
+          route: `/course/${courseData?._id}/Forum`, //TODO
+        };
+      }
       return {
-        name: x.title,
-        route: `/course/${courseData?._id}/${x._id}`,
+        name: page.title,
+        route: `/course/${courseData?._id}/${page._id}`,
       };
     }),
   ];

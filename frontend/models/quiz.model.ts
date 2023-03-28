@@ -15,6 +15,7 @@ export type CreateQuizType = {
   close: string;
 };
 
+// for card in quiz
 export type QuizBasicInfo = {
   title: string;
   description: string;
@@ -24,6 +25,7 @@ export type QuizBasicInfo = {
   close: string;
 };
 
+// for showing answers in admin/student page
 export type QuizQuestionType = {
   _id?: string;
   text: string;
@@ -40,55 +42,23 @@ export type QuizQuestionType = {
   }>;
 };
 
-// admin
-export type QuizInfoTypeAdmin = {
+// gets quiz info
+export type QuizInfoType = {
   title: string;
   description: string;
   maxMarks: number;
+  marksAwarded?: number; // just for student
   open: string;
   close: string;
   questions: Array<QuizQuestionType>;
 };
 
-// student
-// export type QuizQuestionTypeStudent = {
-//   text: string;
-//   type: string;
-//   markAwarded?: number; // admin without that one
-//   markTotal: number;
-//   tag: string;
-//   response: string;
-//   choices?: Array<{
-//     text: string;
-//     correct?: boolean;
-//     chosen: boolean; // admin without that one
-//   }>;
-// };
-
-export type QuizInfoAfterSubmitType = {
-  title: string;
-  description: string;
-  maxMarks: number;
-  marksAwarded?: number; // admin without that one
-  open: string;
-  close: string;
-  questions?: Array<QuizQuestionType>;
-};
-
-export type QuizInfoBeforeSubmitType = {
-  title: string;
-  description: string;
-  maxMarks: number;
-  open: string;
-  close: string;
-  questions: Array<{
-    _id: string;
-    text: string;
-    type: string;
-    marks: number;
-    choices?: Array<{
-      _id: string;
-      text: string;
-    }>;
+export type SubmitQuizType = {
+  courseId: string;
+  quizId: string;
+  responses: Array<{
+    questionId: string;
+    choiceId?: string;
+    answer?: string;
   }>;
 };
