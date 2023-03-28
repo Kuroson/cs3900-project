@@ -2,7 +2,7 @@ import { HttpException } from "@/exceptions/HttpException";
 import Quiz, { QuizInterfaceStudent } from "@/models/course/quiz/quiz.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
+import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { getAttempt } from "./getQuiz.route";
 
@@ -76,7 +76,7 @@ export const startQuiz = async (queryBody: QueryPayload, firebase_uid: string) =
     const quiz = await Quiz.findById(quizId).populate({
         path: "questions",
         model: "Question",
-        select: "_id text type marks choices",
+        select: "_id text type marks choices tag",
         populate: {
             path: "choices",
             model: "Choice",
