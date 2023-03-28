@@ -119,7 +119,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>
-        <div className="flex flex-col w-full px-[5%]">
+        <div className="flex flex-col w-full px-[5%] py-2">
           {!openQuiz && !addNewQuiz && (
             <>
               <PageHeader title="Quiz" />

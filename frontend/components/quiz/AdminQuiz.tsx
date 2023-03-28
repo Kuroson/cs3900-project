@@ -21,6 +21,7 @@ import PageHeader from "components/common/PageHeader";
 import { HttpException } from "util/HttpExceptions";
 import { createNewQuestion, getQuizInfoAdmin, updateQuizAdmin } from "util/api/quizApi";
 import QuizInfoCard from "./QuizInfoCard";
+import ShowAnswer from "./ShowAnswer";
 
 const quiz: QuizInfoTypeAdmin = {
   title: "Quiz1",
@@ -30,12 +31,30 @@ const quiz: QuizInfoTypeAdmin = {
   description: "This quiz aims for student getting familiar with HTML",
   questions: [
     {
-      choices: [],
-      marks: 12,
+      choices: [
+        {
+          text: "I dont know",
+          correct: true,
+          _id: "1",
+        },
+        {
+          text: "No idea",
+          correct: false,
+          _id: "2",
+        },
+      ],
+      marks: 10,
       tag: "js",
-      text: "hi",
+      text: "What is <a> tag?",
       type: "choice",
       _id: "12",
+    },
+    {
+      type: "open",
+      marks: 4,
+      tag: "HTML",
+      text: "How to use html?",
+      _id: "3",
     },
   ],
 };
@@ -164,17 +183,17 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
       <div className="mt-7 mx-auto flex flex-col gap-9 w-full max-w-[800px]">
         <QuizInfoCard
           info={{
-            title: quizInfo?.title ?? "",
-            description: quizInfo?.description ?? "",
-            maxMarks: quizInfo?.maxMarks ?? 0,
-            open: quizInfo?.open ?? "",
-            close: quizInfo?.close ?? "",
+            title: quizInfo.title,
+            description: quizInfo.description,
+            maxMarks: quizInfo.maxMarks,
+            open: quizInfo.open,
+            close: quizInfo.close,
           }}
           isAdmin={true}
           handleEditInfo={handleEditInfo}
         />
         {quizInfo.questions.map((question, idx) => (
-          <div key={idx}>{question.text}</div>
+          <ShowAnswer key={`answer+${idx}`} questionInfo={question} isAdmin={true} />
         ))}
         <Button onClick={() => setAddQuestionModal((prev) => !prev)} variant="outlined">
           Add Question

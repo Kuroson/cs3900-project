@@ -12,7 +12,7 @@ const Card: React.FC<{ text: string; close: string; isQuiz: boolean; handleOpen:
 }) => {
   return (
     <div
-      className="flex flex-col rounded-lg items-center gap-7 shadow-md px-5 pt-2 pb-3 my-2 mx-5 w-[350px] min-h-[160px] cursor-pointer hover:shadow-lg"
+      className="flex flex-col rounded-lg items-center gap-7 shadow-md px-5 pt-2 pb-3 my-2 mx-5 w-[330px] min-h-[160px] cursor-pointer hover:shadow-lg"
       onClick={handleOpen}
     >
       {/* show time left */}

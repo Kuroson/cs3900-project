@@ -24,42 +24,46 @@ export type QuizBasicInfo = {
   close: string;
 };
 
-// admin
-export type QuizQuestionTypeAdmin = {
+export type QuizQuestionType = {
   _id?: string;
   text: string;
   type: string;
+  markAwarded?: number; // student
   marks: number;
   tag: string;
-  choices: Array<{
+  response?: string; // student
+  choices?: Array<{
+    _id?: string;
     text: string;
-    correct: boolean;
+    correct?: boolean; // not show if not submit
+    chosen?: boolean; // student
   }>;
 };
 
+// admin
 export type QuizInfoTypeAdmin = {
   title: string;
   description: string;
   maxMarks: number;
   open: string;
   close: string;
-  questions: Array<QuizQuestionTypeAdmin>;
+  questions: Array<QuizQuestionType>;
 };
 
 // student
-export type QuizQuestionTypeStudent = {
-  text: string;
-  type: string;
-  markAwarded?: number; // admin without that one
-  markTotal: number;
-  tag: string;
-  response: string;
-  choices?: Array<{
-    text: string;
-    correct?: boolean;
-    chosen: boolean; // admin without that one
-  }>;
-};
+// export type QuizQuestionTypeStudent = {
+//   text: string;
+//   type: string;
+//   markAwarded?: number; // admin without that one
+//   markTotal: number;
+//   tag: string;
+//   response: string;
+//   choices?: Array<{
+//     text: string;
+//     correct?: boolean;
+//     chosen: boolean; // admin without that one
+//   }>;
+// };
 
 export type QuizInfoAfterSubmitType = {
   title: string;
@@ -68,7 +72,7 @@ export type QuizInfoAfterSubmitType = {
   marksAwarded?: number; // admin without that one
   open: string;
   close: string;
-  questions?: Array<QuizQuestionTypeStudent>;
+  questions?: Array<QuizQuestionType>;
 };
 
 export type QuizInfoBeforeSubmitType = {
