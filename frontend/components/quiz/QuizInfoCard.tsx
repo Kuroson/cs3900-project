@@ -13,7 +13,7 @@ import AddOrEditQuiz from "./AddOrEditQuiz";
 const QuizInfoCard: React.FC<{
   info: QuizBasicInfo;
   isAdmin: boolean;
-  handleEditInfo: (newInfo: QuizBasicInfo) => void;
+  handleEditInfo?: (newInfo: QuizBasicInfo) => void;
 }> = ({ info, isAdmin, handleEditInfo }) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -33,7 +33,7 @@ const QuizInfoCard: React.FC<{
         </div>
       </div>
       <TitleWithIcon
-        text={`Marks: ${info.markAwarded != null ? info.markAwarded + "/" : ""}${info.maxMarks}`}
+        text={`Marks: ${info.markAwarded != null ? info.markAwarded + "/" : "?/"}${info.maxMarks}`}
       >
         <RuleIcon color="primary" />
       </TitleWithIcon>

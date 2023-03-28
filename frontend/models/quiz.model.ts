@@ -53,12 +53,14 @@ export type QuizInfoType = {
   questions: Array<QuizQuestionType>;
 };
 
+export type ResponsesType = {
+  questionId: string;
+  choiceId?: Array<string>; //todo
+  answer?: string;
+};
+
 export type SubmitQuizType = {
   courseId: string;
   quizId: string;
-  responses: Array<{
-    questionId: string;
-    choiceId?: string;
-    answer?: string;
-  }>;
+  responses: Array<ResponsesType>;
 };

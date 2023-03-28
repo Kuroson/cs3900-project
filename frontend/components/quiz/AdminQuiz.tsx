@@ -304,7 +304,7 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
                       value={choice.correct}
                       onChange={(e) =>
                         setChoices((prev) => {
-                          prev[idx].correct = Boolean(e.target.value);
+                          prev[idx].correct = e.target.checked;
                           return [...prev];
                         })
                       }

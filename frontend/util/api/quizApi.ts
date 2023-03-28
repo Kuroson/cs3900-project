@@ -75,27 +75,25 @@ export const deleteQuestion = (
 // for student
 export const startQuizStudent = (
   token: string | null,
-  courseId: string,
-  quizId: string,
+  ids: { quizId: string; courseId: string },
   type: BackendLinkType,
 ) => {
   return apiGet<{ courseId: string; quizId: string }, QuizInfoType>(
     `${getBackendLink(type)}/quiz/start`,
     token,
-    { courseId: courseId, quizId: quizId },
+    ids,
   );
 };
 
 export const getQuizInfoAfterSubmit = (
   token: string | null,
-  courseId: string,
-  quizId: string,
+  ids: { quizId: string; courseId: string },
   type: BackendLinkType,
 ) => {
   return apiGet<{ courseId: string; quizId: string }, QuizInfoType>(
     `${getBackendLink(type)}/quiz`,
     token,
-    { courseId: courseId, quizId: quizId },
+    ids,
   );
 };
 

@@ -8,32 +8,34 @@ const label = { inputProps: { "aria-label": "Checkbox choice" } };
 const ShowAnswer: React.FC<{
   questionInfo: QuizQuestionType;
   isAdmin: boolean;
-  handleDelete: () => void;
+  handleDelete?: () => void;
 }> = ({ questionInfo, isAdmin, handleDelete }) => {
   return (
     <div>
       <div className="flex gap-3 items-center">
-        {questionInfo.tag && <Tag text={questionInfo.tag} color="bg-[#1e88e5]" />}
+        {questionInfo.tag && <Tag text={questionInfo.tag} color="bg-[#009688]" />}
         <Tag
           text={`Marks: ${
-            questionInfo.markAwarded != null ? questionInfo.markAwarded + "/" : ""
+            questionInfo.markAwarded != null ? questionInfo.markAwarded + "/" : "?/"
           } ${String(questionInfo.marks)}`}
           color="bg-[#78909c]"
         />
-        <IconButton aria-label="delete" onClick={handleDelete}>
-          <DeleteIcon color="error" />
-        </IconButton>
+        {isAdmin && (
+          <IconButton aria-label="delete" onClick={handleDelete}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        )}
       </div>
-      <p className="text-xl mb-2">{questionInfo.text}</p>
+      <p className="text-xl my-2">{questionInfo.text}</p>
       {questionInfo.type === "choice" ? (
         questionInfo.choices?.map((choice, idx) => (
           <div key={`answer_choice_${idx}`} className="flex items-center">
-            <Checkbox {...label} checked={choice.correct} disabled />
-            <p
-              className={`text-xl ${(choice.correct ?? false) && "text-lime-600"} ${
-                (choice.chosen ?? choice.correct) !== choice.correct && "text-pink-600"
-              }`}
-            >
+            <Checkbox
+              {...label}
+              checked={isAdmin ? choice.correct ?? false : choice.chosen ?? false}
+              disabled
+            />
+            <p className={`text-xl ${(choice.correct ?? false) && "text-lime-600"}`}>
               {choice.text}
             </p>
           </div>
