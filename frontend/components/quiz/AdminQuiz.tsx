@@ -68,7 +68,7 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
   quizId,
   handleClose,
   courseId,
-}) => {
+}): JSX.Element => {
   const authUser = useAuthUser();
   const [quizInfo, setQuizInfo] = useState<QuizInfoType>({
     title: "",

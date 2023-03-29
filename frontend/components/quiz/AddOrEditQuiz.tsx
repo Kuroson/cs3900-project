@@ -9,15 +9,24 @@ import PageHeader from "components/common/PageHeader";
 import TitleWithIcon from "components/common/TitleWithIcon";
 import styles from "./EditQuiz.module.scss";
 
-// Add or edit quiz info for admin
-const AddOrEditQuiz: React.FC<{
+type AddOrEditQuizProps = {
   handleAddNewQuiz?: (newQuiz: CreateQuizType) => void;
   closeQuiz: () => void;
   courseId?: string;
   info?: QuizBasicInfo;
   isEditing: boolean;
   handleEditInfo?: (newInfo: QuizBasicInfo) => void;
-}> = ({ handleAddNewQuiz, closeQuiz, courseId, info, isEditing, handleEditInfo }) => {
+};
+
+// Add or edit quiz info for admin
+const AddOrEditQuiz: React.FC<AddOrEditQuizProps> = ({
+  handleAddNewQuiz,
+  closeQuiz,
+  courseId,
+  info,
+  isEditing,
+  handleEditInfo,
+}): JSX.Element => {
   const [title, setTitle] = useState(info?.title ?? "");
   const [description, setDescription] = useState(info?.description ?? "");
   const [maxMarks, setMaxMarks] = useState(info?.maxMarks ?? 0);

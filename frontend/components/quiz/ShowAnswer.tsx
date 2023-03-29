@@ -4,12 +4,14 @@ import { Checkbox, IconButton, TextField } from "@mui/material";
 import { QuizQuestionType } from "models/quiz.model";
 import Tag from "components/common/Tag";
 
-const label = { inputProps: { "aria-label": "Checkbox choice" } };
-const ShowAnswer: React.FC<{
+type ShowAnswerProps = {
   questionInfo: QuizQuestionType;
   isAdmin: boolean;
   handleDelete?: () => void;
-}> = ({ questionInfo, isAdmin, handleDelete }) => {
+};
+
+const label = { inputProps: { "aria-label": "Checkbox choice" } };
+const ShowAnswer: React.FC<ShowAnswerProps> = ({ questionInfo, isAdmin, handleDelete }) => {
   return (
     <div>
       <div className="flex gap-3 items-center">

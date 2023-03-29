@@ -3,13 +3,10 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import QuizIcon from "@mui/icons-material/Quiz";
 import ShowTimeLeft from "./ShowTimeLeft";
 
+type CardProps = { text: string; close: string; isQuiz: boolean; handleOpen: () => void };
+
 // Card for quiz or assignment
-const Card: React.FC<{ text: string; close: string; isQuiz: boolean; handleOpen: () => void }> = ({
-  text,
-  close,
-  isQuiz,
-  handleOpen,
-}) => {
+const Card: React.FC<CardProps> = ({ text, close, isQuiz, handleOpen }): JSX.Element => {
   return (
     <div
       className="flex flex-col rounded-lg items-center gap-7 shadow-md px-5 pt-2 pb-3 my-2 mx-5 w-[330px] min-h-[160px] cursor-pointer hover:shadow-lg"

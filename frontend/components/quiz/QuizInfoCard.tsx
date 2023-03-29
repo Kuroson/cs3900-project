@@ -9,12 +9,18 @@ import ShowTimeLeft from "components/common/ShowTimeLeft";
 import TitleWithIcon from "components/common/TitleWithIcon";
 import AddOrEditQuiz from "./AddOrEditQuiz";
 
-// common for student and admin
-const QuizInfoCard: React.FC<{
+type QuizInfoCardProps = {
   info: QuizBasicInfo;
   isAdmin: boolean;
   handleEditInfo?: (newInfo: QuizBasicInfo) => void;
-}> = ({ info, isAdmin, handleEditInfo }) => {
+};
+
+// common for student and admin
+const QuizInfoCard: React.FC<QuizInfoCardProps> = ({
+  info,
+  isAdmin,
+  handleEditInfo,
+}): JSX.Element => {
   const [isEditing, setIsEditing] = useState(false);
 
   return (
