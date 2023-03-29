@@ -86,7 +86,7 @@ export const gradeQuestion = async (queryBody: QueryPayload, firebase_uid: strin
         throw new HttpException(400, "Failed to recall response");
     }
 
-    if (mark > question.marks) {
+    if (mark < 0 || mark > question.marks) {
         throw new HttpException(400, "Cannot award more than maximum mark");
     }
 

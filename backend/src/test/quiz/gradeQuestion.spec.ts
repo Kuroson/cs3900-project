@@ -1,4 +1,6 @@
+import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
+import QuestionResponse from "@/models/course/enrolment/questionResponse.model";
 import User from "@/models/user.model";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
@@ -8,12 +10,13 @@ import { createQuiz } from "@/routes/quiz/createQuiz.route";
 import { deleteQuiz } from "@/routes/quiz/deleteQuiz.route";
 import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
+import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
-describe("Test getting quiz submissions", () => {
+describe("Test grading a question submission", () => {
     const id = uuidv4();
     const userData = [
         genUserTestOnly("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`),
@@ -21,7 +24,6 @@ describe("Test getting quiz submissions", () => {
     ];
 
     let courseId: string;
-    let quizId: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -42,11 +44,13 @@ describe("Test getting quiz submissions", () => {
         );
         await updateCourse({ courseId, tags: ["test tag"] }, `acc1${id}`);
         await addStudents(courseId, [`user${id}@email.com`], `acc1${id}`);
+    });
 
+    const createTestQuiz = async () => {
         const oneDay = 24 * 60 * 60 * 1000;
         const open = new Date(Date.now() - oneDay).toString();
         const close = new Date(Date.now() + oneDay).toString();
-        quizId = await createQuiz(
+        const quizId = await createQuiz(
             {
                 courseId,
                 title: "Test quiz",
@@ -103,9 +107,12 @@ describe("Test getting quiz submissions", () => {
             },
             `acc1${id}`,
         );
-    });
 
-    it("Should return unmarked submissions for all questions for the given quiz", async () => {
+        return quizId;
+    };
+
+    it("Should save the question as graded", async () => {
+        const quizId = await createTestQuiz();
         const quizQuestions = await startQuiz({ courseId, quizId }, `acc2${id}`);
 
         // Make attempt
@@ -138,25 +145,126 @@ describe("Test getting quiz submissions", () => {
         expect(submissions[0].question.questionId).toEqual(
             quizQuestions.questions[1]._id.toString(),
         );
-        expect(submissions[0].question.text).toBe("question 2 text");
-        expect(submissions[0].question.marks).toBe(2);
-        expect(submissions[0].question.tag).toBe("test tag");
         expect(submissions[0].responses.length).toBe(1);
-        expect(submissions[0].responses[0].answer).toBe("Response");
 
-        expect(submissions[1].question.questionId).toEqual(
-            quizQuestions.questions[2]._id.toString(),
+        await gradeQuestion(
+            {
+                questionId: quizQuestions.questions[1]._id,
+                responseId: submissions[0].responses[0].responseId,
+                mark: 1,
+            },
+            `acc1${id}`,
         );
-        expect(submissions[1].question.text).toBe("question 3 text");
-        expect(submissions[1].question.marks).toBe(2);
-        expect(submissions[1].question.tag).toBe("test tag");
-        expect(submissions[1].responses.length).toBe(1);
-        expect(submissions[1].responses[0].answer).toBe("Another Response");
+
+        const questionResponse = await QuestionResponse.findById(
+            submissions[0].responses[0].responseId,
+        );
+
+        expect(questionResponse === null).toBe(false);
+        expect(questionResponse?.marked).toBe(true);
+        expect(questionResponse?.mark).toBe(1);
+
+        await deleteQuiz({ courseId, quizId }, `acc1${id}`);
+    });
+
+    it("Giving a negative mark should throw an error", async () => {
+        const quizId = await createTestQuiz();
+        const quizQuestions = await startQuiz({ courseId, quizId }, `acc2${id}`);
+
+        // Make attempt
+        await finishQuiz(
+            {
+                courseId,
+                quizId,
+                responses: [
+                    {
+                        questionId: quizQuestions.questions[0]._id,
+                        choiceId: quizQuestions.questions[0].choices[0]._id,
+                    },
+                    {
+                        questionId: quizQuestions.questions[1]._id,
+                        answer: "Response",
+                    },
+                    {
+                        questionId: quizQuestions.questions[2]._id,
+                        answer: "Another Response",
+                    },
+                ],
+            },
+            `acc2${id}`,
+        );
+
+        const submissions = await getSubmissions({ courseId, quizId }, `acc1${id}`);
+
+        expect(submissions.length).toBe(2);
+
+        expect(submissions[0].question.questionId).toEqual(
+            quizQuestions.questions[1]._id.toString(),
+        );
+        expect(submissions[0].responses.length).toBe(1);
+
+        expect(
+            gradeQuestion(
+                {
+                    questionId: quizQuestions.questions[1]._id,
+                    responseId: submissions[0].responses[0].responseId,
+                    mark: -1,
+                },
+                `acc1${id}`,
+            ),
+        ).rejects.toThrow(HttpException);
+    });
+
+    it("Giving a mark above the question max should throw an error", async () => {
+        const quizId = await createTestQuiz();
+        const quizQuestions = await startQuiz({ courseId, quizId }, `acc2${id}`);
+
+        // Make attempt
+        await finishQuiz(
+            {
+                courseId,
+                quizId,
+                responses: [
+                    {
+                        questionId: quizQuestions.questions[0]._id,
+                        choiceId: quizQuestions.questions[0].choices[0]._id,
+                    },
+                    {
+                        questionId: quizQuestions.questions[1]._id,
+                        answer: "Response",
+                    },
+                    {
+                        questionId: quizQuestions.questions[2]._id,
+                        answer: "Another Response",
+                    },
+                ],
+            },
+            `acc2${id}`,
+        );
+
+        const submissions = await getSubmissions({ courseId, quizId }, `acc1${id}`);
+
+        expect(submissions.length).toBe(2);
+
+        expect(submissions[0].question.questionId).toEqual(
+            quizQuestions.questions[1]._id.toString(),
+        );
+        expect(submissions[0].responses.length).toBe(1);
+
+        expect(
+            gradeQuestion(
+                {
+                    questionId: quizQuestions.questions[1]._id,
+                    responseId: submissions[0].responses[0].responseId,
+                    mark: 3,
+                },
+                `acc1${id}`,
+            ),
+        ).rejects.toThrow(HttpException);
     });
 
     afterAll(async () => {
         // Clean up
-        await deleteQuiz({ courseId, quizId }, `acc1${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
         await disconnect();
