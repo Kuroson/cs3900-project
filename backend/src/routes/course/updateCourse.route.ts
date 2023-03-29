@@ -106,7 +106,8 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
     }
 
     if (tags !== undefined && tags.length !== 0) {
-        tags.forEach((tag) => myCourse.tags.push(tag));
+        myCourse.tags.length = 0;
+        tags.forEach((tag) => myCourse.tags.addToSet(tag));
     }
 
     const retCourseId = await myCourse
