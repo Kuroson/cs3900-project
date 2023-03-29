@@ -146,7 +146,7 @@ export const getAssignmentSubmissions = async (queryBody: QueryPayload, firebase
                 studentId: currStudent,
                 title: submission.title,
                 linkToSubmission: await recallFileUrl(submission.storedName),
-                fileType: "", // TODO
+                fileType: submission.fileType,
             };
             submissions.push(submissionInfo);
         }

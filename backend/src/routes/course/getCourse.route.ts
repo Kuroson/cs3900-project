@@ -49,8 +49,6 @@ export const getCourseController = async (
 
             const courseData = await getCourse(courseId, authUser.uid);
 
-            console.log(courseData);
-
             return res.status(200).json({ ...courseData });
         } else {
             throw new HttpException(
