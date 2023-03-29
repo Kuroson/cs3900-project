@@ -19,7 +19,7 @@ type QuestionInfo = {
     text: string;
     type: string;
     markAwarded?: number;
-    markTotal: number;
+    marks: number;
     tag: string;
     response?: string;
     choices?: Array<ChoiceInfo>;
@@ -145,7 +145,7 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
         const questionInfo: QuestionInfo = {
             text: question.text,
             type: question.type,
-            markTotal: question.marks,
+            marks: question.marks,
             tag: question.tag,
         };
 
@@ -153,9 +153,10 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
         if (question.type === MULTIPLE_CHOICE) {
             questionInfo.choices = [];
             for (const choice of question.choices) {
+                const isChosen = questionResponse.choices?.includes(choice._id);
                 const choiceInfo: ChoiceInfo = {
                     text: choice.text,
-                    chosen: choice._id.equals(questionResponse.choice),
+                    chosen: isChosen !== undefined ? isChosen : false,
                 };
 
                 if (afterDue) {
