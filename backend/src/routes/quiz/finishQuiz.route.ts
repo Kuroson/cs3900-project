@@ -158,14 +158,18 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
             let numCorrect = 0;
 
             for (const choice of question.choices) {
-                if (choice.correct && response.choiceIds?.includes(choice._id.toString())) {
+                if (response.choiceIds == null) {
+                    continue;
+                }
+                const isChoiceCorrect: boolean = choice.correct;
+                if (isChoiceCorrect && response.choiceIds.includes(choice._id.toString())) {
                     chosenCorrectly += 1;
                     numCorrect += 1;
                     questionResponse.choices.push(choice._id);
-                } else if (choice.correct) {
+                } else if (isChoiceCorrect) {
                     numCorrect += 1;
                     notChosenIncorrectly += 1;
-                } else if (response.choiceIds?.includes(choice._id.toString())) {
+                } else if (response.choiceIds.includes(choice._id.toString())) {
                     chosenIncorrectly += 1;
                     questionResponse.choices.push(choice._id);
                 }
