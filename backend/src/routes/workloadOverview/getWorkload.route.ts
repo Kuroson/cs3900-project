@@ -25,6 +25,12 @@ type QueryPayload = {
     courseId: string;
 };
 
+/**
+ * GET /workload
+ * @param req
+ * @param res
+ * @returns
+ */
 export const getWorkloadController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
@@ -58,6 +64,11 @@ export const getWorkloadController = async (
     }
 };
 
+/**
+ * Gets all the information and tasks relating to a workload overview
+ * @param courseId
+ * @returns
+ */
 export const getWorkload = async (courseId: string): Promise<WorkloadData> => {
     const course = await Course.findById(courseId).catch(() => null);
     if (course === null) throw new HttpException(500, `Failed to recall course of ${courseId}`);
