@@ -33,6 +33,7 @@ import { getQuestionsController } from "./quiz/getQuestions.route";
 import { getQuizController } from "./quiz/getQuiz.route";
 import { getQuizzesController } from "./quiz/getQuizzes.route";
 import { getSubmissionsController } from "./quiz/getSubmissions.route";
+import { gradeQuestionController } from "./quiz/gradeQuestion.route";
 import { startQuizController } from "./quiz/startQuiz.route";
 import { updateQuizController } from "./quiz/updateQuiz.route";
 import { registerController } from "./user/register.route";
@@ -86,6 +87,7 @@ indexRouter.delete("/quiz/question/delete", deleteQuestionController);
 indexRouter.get("/quiz/start", startQuizController);
 indexRouter.post("/quiz/finish", finishQuizController);
 indexRouter.get("/quiz/submissions", getSubmissionsController);
+indexRouter.post("/quiz/question/grade", gradeQuestionController);
 
 // Assignment routes
 indexRouter.get("/assignment/list", getAssignmentsController);
