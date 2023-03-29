@@ -151,7 +151,7 @@ describe("Test getting quiz info", () => {
                 {
                     text: "question text",
                     type: "choice",
-                    markTotal: 2,
+                    marks: 2,
                     tag: "test tag",
                     choices: [
                         {
@@ -167,7 +167,7 @@ describe("Test getting quiz info", () => {
                 {
                     text: "question 2 text",
                     type: "open",
-                    markTotal: 2,
+                    marks: 2,
                     tag: "test tag",
                     response: "Response",
                 },
@@ -219,7 +219,7 @@ describe("Test getting quiz info", () => {
                 {
                     text: "question text",
                     type: "choice",
-                    markTotal: 2,
+                    marks: 2,
                     tag: "test tag",
                     choices: [
                         {
@@ -238,7 +238,7 @@ describe("Test getting quiz info", () => {
                 {
                     text: "question 2 text",
                     type: "open",
-                    markTotal: 2,
+                    marks: 2,
                     tag: "test tag",
                     response: "Response",
                 },
