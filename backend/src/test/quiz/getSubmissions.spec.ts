@@ -116,7 +116,7 @@ describe("Test getting quiz submissions", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceId: quizQuestions.questions[0].choices[0]._id,
+                        choiceIds: [quizQuestions.questions[0].choices[0]._id],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,

@@ -122,11 +122,13 @@ export const getSubmissions = async (queryBody: QueryPayload, firebase_uid: stri
     for (const student of course.students) {
         const currStudent = student.student;
         for (const attempt of student.quizAttempts) {
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
             if (!attempt.quiz.equals(quizId)) {
                 continue;
             }
             // This is the quiz, now find any unmarked questions
             for (const response of attempt.responses) {
+                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
                 if (response.marked) {
                     continue;
                 }

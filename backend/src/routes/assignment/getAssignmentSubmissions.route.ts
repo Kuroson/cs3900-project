@@ -133,7 +133,8 @@ export const getAssignmentSubmissions = async (queryBody: QueryPayload, firebase
     for (const student of course.students) {
         const currStudent = student.student;
         for (const submission of student.assignmentSubmissions) {
-            if (!submission.assignment._id.equals(assignmentId)) {
+            const isAssignment: boolean = submission.assignment._id.equals(assignmentId);
+            if (!isAssignment) {
                 continue;
             }
             // This is the assignment, now find check if it is marked

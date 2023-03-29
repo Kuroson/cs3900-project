@@ -8,7 +8,7 @@ import { Request, Response, response } from "express";
 import { Types } from "mongoose";
 import { checkAdmin } from "../admin/admin.route";
 
-type ResponsePayload = {};
+type ResponsePayload = Record<string, never>;
 
 type QueryPayload = {
     submissionId: string;
