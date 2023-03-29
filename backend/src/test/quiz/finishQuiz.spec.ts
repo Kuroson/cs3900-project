@@ -92,6 +92,32 @@ describe("Test finishing a quiz", () => {
             `acc1${id}`,
         );
 
+        await createQuestion(
+            {
+                courseId,
+                quizId,
+                text: "question 3 text",
+                type: "choice",
+                marks: 2,
+                choices: [
+                    {
+                        text: "C1",
+                        correct: true,
+                    },
+                    {
+                        text: "C2",
+                        correct: false,
+                    },
+                    {
+                        text: "C3",
+                        correct: true,
+                    },
+                ],
+                tag: "test tag",
+            },
+            `acc1${id}`,
+        );
+
         return quizId;
     };
 
@@ -110,11 +136,18 @@ describe("Test finishing a quiz", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceId: quizQuestions.questions[0].choices[0]._id,
+                        choiceIds: [quizQuestions.questions[0].choices[0]._id.toString()],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,
                         answer: "Response",
+                    },
+                    {
+                        questionId: quizQuestions.questions[2]._id,
+                        choiceIds: [
+                            quizQuestions.questions[2].choices[0]._id.toString(),
+                            quizQuestions.questions[2].choices[1]._id.toString(),
+                        ],
                     },
                 ],
             },
@@ -128,17 +161,27 @@ describe("Test finishing a quiz", () => {
 
         expect(quizAttempt === null).toBe(false);
         expect(quizAttempt?.mark).toBe(2);
-        expect(quizAttempt?.responses.length).toBe(2);
+        expect(quizAttempt?.responses.length).toBe(3);
 
         expect(quizAttempt?.responses[0].marked).toBe(true);
-        expect(quizAttempt?.responses[0].choice).toEqual(quizQuestions.questions[0].choices[0]._id);
+        expect(quizAttempt?.responses[0].choices).toEqual([
+            quizQuestions.questions[0].choices[0]._id,
+        ]);
         expect(quizAttempt?.responses[0].answer).toBe(undefined);
         expect(quizAttempt?.responses[0].mark).toBe(2);
 
         expect(quizAttempt?.responses[1].marked).toBe(false);
-        expect(quizAttempt?.responses[1].choice).toBe(undefined);
+        expect(quizAttempt?.responses[1].choices).toEqual([]);
         expect(quizAttempt?.responses[1].answer).toBe("Response");
         expect(quizAttempt?.responses[1].mark).toBe(0);
+
+        expect(quizAttempt?.responses[2].marked).toBe(true);
+        expect(quizAttempt?.responses[2].choices).toEqual([
+            quizQuestions.questions[2].choices[0]._id,
+            quizQuestions.questions[2].choices[1]._id,
+        ]);
+        expect(quizAttempt?.responses[2].answer).toBe(undefined);
+        expect(quizAttempt?.responses[2].mark).toBe(0);
 
         await deleteQuiz({ courseId, quizId }, `acc1${id}`);
     });
@@ -163,11 +206,18 @@ describe("Test finishing a quiz", () => {
                     responses: [
                         {
                             questionId: quizQuestions.questions[0]._id,
-                            choiceId: quizQuestions.questions[0].choices[0]._id,
+                            choiceIds: [quizQuestions.questions[0].choices[0]._id],
                         },
                         {
                             questionId: quizQuestions.questions[1]._id,
                             answer: "Response",
+                        },
+                        {
+                            questionId: quizQuestions.questions[2]._id,
+                            choiceIds: [
+                                quizQuestions.questions[2].choices[0]._id,
+                                quizQuestions.questions[2].choices[1]._id,
+                            ],
                         },
                     ],
                 },
@@ -198,11 +248,18 @@ describe("Test finishing a quiz", () => {
                     responses: [
                         {
                             questionId: quizQuestions.questions[0]._id,
-                            choiceId: quizQuestions.questions[0].choices[0]._id,
+                            choiceIds: [quizQuestions.questions[0].choices[0]._id],
                         },
                         {
                             questionId: quizQuestions.questions[1]._id,
                             answer: "Response",
+                        },
+                        {
+                            questionId: quizQuestions.questions[2]._id,
+                            choiceIds: [
+                                quizQuestions.questions[2].choices[0]._id,
+                                quizQuestions.questions[2].choices[1]._id,
+                            ],
                         },
                     ],
                 },
@@ -228,11 +285,18 @@ describe("Test finishing a quiz", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceId: quizQuestions.questions[0].choices[0]._id,
+                        choiceIds: [quizQuestions.questions[0].choices[0]._id],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,
                         answer: "Response",
+                    },
+                    {
+                        questionId: quizQuestions.questions[2]._id,
+                        choiceIds: [
+                            quizQuestions.questions[2].choices[0]._id,
+                            quizQuestions.questions[2].choices[1]._id,
+                        ],
                     },
                 ],
             },
@@ -247,11 +311,18 @@ describe("Test finishing a quiz", () => {
                     responses: [
                         {
                             questionId: quizQuestions.questions[0]._id,
-                            choiceId: quizQuestions.questions[0].choices[0]._id,
+                            choiceIds: [quizQuestions.questions[0].choices[0]._id],
                         },
                         {
                             questionId: quizQuestions.questions[1]._id,
                             answer: "Response",
+                        },
+                        {
+                            questionId: quizQuestions.questions[2]._id,
+                            choiceIds: [
+                                quizQuestions.questions[2].choices[0]._id,
+                                quizQuestions.questions[2].choices[1]._id,
+                            ],
                         },
                     ],
                 },
