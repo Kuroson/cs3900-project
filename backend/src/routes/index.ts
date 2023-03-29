@@ -7,6 +7,7 @@ import { deleteAssignmentController } from "./assignment/deleteAssignment.route"
 import { getAssignmentController } from "./assignment/getAssignment.route";
 import { getAssignmentSubmissionsController } from "./assignment/getAssignmentSubmissions.route";
 import { getAssignmentsController } from "./assignment/getAssignments.route";
+import { gradeAssignmentController } from "./assignment/gradeAssignment.route";
 import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
@@ -96,3 +97,4 @@ indexRouter.get("/assignment", getAssignmentController);
 indexRouter.post("/assignment/create", createAssignmentController);
 indexRouter.delete("/assignment/delete", deleteAssignmentController);
 indexRouter.get("/assignment/submissions", getAssignmentSubmissionsController);
+indexRouter.post("/assignment/grade", gradeAssignmentController);
