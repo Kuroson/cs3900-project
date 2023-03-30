@@ -1,8 +1,9 @@
 import Course from "@/models/course/course.model";
+import { QuizInterfaceStudent } from "@/models/course/quiz/quiz.model";
 import User from "@/models/user.model";
-import { getGrades } from "@/routes/analytics/getGrades.route";
+import { getQuestionAnalytics } from "@/routes/analytics/getQuestionAnalytics";
+import { getTagSummary } from "@/routes/analytics/getTagSummary.route";
 import { createAssignment } from "@/routes/assignment/createAssignment.route";
-import { deleteAssignment } from "@/routes/assignment/deleteAssignment.route";
 import { gradeAssignment } from "@/routes/assignment/gradeAssignment.route";
 import { submitAssignment } from "@/routes/assignment/submitAssignment.route";
 import { addStudents } from "@/routes/course/addStudents.route";
@@ -15,11 +16,12 @@ import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
+import { logger } from "@/utils/logger";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
-describe("Test getting student grades", () => {
+describe("Test getting question analytics", () => {
     const id = uuidv4();
     const userData = [
         genUserTestOnly("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`),
@@ -28,8 +30,7 @@ describe("Test getting student grades", () => {
 
     let courseId: string;
     let quizId: string;
-    let assignmentId1: string;
-    let assignmentId2: string;
+    let quizQuestions: QuizInterfaceStudent;
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -101,8 +102,34 @@ describe("Test getting student grades", () => {
             `acc1${id}`,
         );
 
+        await createQuestion(
+            {
+                courseId,
+                quizId,
+                text: "another question text",
+                type: "choice",
+                marks: 2,
+                choices: [
+                    {
+                        text: "C1",
+                        correct: true,
+                    },
+                    {
+                        text: "C2",
+                        correct: false,
+                    },
+                    {
+                        text: "C3",
+                        correct: true,
+                    },
+                ],
+                tag: "tag1",
+            },
+            `acc1${id}`,
+        );
+
         // Attempt quiz
-        const quizQuestions = await startQuiz({ courseId, quizId }, `acc2${id}`);
+        quizQuestions = await startQuiz({ courseId, quizId }, `acc2${id}`);
         await finishQuiz(
             {
                 courseId,
@@ -116,6 +143,13 @@ describe("Test getting student grades", () => {
                         questionId: quizQuestions.questions[1]._id,
                         answer: "Response",
                     },
+                    {
+                        questionId: quizQuestions.questions[2]._id,
+                        choiceIds: [
+                            quizQuestions.questions[2].choices[0]._id.toString(),
+                            quizQuestions.questions[2].choices[1]._id.toString(),
+                        ],
+                    },
                 ],
             },
             `acc2${id}`,
@@ -128,95 +162,53 @@ describe("Test getting student grades", () => {
             {
                 questionId: quizQuestions.questions[1]._id,
                 responseId: submissions[0].responses[0].responseId,
-                mark: 1,
+                mark: 0.5,
             },
             `acc1${id}`,
-        );
-
-        // Create assignments
-        assignmentId1 = await createAssignment(
-            {
-                courseId,
-                title: "Test assignment",
-                description: "This is the description",
-                deadline: close,
-                marksAvailable: 2,
-                tags: ["tag1", "tag2", "tag4"],
-            },
-            `acc1${id}`,
-        );
-
-        assignmentId2 = await createAssignment(
-            {
-                courseId,
-                title: "Test assignment 2",
-                description: "This is the description",
-                deadline: close,
-                marksAvailable: 3,
-                tags: ["tag1", "tag2"],
-            },
-            `acc1${id}`,
-        );
-
-        // Submit assignment
-        const submission = await submitAssignment(
-            { courseId, assignmentId: assignmentId1, title: "test title" },
-            `acc2${id}`,
-            {
-                fileRef: { name: "TestFile.PNG" },
-                mimetype: "image/png",
-            },
-        );
-
-        // Grade assignment
-        await gradeAssignment(
-            {
-                submissionId: submission.submissionId,
-                assignmentId: assignmentId1,
-                mark: 1.75,
-                comment: "test comment",
-                successTags: ["tag1", "tag2"],
-                improvementTags: ["tag4"],
-            },
-            `acc1${id}`,
-        );
-
-        await submitAssignment(
-            { courseId, assignmentId: assignmentId2, title: "test title" },
-            `acc2${id}`,
-            {
-                fileRef: { name: "TestFile.PNG" },
-                mimetype: "image/png",
-            },
         );
     });
 
-    it("Should get all the student's grades in the course", async () => {
-        const grades = await getGrades({ courseId }, `acc2${id}`);
+    it("Should get a summary of incorrect questions", async () => {
+        const questions = await getQuestionAnalytics({ courseId }, `acc2${id}`);
 
-        expect(grades).toEqual({
-            assignmentGrades: [
+        expect(questions).toEqual({
+            questions: [
                 {
-                    assignmentId: assignmentId1,
-                    title: "Test assignment",
-                    maxMarks: 2,
-                    marksAwarded: 1.75,
-                    successTags: ["tag1", "tag2"],
-                    imrpovementTags: ["tag4"],
+                    questionId: quizQuestions.questions[1]._id,
+                    text: "question 2 text",
+                    tag: "tag2",
+                    type: "open",
+                    marksTotal: 2,
+                    marksAwarded: 0.5,
+                    answer: "Response",
                 },
                 {
-                    assignmentId: assignmentId2,
-                    title: "Test assignment 2",
-                    maxMarks: 3,
-                },
-            ],
-            quizGrades: [
-                {
-                    quizId,
-                    title: "Test quiz",
-                    maxMarks: 1,
-                    marksAwarded: 0.75,
-                    incorrectTags: ["tag2"],
+                    questionId: quizQuestions.questions[2]._id,
+                    text: "another question text",
+                    tag: "tag1",
+                    type: "choice",
+                    marksTotal: 2,
+                    marksAwarded: 0,
+                    choices: [
+                        {
+                            choiceId: quizQuestions.questions[2].choices[0]._id,
+                            text: "C1",
+                            correct: true,
+                            chosen: true,
+                        },
+                        {
+                            choiceId: quizQuestions.questions[2].choices[1]._id,
+                            text: "C2",
+                            correct: false,
+                            chosen: true,
+                        },
+                        {
+                            choiceId: quizQuestions.questions[2].choices[2]._id,
+                            text: "C3",
+                            correct: true,
+                            chosen: false,
+                        },
+                    ],
                 },
             ],
         });
@@ -224,8 +216,6 @@ describe("Test getting student grades", () => {
 
     afterAll(async () => {
         // Clean up
-        await deleteAssignment({ courseId, assignmentId: assignmentId1 }, `acc1${id}`);
-        await deleteAssignment({ courseId, assignmentId: assignmentId2 }, `acc1${id}`);
         await deleteQuiz({ courseId, quizId }, `acc1${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();

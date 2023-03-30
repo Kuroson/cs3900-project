@@ -2,6 +2,7 @@ import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { getTagSummary } from "@/routes/analytics/getTagSummary.route";
 import { createAssignment } from "@/routes/assignment/createAssignment.route";
+import { deleteAssignment } from "@/routes/assignment/deleteAssignment.route";
 import { gradeAssignment } from "@/routes/assignment/gradeAssignment.route";
 import { submitAssignment } from "@/routes/assignment/submitAssignment.route";
 import { addStudents } from "@/routes/course/addStudents.route";
@@ -206,6 +207,8 @@ describe("Test getting student tag summary", () => {
 
     afterAll(async () => {
         // Clean up
+        await deleteAssignment({ courseId, assignmentId: assignmentId1 }, `acc1${id}`);
+        await deleteAssignment({ courseId, assignmentId: assignmentId2 }, `acc1${id}`);
         await deleteQuiz({ courseId, quizId }, `acc1${id}`);
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
