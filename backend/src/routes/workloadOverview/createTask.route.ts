@@ -98,5 +98,5 @@ export const createTask = async (
         throw new HttpException(500, "Failed to add task to week", err);
     });
 
-    return taskId;
+    return taskId.toString();
 };

@@ -42,6 +42,10 @@ describe("Test completing a task", () => {
         task1Id = await createTask(weekId, "Do Task 1", "Look at week 1", `acc${id}`);
         task2Id = await createTask(weekId, "Do Task 2", "Look at week 1", `acc${id}`);
 
+        expect(typeof weekId).toEqual("string");
+        expect(typeof task1Id).toEqual("string");
+        expect(typeof task2Id).toEqual("string");
+
         await addStudents(courseId, [`student1${id}@email.com`], `acc${id}`);
     });
 
@@ -59,9 +63,9 @@ describe("Test completing a task", () => {
         let workloadCompletion = await WorkloadCompletion.findById(workloadCompletionId);
         expect(workloadCompletion).not.toBeNull();
 
-        expect(workloadCompletion?.week).toEqual(weekId);
+        expect(workloadCompletion?.week._id.toString()).toBe(weekId);
         expect(workloadCompletion?.completedTasks.length).toBe(1);
-        expect(workloadCompletion?.completedTasks[0]).toEqual(task1Id);
+        expect(workloadCompletion?.completedTasks[0]._id.toString()).toEqual(task1Id);
 
         workloadCompletionId = await completeTask({
             studentId: user?._id,
@@ -73,10 +77,10 @@ describe("Test completing a task", () => {
         workloadCompletion = await WorkloadCompletion.findById(workloadCompletionId);
         expect(workloadCompletion).not.toBeNull();
 
-        expect(workloadCompletion?.week).toEqual(weekId);
+        expect(workloadCompletion?.week._id.toString()).toEqual(weekId);
         expect(workloadCompletion?.completedTasks.length).toBe(2);
-        expect(workloadCompletion?.completedTasks).toContain(task1Id);
-        expect(workloadCompletion?.completedTasks).toContain(task2Id);
+        expect(workloadCompletion?.completedTasks.includes(task1Id)).toEqual(true);
+        expect(workloadCompletion?.completedTasks.includes(task2Id)).toEqual(true);
     });
 
     afterAll(async () => {

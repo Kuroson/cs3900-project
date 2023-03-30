@@ -119,5 +119,5 @@ export const createWeek = async (
         throw new HttpException(500, "Failed to add week to workload overview for course", err);
     });
 
-    return weekId;
+    return weekId.toString();
 };

@@ -1,5 +1,5 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
+import Enrolment, { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
 import WorkloadCompletion from "@/models/course/enrolment/workloadCompletion.model";
 import Task from "@/models/course/workloadOverview/Task.model";
 import { checkAuth } from "@/utils/firebase";
@@ -7,6 +7,8 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { WorkloadCompletionInterface } from "./../../models/course/enrolment/workloadCompletion.model";
+import { WeekInterface } from "./../../models/course/workloadOverview/week.model";
 
 type ResponsePayload = {
     workloadCompletionId: string;
@@ -61,8 +63,19 @@ export const completeTaskController = async (
 export const completeTask = async (queryBody: QueryPayload): Promise<string> => {
     const { studentId, courseId, weekId, taskId } = queryBody;
 
+    type QueryDataEnrolment = Omit<
+        EnrolmentInterface,
+        "student" | "course" | "quizAttempts" | "assignmentSubmissions" | "workloadCompletion"
+    > & {
+        workloadCompletion: Array<
+            Omit<WorkloadCompletionInterface, "completedTasks" | "week"> & {
+                week: WeekInterface;
+            }
+        >;
+    };
+
     // Get enrolment
-    const enrolment = await Enrolment.findOne(
+    const enrolment: QueryDataEnrolment | null = await Enrolment.findOne(
         {
             course: courseId,
             student: studentId,
@@ -70,6 +83,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         "workloadCompletion",
     )
         .populate("workloadCompletion", "_id week")
+        .populate({ path: "workloadCompletion", populate: "week" })
         .exec()
         .catch((err) => {
             logger.error(err);
@@ -81,12 +95,12 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
     }
 
     const existingCompletion = enrolment.workloadCompletion.find(
-        (element) => element.week === weekId,
+        (element) => element.week._id.toString() === weekId,
     );
 
     let workloadCompletionId;
 
-    if (existingCompletion === undefined || existingCompletion === null) {
+    if (existingCompletion === undefined) {
         const newWorkload = new WorkloadCompletion({
             week: weekId,
             completedTasks: [taskId],
