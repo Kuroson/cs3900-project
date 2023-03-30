@@ -68,7 +68,7 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
     const { courseId, weekId } = queryBody;
 
     // Get course
-    const course = await Course.findById(weekId)
+    const course = await Course.findById(courseId)
         .exec()
         .catch((err) => {
             logger.error(err);

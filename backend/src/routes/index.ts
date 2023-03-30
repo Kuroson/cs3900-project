@@ -36,6 +36,7 @@ import { startQuizController } from "./quiz/startQuiz.route";
 import { updateQuizController } from "./quiz/updateQuiz.route";
 import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
+import { completeTaskController } from "./workloadOverview/completeTask.route";
 import { createTaskController } from "./workloadOverview/createTask.route";
 import { createWeekController } from "./workloadOverview/createWeek.route";
 import { deleteTaskController } from "./workloadOverview/deleteTask.route";
@@ -102,6 +103,7 @@ indexRouter.put("/workload/task/update", updateTaskController);
 indexRouter.put("/workload/week/update", updateWeekController);
 indexRouter.delete("/workload/task/delete", deleteTaskController);
 indexRouter.delete("/workload/week/delete", deleteWeekController);
+indexRouter.post("/workload/task/complete", completeTaskController);
 
 // Assignment routes
 indexRouter.get("/assignment/list", getAssignmentsController);

@@ -14,6 +14,12 @@ type QueryPayload = {
     taskId: string;
 };
 
+/**
+ * DELETE /workload/task/delete
+ * @param req
+ * @param res
+ * @returns
+ */
 export const deleteTaskController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,

@@ -45,7 +45,7 @@ describe("Test deleting a week", () => {
         expect(workload).not.toBeNull();
 
         expect(workload?.weeks.length).toBe(1);
-        expect(workload?.weeks[0]).toBe(weekId);
+        expect(workload?.weeks[0]).toEqual(weekId);
         await deleteWeek(
             {
                 courseId: courseId,
