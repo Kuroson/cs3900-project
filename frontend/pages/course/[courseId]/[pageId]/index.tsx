@@ -40,11 +40,14 @@ const ResourcesDisplay = ({ resources }: ResourceDisplayProps): JSX.Element => {
     <div className="flex flex-col w-full">
       {resources.map((resource) => {
         return (
-          <div key={resource._id} className="w-full mb-5">
-            <span className="w-full text-xl font-medium flex flex-col">{`Resource: ${resource.title}`}</span>
+          <div key={resource._id} className="w-full mb-5" data-cy={resource.title}>
+            <span
+              className="w-full text-xl font-medium flex flex-col"
+              data-cy="resource-title"
+            >{`Resource: ${resource.title}`}</span>
             {/* Description */}
-            {resource.description ?? (
-              <span className="">{`Description: ${resource.description}`}</span>
+            {resource.description !== undefined && (
+              <span data-cy="resource-description">{`Description: ${resource.description}`}</span>
             )}
             {/* Resource */}
             {resource.stored_name !== undefined && (
