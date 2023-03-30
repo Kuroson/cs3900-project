@@ -11,26 +11,9 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 
-type AssignmentGrade = {
-    assignmentId: string;
-    title: string;
-    maxMarks: number;
-    marksAwarded?: number;
-    successTags?: Array<string>;
-    imrpovementTags?: Array<string>;
-};
-
-type QuizGrade = {
-    quizId: string;
-    title: string;
-    maxMarks: number;
-    marksAwarded?: number;
-    incorrectTags?: Array<string>;
-};
-
 type ResponsePayload = {
-    assignmentGrades: Array<AssignmentGrade>;
-    quizGrades: Array<QuizGrade>;
+    successTags: Record<string, number>;
+    improvementTags: Record<string, number>;
 };
 
 type QueryPayload = {
@@ -38,13 +21,13 @@ type QueryPayload = {
 };
 
 /**
- * GET /analytics/grades
- * Get the course grades for the current student
+ * GET /analytics/tags/summary
+ * Get the tag summary for the current student
  * @param req
  * @param res
  * @returns
  */
-export const getGradesController = async (
+export const getTagSummaryController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
@@ -53,7 +36,7 @@ export const getGradesController = async (
         const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId"];
 
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
-            const ret_data = await getGrades(req.query, authUser.uid);
+            const ret_data = await getTagSummary(req.query, authUser.uid);
 
             return res.status(200).json(ret_data);
         } else {
@@ -75,14 +58,15 @@ export const getGradesController = async (
 };
 
 /**
- * Gets all the grades a student has been awarded in the course for all assessments (quizzes and assignments)
+ * Gets a summary of the successful and improvement tags for the given student. This comes from
+ * questions they have got right and wrong in quizzes and their feedback from assignments
  *
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
  * @throws { HttpException } Recall failed
- * @returns Object of grade information based on ResponsePayload above
+ * @returns Object of tag information based on ResponsePayload above
  */
-export const getGrades = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const getTagSummary = async (queryBody: QueryPayload, firebase_uid: string) => {
     const { courseId } = queryBody;
 
     type assignmentEnrolmentType =
@@ -146,52 +130,49 @@ export const getGrades = async (queryBody: QueryPayload, firebase_uid: string) =
     }
 
     const retData: ResponsePayload = {
-        assignmentGrades: [],
-        quizGrades: [],
+        successTags: {},
+        improvementTags: {},
     };
 
     for (const quizAttempt of enrolment.quizAttempts) {
-        // Check if all questions marked
-        const incorrectTags: Array<string> = [];
-        let marksAwarded = 0;
-        let marksTotal = 0;
-        const allAnswered = quizAttempt.responses.every((questionResponse) => {
-            marksAwarded += questionResponse.mark;
-            marksTotal += questionResponse.question.marks;
+        for (const questionResponse of quizAttempt.responses) {
             if (questionResponse.marked && questionResponse.mark === 0) {
-                incorrectTags.push(questionResponse.question.tag);
+                // Incorrect response
+                if (!(questionResponse.question.tag in retData.improvementTags)) {
+                    retData.improvementTags[questionResponse.question.tag] = 0;
+                }
+                retData.improvementTags[questionResponse.question.tag] += 1;
+            } else if (questionResponse.marked) {
+                // Correct response
+                if (!(questionResponse.question.tag in retData.successTags)) {
+                    retData.successTags[questionResponse.question.tag] = 0;
+                }
+                retData.successTags[questionResponse.question.tag] += 1;
             }
-            return questionResponse.marked;
-        });
-
-        const quizGrade: QuizGrade = {
-            quizId: quizAttempt.quiz._id,
-            title: quizAttempt.quiz.title,
-            maxMarks: quizAttempt.quiz.maxMarks,
-        };
-
-        if (allAnswered) {
-            quizGrade.marksAwarded = (marksAwarded / marksTotal) * quizAttempt.quiz.maxMarks;
-            quizGrade.incorrectTags = incorrectTags;
         }
-
-        retData.quizGrades.push(quizGrade);
     }
 
     for (const assignmentSubmission of enrolment.assignmentSubmissions) {
-        const assignmentGrade: AssignmentGrade = {
-            assignmentId: assignmentSubmission.assignment._id,
-            title: assignmentSubmission.assignment.title,
-            maxMarks: assignmentSubmission.assignment.marksAvailable,
-        };
+        if (
+            assignmentSubmission.mark !== undefined &&
+            assignmentSubmission.successfulTags !== undefined &&
+            assignmentSubmission.improvementTags !== undefined
+        ) {
+            // Has been marked
+            for (const tag of assignmentSubmission.successfulTags) {
+                if (!(tag in retData.successTags)) {
+                    retData.successTags[tag] = 0;
+                }
+                retData.successTags[tag] += 1;
+            }
 
-        if (assignmentSubmission.mark !== undefined) {
-            assignmentGrade.marksAwarded = assignmentSubmission.mark;
-            assignmentGrade.successTags = assignmentSubmission.successfulTags;
-            assignmentGrade.imrpovementTags = assignmentSubmission.improvementTags;
+            for (const tag of assignmentSubmission.improvementTags) {
+                if (!(tag in retData.improvementTags)) {
+                    retData.improvementTags[tag] = 0;
+                }
+                retData.improvementTags[tag] += 1;
+            }
         }
-
-        retData.assignmentGrades.push(assignmentGrade);
     }
 
     return retData;
