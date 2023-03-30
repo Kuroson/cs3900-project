@@ -158,7 +158,10 @@ export const getGrades = async (queryBody: QueryPayload, firebase_uid: string) =
         const allAnswered = quizAttempt.responses.every((questionResponse) => {
             marksAwarded += questionResponse.mark;
             marksTotal += questionResponse.question.marks;
-            if (questionResponse.marked && questionResponse.mark === 0) {
+            if (
+                questionResponse.marked &&
+                questionResponse.mark !== questionResponse.question.marks
+            ) {
                 incorrectTags.push(questionResponse.question.tag);
             }
             return questionResponse.marked;
