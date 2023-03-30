@@ -1,4 +1,5 @@
 import { firebaseUpload } from "@/utils/firebase";
+import { adminRoute } from "@/utils/util";
 import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
@@ -69,7 +70,7 @@ indexRouter.put("/course/students/remove", removeStudentsController);
 indexRouter.get("/page", getPagesController);
 indexRouter.delete("/page", deletePageController);
 indexRouter.put("/page/update", updatePageController);
-indexRouter.post("/page/create", createPageController);
+indexRouter.post("/page/create", adminRoute(createPageController));
 indexRouter.put("/page/add/resource", addResourceController); // This updates and create, should split up
 indexRouter.put("/page/add/section", addSectionController);
 indexRouter.delete("/page/remove/resource", deleteResourceController);

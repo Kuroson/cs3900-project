@@ -1,5 +1,8 @@
 import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
+import { checkAdmin } from "@/routes/admin/admin.route";
+import { Request, Response } from "express";
+import { checkAuth } from "./firebase";
 import { logger } from "./logger";
 
 /**
@@ -60,4 +63,20 @@ export type Nullable<T> = { [K in keyof T]: T[K] | null };
 
 export type ErrorResponsePayload = {
     message: string;
+};
+
+export const adminRoute = (
+    routeHandler: (req: Request, res: Response) => any,
+): ((req: Request, res: Response) => Promise<void>) => {
+    return async (req, res) => {
+        const authUser = await checkAuth(req);
+        if (!(await checkAdmin(authUser.uid))) {
+            const adminFailed = async (req: Request, res: Response) => {
+                return res.status(403).json({ message: "Must be an admin to access route" });
+            };
+            return await adminFailed(req, res);
+        }
+
+        return await routeHandler(req, res);
+    };
 };
