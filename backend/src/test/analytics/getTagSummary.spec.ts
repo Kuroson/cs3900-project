@@ -1,6 +1,6 @@
 import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
-import { getGrades } from "@/routes/analytics/getGrades.route";
+import { getTagSummary } from "@/routes/analytics/getTagSummary.route";
 import { createAssignment } from "@/routes/assignment/createAssignment.route";
 import { gradeAssignment } from "@/routes/assignment/gradeAssignment.route";
 import { submitAssignment } from "@/routes/assignment/submitAssignment.route";
@@ -18,7 +18,7 @@ import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
-describe("Test getting student grades", () => {
+describe("Test getting student tag summary", () => {
     const id = uuidv4();
     const userData = [
         genUserTestOnly("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`),
@@ -190,34 +190,17 @@ describe("Test getting student grades", () => {
         );
     });
 
-    it("Should get all the student's grades in the course", async () => {
-        const grades = await getGrades({ courseId }, `acc2${id}`);
+    it("Should get a summary of the course tags for the student", async () => {
+        const tags = await getTagSummary({ courseId }, `acc2${id}`);
 
-        expect(grades).toEqual({
-            assignmentGrades: [
-                {
-                    assignmentId: assignmentId1,
-                    title: "Test assignment",
-                    maxMarks: 2,
-                    marksAwarded: 1.75,
-                    successTags: ["tag1", "tag2"],
-                    imrpovementTags: ["tag4"],
-                },
-                {
-                    assignmentId: assignmentId2,
-                    title: "Test assignment 2",
-                    maxMarks: 3,
-                },
-            ],
-            quizGrades: [
-                {
-                    quizId,
-                    title: "Test quiz",
-                    maxMarks: 1,
-                    marksAwarded: 0.75,
-                    incorrectTags: ["tag2"],
-                },
-            ],
+        expect(tags).toEqual({
+            successTags: {
+                tag1: 2,
+                tag2: 2,
+            },
+            improvementTags: {
+                tag4: 1,
+            },
         });
     });
 
