@@ -119,6 +119,6 @@ export const recallFileUrl = async (fileName: string) => {
             return signedUrls[0];
         })
         .catch((err) => {
-            throw new HttpException(500, "Failed to retrieve file");
+            throw new HttpException(400, "Failed to retrieve file");
         });
 };

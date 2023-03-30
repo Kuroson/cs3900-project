@@ -86,13 +86,10 @@ export const createAssignment = async (queryBody: QueryPayload, firebase_uid: st
 
     const course = await Course.findById(courseId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch course");
-        });
+        .catch((err) => null);
 
     if (course === null) {
-        throw new HttpException(500, "Failed to fetch course");
+        throw new HttpException(400, "Failed to fetch course");
     }
 
     const myAssignment = await new Assignment({
@@ -117,10 +114,7 @@ export const createAssignment = async (queryBody: QueryPayload, firebase_uid: st
         myAssignment.tags.addToSet(tag);
     }
 
-    myAssignment.save().catch((err) => {
-        logger.error(err);
-        throw new HttpException(500, "Failed to save new quiz");
-    });
+    myAssignment.save().catch((err) => null);
 
     course.assignments.push(myAssignment._id);
 

@@ -86,8 +86,6 @@ export const removeStudents = async (
         return new Promise<void>(async (resolve, reject): Promise<void> => {
             const user = await User.findOne({ email: email });
 
-            console.log("HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
             if (user !== null) {
                 // Get enrolment related to this user-course combination
                 const enrolment = await Enrolment.findOne({
@@ -104,7 +102,6 @@ export const removeStudents = async (
                 user.enrolments.pull(enrolment._id);
 
                 await user.save().catch((err) => {
-                    // throw new HttpException(500, "Failed to update specific user", err);
                     // Just add to invalidEmails
                     invalidEmails.push(email);
                     logger.error(`Failed to update enrolments for ${email}.`);

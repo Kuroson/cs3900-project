@@ -68,17 +68,19 @@ export const getQuestions = async (queryBody: QueryPayload, firebase_uid: string
 
     const { quizId } = queryBody;
 
-    const quiz = await Quiz.findById(quizId).populate({
-        path: "questions",
-        model: "Question",
-        populate: {
-            path: "choices",
-            model: "Choice",
-        },
-    });
+    const quiz = await Quiz.findById(quizId)
+        .populate({
+            path: "questions",
+            model: "Question",
+            populate: {
+                path: "choices",
+                model: "Choice",
+            },
+        })
+        .catch((err) => null);
 
     if (quiz === null) {
-        throw new HttpException(500, "Failed to recall quiz");
+        throw new HttpException(400, "Failed to recall quiz");
     }
 
     return quiz;

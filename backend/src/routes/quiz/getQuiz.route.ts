@@ -105,12 +105,9 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
                 model: "Choice",
             },
         })
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to recall quiz");
-        });
+        .catch((err) => null);
     if (quiz === null) {
-        throw new HttpException(500, "Failed to recall quiz");
+        throw new HttpException(400, "Failed to recall quiz");
     }
 
     const ret_data: ResponsePayload = {
@@ -207,12 +204,9 @@ export const getAttempt = async (courseId: string, quizId: string, firebase_uid:
             model: "QuizAttempt",
             select: "_id quiz",
         })
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch enrolment");
-        });
+        .catch((err) => null);
     if (enrolment === null) {
-        throw new HttpException(500, "Failed to fetch enrolment");
+        throw new HttpException(400, "Failed to fetch enrolment");
     }
 
     for (const attempt of enrolment.quizAttempts) {
@@ -236,12 +230,9 @@ const getQuestionResponse = async (questionId: string, attemptId: string) => {
             path: "responses",
             model: "QuestionResponse",
         })
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch attempt");
-        });
+        .catch((err) => null);
     if (attempt === null) {
-        throw new HttpException(500, "Failed to fetch attempt");
+        throw new HttpException(400, "Failed to fetch attempt");
     }
 
     for (const question of attempt.responses) {
@@ -251,5 +242,5 @@ const getQuestionResponse = async (questionId: string, attemptId: string) => {
         }
     }
 
-    throw new HttpException(500, "Question response not present");
+    throw new HttpException(400, "Question response not present");
 };

@@ -122,7 +122,7 @@ export const addResource = async (queryBody: QueryPayload, firebase_uid: string)
     if (sectionId === null) {
         // The resource goes on the base page
         const currPage = await Page.findById(pageId).catch(() => null);
-        if (currPage === null) throw new HttpException(500, "Cannot retrieve section");
+        if (currPage === null) throw new HttpException(400, "Cannot retrieve section");
 
         currPage.resources.addToSet(newResourceId);
 

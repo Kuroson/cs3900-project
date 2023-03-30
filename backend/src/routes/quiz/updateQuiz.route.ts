@@ -78,13 +78,10 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
 
     const quiz = await Quiz.findById(quizId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch quiz");
-        });
+        .catch((err) => null);
 
     if (quiz === null) {
-        throw new HttpException(500, "Failed to fetch quiz");
+        throw new HttpException(400, "Failed to recall quiz");
     }
 
     if (title !== undefined) {

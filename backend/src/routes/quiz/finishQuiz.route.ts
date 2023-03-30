@@ -92,13 +92,10 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     });
 
     // Get the quiz
-    const quiz = await Quiz.findById(quizId).catch((err) => {
-        logger.error(err);
-        throw new HttpException(500, "Failed to recall quiz");
-    });
+    const quiz = await Quiz.findById(quizId).catch((err) => null);
 
     if (quiz === null) {
-        throw new HttpException(500, "Failed to recall quiz");
+        throw new HttpException(400, "Failed to recall quiz");
     }
 
     // Fail if quiz after due date or quiz not open
@@ -125,12 +122,9 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
                 path: "choices",
                 model: "Choice",
             })
-            .catch((err) => {
-                logger.error(err);
-                throw new HttpException(500, "Cannot recall question");
-            });
+            .catch((err) => null);
         if (question === null) {
-            throw new HttpException(500, "Cannot recall question");
+            throw new HttpException(400, "Cannot recall question");
         }
 
         // Verify correct response type

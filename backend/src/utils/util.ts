@@ -38,17 +38,13 @@ export const getMissingBodyIDs = <T extends Record<string, unknown>>(
  * @returns the mongoDB id of the user
  */
 export const getUserId = async (firebase_uid: string) => {
-    return await User.findOne({ firebase_uid })
-        .then((res) => {
-            if (res === null) {
-                throw new HttpException(500, "Failed to recall user");
-            }
-            return res._id;
-        })
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to recall user");
-        });
+    const user = await User.findOne({ firebase_uid })
+    .catch((err) => null);
+
+    if (user === null) {
+        throw new HttpException(400, "Failed to recall user");
+    }
+    return user._id;
 };
 
 export type UserInfo = {

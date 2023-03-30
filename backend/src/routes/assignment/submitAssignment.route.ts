@@ -76,12 +76,9 @@ export const submitAssignment = async (
     const enrolment = await Enrolment.findOne({
         student: await getUserId(firebase_uid),
         course: courseId,
-    }).catch((err) => {
-        logger.error(err);
-        throw new HttpException(500, "Failed to fetch enrolment");
-    });
+    }).catch((err) => null);
     if (enrolment === null) {
-        throw new HttpException(500, "Failed to fetch enrolment");
+        throw new HttpException(400, "Failed to fetch enrolment");
     }
 
     const submissionId = await new AssignmentSubmission({

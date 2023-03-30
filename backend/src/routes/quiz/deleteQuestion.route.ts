@@ -73,13 +73,10 @@ export const deleteQuestion = async (queryBody: QueryPayload, firebase_uid: stri
     // Get quiz
     const quiz = await Quiz.findById(quizId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch quiz");
-        });
+        .catch((err) => null);
 
     if (quiz === null) {
-        throw new HttpException(500, "Failed to fetch quiz");
+        throw new HttpException(400, "Failed to fetch quiz");
     }
 
     quiz.questions.pull(questionId);
