@@ -81,10 +81,7 @@ export const getAssignments = async (queryBody: QueryPayload, firebase_uid: stri
             model: "Assignment",
         })
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(400, "Failed to fetch course");
-        });
+        .catch((err) => null);
     if (course === null) {
         throw new HttpException(400, "Failed to fetch course");
     }

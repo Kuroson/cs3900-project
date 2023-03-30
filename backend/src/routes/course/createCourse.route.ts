@@ -129,9 +129,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         .then((res) => {
             return res._id;
         })
-        .catch((err) => {
-            throw new HttpException(500, "Failed to save new course", err);
-        });
+        .catch((err) => null);
 
     if (courseId === null) {
         throw new HttpException(500, "Failed to create course");
