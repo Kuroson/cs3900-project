@@ -10,7 +10,7 @@ import { QuestionInterface } from "../quiz/question.model";
 export interface QuestionResponseInterface extends Document {
     question: QuestionInterface["_id"];
     marked: boolean;
-    choice?: ChoiceInterface["_id"];
+    choices: Types.DocumentArray<ChoiceInterface["_id"]>;
     answer?: string;
     mark: number;
 }
@@ -18,7 +18,7 @@ export interface QuestionResponseInterface extends Document {
 const questionResponseSchema: Schema = new Schema<QuestionResponseInterface>({
     question: { type: Schema.Types.ObjectId, ref: "Question", required: true },
     marked: { type: Boolean, required: true },
-    choice: { type: Schema.Types.ObjectId, ref: "Choice" },
+    choices: [{ type: Schema.Types.ObjectId, ref: "Choice", required: true }],
     answer: { type: String },
     mark: { type: Number, required: true },
 });

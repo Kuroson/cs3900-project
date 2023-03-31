@@ -2,21 +2,19 @@ import { HttpException } from "@/exceptions/HttpException";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import QuestionResponse from "@/models/course/enrolment/questionResponse.model";
 import QuizAttempt from "@/models/course/enrolment/quizAttempt.model";
-import Choice from "@/models/course/quiz/choice.model";
 import Question, { EXTENDED_RESPONSE, MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
 import Quiz from "@/models/course/quiz/quiz.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
-import { checkAdmin } from "../admin/admin.route";
 import { getAttempt } from "./getQuiz.route";
 
 type ResponsePayload = Record<string, never>;
 
 type ResponseInfo = {
     questionId: string;
-    choiceId?: string;
+    choiceId?: Array<string>;
     answer?: string;
 };
 
@@ -122,10 +120,15 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     // Go through and mark questions (and do required checks)
     for (const response of responses) {
         // Get question
-        const question = await Question.findById(response.questionId).catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Cannot recall question");
-        });
+        const question = await Question.findById(response.questionId)
+            .populate({
+                path: "choices",
+                model: "Choice",
+            })
+            .catch((err) => {
+                logger.error(err);
+                throw new HttpException(500, "Cannot recall question");
+            });
         if (question === null) {
             throw new HttpException(500, "Cannot recall question");
         }
@@ -143,22 +146,41 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
             question: question._id,
             marked: false,
             mark: 0,
+            choices: [],
         });
 
         if (question.type === MULTIPLE_CHOICE) {
             questionResponse.marked = true;
 
-            // Check if correct
-            const choice = await Choice.findById(response.choiceId).catch((err) => {
-                logger.error(err);
-                throw new HttpException(500, "Failed to recall choice");
-            });
-            if (choice === null) {
-                throw new HttpException(500, "Failed to recall choice");
+            let chosenCorrectly = 0;
+            let chosenIncorrectly = 0;
+            let notChosenIncorrectly = 0;
+            let numCorrect = 0;
+
+            for (const choice of question.choices) {
+                if (response.choiceId == null) {
+                    continue;
+                }
+                const isChoiceCorrect: boolean = choice.correct;
+                if (isChoiceCorrect && response.choiceId.includes(choice._id.toString())) {
+                    chosenCorrectly += 1;
+                    numCorrect += 1;
+                    questionResponse.choices.push(choice._id);
+                } else if (isChoiceCorrect) {
+                    numCorrect += 1;
+                    notChosenIncorrectly += 1;
+                } else if (response.choiceId.includes(choice._id.toString())) {
+                    chosenIncorrectly += 1;
+                    questionResponse.choices.push(choice._id);
+                }
             }
 
-            questionResponse.choice = choice._id;
-            if (choice.correct) {
+            // Marked as all or nothing
+            if (
+                chosenCorrectly == numCorrect &&
+                notChosenIncorrectly === 0 &&
+                chosenIncorrectly === 0
+            ) {
                 questionResponse.mark = question.marks;
                 attempt.mark += question.marks;
             }

@@ -111,7 +111,7 @@ describe("Test starting a quiz", () => {
         expect(quizQuestions?.questions[0].text).toBe("question text");
         expect(quizQuestions?.questions[0].type).toBe("choice");
         expect(quizQuestions?.questions[0].marks).toBe(1);
-        expect(quizQuestions?.questions[0].tag).toBe(undefined);
+        expect(quizQuestions?.questions[0].tag).toBe("test tag");
         expect(quizQuestions?.questions[0].choices.length).toBe(2);
         expect(quizQuestions?.questions[0].choices[0].text).toBe("C1");
         expect(quizQuestions?.questions[0].choices[0].correct).toBe(undefined);
@@ -121,7 +121,7 @@ describe("Test starting a quiz", () => {
         expect(quizQuestions?.questions[1].text).toBe("question 2 text");
         expect(quizQuestions?.questions[1].type).toBe("open");
         expect(quizQuestions?.questions[1].marks).toBe(1);
-        expect(quizQuestions?.questions[1].tag).toBe(undefined);
+        expect(quizQuestions?.questions[1].tag).toBe("test tag");
 
         await deleteQuiz({ courseId, quizId }, `acc1${id}`);
     });
@@ -161,7 +161,7 @@ describe("Test starting a quiz", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceId: quizQuestions.questions[0].choices[0]._id,
+                        choiceId: [quizQuestions.questions[0].choices[0]._id],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,

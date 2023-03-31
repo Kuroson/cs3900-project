@@ -113,7 +113,7 @@ const AddNewResourceSection = ({
         <div className="flex flex-col w-full">
           <div className="w-full pb-5">
             <TextField
-              id="Resource Title"
+              id="ResourceTitle"
               label="Resource Title"
               variant="outlined"
               value={title}
@@ -122,7 +122,7 @@ const AddNewResourceSection = ({
             />
           </div>
           <TextField
-            id="Resource Description"
+            id="ResourceDescription"
             label="Resource Description"
             variant="outlined"
             multiline
@@ -138,9 +138,11 @@ const AddNewResourceSection = ({
                 component="label"
                 sx={{ width: "200px" }}
                 startIcon={<DriveFolderUploadIcon />}
+                id="uploadResourceMaterial"
               >
                 Upload Material
                 <input
+                  id="uploadFileMaterialInput"
                   hidden
                   type="file"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,7 +162,12 @@ const AddNewResourceSection = ({
               <Button variant="outlined" color="error" onClick={handleCloseForm}>
                 Cancel
               </Button>
-              <Button variant="contained" onClick={handleNewResource} disabled={title === ""}>
+              <Button
+                id="createResourceButton"
+                variant="contained"
+                onClick={handleNewResource}
+                disabled={title === ""}
+              >
                 Add
               </Button>
             </div>

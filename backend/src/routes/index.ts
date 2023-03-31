@@ -2,10 +2,16 @@ import { firebaseUpload } from "@/utils/firebase";
 import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
+import { getGradesController } from "./analytics/getGrades.route";
+import { getQuestionAnalyticsController } from "./analytics/getQuestionAnalytics.route";
+import { getTagSummaryController } from "./analytics/getTagSummary.route";
 import { createAssignmentController } from "./assignment/createAssignment.route";
 import { deleteAssignmentController } from "./assignment/deleteAssignment.route";
 import { getAssignmentController } from "./assignment/getAssignment.route";
+import { getAssignmentSubmissionsController } from "./assignment/getAssignmentSubmissions.route";
 import { getAssignmentsController } from "./assignment/getAssignments.route";
+import { gradeAssignmentController } from "./assignment/gradeAssignment.route";
+import { submitAssignmentController } from "./assignment/submitAssignment.route";
 import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
@@ -32,6 +38,8 @@ import { finishQuizController } from "./quiz/finishQuiz.route";
 import { getQuestionsController } from "./quiz/getQuestions.route";
 import { getQuizController } from "./quiz/getQuiz.route";
 import { getQuizzesController } from "./quiz/getQuizzes.route";
+import { getSubmissionsController } from "./quiz/getSubmissions.route";
+import { gradeQuestionController } from "./quiz/gradeQuestion.route";
 import { startQuizController } from "./quiz/startQuiz.route";
 import { updateQuizController } from "./quiz/updateQuiz.route";
 import { registerController } from "./user/register.route";
@@ -93,6 +101,8 @@ indexRouter.post("/quiz/question/create", createQuestionController);
 indexRouter.delete("/quiz/question/delete", deleteQuestionController);
 indexRouter.get("/quiz/start", startQuizController);
 indexRouter.post("/quiz/finish", finishQuizController);
+indexRouter.get("/quiz/submissions", getSubmissionsController);
+indexRouter.post("/quiz/question/grade", gradeQuestionController);
 
 //Workload Overview routes
 indexRouter.post("/workload/week/create", createWeekController);
@@ -110,3 +120,11 @@ indexRouter.get("/assignment/list", getAssignmentsController);
 indexRouter.get("/assignment", getAssignmentController);
 indexRouter.post("/assignment/create", createAssignmentController);
 indexRouter.delete("/assignment/delete", deleteAssignmentController);
+indexRouter.post("/assignment/submit", firebaseUpload.single("file"), submitAssignmentController);
+indexRouter.get("/assignment/submissions", getAssignmentSubmissionsController);
+indexRouter.post("/assignment/grade", gradeAssignmentController);
+
+// Analytics routes
+indexRouter.get("/analytics/grades", getGradesController);
+indexRouter.get("/analytics/tags/summary", getTagSummaryController);
+indexRouter.get("/analytics/questions", getQuestionAnalyticsController);

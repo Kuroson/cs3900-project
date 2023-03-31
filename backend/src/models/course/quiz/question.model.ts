@@ -36,7 +36,7 @@ export type QuestionInterfaceFull = Omit<QuestionInterface, "choices"> & {
     choices: ChoiceInterface[];
 };
 
-export type QuestionInterfaceStudent = Omit<Omit<QuestionInterface, "choices">, "tag"> & {
+export type QuestionInterfaceStudent = Omit<QuestionInterface, "choices"> & {
     // Omit the array of ids and replace them with the full objects
     choices: ChoiceInterfaceStudent[];
 };

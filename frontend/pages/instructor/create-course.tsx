@@ -136,7 +136,7 @@ const CreateCourse = (): JSX.Element => {
           </Button>
           <div className="flex flex-col gap-6 w-[600px]">
             <TextField
-              id="Course ID"
+              id="CourseCode"
               label="Course Code"
               variant="outlined"
               onChange={(e) => setCode(e.target.value)}
@@ -161,7 +161,13 @@ const CreateCourse = (): JSX.Element => {
               rows={9}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <LoadingButton variant="contained" fullWidth type="submit" loading={buttonLoading}>
+            <LoadingButton
+              variant="contained"
+              fullWidth
+              type="submit"
+              loading={buttonLoading}
+              id="create-course-button"
+            >
               Create
             </LoadingButton>
           </div>

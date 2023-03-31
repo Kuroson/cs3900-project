@@ -108,6 +108,7 @@ export default function AdminNavBar({
           route: `/instructor/${courseData?._id}/Assignment`,
         };
       } else if (page.title === "Forum") {
+        // TODO: forum route
         return {
           name: page.title,
           route: `/instructor/${courseData?._id}/Forum`,
@@ -207,7 +208,7 @@ export default function AdminNavBar({
             />
             {showAddPage === true && (
               <div className="flex justify-center items-center w-full">
-                <Button variant="outlined" onClick={handleOpen}>
+                <Button variant="outlined" onClick={handleOpen} id="addNewPage">
                   Add New Page
                 </Button>
               </div>
@@ -243,10 +244,15 @@ export default function AdminNavBar({
                       control={<Radio disabled={routesNames.includes("Forum")} />}
                       label="Forum"
                     />
-                    <FormControlLabel value="Other Page" control={<Radio />} label="Other Page" />
+                    <FormControlLabel
+                      id="RadioOtherPage"
+                      value="Other Page"
+                      control={<Radio />}
+                      label="Other Page"
+                    />
                     <TextField
                       disabled={radio !== "Other Page"}
-                      id="Page Name"
+                      id="OtherPageName"
                       label="Page Name"
                       variant="standard"
                       sx={{ marginLeft: "30px" }}

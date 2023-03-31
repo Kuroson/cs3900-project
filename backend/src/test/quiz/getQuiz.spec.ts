@@ -94,7 +94,7 @@ describe("Test getting quiz info", () => {
         return quizId;
     };
 
-    it("Getting an uncompleted quiz just gives details without questions", async () => {
+    it("Getting a uncompleted quiz just gives details without questions", async () => {
         const oneDay = 24 * 60 * 60 * 1000;
         const open = new Date(Date.now() - oneDay).toString();
         const close = new Date(Date.now() + oneDay).toString();
@@ -112,7 +112,7 @@ describe("Test getting quiz info", () => {
         await deleteQuiz({ courseId, quizId }, `acc1${id}`);
     });
 
-    it("Getting an completed quiz before deadline gives just questions", async () => {
+    it("Getting a completed quiz before deadline gives just questions", async () => {
         const oneDay = 24 * 60 * 60 * 1000;
         const open = new Date(Date.now() - oneDay).toString();
         const close = new Date(Date.now() + oneDay).toString();
@@ -127,7 +127,7 @@ describe("Test getting quiz info", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceId: quizQuestions.questions[0].choices[0]._id,
+                        choiceId: [quizQuestions.questions[0].choices[0]._id.toString()],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,
@@ -151,7 +151,7 @@ describe("Test getting quiz info", () => {
                 {
                     text: "question text",
                     type: "choice",
-                    markTotal: 2,
+                    marks: 2,
                     tag: "test tag",
                     choices: [
                         {
@@ -167,7 +167,7 @@ describe("Test getting quiz info", () => {
                 {
                     text: "question 2 text",
                     type: "open",
-                    markTotal: 2,
+                    marks: 2,
                     tag: "test tag",
                     response: "Response",
                 },
@@ -177,7 +177,7 @@ describe("Test getting quiz info", () => {
         await deleteQuiz({ courseId, quizId }, `acc1${id}`);
     });
 
-    it("Getting an completed quiz before deadline gives just questions", async () => {
+    it("Getting a completed quiz before deadline gives just questions", async () => {
         const oneDay = 24 * 60 * 60 * 1000;
         let open = new Date(Date.now() - oneDay).toString();
         let close = new Date(Date.now() + oneDay).toString();
@@ -192,7 +192,7 @@ describe("Test getting quiz info", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceId: quizQuestions.questions[0].choices[0]._id,
+                        choiceId: [quizQuestions.questions[0].choices[0]._id.toString()],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,
@@ -219,7 +219,7 @@ describe("Test getting quiz info", () => {
                 {
                     text: "question text",
                     type: "choice",
-                    markTotal: 2,
+                    marks: 2,
                     tag: "test tag",
                     choices: [
                         {
@@ -238,7 +238,7 @@ describe("Test getting quiz info", () => {
                 {
                     text: "question 2 text",
                     type: "open",
-                    markTotal: 2,
+                    marks: 2,
                     tag: "test tag",
                     response: "Response",
                 },

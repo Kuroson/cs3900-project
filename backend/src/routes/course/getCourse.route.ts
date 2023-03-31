@@ -49,8 +49,6 @@ export const getCourseController = async (
 
             const courseData = await getCourse(courseId, authUser.uid);
 
-            console.log(courseData);
-
             return res.status(200).json({ ...courseData });
         } else {
             throw new HttpException(
@@ -105,8 +103,6 @@ export const getCourse = async (
         })
         .exec()
         .catch(() => null);
-
-    console.log(myCourse);
 
     if (myCourse === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
 

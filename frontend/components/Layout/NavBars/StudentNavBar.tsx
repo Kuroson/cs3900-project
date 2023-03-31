@@ -1,4 +1,6 @@
+import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
+import StorefrontIcon from "@mui/icons-material/Storefront";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import { UserCourseInformation } from "models/course.model";
@@ -11,6 +13,23 @@ type SideNavBarProps = {
   userDetails: UserDetails;
   routes?: Routes[];
   courseData?: UserCourseInformation;
+};
+
+type CourseDetailsProps = {
+  code: string;
+};
+
+const CourseDetails = ({ code }: CourseDetailsProps): JSX.Element => {
+  return (
+    <div className="mt-5 flex flex-row justify-center">
+      <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
+        <span className="text-3xl font-bold">{code.charAt(0) ?? ""}</span>
+      </div>
+      <div className="flex flex-col pl-2 justify-center items-center">
+        <span className="font-bold text-start w-full text-2xl">{code}</span>
+      </div>
+    </div>
+  );
 };
 
 export default function StudentNavBar({
@@ -34,10 +53,38 @@ export default function StudentNavBar({
       icon: <HomeIcon fontSize="large" color="primary" />,
       hasLine: true,
     },
-    ...(courseData?.pages ?? []).map((x) => {
+    {
+      name: "Home",
+      route: "/", //TODO
+      icon: <GridViewIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Marketplace",
+      route: "/", //TODO
+      icon: <StorefrontIcon fontSize="large" color="primary" />,
+      hasLine: true,
+    },
+    ...(courseData?.pages ?? []).map((page) => {
+      if (page.title === "Quiz") {
+        return {
+          name: page.title,
+          route: `/course/${courseData?._id}/Quiz`,
+        };
+      } else if (page.title === "Assignment") {
+        return {
+          name: page.title,
+          route: `/course/${courseData?._id}/Assignment`,
+        };
+      } else if (page.title === "Forum") {
+        // TODO: forum route
+        return {
+          name: page.title,
+          route: `/course/${courseData?._id}/Forum`, //TODO
+        };
+      }
       return {
-        name: x.title,
-        route: `/course/${courseData?._id}/${x._id}`,
+        name: page.title,
+        route: `/course/${courseData?._id}/${page._id}`,
       };
     }),
   ];
@@ -48,7 +95,8 @@ export default function StudentNavBar({
         <div className="w-full flex flex-col justify-between h-[calc(100%_-_4rem)]">
           <div>
             {/* Top */}
-            <UserDetailsSection {...userDetails} />
+            {courseData === undefined && <UserDetailsSection {...userDetails} />}
+            {courseData !== undefined && <CourseDetails code={courseData?.code ?? ""} />}
             <NavBar
               routes={routes ?? studentRoutes}
               role={getRoleText(userDetails.role)}
