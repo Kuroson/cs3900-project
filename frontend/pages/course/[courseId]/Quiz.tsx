@@ -42,16 +42,16 @@ const quizzes: QuizListType[] = [
 ];
 
 const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
-  const [quizList, setQuizList] = useState<QuizListType[]>(quizzes);
+  const [quizList, setQuizList] = useState<QuizListType[]>([]);
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
   const [openQuiz, setOpenQuiz] = useState(false);
   const [currentQuiz, setCurrentQuiz] = useState("");
   const [isResponded, setIsResponded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // TODO
     const getQuizzes = async () => {
       const [res, err] = await getListOfQuizzes(
         await authUser.getIdToken(),
@@ -70,7 +70,7 @@ const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
       if (res === null) throw new Error("Response and error are null");
       setQuizList(res.quizzes);
     };
-    // getQuizzes();
+    getQuizzes();
   }, [authUser, courseData._id]);
 
   React.useEffect(() => {
@@ -107,6 +107,7 @@ const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
                       setOpenQuiz((prev) => !prev);
                       setCurrentQuiz(quiz.quizId);
                       setIsResponded(quiz.isResponded ?? false);
+                      setIsOpen(new Date() < new Date(Date.parse(quiz.close)));
                     }}
                   />
                 ))}
@@ -119,6 +120,7 @@ const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
               handleClose={() => setOpenQuiz((prev) => !prev)}
               courseId={courseData._id}
               isResponded={isResponded}
+              isOpen={isOpen}
             />
           )}
         </div>

@@ -91,7 +91,8 @@ const StudentQuiz: React.FC<{
   courseId: string;
   handleClose: () => void;
   isResponded: boolean;
-}> = ({ quizId, courseId, handleClose, isResponded }) => {
+  isOpen: boolean;
+}> = ({ quizId, courseId, handleClose, isResponded, isOpen }) => {
   const authUser = useAuthUser();
   const [quizInfo, setQuizInfo] = useState<QuizInfoType>({
     title: "",
@@ -103,6 +104,7 @@ const StudentQuiz: React.FC<{
   });
   const [responses, setResponses] = useState<Array<ResponsesType>>([]);
   const [checkIsResponded, setCheckIsResponded] = useState(isResponded);
+  const [checkIsOpen, setCheckIsOpen] = useState<boolean>(isOpen);
 
   useEffect(() => {
     const startQuiz = async () => {
@@ -126,6 +128,7 @@ const StudentQuiz: React.FC<{
         }),
       );
     };
+
     const finishQuiz = async () => {
       const [res, err] = await getQuizInfoAfterSubmit(
         await authUser.getIdToken(),
@@ -137,47 +140,37 @@ const StudentQuiz: React.FC<{
       }
 
       if (res === null) throw new Error("Response and error are null");
+
       setQuizInfo(res);
     };
-    // TODO
-    if (!checkIsResponded) {
-      // startQuiz();
-      setQuizInfo(quizBeforeSubmit);
+
+    if (!checkIsResponded && isOpen) {
+      startQuiz();
     } else {
-      // finishQuiz();
-      setQuizInfo(quizAfterSubmit);
+      finishQuiz();
     }
-    setResponses(
-      quizBeforeSubmit.questions.map((question) => {
-        if (question.type === "choice") {
-          return { questionId: question._id ?? "", choiceId: [] };
-        }
-        return { questionId: question._id ?? "", answer: "" };
-      }),
-    );
-  }, [authUser, courseId, checkIsResponded, quizId]);
+  }, [authUser, courseId, checkIsResponded, quizId, isOpen]);
 
   const handleSubmit = async () => {
-    // TODO
-    // const [res, err] = await submitQuiz(
-    //   await authUser.getIdToken(),
-    //   {
-    //     quizId: quizId,
-    //     courseId: courseId,
-    //     responses: responses
-    //   },
-    //   "client",
-    // );
-    // if (err !== null) {
-    //   console.error(err);
-    //   if (err instanceof HttpException) {
-    //     toast.error(err.message);
-    //   } else {
-    //     toast.error("Failed to submit quiz");
-    //   }
-    //   return;
-    // }
-    // toast.success("Submitted quiz successfully");
+    const [res, err] = await submitQuiz(
+      await authUser.getIdToken(),
+      {
+        quizId: quizId,
+        courseId: courseId,
+        responses: responses,
+      },
+      "client",
+    );
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error("Failed to submit quiz");
+      }
+      return;
+    }
+    toast.success("Submitted quiz successfully");
     setCheckIsResponded(true);
   };
 
@@ -199,61 +192,63 @@ const StudentQuiz: React.FC<{
           }}
           isAdmin={false}
         />
-        {!checkIsResponded ? (
+        {!checkIsResponded && isOpen ? (
           <>
-            {quizInfo.questions.map((question, questionIdx) => (
-              <div key={`question_${questionIdx}`}>
-                <div className="flex gap-3 items-center">
-                  {question.tag && <Tag text={question.tag} color="bg-[#009688]" />}
-                  <Tag text={`Marks: ${String(question.marks)}`} color="bg-[#78909c]" />
+            {quizInfo.questions &&
+              quizInfo.questions.map((question, questionIdx) => (
+                <div key={`question_${questionIdx}`}>
+                  <div className="flex gap-3 items-center">
+                    {question.tag && <Tag text={question.tag} color="bg-[#009688]" />}
+                    <Tag text={`Marks: ${String(question.marks)}`} color="bg-[#78909c]" />
+                  </div>
+                  <p className="text-xl my-2">{question.text}</p>
+                  {question.type === "choice" ? (
+                    <>
+                      {question.choices?.map((choice, choiceIdx) => (
+                        <div key={`answer_choice_${choiceIdx}`} className="flex items-center">
+                          <Checkbox
+                            id={`choice_${choiceIdx}`}
+                            onChange={(e) => {
+                              setResponses((prev) => {
+                                if (e.target.checked) {
+                                  prev[questionIdx].choiceId?.push(choice._id ?? "");
+                                } else {
+                                  prev[questionIdx].choiceId = prev[questionIdx].choiceId?.filter(
+                                    (id) => id !== choice._id,
+                                  );
+                                }
+                                return [...prev];
+                              });
+                            }}
+                          />
+                          <p className="text-xl">{choice.text}</p>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <TextField
+                      multiline
+                      rows={5}
+                      fullWidth
+                      variant="outlined"
+                      label="Answer"
+                      onChange={(e) =>
+                        setResponses((prev) => {
+                          prev[questionIdx].answer = e.target.value;
+                          return [...prev];
+                        })
+                      }
+                    />
+                  )}
                 </div>
-                <p className="text-xl my-2">{question.text}</p>
-                {question.type === "choice" ? (
-                  <>
-                    {question.choices?.map((choice, choiceIdx) => (
-                      <div key={`answer_choice_${choiceIdx}`} className="flex items-center">
-                        <Checkbox
-                          id={`choice_${choiceIdx}`}
-                          onChange={(e) => {
-                            setResponses((prev) => {
-                              if (e.target.checked) {
-                                prev[questionIdx].choiceId?.push(choice._id ?? "");
-                              } else {
-                                prev[questionIdx].choiceId = prev[questionIdx].choiceId?.filter(
-                                  (id) => id !== choice._id,
-                                );
-                              }
-                              return [...prev];
-                            });
-                          }}
-                        />
-                        <p className="text-xl">{choice.text}</p>
-                      </div>
-                    ))}
-                  </>
-                ) : (
-                  <TextField
-                    multiline
-                    rows={5}
-                    fullWidth
-                    variant="outlined"
-                    label="Answer"
-                    onChange={(e) =>
-                      setResponses((prev) => {
-                        prev[questionIdx].answer = e.target.value;
-                        return [...prev];
-                      })
-                    }
-                  />
-                )}
-              </div>
-            ))}
+              ))}
           </>
         ) : (
           <>
-            {quizInfo.questions.map((question, idx) => (
-              <ShowAnswer questionInfo={question} key={`q_answer_${idx}`} isAdmin={false} />
-            ))}
+            {quizInfo.questions &&
+              quizInfo.questions.map((question, idx) => (
+                <ShowAnswer questionInfo={question} key={`q_answer_${idx}`} isAdmin={false} />
+              ))}
           </>
         )}
         <Button variant="contained" disabled={checkIsResponded} onClick={handleSubmit}>

@@ -98,5 +98,9 @@ export const getQuizInfoAfterSubmit = (
 };
 
 export const submitQuiz = (token: string | null, body: SubmitQuizType, type: BackendLinkType) => {
-  return apiPost<SubmitQuizType, { message: string }>(`${getBackendLink(type)}/quiz`, token, body);
+  return apiPost<SubmitQuizType, { message: string }>(
+    `${getBackendLink(type)}/quiz/finish`,
+    token,
+    body,
+  );
 };

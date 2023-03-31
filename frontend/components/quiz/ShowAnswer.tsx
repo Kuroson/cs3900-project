@@ -51,6 +51,7 @@ const ShowAnswer: React.FC<ShowAnswerProps> = ({ questionInfo, isAdmin, handleDe
           label="Answer"
           value={questionInfo?.response}
           disabled
+          InputLabelProps={{ shrink: true }}
         />
       )}
     </div>

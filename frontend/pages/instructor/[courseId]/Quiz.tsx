@@ -26,47 +26,34 @@ type QuizProps = {
   courseData: UserCourseInformation;
 };
 
-const quizzes: QuizListType[] = [
-  {
-    quizId: "1",
-    title: "Quiz1",
-    open: dayjs().format(),
-    close: dayjs().add(30, "minute").format(),
-  },
-  {
-    quizId: "2",
-    title: "Quiz2",
-    open: dayjs().format(),
-    close: dayjs().subtract(1, "day").format(),
-  },
-];
-
 const Quiz = ({ courseData }: QuizProps): JSX.Element => {
   // TODO: Fix metadata thing
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
-  const [quizList, setQuizList] = useState<QuizListType[]>(quizzes);
+  const [quizList, setQuizList] = useState<QuizListType[]>([]);
   const [addNewQuiz, setAddNewQuiz] = useState(false);
   const [openQuiz, setOpenQuiz] = useState(false);
   const [currentQuiz, setCurrentQuiz] = useState("");
 
   const handleAddNewQuiz = async (newQuiz: CreateQuizType) => {
     // TODO: backend
-    // const [res, err] = await createNewQuiz(await authUser.getIdToken(), newQuiz, "client");
-    // if (err !== null) {
-    //   console.error(err);
-    //   if (err instanceof HttpException) {
-    //     toast.error(err.message);
-    //   } else {
-    //     toast.error(err);
-    //   }
-    //   return;
-    // }
-    // if (res === null) throw new Error("Response and error are null");
+    const [res, err] = await createNewQuiz(await authUser.getIdToken(), newQuiz, "client");
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
+      }
+      return;
+    }
+    if (res === null) throw new Error("Response and error are null");
+
+    console.log(res);
 
     const quiz = {
-      quizId: "3", // res.quizId
+      quizId: res.quizId,
       title: newQuiz.title,
       open: newQuiz.open,
       close: newQuiz.close,
@@ -78,7 +65,6 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
   };
 
   useEffect(() => {
-    // TODO
     const getQuizzes = async () => {
       const [res, err] = await getListOfQuizzes(
         await authUser.getIdToken(),
@@ -97,7 +83,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
       if (res === null) throw new Error("Response and error are null");
       setQuizList(res.quizzes);
     };
-    // getQuizzes();
+    getQuizzes();
   }, [authUser, courseData._id]);
 
   useEffect(() => {
@@ -158,6 +144,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
               quizId={currentQuiz}
               handleClose={() => setOpenQuiz((prev) => !prev)}
               courseId={courseData._id}
+              courseTags={courseData.tags}
             />
           )}
         </div>
