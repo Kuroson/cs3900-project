@@ -19,6 +19,8 @@ import {
     getUserCourseDetails,
 } from "util/api/courseApi";
 import ForumPostCard from "components/common/ForumPostCard";
+import ForumPostOverviewCard from "components/common/ForumPostOverviewCard";
+import { use } from "chai";
 
 initAuth(); // SSR maybe, i think...
 
@@ -40,11 +42,22 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
-  const postExample = {
-    title: "What is the meaning of life?",
-    question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    _id: "id"
-  }
+  const postList = [
+    {
+        title: "What is the meaning of life?",
+        question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        _id: "id"
+    },
+    {
+        title: "Why am I here?",
+        question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        _id: "id2"
+    },
+    {
+        title: "Is God a woman?",
+        question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        _id: "id3"
+    }]
   const date = new Date();
 
 
@@ -62,11 +75,12 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             <span className="ml-4">Course Forum</span>
           </h1>
         </div>        
-        <div className="flex flex-col w-full justify-center px-[5%]">
-            {/* {showedPosts?.map((post, index) => (
-              <ForumCard key={index} course={course} href={`/instructor/${course._id}`} />
-            ))} */}
-            <ForumPostCard post={postExample} posterDetails={userDetails} datePosted={date.toLocaleString()}></ForumPostCard>
+        <div className="flex flex-col w-full justify-center px-[2%]">
+            {postList?.map((post, index) => (
+              <ForumPostOverviewCard post={post} posterDetails={userDetails}></ForumPostOverviewCard>
+            ))}
+            <ForumPostCard post={postList.pop()} posterDetails={userDetails} datePosted={date.toLocaleString()}></ForumPostCard>
+            
         </div>
       </ContentContainer>
       
