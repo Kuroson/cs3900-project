@@ -2,12 +2,23 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
+import {
+  AnalyticsGradesType,
+  AnalyticsQuestionsType,
+  AnalyticsTagSummaryType,
+} from "models/analytics.model";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading } from "components";
+import { AdminNavBar, ContentContainer, Loading, StudentNavBar } from "components";
+import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
+import {
+  getAnalyticsGrades,
+  getAnalyticsQuestions,
+  getAnalyticsTagsSummary,
+} from "util/api/analyticsApi";
 import { getUserCourseDetails } from "util/api/courseApi";
 import initAuth from "util/firebase";
 
@@ -24,9 +35,72 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
   const [loading, setLoading] = React.useState(user.userDetails === null);
 
   // Analytics information
+  const [grades, setGrades] = React.useState<AnalyticsGradesType>();
+  const [tagsSummary, setTagsSummary] = React.useState<AnalyticsTagSummaryType>();
+  const [questions, setQuestions] = React.useState<AnalyticsQuestionsType>();
 
   useEffect(() => {
-    // TODO: fetch data
+    const getGrades = async () => {
+      const [res, err] = await getAnalyticsGrades(
+        await authUser.getIdToken(),
+        courseData._id,
+        "client",
+      );
+      if (err !== null) {
+        console.error(err);
+        if (err instanceof HttpException) {
+          toast.error(err.message);
+        } else {
+          toast.error(err);
+        }
+        return;
+      }
+      if (res === null) throw new Error("Response and error are null");
+      setGrades(res);
+    };
+
+    const getTagsSummary = async () => {
+      const [res, err] = await getAnalyticsTagsSummary(
+        await authUser.getIdToken(),
+        courseData._id,
+        "client",
+      );
+      if (err !== null) {
+        console.error(err);
+        if (err instanceof HttpException) {
+          toast.error(err.message);
+        } else {
+          toast.error(err);
+        }
+        return;
+      }
+      if (res === null) throw new Error("Response and error are null");
+      setTagsSummary(res);
+    };
+
+    const getQuestions = async () => {
+      const [res, err] = await getAnalyticsQuestions(
+        await authUser.getIdToken(),
+        courseData._id,
+        "client",
+      );
+      if (err !== null) {
+        console.error(err);
+        if (err instanceof HttpException) {
+          toast.error(err.message);
+        } else {
+          toast.error(err);
+        }
+        return;
+      }
+      if (res === null) throw new Error("Response and error are null");
+      setQuestions(res);
+    };
+
+    // Fetch data
+    getGrades();
+    getTagsSummary();
+    getQuestions();
   }, [authUser, courseData._id]);
 
   useEffect(() => {
@@ -46,9 +120,9 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
         <meta name="description" content="Analytics" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
+      <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
-        <div className="flex flex-col w-full px-[5%] py-2">Test</div>
+        <div className="flex flex-col w-full px-[5%] py-2">Testing</div>
       </ContentContainer>
     </>
   );

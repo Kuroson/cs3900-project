@@ -104,8 +104,6 @@ export const getCourse = async (
         .exec()
         .catch(() => null);
 
-    console.log(myCourse);
-
     if (myCourse === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
 
     // Try and find enrolment

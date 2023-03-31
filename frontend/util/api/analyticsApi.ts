@@ -18,7 +18,11 @@ export const getAnalyticsGrades = (
   );
 };
 
-export const getAnalyticsTags = (token: string | null, courseId: string, type: BackendLinkType) => {
+export const getAnalyticsTagsSummary = (
+  token: string | null,
+  courseId: string,
+  type: BackendLinkType,
+) => {
   return apiGet<{ courseId: string }, AnalyticsTagSummaryType>(
     `${getBackendLink(type)}/analytics/tags/summary`,
     token,
@@ -32,7 +36,7 @@ export const getAnalyticsQuestions = (
   type: BackendLinkType,
 ) => {
   return apiGet<{ courseId: string }, AnalyticsQuestionsType>(
-    `${getBackendLink(type)}/analytics/grades`,
+    `${getBackendLink(type)}/analytics/questions`,
     token,
     { courseId: courseId },
   );
