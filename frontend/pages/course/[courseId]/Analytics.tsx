@@ -4,7 +4,19 @@ import Chart from "react-google-charts";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { ExpandMore } from "@mui/icons-material";
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import {
   AnalyticsGradesType,
   AnalyticsQuestionsType,
@@ -143,15 +155,97 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
           <div className="py-4">
             <Accordion elevation={3} defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMore />}>
-                <Typography>Grades</Typography>
+                <Typography>
+                  <h3>Grades</h3>
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography>{JSON.stringify(grades)}</Typography>
+                <div className="mb-3 flex gap-9 w-full max-w-[800px]">
+                  <Typography>
+                    <h4>
+                      <i>Quiz Grades</i>
+                    </h4>
+                  </Typography>
+                </div>
+                <div className="mt-2 mb-5 flex flex-col items-center gap-9 w-full">
+                  <TableContainer sx={{ width: "90%" }} component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>
+                            <b>Quiz</b>
+                          </TableCell>
+                          <TableCell align="center">
+                            <b>Mark Awarded</b>
+                          </TableCell>
+                          <TableCell align="center">
+                            <b>Maximum Mark</b>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {grades?.quizGrades.map((row) => (
+                          <TableRow
+                            key={row.quizId}
+                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                          >
+                            <TableCell component="th" scope="row">
+                              {row.title}
+                            </TableCell>
+                            <TableCell align="center">{row.marksAwarded ?? "?"}</TableCell>
+                            <TableCell align="center">{row.maxMarks}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
+
+                <div className="mb-3 flex gap-9 w-full max-w-[800px]">
+                  <h4>
+                    <i>Assignment Grades</i>
+                  </h4>
+                </div>
+                <div className="mt-2 mb-5 flex flex-col items-center gap-9 w-full">
+                  <TableContainer sx={{ width: "90%" }} component={Paper}>
+                    <Table sx={{ width: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>
+                            <b>Assignment</b>
+                          </TableCell>
+                          <TableCell align="center">
+                            <b>Mark Awarded</b>
+                          </TableCell>
+                          <TableCell align="center">
+                            <b>Maximum Mark</b>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {grades?.assignmentGrades.map((row) => (
+                          <TableRow
+                            key={row.assignmentId}
+                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                          >
+                            <TableCell component="th" scope="row">
+                              {row.title}
+                            </TableCell>
+                            <TableCell align="center">{row.marksAwarded ?? "?"}</TableCell>
+                            <TableCell align="center">{row.maxMarks}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
               </AccordionDetails>
             </Accordion>
             <Accordion elevation={3}>
               <AccordionSummary expandIcon={<ExpandMore />}>
-                <Typography>Tag Summary</Typography>
+                <Typography>
+                  <h3>Tag Summary</h3>
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 {tagsSummary && (
@@ -184,10 +278,12 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
             </Accordion>
             <Accordion elevation={3}>
               <AccordionSummary expandIcon={<ExpandMore />}>
-                <Typography>Incorrect Questions</Typography>
+                <Typography>
+                  <h3>Incorrect Questions</h3>
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <div className="mt-7 mx-auto flex flex-col gap-9 w-full max-w-[800px]">
+                <div className="mt-7 mx-4 flex flex-col gap-9 w-full max-w-[800px]">
                   {questions &&
                     questions.questions.map((question, idx) => (
                       <ShowAnswer questionInfo={question} key={`q_answer_${idx}`} isAdmin={false} />
