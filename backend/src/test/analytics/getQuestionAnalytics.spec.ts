@@ -1,11 +1,7 @@
 import Course from "@/models/course/course.model";
 import { QuizInterfaceStudent } from "@/models/course/quiz/quiz.model";
 import User from "@/models/user.model";
-import { getQuestionAnalytics } from "@/routes/analytics/getQuestionAnalytics";
-import { getTagSummary } from "@/routes/analytics/getTagSummary.route";
-import { createAssignment } from "@/routes/assignment/createAssignment.route";
-import { gradeAssignment } from "@/routes/assignment/gradeAssignment.route";
-import { submitAssignment } from "@/routes/assignment/submitAssignment.route";
+import { getQuestionAnalytics } from "@/routes/analytics/getQuestionAnalytics.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
@@ -16,7 +12,6 @@ import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
-import { logger } from "@/utils/logger";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
@@ -137,7 +132,7 @@ describe("Test getting question analytics", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceIds: [quizQuestions.questions[0].choices[0]._id.toString()],
+                        choiceId: [quizQuestions.questions[0].choices[0]._id.toString()],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,
@@ -145,7 +140,7 @@ describe("Test getting question analytics", () => {
                     },
                     {
                         questionId: quizQuestions.questions[2]._id,
-                        choiceIds: [
+                        choiceId: [
                             quizQuestions.questions[2].choices[0]._id.toString(),
                             quizQuestions.questions[2].choices[1]._id.toString(),
                         ],

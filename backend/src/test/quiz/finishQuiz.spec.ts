@@ -136,7 +136,7 @@ describe("Test finishing a quiz", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceIds: [quizQuestions.questions[0].choices[0]._id.toString()],
+                        choiceId: [quizQuestions.questions[0].choices[0]._id.toString()],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,
@@ -144,7 +144,7 @@ describe("Test finishing a quiz", () => {
                     },
                     {
                         questionId: quizQuestions.questions[2]._id,
-                        choiceIds: [
+                        choiceId: [
                             quizQuestions.questions[2].choices[0]._id.toString(),
                             quizQuestions.questions[2].choices[1]._id.toString(),
                         ],
@@ -206,7 +206,7 @@ describe("Test finishing a quiz", () => {
                     responses: [
                         {
                             questionId: quizQuestions.questions[0]._id,
-                            choiceIds: [quizQuestions.questions[0].choices[0]._id],
+                            choiceId: [quizQuestions.questions[0].choices[0]._id],
                         },
                         {
                             questionId: quizQuestions.questions[1]._id,
@@ -214,7 +214,7 @@ describe("Test finishing a quiz", () => {
                         },
                         {
                             questionId: quizQuestions.questions[2]._id,
-                            choiceIds: [
+                            choiceId: [
                                 quizQuestions.questions[2].choices[0]._id,
                                 quizQuestions.questions[2].choices[1]._id,
                             ],
@@ -248,7 +248,7 @@ describe("Test finishing a quiz", () => {
                     responses: [
                         {
                             questionId: quizQuestions.questions[0]._id,
-                            choiceIds: [quizQuestions.questions[0].choices[0]._id],
+                            choiceId: [quizQuestions.questions[0].choices[0]._id],
                         },
                         {
                             questionId: quizQuestions.questions[1]._id,
@@ -256,7 +256,7 @@ describe("Test finishing a quiz", () => {
                         },
                         {
                             questionId: quizQuestions.questions[2]._id,
-                            choiceIds: [
+                            choiceId: [
                                 quizQuestions.questions[2].choices[0]._id,
                                 quizQuestions.questions[2].choices[1]._id,
                             ],
@@ -285,7 +285,7 @@ describe("Test finishing a quiz", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceIds: [quizQuestions.questions[0].choices[0]._id],
+                        choiceId: [quizQuestions.questions[0].choices[0]._id],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,
@@ -293,7 +293,7 @@ describe("Test finishing a quiz", () => {
                     },
                     {
                         questionId: quizQuestions.questions[2]._id,
-                        choiceIds: [
+                        choiceId: [
                             quizQuestions.questions[2].choices[0]._id,
                             quizQuestions.questions[2].choices[1]._id,
                         ],
@@ -311,7 +311,7 @@ describe("Test finishing a quiz", () => {
                     responses: [
                         {
                             questionId: quizQuestions.questions[0]._id,
-                            choiceIds: [quizQuestions.questions[0].choices[0]._id],
+                            choiceId: [quizQuestions.questions[0].choices[0]._id],
                         },
                         {
                             questionId: quizQuestions.questions[1]._id,
@@ -319,7 +319,7 @@ describe("Test finishing a quiz", () => {
                         },
                         {
                             questionId: quizQuestions.questions[2]._id,
-                            choiceIds: [
+                            choiceId: [
                                 quizQuestions.questions[2].choices[0]._id,
                                 quizQuestions.questions[2].choices[1]._id,
                             ],
