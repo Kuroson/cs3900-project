@@ -104,7 +104,6 @@ const StudentQuiz: React.FC<{
   });
   const [responses, setResponses] = useState<Array<ResponsesType>>([]);
   const [checkIsResponded, setCheckIsResponded] = useState(isResponded);
-  const [checkIsOpen, setCheckIsOpen] = useState<boolean>(isOpen);
 
   useEffect(() => {
     const startQuiz = async () => {
@@ -251,7 +250,7 @@ const StudentQuiz: React.FC<{
               ))}
           </>
         )}
-        <Button variant="contained" disabled={checkIsResponded} onClick={handleSubmit}>
+        <Button variant="contained" disabled={checkIsResponded || !isOpen} onClick={handleSubmit}>
           Submit
         </Button>
       </div>

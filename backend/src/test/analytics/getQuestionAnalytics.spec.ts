@@ -12,6 +12,7 @@ import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
+import { updateQuiz } from "@/routes/quiz/updateQuiz.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
@@ -50,7 +51,7 @@ describe("Test getting question analytics", () => {
         // Create quiz
         const oneDay = 24 * 60 * 60 * 1000;
         const open = new Date(Date.now() - oneDay).toString();
-        const close = new Date(Date.now() + oneDay).toString();
+        let close = new Date(Date.now() + oneDay).toString();
         quizId = await createQuiz(
             {
                 courseId,
@@ -161,6 +162,11 @@ describe("Test getting question analytics", () => {
             },
             `acc1${id}`,
         );
+
+        // Update quiz
+        const oneMin = 60 * 1000;
+        close = new Date(Date.now() - oneMin).toString();
+        await updateQuiz({ quizId, close }, `acc1${id}`);
     });
 
     it("Should get a summary of incorrect questions", async () => {
@@ -169,36 +175,36 @@ describe("Test getting question analytics", () => {
         expect(questions).toEqual({
             questions: [
                 {
-                    questionId: quizQuestions.questions[1]._id,
+                    _id: quizQuestions.questions[1]._id,
                     text: "question 2 text",
                     tag: "tag2",
                     type: "open",
-                    marksTotal: 2,
-                    marksAwarded: 0.5,
-                    answer: "Response",
+                    marks: 2,
+                    markAwarded: 0.5,
+                    response: "Response",
                 },
                 {
-                    questionId: quizQuestions.questions[2]._id,
+                    _id: quizQuestions.questions[2]._id,
                     text: "another question text",
                     tag: "tag1",
                     type: "choice",
-                    marksTotal: 2,
-                    marksAwarded: 0,
+                    marks: 2,
+                    markAwarded: 0,
                     choices: [
                         {
-                            choiceId: quizQuestions.questions[2].choices[0]._id,
+                            _id: quizQuestions.questions[2].choices[0]._id,
                             text: "C1",
                             correct: true,
                             chosen: true,
                         },
                         {
-                            choiceId: quizQuestions.questions[2].choices[1]._id,
+                            _id: quizQuestions.questions[2].choices[1]._id,
                             text: "C2",
                             correct: false,
                             chosen: true,
                         },
                         {
-                            choiceId: quizQuestions.questions[2].choices[2]._id,
+                            _id: quizQuestions.questions[2].choices[2]._id,
                             text: "C3",
                             correct: true,
                             chosen: false,

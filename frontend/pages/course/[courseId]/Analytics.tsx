@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
+import { ExpandMore } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import {
   AnalyticsGradesType,
   AnalyticsQuestionsType,
@@ -12,6 +14,8 @@ import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading, StudentNavBar } from "components";
+import PageHeader from "components/common/PageHeader";
+import ShowAnswer from "components/quiz/ShowAnswer";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import {
@@ -122,7 +126,42 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
       </Head>
       <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
-        <div className="flex flex-col w-full px-[5%] py-2">Testing</div>
+        <div className="flex flex-col w-full px-[5%] gap-9">
+          <PageHeader title="Analytics" />
+
+          <div className="py-4">
+            <Accordion elevation={3} defaultExpanded>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography>Grades</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>{JSON.stringify(grades)}</Typography>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion elevation={3}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography>Tag Summary</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>{JSON.stringify(tagsSummary)}</Typography>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion elevation={3}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography>Incorrect Questions</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className="mt-7 mx-auto flex flex-col gap-9 w-full max-w-[800px]">
+                  {questions &&
+                    questions.questions.map((question, idx) => (
+                      <ShowAnswer questionInfo={question} key={`q_answer_${idx}`} isAdmin={false} />
+                    ))}
+                </div>
+              </AccordionDetails>
+            </Accordion>
+          </div>
+          {/* <div className="flex flex-wrap mt-10"> */}
+        </div>
       </ContentContainer>
     </>
   );
