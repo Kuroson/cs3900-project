@@ -208,21 +208,21 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
             <Accordion elevation={3}>
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Typography>
-                  <h3>Tag Summary</h3>
+                  <h3>Topic Summary</h3>
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 {tagsSummary && (
-                  <div className="mt-7 mx-auto flex gap-9 w-full max-w-[800px]">
+                  <div className="mx-auto flex space-between gap-9 w-full max-w-[800px]">
                     <div>
                       <Chart
                         chartType="PieChart"
                         data={organiseTags(tagsSummary.successTags)}
                         options={{
-                          title: "Success Tags",
+                          title: "Success Topics",
                         }}
                         width={"100%"}
-                        height={"400px"}
+                        height={"250px"}
                       />
                     </div>
                     <div>
@@ -230,10 +230,10 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
                         chartType="PieChart"
                         data={organiseTags(tagsSummary.improvementTags)}
                         options={{
-                          title: "Improvement Tags",
+                          title: "Improvement Topics",
                         }}
                         width={"100%"}
-                        height={"400px"}
+                        height={"250px"}
                       />
                     </div>
                   </div>
