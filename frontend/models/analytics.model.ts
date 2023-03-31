@@ -26,20 +26,20 @@ export type AnalyticsTagSummaryType = {
 };
 
 type ChoiceInfo = {
-  choiceId: string; // _id
+  choiceId: string;
   text: string;
   chosen: boolean;
   correct?: boolean;
 };
 
 type QuestionInfo = {
-  _id: string; //_id
+  _id: string;
   text: string;
   tag: string;
   type: string;
-  markAwarded: number; //markAwarded
-  marks: number; //marks
-  response?: string; // response
+  markAwarded: number;
+  marks: number;
+  response?: string;
   choices?: Array<ChoiceInfo>;
 };
 

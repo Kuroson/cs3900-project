@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
+import Chart from "react-google-charts";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { ExpandMore } from "@mui/icons-material";
@@ -117,6 +118,16 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
+  const organiseTags = (tagList: Record<string, number>) => {
+    const keyList = [];
+    keyList.push(["Tag", "Count"]);
+    for (const [key, value] of Object.entries(tagList)) {
+      keyList.push([key, value]);
+    }
+
+    return keyList;
+  };
+
   return (
     <>
       <Head>
@@ -143,7 +154,32 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
                 <Typography>Tag Summary</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography>{JSON.stringify(tagsSummary)}</Typography>
+                {tagsSummary && (
+                  <div className="mt-7 mx-auto flex gap-9 w-full max-w-[800px]">
+                    <div>
+                      <Chart
+                        chartType="PieChart"
+                        data={organiseTags(tagsSummary.successTags)}
+                        options={{
+                          title: "Success Tags",
+                        }}
+                        width={"100%"}
+                        height={"400px"}
+                      />
+                    </div>
+                    <div>
+                      <Chart
+                        chartType="PieChart"
+                        data={organiseTags(tagsSummary.improvementTags)}
+                        options={{
+                          title: "Improvement Tags",
+                        }}
+                        width={"100%"}
+                        height={"400px"}
+                      />
+                    </div>
+                  </div>
+                )}
               </AccordionDetails>
             </Accordion>
             <Accordion elevation={3}>
