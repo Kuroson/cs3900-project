@@ -1,4 +1,4 @@
-type AssignmentGrade = {
+export type AssignmentGrade = {
   assignmentId: string;
   title: string;
   maxMarks: number;
@@ -7,7 +7,7 @@ type AssignmentGrade = {
   imrpovementTags?: Array<string>;
 };
 
-type QuizGrade = {
+export type QuizGrade = {
   quizId: string;
   title: string;
   maxMarks: number;
@@ -19,6 +19,13 @@ export type AnalyticsGradesType = {
   assignmentGrades: Array<AssignmentGrade>;
   quizGrades: Array<QuizGrade>;
 };
+
+export type GradeType = Array<{
+  id: string;
+  title: string;
+  maxMarks: number;
+  marksAwarded?: number;
+}>;
 
 export type AnalyticsTagSummaryType = {
   successTags: Record<string, number>;

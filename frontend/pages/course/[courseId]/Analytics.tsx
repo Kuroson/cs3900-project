@@ -21,12 +21,16 @@ import {
   AnalyticsGradesType,
   AnalyticsQuestionsType,
   AnalyticsTagSummaryType,
+  AssignmentGrade,
+  GradeType,
+  QuizGrade,
 } from "models/analytics.model";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading, StudentNavBar } from "components";
+import { ContentContainer, Loading, StudentNavBar } from "components";
+import GradeTable from "components/analytics/GradeTable";
 import PageHeader from "components/common/PageHeader";
 import ShowAnswer from "components/quiz/ShowAnswer";
 import { HttpException } from "util/HttpExceptions";
@@ -140,6 +144,36 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
     return keyList;
   };
 
+  const organiseQuizGrades = (quizGrades: Array<QuizGrade>) => {
+    const grades: GradeType = [];
+
+    for (const quizGrade of quizGrades) {
+      grades.push({
+        id: quizGrade.quizId,
+        title: quizGrade.title,
+        marksAwarded: quizGrade.marksAwarded,
+        maxMarks: quizGrade.maxMarks,
+      });
+    }
+
+    return grades;
+  };
+
+  const organiseAssignmentGrades = (assignmentGrades: Array<AssignmentGrade>) => {
+    const grades: GradeType = [];
+
+    for (const assignmentGrade of assignmentGrades) {
+      grades.push({
+        id: assignmentGrade.assignmentId,
+        title: assignmentGrade.title,
+        marksAwarded: assignmentGrade.marksAwarded,
+        maxMarks: assignmentGrade.maxMarks,
+      });
+    }
+
+    return grades;
+  };
+
   return (
     <>
       <Head>
@@ -160,85 +194,15 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <div className="mb-3 flex gap-9 w-full max-w-[800px]">
-                  <Typography>
-                    <h4>
-                      <i>Quiz Grades</i>
-                    </h4>
-                  </Typography>
-                </div>
-                <div className="mt-2 mb-5 flex flex-col items-center gap-9 w-full">
-                  <TableContainer sx={{ width: "90%" }} component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>
-                            <b>Quiz</b>
-                          </TableCell>
-                          <TableCell align="center">
-                            <b>Mark Awarded</b>
-                          </TableCell>
-                          <TableCell align="center">
-                            <b>Maximum Mark</b>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {grades?.quizGrades.map((row) => (
-                          <TableRow
-                            key={row.quizId}
-                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                          >
-                            <TableCell component="th" scope="row">
-                              {row.title}
-                            </TableCell>
-                            <TableCell align="center">{row.marksAwarded ?? "?"}</TableCell>
-                            <TableCell align="center">{row.maxMarks}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </div>
-
-                <div className="mb-3 flex gap-9 w-full max-w-[800px]">
-                  <h4>
-                    <i>Assignment Grades</i>
-                  </h4>
-                </div>
-                <div className="mt-2 mb-5 flex flex-col items-center gap-9 w-full">
-                  <TableContainer sx={{ width: "90%" }} component={Paper}>
-                    <Table sx={{ width: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>
-                            <b>Assignment</b>
-                          </TableCell>
-                          <TableCell align="center">
-                            <b>Mark Awarded</b>
-                          </TableCell>
-                          <TableCell align="center">
-                            <b>Maximum Mark</b>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {grades?.assignmentGrades.map((row) => (
-                          <TableRow
-                            key={row.assignmentId}
-                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                          >
-                            <TableCell component="th" scope="row">
-                              {row.title}
-                            </TableCell>
-                            <TableCell align="center">{row.marksAwarded ?? "?"}</TableCell>
-                            <TableCell align="center">{row.maxMarks}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </div>
+                {grades && (
+                  <>
+                    <GradeTable tableTitle="Quiz" rows={organiseQuizGrades(grades.quizGrades)} />
+                    <GradeTable
+                      tableTitle="Assignment"
+                      rows={organiseAssignmentGrades(grades.assignmentGrades)}
+                    />
+                  </>
+                )}
               </AccordionDetails>
             </Accordion>
             <Accordion elevation={3}>
@@ -292,7 +256,6 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
               </AccordionDetails>
             </Accordion>
           </div>
-          {/* <div className="flex flex-wrap mt-10"> */}
         </div>
       </ContentContainer>
     </>
