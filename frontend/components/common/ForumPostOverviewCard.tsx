@@ -13,7 +13,7 @@ type ForumPostOverviewCardProps = {
 
 const ForumPostOverviewCard: React.FC<ForumPostOverviewCardProps> = ({ post, posterDetails }): JSX.Element => {
   return (
-    <div className="flex flex-col rounded-lg shadow-md p-2 my-2 mx-5 w-[600px] cursor-pointer hover:shadow-lg">
+    <div className="flex flex-col rounded-lg shadow-md p-2 my-2 mx-5 w-[300px] cursor-pointer hover:shadow-lg">
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
                 <div className="mt-5 flex flex-row justify-center">

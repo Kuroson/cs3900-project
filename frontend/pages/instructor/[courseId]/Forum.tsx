@@ -72,13 +72,14 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE] pt-3">
-            <span className="ml-4">Course Forum</span>
+            <span className="ml-4">Class Forum</span>
           </h1>
-        </div>        
+        </div>     
+         
         <div className="flex flex-col w-full justify-center px-[2%]">
             {postList?.map((post, index) => (
-              <ForumPostOverviewCard post={post} posterDetails={userDetails}></ForumPostOverviewCard>
-            ))}
+                <ForumPostOverviewCard post={post} posterDetails={userDetails}></ForumPostOverviewCard>
+            ))}  
             <ForumPostCard post={postList.pop()} posterDetails={userDetails} datePosted={date.toLocaleString()}></ForumPostCard>
             
         </div>
