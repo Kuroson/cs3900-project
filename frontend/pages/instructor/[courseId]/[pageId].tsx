@@ -85,7 +85,12 @@ const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.El
             <div className="flex items-center gap-4">
               <span className="ml-4">{pageData.title}</span>
             </div>
-            <Button color="error" onClick={handleDeletePage} startIcon={<DeleteIcon />}>
+            <Button
+              color="error"
+              onClick={handleDeletePage}
+              startIcon={<DeleteIcon />}
+              id="deletePageButton"
+            >
               Delete page
             </Button>
           </h1>

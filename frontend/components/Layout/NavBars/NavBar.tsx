@@ -23,7 +23,7 @@ type NavBarProps = {
 export const defaultAdminRoutes: Routes[] = [
   { name: "Dashboard", route: "/instructor", icon: <HomeIcon fontSize="large" color="primary" /> },
   {
-    name: "Admin allocation",
+    name: "Instructor allocation",
     route: "/instructor/instructor-allocation",
     icon: <SupervisorAccountIcon fontSize="large" color="primary" />,
   },
@@ -37,7 +37,7 @@ export const defaultAdminRoutes: Routes[] = [
 const NavBar = ({ routes, isCoursePage, role }: NavBarProps): JSX.Element => {
   if (role === "Student") {
     return (
-      <div className="w-full flex flex-col items-center justify-center mt-4 pl-2">
+      <div className="w-full flex flex-col items-center justify-center mt-4 pl-2" id="navbar">
         {routes.map(({ name, route, icon, hasLine }, index) => {
           return (
             <div key={`nav-index-${index}`} className="w-full flex py-2 flex-col">
@@ -53,7 +53,7 @@ const NavBar = ({ routes, isCoursePage, role }: NavBarProps): JSX.Element => {
     );
   } else {
     return (
-      <div className="w-full flex flex-col items-center justify-center mt-4 ml-4">
+      <div className="w-full flex flex-col items-center justify-center mt-4 ml-4" id="navbar">
         {routes.map(({ name, route, icon, hasLine }, index) => {
           return (
             <div key={`nav-index-${index}`} className="w-full flex py-2 flex-col">

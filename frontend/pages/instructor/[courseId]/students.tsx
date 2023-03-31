@@ -130,7 +130,7 @@ const AddStudentsPage = ({ courseData }: AddStudentPageProps): JSX.Element => {
             <h2 className="text-left w-full pb-4">Add Students</h2>
             <div className="flex w-full flex-col">
               <TextField
-                id="outlined-basic"
+                id="student-email"
                 label="Student Email"
                 variant="outlined"
                 value={studentEmail}

@@ -79,7 +79,7 @@ const AddNewSection = ({
     <div className="pb-4 flex flex-col">
       <div className="pb-4">
         <TextField
-          id="Resource Title"
+          id="ResourceTitle"
           label="Resource Title"
           variant="outlined"
           value={title}

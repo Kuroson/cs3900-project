@@ -3,6 +3,9 @@ import { adminRoute } from "@/utils/util";
 import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
+import { getGradesController } from "./analytics/getGrades.route";
+import { getQuestionAnalyticsController } from "./analytics/getQuestionAnalytics.route";
+import { getTagSummaryController } from "./analytics/getTagSummary.route";
 import { createAssignmentController } from "./assignment/createAssignment.route";
 import { deleteAssignmentController } from "./assignment/deleteAssignment.route";
 import { getAssignmentController } from "./assignment/getAssignment.route";
@@ -101,3 +104,8 @@ indexRouter.delete("/assignment/delete", deleteAssignmentController);
 indexRouter.post("/assignment/submit", firebaseUpload.single("file"), submitAssignmentController);
 indexRouter.get("/assignment/submissions", getAssignmentSubmissionsController);
 indexRouter.post("/assignment/grade", gradeAssignmentController);
+
+// Analytics routes
+indexRouter.get("/analytics/grades", getGradesController);
+indexRouter.get("/analytics/tags/summary", getTagSummaryController);
+indexRouter.get("/analytics/questions", getQuestionAnalyticsController);

@@ -89,6 +89,7 @@ const Admin = (): JSX.Element => {
             <div
               className="flex flex-col rounded-lg shadow-md p-5 my-2 mx-5 w-[370px] h-[264px] cursor-pointer hover:shadow-lg items-center justify-center"
               onClick={() => router.push("/instructor/create-course")}
+              data-cy="createCourseDiv"
             >
               <AddIcon fontSize="large" color="primary" />
             </div>

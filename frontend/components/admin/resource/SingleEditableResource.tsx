@@ -140,11 +140,11 @@ const SingleEditableResource = ({
   // Show edit interface
   if (editMode) {
     return (
-      <div className="w-full pt-5">
+      <div className="w-full pt-5" data-cy="current-edit">
         <div className="flex flex-col w-full">
           <div className="w-full pb-5">
             <TextField
-              id="Resource Title"
+              id="ResourceTitle"
               label="Resource Title"
               variant="outlined"
               sx={{ maxWidth: "500px" }}
@@ -153,7 +153,7 @@ const SingleEditableResource = ({
             />
           </div>
           <TextField
-            id="Resource Description"
+            id="ResourceDescription"
             label="Resource Description"
             variant="outlined"
             multiline
@@ -206,10 +206,10 @@ const SingleEditableResource = ({
 
   // Show normal interface
   return (
-    <div className="w-full pt-5">
+    <div className="w-full pt-5" data-cy={`section-${title}`}>
       <span className="w-full text-xl font-medium flex flex-col">{title}</span>
       {/* Description */}
-      {description ?? <span className="">{description}</span>}
+      {description !== undefined && <p>{description}</p>}
       {/* Resource */}
       {storedName !== undefined && (
         <div className="my-5">
@@ -224,7 +224,7 @@ const SingleEditableResource = ({
           )}
         </div>
       )}
-      <div>
+      <div data-cy="edit-button-section">
         <EditPanelButtons
           editMode={editMode}
           handleEditClick={handleEditClick}

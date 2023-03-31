@@ -14,7 +14,7 @@ type ResponsePayload = Record<string, never>;
 
 type ResponseInfo = {
     questionId: string;
-    choiceIds?: Array<string>;
+    choiceId?: Array<string>;
     answer?: string;
 };
 
@@ -128,9 +128,9 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         }
 
         // Verify correct response type
-        if (response.answer === undefined && response.choiceIds == undefined) {
+        if (response.answer === undefined && response.choiceId == undefined) {
             throw new HttpException(400, "Must give either response or choice for question");
-        } else if (question.type === MULTIPLE_CHOICE && response.choiceIds === undefined) {
+        } else if (question.type === MULTIPLE_CHOICE && response.choiceId === undefined) {
             throw new HttpException(400, "Must give choice for multiple choice question");
         } else if (question.type === EXTENDED_RESPONSE && response.answer === undefined) {
             throw new HttpException(400, "Must give response for open response question");
@@ -152,18 +152,18 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
             let numCorrect = 0;
 
             for (const choice of question.choices) {
-                if (response.choiceIds == null) {
+                if (response.choiceId == null) {
                     continue;
                 }
                 const isChoiceCorrect: boolean = choice.correct;
-                if (isChoiceCorrect && response.choiceIds.includes(choice._id.toString())) {
+                if (isChoiceCorrect && response.choiceId.includes(choice._id.toString())) {
                     chosenCorrectly += 1;
                     numCorrect += 1;
                     questionResponse.choices.push(choice._id);
                 } else if (isChoiceCorrect) {
                     numCorrect += 1;
                     notChosenIncorrectly += 1;
-                } else if (response.choiceIds.includes(choice._id.toString())) {
+                } else if (response.choiceId.includes(choice._id.toString())) {
                     chosenIncorrectly += 1;
                     questionResponse.choices.push(choice._id);
                 }
