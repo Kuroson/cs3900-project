@@ -14,8 +14,8 @@ if (FIREBASE_DATABASE_URL === undefined) {
 const FIREBASE_KEY = (): string => {
   try {
     return process.env.FIREBASE_PRIVATE_KEY !== undefined
-      ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY)
-      : undefined;
+      ? (JSON.parse(process.env.FIREBASE_PRIVATE_KEY) as string)
+      : "";
   } catch (err) {
     return process.env.FIREBASE_PRIVATE_KEY ?? "";
   }
