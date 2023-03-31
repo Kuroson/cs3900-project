@@ -62,8 +62,8 @@ describe("Test creating a week", () => {
         expect(workload).not.toBeNull();
 
         expect(workload?.weeks.length).toEqual(2);
-        expect(workload?.weeks[0] as string).toEqual(week1Id);
-        expect(workload?.weeks[1] as string).toEqual(week2Id);
+        expect(workload?.weeks[0].toString()).toEqual(week1Id);
+        expect(workload?.weeks[1].toString()).toEqual(week2Id);
 
         await Week.findByIdAndDelete(week1Id).exec();
         await Week.findByIdAndDelete(week2Id).exec();

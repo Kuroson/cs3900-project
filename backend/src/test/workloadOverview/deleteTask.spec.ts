@@ -40,7 +40,7 @@ describe("Test deleting a task", () => {
         expect(week).not.toBeNull();
 
         expect(week?.tasks.length).toEqual(1);
-        expect(week?.tasks[0]).toEqual(taskId);
+        expect(week?.tasks[0].toString()).toEqual(taskId);
 
         await deleteTask(
             {

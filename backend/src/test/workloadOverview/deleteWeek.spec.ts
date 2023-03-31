@@ -38,14 +38,14 @@ describe("Test deleting a week", () => {
     it("Should delete week if it does not contain tasks", async () => {
         const weekId = await createWeek(`${courseId}`, "Week 1", "Week 1 Description", `acc${id}`);
 
-        let course = await Course.findById(courseId);
+        const course = await Course.findById(courseId);
         expect(course).not.toBeNull();
 
         let workload = await WorkloadOverview.findById(course?.workloadOverview);
         expect(workload).not.toBeNull();
 
         expect(workload?.weeks.length).toBe(1);
-        expect(workload?.weeks[0]).toEqual(weekId);
+        expect(workload?.weeks[0].toString()).toEqual(weekId);
         await deleteWeek(
             {
                 courseId: courseId,
