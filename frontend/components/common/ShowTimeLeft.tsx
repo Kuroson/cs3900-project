@@ -15,7 +15,7 @@ const ShowTimeLeft: React.FC<{ time: string; className?: string }> = ({ time, cl
         pass ? "bg-[#979091a7]" : "bg-[#e53d56a7]"
       } p-1 rounded-md font-bold text-white text-xs ${className}`}
     >
-      {pass ? "Closed" : `Close ${timeLeft}`}
+      {pass ? "Closed" : `Closes ${timeLeft}`}
     </span>
   );
 };

@@ -28,47 +28,12 @@ import {
 import QuizInfoCard from "./QuizInfoCard";
 import ShowAnswer from "./ShowAnswer";
 
-const quiz: QuizInfoType = {
-  title: "Quiz1",
-  open: dayjs().format(),
-  close: dayjs().add(30, "minute").format(),
-  maxMarks: 100,
-  description: "This quiz aims for student getting familiar with HTML",
-  questions: [
-    {
-      choices: [
-        {
-          text: "I dont know",
-          correct: true,
-          _id: "1",
-        },
-        {
-          text: "No idea",
-          correct: false,
-          _id: "2",
-        },
-      ],
-      marks: 10,
-      tag: "js",
-      text: "What is <a> tag?",
-      type: "choice",
-      _id: "12",
-    },
-    {
-      type: "open",
-      marks: 4,
-      tag: "HTML",
-      text: "How to use html?",
-      _id: "3",
-    },
-  ],
-};
-
-const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: string }> = ({
-  quizId,
-  handleClose,
-  courseId,
-}): JSX.Element => {
+const AdminQuiz: React.FC<{
+  quizId: string;
+  handleClose: () => void;
+  courseId: string;
+  courseTags: Array<string>;
+}> = ({ quizId, handleClose, courseId, courseTags }): JSX.Element => {
   const authUser = useAuthUser();
   const [quizInfo, setQuizInfo] = useState<QuizInfoType>({
     title: "",
@@ -96,30 +61,39 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
       if (res === null) throw new Error("Response and error are null");
       setQuizInfo(res);
     };
-    setQuizInfo(quiz);
-    // TODO
-    // getQuizInfo()
+    getQuizInfo();
   }, [authUser, quizId]);
+
+  const canEditQuiz = () => {
+    // Can only edit quiz before opening
+    const isOpen = new Date() > new Date(Date.parse(quizInfo.open));
+
+    if (isOpen) {
+      toast.error("Can only edit quiz before opening");
+    }
+    return !isOpen;
+  };
 
   // edit quiz info
   const handleEditInfo = async (newInfo: QuizBasicInfo) => {
-    // TODO
-    // const [res, err] = await updateQuizAdmin(
-    //   await authUser.getIdToken(),
-    //   { ...newInfo, quizId: quizId },
-    //   "client",
-    // );
-    // if (err !== null) {
-    //   console.error(err);
-    //   if (err instanceof HttpException) {
-    //     toast.error(err.message);
-    //   } else {
-    //     toast.error("Failed to edit quiz");
-    //   }
-    //   return;
-    // }
-    // if (res === null) throw new Error("Shouldn't happen");
-    // toast.success("Edited quiz successfully");
+    if (!canEditQuiz()) return;
+
+    const [res, err] = await updateQuizAdmin(
+      await authUser.getIdToken(),
+      { ...newInfo, quizId: quizId },
+      "client",
+    );
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error("Failed to edit quiz");
+      }
+      return;
+    }
+    if (res === null) throw new Error("Shouldn't happen");
+    toast.success("Edited quiz successfully");
 
     setQuizInfo((prev) => ({
       questions: prev?.questions ?? [],
@@ -132,6 +106,11 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
   };
 
   const handleAddQuestion = async () => {
+    if (!canEditQuiz()) {
+      setAddQuestionModal((prev) => !prev);
+      return;
+    }
+
     const newQuestion = {
       text: questionText,
       type: questionType,
@@ -139,37 +118,32 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
       choices: choices,
       tag: questionTag,
     };
-    // TODO
-    // const [res, err] = await createNewQuestion(
-    //   await authUser.getIdToken(),
-    //   {
-    //     courseId: courseId,
-    //     quizId: quizId,
-    //     ...newQuestion,
-    //   },
-    //   "client",
-    // );
-    // if (err !== null) {
-    //   console.error(err);
-    //   if (err instanceof HttpException) {
-    //     toast.error(err.message);
-    //   } else {
-    //     toast.error("Failed to add question in the quiz");
-    //   }
-    //   return;
-    // }
-    // if (res === null) throw new Error("Shouldn't happen");
-    // toast.success("Added question in quiz successfully");
-    // TODO
-    // setQuizInfo((prev) => ({
-    //   ...prev,
-    //   questions: [...(prev?.questions ?? []), { ...newQuestion, _id: res.questionId }],
-    // }));
-    console.log("Add question");
+    const [res, err] = await createNewQuestion(
+      await authUser.getIdToken(),
+      {
+        courseId: courseId,
+        quizId: quizId,
+        ...newQuestion,
+      },
+      "client",
+    );
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error("Failed to add question in the quiz");
+      }
+      return;
+    }
+    if (res === null) throw new Error("Shouldn't happen");
+    toast.success("Added question in quiz successfully");
+
     setQuizInfo((prev) => ({
       ...prev,
-      questions: [...(prev?.questions ?? []), { ...newQuestion, _id: "1" }],
+      questions: [...(prev?.questions ?? []), { ...newQuestion, _id: res.questionId }],
     }));
+
     setAddQuestionModal((prev) => !prev);
     setQuestionText("");
     setQuestionMarks(0);
@@ -179,25 +153,27 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
   };
 
   const handleDeleteQuestion = async (questionId: string, idx: number) => {
-    // TODO
-    // const [res, err] = await deleteQuestion(
-    //   await authUser.getIdToken(),
-    //   {
-    //     quizId: quizId,
-    //     questionId: questionId
-    //   },
-    //   "client",
-    // );
-    // if (err !== null) {
-    //   console.error(err);
-    //   if (err instanceof HttpException) {
-    //     toast.error(err.message);
-    //   } else {
-    //     toast.error("Failed to delete question");
-    //   }
-    //   return;
-    // }
-    // toast.success("Deleted question successfully");
+    if (!canEditQuiz()) return;
+
+    const [res, err] = await deleteQuestion(
+      await authUser.getIdToken(),
+      {
+        quizId: quizId,
+        questionId: questionId,
+      },
+      "client",
+    );
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error("Failed to delete question");
+      }
+      return;
+    }
+    toast.success("Deleted question successfully");
+
     setQuizInfo((prev) => {
       prev.questions.splice(idx, 1);
       return { ...prev };
@@ -266,14 +242,25 @@ const AdminQuiz: React.FC<{ quizId: string; handleClose: () => void; courseId: s
               onChange={(e) => setQuestionText(e.target.value)}
             />
             <Box sx={{ display: "flex", justifyContent: "space-between", gap: "20px" }}>
-              <TextField
-                id="question tag"
-                label="Question Tag"
-                variant="outlined"
-                value={questionTag}
-                onChange={(e) => setQuestionTag(e.target.value)}
-                fullWidth
-              />
+              <FormControl fullWidth>
+                <InputLabel id="question-tag-label">Question Tag</InputLabel>
+                <Select
+                  labelId="question-tag-label"
+                  id="question tag"
+                  label="Question Tag"
+                  value={questionTag}
+                  onChange={(e) => setQuestionTag(e.target.value as string)}
+                  fullWidth
+                >
+                  {courseTags.map((tag) => {
+                    return (
+                      <MenuItem value={tag} key={tag}>
+                        {tag}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
               <TextField
                 id="question marks"
                 label="Question marks"

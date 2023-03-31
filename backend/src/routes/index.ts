@@ -3,7 +3,7 @@ import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
 import { getGradesController } from "./analytics/getGrades.route";
-import { getQuestionAnalyticsController } from "./analytics/getQuestionAnalytics";
+import { getQuestionAnalyticsController } from "./analytics/getQuestionAnalytics.route";
 import { getTagSummaryController } from "./analytics/getTagSummary.route";
 import { createAssignmentController } from "./assignment/createAssignment.route";
 import { deleteAssignmentController } from "./assignment/deleteAssignment.route";
