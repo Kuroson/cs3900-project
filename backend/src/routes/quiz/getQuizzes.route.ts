@@ -132,7 +132,7 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
             }
 
             quizInfo.isResponded = enrolment.quizAttempts.some((attempt) => {
-                return attempt._id === quiz._id && attempt.underway === false;
+                return attempt.quiz._id.equals(quiz._id);
             });
         }
 

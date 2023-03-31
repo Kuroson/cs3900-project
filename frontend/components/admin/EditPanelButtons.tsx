@@ -19,17 +19,24 @@ const EditPanelButtons = ({
   handleRemoveClick,
 }: EditPanelButtonsProps): JSX.Element => {
   return (
-    <div className="">
+    <div>
       <IconButton
         color="primary"
         aria-label="edit"
         component="label"
         onClick={handleEditClick}
         // disabled={editResource && title === ""}
+        data-cy="edit-button"
       >
         {editMode ? <DoneIcon /> : <EditIcon />}
       </IconButton>
-      <IconButton color="error" aria-label="delete" component="label" onClick={handleRemoveClick}>
+      <IconButton
+        color="error"
+        aria-label="delete"
+        component="label"
+        onClick={handleRemoveClick}
+        data-cy="delete-button"
+      >
         <DeleteIcon />
       </IconButton>
     </div>

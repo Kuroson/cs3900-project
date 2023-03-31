@@ -127,7 +127,7 @@ describe("Test getting quiz info", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceIds: [quizQuestions.questions[0].choices[0]._id.toString()],
+                        choiceId: [quizQuestions.questions[0].choices[0]._id.toString()],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,
@@ -192,7 +192,7 @@ describe("Test getting quiz info", () => {
                 responses: [
                     {
                         questionId: quizQuestions.questions[0]._id,
-                        choiceIds: [quizQuestions.questions[0].choices[0]._id.toString()],
+                        choiceId: [quizQuestions.questions[0].choices[0]._id.toString()],
                     },
                     {
                         questionId: quizQuestions.questions[1]._id,

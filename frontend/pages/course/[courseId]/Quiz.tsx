@@ -2,67 +2,54 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
-import AddIcon from "@mui/icons-material/Add";
+import HomeIcon from "@mui/icons-material/Home";
 import dayjs from "dayjs";
 import { UserCourseInformation } from "models/course.model";
-import { CreateQuizType, QuizListType } from "models/quiz.model";
+import { QuizListType } from "models/quiz.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading } from "components";
+import { ContentContainer, Loading, StudentNavBar } from "components";
+import { Routes } from "components/Layout/NavBars/NavBar";
 import Card from "components/common/Card";
 import PageHeader from "components/common/PageHeader";
-import AddOrEditQuiz from "components/quiz/AddOrEditQuiz";
-import AdminQuiz from "components/quiz/AdminQuiz";
+import StudentQuiz from "components/quiz/StudentQuiz";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
-import { createNewQuiz, getListOfQuizzes } from "util/api/quizApi";
+import { getListOfQuizzes } from "util/api/quizApi";
+import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
 
-initAuth(); // SSR maybe, i think...
+initAuth();
 
-type QuizProps = {
+type StudentCoursePageProps = {
   courseData: UserCourseInformation;
 };
+const quizzes: QuizListType[] = [
+  {
+    quizId: "1",
+    title: "Quiz1",
+    open: dayjs().format(),
+    close: dayjs().add(30, "minute").format(),
+  },
+  {
+    quizId: "2",
+    title: "Quiz2",
+    open: dayjs().format(),
+    close: dayjs().subtract(1, "day").format(),
+  },
+];
 
-const Quiz = ({ courseData }: QuizProps): JSX.Element => {
-  // TODO: Fix metadata thing
+const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
+  const [quizList, setQuizList] = useState<QuizListType[]>([]);
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
-  const [quizList, setQuizList] = useState<QuizListType[]>([]);
-  const [addNewQuiz, setAddNewQuiz] = useState(false);
   const [openQuiz, setOpenQuiz] = useState(false);
   const [currentQuiz, setCurrentQuiz] = useState("");
-
-  const handleAddNewQuiz = async (newQuiz: CreateQuizType) => {
-    // TODO: backend
-    const [res, err] = await createNewQuiz(await authUser.getIdToken(), newQuiz, "client");
-    if (err !== null) {
-      console.error(err);
-      if (err instanceof HttpException) {
-        toast.error(err.message);
-      } else {
-        toast.error(err);
-      }
-      return;
-    }
-    if (res === null) throw new Error("Response and error are null");
-
-    console.log(res);
-
-    const quiz = {
-      quizId: res.quizId,
-      title: newQuiz.title,
-      open: newQuiz.open,
-      close: newQuiz.close,
-    };
-
-    setQuizList((prev) => [...prev, quiz]);
-    setAddNewQuiz(false);
-    toast.success("Quiz created successfully");
-  };
+  const [isResponded, setIsResponded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const getQuizzes = async () => {
@@ -86,7 +73,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
     getQuizzes();
   }, [authUser, courseData._id]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Build user data for user context
     if (user.userDetails !== null) {
       setLoading(false);
@@ -99,14 +86,14 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Quiz</title>
-        <meta name="description" content="Quiz" />
+        <title>{`${courseData.code} Quiz`}</title>
+        <meta name="description" content={courseData.description} />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
+      <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
-        <div className="flex flex-col w-full px-[5%] py-2">
-          {!openQuiz && !addNewQuiz && (
+        <div className="flex flex-col w-full justify-center px-[5%]">
+          {!openQuiz && (
             <>
               <PageHeader title="Quiz" />
               <div className="flex flex-wrap mt-10">
@@ -119,32 +106,21 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
                     handleOpen={() => {
                       setOpenQuiz((prev) => !prev);
                       setCurrentQuiz(quiz.quizId);
+                      setIsResponded(quiz.isResponded ?? false);
+                      setIsOpen(new Date() < new Date(Date.parse(quiz.close)));
                     }}
                   />
                 ))}
-                <div
-                  className="flex flex-col rounded-lg items-center justify-center gap-2 shadow-md p-5 my-2 mx-5 w-[350px] h-[160px] cursor-pointer hover:shadow-lg"
-                  onClick={() => setAddNewQuiz((prev) => !prev)}
-                >
-                  <AddIcon color="primary" fontSize="large" />
-                </div>
               </div>
             </>
           )}
-          {addNewQuiz && (
-            <AddOrEditQuiz
-              handleAddNewQuiz={handleAddNewQuiz}
-              closeQuiz={() => setAddNewQuiz((prev) => !prev)}
-              courseId={courseData._id}
-              isEditing={false}
-            />
-          )}
           {openQuiz && (
-            <AdminQuiz
+            <StudentQuiz
               quizId={currentQuiz}
               handleClose={() => setOpenQuiz((prev) => !prev)}
               courseId={courseData._id}
-              courseTags={courseData.tags}
+              isResponded={isResponded}
+              isOpen={isOpen}
             />
           )}
         </div>
@@ -153,9 +129,9 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<QuizProps> = withAuthUserTokenSSR({
+export const getServerSideProps: GetServerSideProps<StudentCoursePageProps> = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})(async ({ AuthUser, query }): Promise<{ props: QuizProps } | { notFound: true }> => {
+})(async ({ AuthUser, query }): Promise<{ props: StudentCoursePageProps } | { notFound: true }> => {
   const { courseId } = query;
 
   if (courseId === undefined || typeof courseId !== "string") {
@@ -179,7 +155,7 @@ export const getServerSideProps: GetServerSideProps<QuizProps> = withAuthUserTok
   return { props: { courseData: courseDetails } };
 });
 
-export default withAuthUser<QuizProps>({
+export default withAuthUser<StudentCoursePageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-})(Quiz);
+})(QuizStudent);
