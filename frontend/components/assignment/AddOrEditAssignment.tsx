@@ -15,7 +15,7 @@ import {
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { AssignmentBasicInfo, CreateAssignmentType } from "models/assignment.model";
+import { AssignmentInfoType, CreateAssignmentType } from "models/assignment.model";
 import PageHeader from "components/common/PageHeader";
 import TitleWithIcon from "components/common/TitleWithIcon";
 
@@ -24,9 +24,9 @@ type AddOrEditAssignmentProps = {
   closeAssignment: () => void;
   courseId: string;
   courseTags: Array<string>;
-  info?: AssignmentBasicInfo;
+  info?: AssignmentInfoType;
   isEditing: boolean;
-  handleEditInfo?: (newInfo: AssignmentBasicInfo) => void;
+  handleEditInfo?: (newInfo: AssignmentInfoType) => void;
 };
 
 // Add or edit assignment info for admin

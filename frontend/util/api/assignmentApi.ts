@@ -1,4 +1,8 @@
-import { AssignmentListType } from "models/assignment.model";
+import {
+  AssignmentInfoType,
+  AssignmentListType,
+  CreateAssignmentType,
+} from "models/assignment.model";
 import {
   CreateQuizType,
   QuizBasicInfo,
@@ -22,25 +26,36 @@ export const getListOfAssignments = (
   );
 };
 
-// for admin
-export const createNewQuiz = (
+export const getAssignmentInfo = (
   token: string | null,
-  quiz: CreateQuizType,
+  courseId: string,
+  assignmentId: string,
   type: BackendLinkType,
 ) => {
-  return apiPost<CreateQuizType, { quizId: string }>(
-    `${getBackendLink(type)}/quiz/create`,
+  return apiGet<{ courseId: string; assignmentId: string }, AssignmentInfoType>(
+    `${getBackendLink(type)}/assignment`,
     token,
-    quiz,
+    {
+      courseId,
+      assignmentId,
+    },
   );
 };
 
-export const getQuizInfoAdmin = (token: string | null, quizId: string, type: BackendLinkType) => {
-  return apiGet<{ quizId: string }, QuizInfoType>(`${getBackendLink(type)}/quiz/questions`, token, {
-    quizId: quizId,
-  });
+// for admin
+export const createNewAssignment = (
+  token: string | null,
+  assignment: CreateAssignmentType,
+  type: BackendLinkType,
+) => {
+  return apiPost<CreateAssignmentType, { assignmentId: string }>(
+    `${getBackendLink(type)}/assignment/create`,
+    token,
+    assignment,
+  );
 };
 
+// TODO
 export const updateQuizAdmin = (
   token: string | null,
   newInfo: QuizBasicInfo & { quizId: string },
@@ -53,55 +68,7 @@ export const updateQuizAdmin = (
   );
 };
 
-export const createNewQuestion = (
-  token: string | null,
-  newQuestion: QuizQuestionType & { courseId: string; quizId: string },
-  type: BackendLinkType,
-) => {
-  return apiPost<QuizQuestionType & { courseId: string; quizId: string }, { questionId: string }>(
-    `${getBackendLink(type)}/quiz/question/create`,
-    token,
-    newQuestion,
-  );
-};
-
-export const deleteQuestion = (
-  token: string | null,
-  ids: { quizId: string; questionId: string },
-  type: BackendLinkType,
-) => {
-  return apiDelete<{ quizId: string; questionId: string }, { message: string }>(
-    `${getBackendLink(type)}/quiz/question/delete`,
-    token,
-    ids,
-  );
-};
-
 // for student
-export const startQuizStudent = (
-  token: string | null,
-  ids: { quizId: string; courseId: string },
-  type: BackendLinkType,
-) => {
-  return apiGet<{ courseId: string; quizId: string }, QuizInfoType>(
-    `${getBackendLink(type)}/quiz/start`,
-    token,
-    ids,
-  );
-};
-
-export const getQuizInfoAfterSubmit = (
-  token: string | null,
-  ids: { quizId: string; courseId: string },
-  type: BackendLinkType,
-) => {
-  return apiGet<{ courseId: string; quizId: string }, QuizInfoType>(
-    `${getBackendLink(type)}/quiz`,
-    token,
-    ids,
-  );
-};
-
 export const submitQuiz = (token: string | null, body: SubmitQuizType, type: BackendLinkType) => {
   return apiPost<SubmitQuizType, { message: string }>(
     `${getBackendLink(type)}/quiz/finish`,

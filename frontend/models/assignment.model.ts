@@ -1,7 +1,7 @@
 export type AssignmentListType = {
   assignmentId: string;
   title: string;
-  description?: boolean;
+  description?: string;
   deadline: string;
 };
 
@@ -23,7 +23,7 @@ type SubmissionInfo = {
   improvementTags?: Array<string>;
 };
 
-export type AssignmentBasicInfo = {
+export type AssignmentInfoType = {
   title: string;
   description?: string;
   deadline: string;

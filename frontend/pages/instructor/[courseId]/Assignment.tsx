@@ -6,21 +6,18 @@ import AddIcon from "@mui/icons-material/Add";
 import dayjs from "dayjs";
 import { AssignmentListType, CreateAssignmentType } from "models/assignment.model";
 import { UserCourseInformation } from "models/course.model";
-import { CreateQuizType, QuizListType } from "models/quiz.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
 import AddOrEditAssignment from "components/assignment/AddOrEditAssignment";
+import AdminAssignment from "components/assignment/AdminAssignment";
 import Card from "components/common/Card";
 import PageHeader from "components/common/PageHeader";
-import AddOrEditQuiz from "components/quiz/AddOrEditQuiz";
-import AdminQuiz from "components/quiz/AdminQuiz";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
-import { getListOfAssignments } from "util/api/assignmentApi";
+import { createNewAssignment, getListOfAssignments } from "util/api/assignmentApi";
 import { getUserCourseDetails } from "util/api/courseApi";
-import { createNewQuiz, getListOfQuizzes } from "util/api/quizApi";
 import initAuth from "util/firebase";
 
 initAuth(); // SSR maybe, i think...
@@ -43,27 +40,31 @@ const Assignment = ({ courseData }: AssignmentProps): JSX.Element => {
 
   const handleaddNewAssignment = async (newAssignment: CreateAssignmentType) => {
     // TODO: backend
-    // const [res, err] = await createNewQuiz(await authUser.getIdToken(), newQuiz, "client");
-    // if (err !== null) {
-    //   console.error(err);
-    //   if (err instanceof HttpException) {
-    //     toast.error(err.message);
-    //   } else {
-    //     toast.error(err);
-    //   }
-    //   return;
-    // }
-    // if (res === null) throw new Error("Response and error are null");
-    // console.log(res);
-    // const quiz = {
-    //   quizId: res.quizId,
-    //   title: newQuiz.title,
-    //   open: newQuiz.open,
-    //   close: newQuiz.close,
-    // };
-    // setQuizList((prev) => [...prev, quiz]);
-    // setAddNewAssignment(false);
-    // toast.success("Quiz created successfully");
+    const [res, err] = await createNewAssignment(
+      await authUser.getIdToken(),
+      newAssignment,
+      "client",
+    );
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
+      }
+      return;
+    }
+    if (res === null) throw new Error("Response and error are null");
+    console.log(res);
+    const assignment: AssignmentListType = {
+      assignmentId: res.assignmentId,
+      title: newAssignment.title,
+      description: newAssignment.description,
+      deadline: newAssignment.deadline,
+    };
+    setAssignmentList((prev) => [...prev, assignment]);
+    setAddNewAssignment(false);
+    toast.success("Assignment created successfully");
   };
 
   useEffect(() => {
@@ -142,14 +143,14 @@ const Assignment = ({ courseData }: AssignmentProps): JSX.Element => {
               isEditing={false}
             />
           )}
-          {/* {openAssignment && (
-            <AdminQuiz
-              quizId={currentAssignment}
+          {openAssignment && (
+            <AdminAssignment
+              assignmentId={currentAssignment}
               handleClose={() => setOpenAssignment((prev) => !prev)}
               courseId={courseData._id}
               courseTags={courseData.tags}
             />
-          )} */}
+          )}
         </div>
       </ContentContainer>
     </>
