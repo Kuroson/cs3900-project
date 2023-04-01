@@ -9,10 +9,12 @@ import { UserDetails } from "models/user.model";
 type ForumPostCardProps = {
   post: BasicPostInfo,
   posterDetails: UserDetails,
-  datePosted: string
+  datePosted: string,
 };
 
 const ForumPostCard: React.FC<ForumPostCardProps> = ({ post, posterDetails, datePosted }): JSX.Element => {
+  if (post === null) return <></> 
+  else 
   return (
     <div className="flex flex-col rounded-lg p-5 my-2 mx-5 w-[600px]">
         <div className="flex items-center justify-between">

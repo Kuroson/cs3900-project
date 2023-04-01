@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
+import { BasicForumInfo } from "models/forum.model";
 import { BasicPostInfo } from "models/post.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -21,6 +22,8 @@ import {
 import ForumPostCard from "components/common/ForumPostCard";
 import ForumPostOverviewCard from "components/common/ForumPostOverviewCard";
 import { use } from "chai";
+import { useRouter } from "next/router";
+import { isEmpty } from "cypress/types/lodash";
 
 initAuth(); // SSR maybe, i think...
 
@@ -46,19 +49,29 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     {
         title: "What is the meaning of life?",
         question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        _id: "id"
+        _id: "id",
     },
     {
         title: "Why am I here?",
         question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        _id: "id2"
+        _id: "id2",
     },
     {
         title: "Is God a woman?",
         question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        _id: "id3"
+        _id: "id3",
     }]
-  const date = new Date();
+
+    const [showedPost, setShowedPost] = useState<BasicPostInfo>(postList[0]);
+
+    const date = new Date();
+    const router = useRouter();
+    
+
+    function handleOnClickPostOverview(index) {
+        //Clicks on a particular post overview
+        setShowedPost(postList[index]);
+    }
 
 
   return (
@@ -76,12 +89,20 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
           </h1>
         </div>     
          
-        <div className="flex flex-col w-full justify-center px-[2%]">
-            {postList?.map((post, index) => (
-                <ForumPostOverviewCard post={post} posterDetails={userDetails}></ForumPostOverviewCard>
-            ))}  
-            <ForumPostCard post={postList.pop()} posterDetails={userDetails} datePosted={date.toLocaleString()}></ForumPostCard>
-            
+        <div className="flex inline-block w-full justify-left px-[2%]">
+            <div>
+                <div
+                    className="flex flex-col rounded-lg shadow-md p-5 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center"
+                    onClick={() => router.push("/forum/post")}>
+                    <span>New Thread</span>
+                </div>
+                {postList?.map((post, index) => (
+                    <div onClick={() => handleOnClickPostOverview(index)}>
+                        <ForumPostOverviewCard post={post} posterDetails={userDetails}></ForumPostOverviewCard>
+                    </div>          
+                ))}  
+            </div>
+            <ForumPostCard post={showedPost} posterDetails={userDetails} datePosted={date.toLocaleString()}></ForumPostCard>;
         </div>
       </ContentContainer>
       
@@ -115,6 +136,8 @@ export const getServerSideProps: GetServerSideProps<ForumPageProps> = withAuthUs
   return { props: { courseData: courseDetails } };
 });
 
+
+  
 export default withAuthUser<ForumPageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
