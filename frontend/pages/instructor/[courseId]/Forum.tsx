@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { LoadingButton } from "@mui/lab";
-import { TextField } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
 import { BasicForumInfo } from "models/forum.model";
 import { BasicPostInfo } from "models/post.model";
@@ -24,7 +23,16 @@ import ForumPostOverviewCard from "components/common/ForumPostOverviewCard";
 import { use } from "chai";
 import { useRouter } from "next/router";
 import { isEmpty } from "cypress/types/lodash";
-
+import {
+    Button,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Modal,
+    Radio,
+    RadioGroup,
+    TextField,
+  } from "@mui/material";
 initAuth(); // SSR maybe, i think...
 
 type ForumPageProps = {
@@ -63,6 +71,10 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     }]
 
     const [showedPost, setShowedPost] = useState<BasicPostInfo>(postList[0]);
+    const [open, setOpen] = React.useState(false);
+    const [postTitle, setPostTitle] = React.useState("");
+    const [postDesc, setPostDesc] = React.useState("");
+
 
     const date = new Date();
     const router = useRouter();
@@ -71,6 +83,16 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     function handleOnClickPostOverview(index) {
         //Clicks on a particular post overview
         setShowedPost(postList[index]);
+    }
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    function handleNewPost() {
+
+    }
+
+    const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     }
 
 
@@ -91,11 +113,49 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
          
         <div className="flex inline-block w-full justify-left px-[2%]">
             <div>
-                <div
-                    className="flex flex-col rounded-lg shadow-md p-5 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center"
-                    onClick={() => router.push("/forum/post")}>
-                    <span>New Thread</span>
+                <div className="flex flex-col rounded-lg shadow-md p-5 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center">
+                    <Button variant="outlined" onClick={handleOpen} id="addNewPost">
+                        New Thread
+                    </Button>
                 </div>
+                <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description">
+                    <form onSubmit={handleOnSubmit}>
+                        <FormControl sx={style}>
+                        <FormLabel sx={{color: "black"}}>Title</FormLabel>
+                        <TextField
+                            id="title"
+                            value={postTitle}
+                            sx={{ width: "500px" }}
+                            onChange={(e) => setPostTitle(e.target.value)}
+                            />
+                        <FormLabel sx={{color: "black"}}>Description</FormLabel>
+                        <TextField
+                            id="description"
+                            sx={{ width: "500px",  OverflowY: "scroll" }}
+                            value={postDesc}
+                            onChange={(e) => setPostDesc(e.target.value)}
+                            />
+                        <Button
+                            variant="contained"
+                            sx={{ marginTop: "30px",width: "90px" }}
+                            type="submit"
+                        >
+                            Submit
+                        </Button>
+                        <Button
+                            variant="contained"
+                            sx={{ marginTop: "30px", width: "90px" }}
+                            type="submit"
+                        >
+                            Cancel
+                        </Button>
+                        </FormControl>
+                    </form>
+                </Modal>
                 {postList?.map((post, index) => (
                     <div onClick={() => handleOnClickPostOverview(index)}>
                         <ForumPostOverviewCard post={post} posterDetails={userDetails}></ForumPostOverviewCard>
@@ -142,3 +202,15 @@ export default withAuthUser<ForumPageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(ForumPage);
+
+const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 4,
+    width: "570px",
+  };
+  
