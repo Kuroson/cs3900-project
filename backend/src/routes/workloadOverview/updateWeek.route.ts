@@ -72,10 +72,7 @@ export const updateWeek = async (queryBody: QueryPayload, firebase_uid: string) 
 
     const week = await Week.findById(weekId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch week", err);
-        });
+        .catch(() => null);
 
     if (week === null) {
         throw new HttpException(400, "Failed to fetch week");

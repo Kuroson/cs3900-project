@@ -8,6 +8,7 @@ import { getCourse } from "@/routes/course/getCourse.route";
 import { registerUser } from "@/routes/user/register.route";
 import { createTask } from "@/routes/workloadOverview/createTask.route";
 import { createWeek } from "@/routes/workloadOverview/createWeek.route";
+import { logger } from "@/utils/logger";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
@@ -41,6 +42,7 @@ describe("Test creating a week", () => {
         const task2Id = await createTask(weekId, "Do Task 2", "Look at week 1", `acc${id}`);
 
         const week = await Week.findById(weekId);
+
         expect(week).not.toBeNull();
 
         expect(week?.tasks.length).toEqual(2);

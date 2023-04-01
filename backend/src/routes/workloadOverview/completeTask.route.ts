@@ -85,10 +85,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         .populate("workloadCompletion", "_id week")
         .populate({ path: "workloadCompletion", populate: "week" })
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch enrolment", err);
-        });
+        .catch(() => null);
 
     if (enrolment === null) {
         throw new HttpException(400, "Failed to fetch enrolment");
@@ -121,10 +118,9 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
             throw new HttpException(500, "Failed to add new workload completion to enrolment", err);
         });
     } else {
-        const workload = await WorkloadCompletion.findById(existingCompletion._id).catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch completed workload", err);
-        });
+        const workload = await WorkloadCompletion.findById(existingCompletion._id).catch(
+            () => null,
+        );
 
         if (workload === null) {
             throw new HttpException(400, "Failed to fetch completed workload");

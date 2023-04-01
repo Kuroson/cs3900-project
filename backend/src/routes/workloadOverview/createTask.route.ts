@@ -73,9 +73,7 @@ export const createTask = async (
         throw new HttpException(403, "Must be an admin to create a task");
     }
 
-    const week = await Week.findById(weekId).catch((err) => {
-        throw new HttpException(500, `Could not fetch Week, ${weekId} from database`, err);
-    });
+    const week = await Week.findById(weekId).catch(() => null);
 
     if (week === null) {
         throw new HttpException(400, `Week, ${weekId}, does not exist`);

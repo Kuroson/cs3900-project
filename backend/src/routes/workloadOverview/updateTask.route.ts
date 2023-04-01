@@ -73,10 +73,7 @@ export const updateTask = async (queryBody: QueryPayload, firebase_uid: string) 
 
     const task = await Task.findById(taskId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch task from database", err);
-        });
+        .catch(() => null);
 
     if (task === null) {
         throw new HttpException(400, "Failed to fetch task");

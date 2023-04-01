@@ -81,18 +81,14 @@ export const createWeek = async (
     }
 
     // Get the course
-    const course = await Course.findById(courseId).catch((err) => {
-        throw new HttpException(500, "Failed to fetch course", err);
-    });
-    if (course == null) {
+    const course = await Course.findById(courseId).catch(() => null);
+    if (course === null) {
         throw new HttpException(400, `Course, ${courseId}, does not exist`);
     }
 
     // Get the workload Overview
     const workloadOverview = await WorkloadOverview.findById(course.workloadOverview).catch(
-        (err) => {
-            throw new HttpException(500, "Failed to fetch workload Overview", err);
-        },
+        () => null,
     );
     if (workloadOverview == null) {
         throw new HttpException(

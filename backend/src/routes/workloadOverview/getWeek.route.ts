@@ -61,22 +61,14 @@ export const getWeekController = async (
  */
 export const getWeek = async (courseId: string, weekId: string): Promise<WeekInterface> => {
     // Check course exists
-    const course = await Course.findById(courseId).catch((err) => {
-        throw new HttpException(500, `Failed to fetch course ${courseId} from database`, err);
-    });
+    const course = await Course.findById(courseId).catch(() => null);
     if (course == null) {
         throw new HttpException(400, `Course, ${courseId}, does not exist`);
     }
 
     // Check that the workload Overview exists.
     const workloadOverview = await WorkloadOverview.findById(course.workloadOverview).catch(
-        (err) => {
-            throw new HttpException(
-                500,
-                `Failed to fetch workloadOverview ${course.workloadOverview} from database`,
-                err,
-            );
-        },
+        () => null,
     );
     if (workloadOverview == null) {
         throw new HttpException(
@@ -93,9 +85,7 @@ export const getWeek = async (courseId: string, weekId: string): Promise<WeekInt
     const week = await Week.findById(weekId)
         .populate("tasks")
         .exec()
-        .catch((err) => {
-            throw new HttpException(500, `Failed to fetch week ${weekId} from database`, err);
-        });
+        .catch(() => null);
     if (week === null) throw new HttpException(400, "Week does not exist");
     return week;
 };

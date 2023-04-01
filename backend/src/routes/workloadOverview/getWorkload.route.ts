@@ -70,9 +70,7 @@ export const getWorkloadController = async (
  * @returns
  */
 export const getWorkload = async (courseId: string): Promise<WorkloadData> => {
-    const course = await Course.findById(courseId).catch((err) => {
-        throw new HttpException(500, `Failed to fetch course ${courseId} from database`, err);
-    });
+    const course = await Course.findById(courseId).catch(() => null);
     if (course === null) throw new HttpException(500, `Failed to recall course of ${courseId}`);
 
     // Check that the workload Overview exists.
@@ -83,13 +81,7 @@ export const getWorkload = async (courseId: string): Promise<WorkloadData> => {
             populate: { path: "tasks", select: "_id title description" },
         })
         .exec()
-        .catch((err) => {
-            throw new HttpException(
-                500,
-                `Failed to fetch workloadOverview ${course.workloadOverview} from database`,
-                err,
-            );
-        });
+        .catch(() => null);
     if (workloadOverview == null) {
         throw new HttpException(
             400,

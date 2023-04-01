@@ -70,10 +70,7 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
     // Get course
     const course = await Course.findById(courseId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch course", err);
-        });
+        .catch(() => null);
 
     if (course === null) {
         throw new HttpException(400, "Failed to fetch course");
@@ -82,10 +79,7 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
     // Get workflowOverivew
     const workloadOverview = await WorkloadOverview.findById(course.workloadOverview)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch workload overview for course", err);
-        });
+        .catch(() => null);
 
     if (workloadOverview === null) {
         throw new HttpException(400, "Failed to fetch workloadOverview");
@@ -94,10 +88,7 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
     // Get Week
     const week = await Week.findById(weekId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch week from Database", err);
-        });
+        .catch(() => null);
 
     if (week === null) {
         throw new HttpException(400, "Failed to fetch week");
