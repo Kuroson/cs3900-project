@@ -71,11 +71,11 @@ export const deleteTask = async (queryBody: QueryPayload, firebase_uid: string) 
         .exec()
         .catch((err) => {
             logger.error(err);
-            throw new HttpException(500, "Failed to fetch week");
+            throw new HttpException(500, "Failed to fetch week", err);
         });
 
     if (week === null) {
-        throw new HttpException(500, "Failed to fetch week");
+        throw new HttpException(400, "Failed to fetch week");
     }
 
     // Does the task exist within the week
@@ -86,7 +86,7 @@ export const deleteTask = async (queryBody: QueryPayload, firebase_uid: string) 
     // Delete task
     await Task.findByIdAndDelete(taskId).catch((err) => {
         logger.error(err);
-        throw new HttpException(500, "Failed to delete Task");
+        throw new HttpException(500, "Failed to delete Task from Database", err);
     });
 
     // Remove taskId from the week
@@ -95,6 +95,6 @@ export const deleteTask = async (queryBody: QueryPayload, firebase_uid: string) 
     // Save the updated weel
     await week.save().catch((err) => {
         logger.error(err);
-        throw new HttpException(500, "Failed to save updated week");
+        throw new HttpException(500, "Failed to save updated week", err);
     });
 };

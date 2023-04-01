@@ -74,8 +74,12 @@ export const createTask = async (
     }
 
     const week = await Week.findById(weekId).catch((err) => {
-        throw new HttpException(400, `Week, ${weekId}, does not exist`);
+        throw new HttpException(500, `Could not fetch Week, ${weekId} from database`, err);
     });
+
+    if (week === null) {
+        throw new HttpException(400, `Week, ${weekId}, does not exist`);
+    }
 
     const newTask = new Task({
         title: title,
@@ -88,7 +92,7 @@ export const createTask = async (
             return res._id;
         })
         .catch((err) => {
-            throw new HttpException(500, "Failed to create task", err);
+            throw new HttpException(500, "4ailed to create task", err);
         });
 
     //Add task to the week

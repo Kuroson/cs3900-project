@@ -74,11 +74,11 @@ export const updateWeek = async (queryBody: QueryPayload, firebase_uid: string) 
         .exec()
         .catch((err) => {
             logger.error(err);
-            throw new HttpException(500, "Failed to fetch week");
+            throw new HttpException(500, "Failed to fetch week", err);
         });
 
     if (week === null) {
-        throw new HttpException(500, "Failed to fetch week");
+        throw new HttpException(400, "Failed to fetch week");
     }
 
     if (title !== undefined) {
@@ -90,7 +90,7 @@ export const updateWeek = async (queryBody: QueryPayload, firebase_uid: string) 
 
     const myWeek = await week.save().catch((err) => {
         logger.error(err);
-        throw new HttpException(500, "Failed to save updated week");
+        throw new HttpException(500, "Failed to save updated week", err);
     });
 
     return myWeek._id;

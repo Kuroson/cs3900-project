@@ -75,11 +75,11 @@ export const updateTask = async (queryBody: QueryPayload, firebase_uid: string) 
         .exec()
         .catch((err) => {
             logger.error(err);
-            throw new HttpException(500, "Failed to fetch task");
+            throw new HttpException(500, "Failed to fetch task from database", err);
         });
 
     if (task === null) {
-        throw new HttpException(500, "Failed to fetch task");
+        throw new HttpException(400, "Failed to fetch task");
     }
 
     if (title !== undefined) {
@@ -91,7 +91,7 @@ export const updateTask = async (queryBody: QueryPayload, firebase_uid: string) 
 
     const myTask = await task.save().catch((err) => {
         logger.error(err);
-        throw new HttpException(500, "Failed to save updated task");
+        throw new HttpException(500, "Failed to save updated task", err);
     });
 
     return myTask._id;

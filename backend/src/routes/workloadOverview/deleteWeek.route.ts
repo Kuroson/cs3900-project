@@ -72,11 +72,11 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
         .exec()
         .catch((err) => {
             logger.error(err);
-            throw new HttpException(500, "Failed to fetch course");
+            throw new HttpException(500, "Failed to fetch course", err);
         });
 
     if (course === null) {
-        throw new HttpException(500, "Failed to fetch course");
+        throw new HttpException(400, "Failed to fetch course");
     }
 
     // Get workflowOverivew
@@ -84,11 +84,11 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
         .exec()
         .catch((err) => {
             logger.error(err);
-            throw new HttpException(500, "Failed to fetch workload overview for course");
+            throw new HttpException(500, "Failed to fetch workload overview for course", err);
         });
 
     if (workloadOverview === null) {
-        throw new HttpException(500, "Failed to fetch workloadOverview");
+        throw new HttpException(400, "Failed to fetch workloadOverview");
     }
 
     // Get Week
@@ -96,11 +96,11 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
         .exec()
         .catch((err) => {
             logger.error(err);
-            throw new HttpException(500, "Failed to fetch week");
+            throw new HttpException(500, "Failed to fetch week from Database", err);
         });
 
     if (week === null) {
-        throw new HttpException(500, "Failed to fetch week");
+        throw new HttpException(400, "Failed to fetch week");
     }
 
     // Check that the week exists in the workload overview
@@ -122,7 +122,7 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
     // Delete Week
     await Week.findByIdAndDelete(weekId).catch((err) => {
         logger.error(err);
-        throw new HttpException(500, "Failed to delete Week");
+        throw new HttpException(500, "Failed to delete Week", err);
     });
 
     // Remove weekId from the workload overview
@@ -131,6 +131,6 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
     // Save the updated workload overview
     await workloadOverview.save().catch((err) => {
         logger.error(err);
-        throw new HttpException(500, "Failed to save updated workload overview");
+        throw new HttpException(500, "Failed to save updated workload overview", err);
     });
 };
