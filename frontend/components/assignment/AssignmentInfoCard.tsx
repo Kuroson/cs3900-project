@@ -5,11 +5,13 @@ import { Box, Button, Modal } from "@mui/material";
 import dayjs from "dayjs";
 import { AssignmentInfoType } from "models/assignment.model";
 import ShowTimeLeft from "components/common/ShowTimeLeft";
+import Tag from "components/common/Tag";
 import TitleWithIcon from "components/common/TitleWithIcon";
 import AddOrEditAssignment from "./AddOrEditAssignment";
 
 type AssignmentInfoCardProps = {
   info: AssignmentInfoType;
+  courseTags: Array<string>;
   isAdmin: boolean;
   handleEditInfo?: (newInfo: AssignmentInfoType) => void;
 };
@@ -17,6 +19,7 @@ type AssignmentInfoCardProps = {
 // common for student and admin
 const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
   info,
+  courseTags,
   isAdmin,
   handleEditInfo,
 }): JSX.Element => {
@@ -34,13 +37,19 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
           <ShowTimeLeft time={info.deadline} />
         </div>
       </div>
-      <TitleWithIcon
-        text={`Marks: ${info.markAwarded != null ? info.markAwarded + "/" : "?/"}${
-          info.marksAvailable
-        }`}
-      >
-        <RuleIcon color="primary" />
-      </TitleWithIcon>
+      <div className="flex justify-between items-center">
+        <TitleWithIcon
+          text={`Marks: ${info.submission?.mark != undefined ? info.submission?.mark + "/" : "?/"}${
+            info.marksAvailable
+          }`}
+        >
+          <RuleIcon color="primary" />
+        </TitleWithIcon>
+        <div className="flex gap-1">
+          {info.tags.length !== 0 &&
+            info.tags.map((tag) => <Tag text={tag} color="bg-[#009688]" />)}
+        </div>
+      </div>
       {info.description && <p className="m-4 break-all text-lg">{info.description}</p>}
       {/* Just for admin -> edit information */}
       {isAdmin && (
@@ -70,6 +79,7 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
         >
           <AddOrEditAssignment
             closeAssignment={() => setIsEditing((prev) => !prev)}
+            courseTags={courseTags}
             info={info}
             isEditing={true}
             handleEditInfo={handleEditInfo}

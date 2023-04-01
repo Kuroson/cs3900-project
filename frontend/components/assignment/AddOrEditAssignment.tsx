@@ -22,7 +22,7 @@ import TitleWithIcon from "components/common/TitleWithIcon";
 type AddOrEditAssignmentProps = {
   handleAddNewAssignment?: (newAssignment: CreateAssignmentType) => void;
   closeAssignment: () => void;
-  courseId: string;
+  courseId?: string;
   courseTags: Array<string>;
   info?: AssignmentInfoType;
   isEditing: boolean;

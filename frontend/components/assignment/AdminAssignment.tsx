@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Modal,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import dayjs from "dayjs";
 import { AssignmentInfoType } from "models/assignment.model";
-import { QuizBasicInfo, QuizInfoType } from "models/quiz.model";
 import { useAuthUser } from "next-firebase-auth";
 import PageHeader from "components/common/PageHeader";
 import { HttpException } from "util/HttpExceptions";
-import { getAssignmentInfo } from "util/api/assignmentApi";
-import { updateQuizAdmin } from "util/api/quizApi";
+import { getAssignmentInfo, updateAssignmentAdmin } from "util/api/assignmentApi";
 import AssignmentInfoCard from "./AssignmentInfoCard";
 
 const AdminAssignment: React.FC<{
@@ -56,11 +41,23 @@ const AdminAssignment: React.FC<{
     getAssignment();
   }, [authUser, assignmentId]);
 
-  // edit quiz info
-  const handleEditInfo = async (newInfo: QuizBasicInfo) => {
-    const [res, err] = await updateQuizAdmin(
+  const canEditAssignment = () => {
+    // Can only edit quiz before opening
+    const isClosed = new Date() > new Date(Date.parse(assignmentInfo.deadline));
+
+    if (isClosed) {
+      toast.error("Can only edit assignment before deadline");
+    }
+    return !isClosed;
+  };
+
+  // edit assignment info
+  const handleEditInfo = async (newInfo: AssignmentInfoType) => {
+    if (!canEditAssignment()) return;
+
+    const [res, err] = await updateAssignmentAdmin(
       await authUser.getIdToken(),
-      { ...newInfo, quizId: quizId },
+      { ...newInfo, courseId, assignmentId },
       "client",
     );
     if (err !== null) {
@@ -73,15 +70,14 @@ const AdminAssignment: React.FC<{
       return;
     }
     if (res === null) throw new Error("Shouldn't happen");
-    toast.success("Edited quiz successfully");
+    toast.success("Edited assignment successfully");
 
-    setQuizInfo((prev) => ({
-      questions: prev?.questions ?? [],
+    setAssignmentInfo((prev) => ({
       title: newInfo.title,
-      open: newInfo.open,
-      close: newInfo.close,
       description: newInfo.description,
-      maxMarks: newInfo.maxMarks,
+      deadline: newInfo.deadline,
+      marksAvailable: newInfo.marksAvailable,
+      tags: newInfo.tags,
     }));
   };
 
@@ -101,6 +97,7 @@ const AdminAssignment: React.FC<{
             deadline: assignmentInfo.deadline,
             tags: assignmentInfo.tags,
           }}
+          courseTags={courseTags}
           isAdmin={true}
           handleEditInfo={handleEditInfo}
         />

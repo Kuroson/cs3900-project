@@ -55,17 +55,15 @@ export const createNewAssignment = (
   );
 };
 
-// TODO
-export const updateQuizAdmin = (
+export const updateAssignmentAdmin = (
   token: string | null,
-  newInfo: QuizBasicInfo & { quizId: string },
+  newInfo: Omit<AssignmentInfoType, "submission"> & { courseId: string; assignmentId: string },
   type: BackendLinkType,
 ) => {
-  return apiPut<QuizBasicInfo & { quizId: string }, { quizId: string }>(
-    `${getBackendLink(type)}/quiz/update`,
-    token,
-    newInfo,
-  );
+  return apiPut<
+    AssignmentInfoType & { courseId: string; assignmentId: string },
+    { assignmentId: string }
+  >(`${getBackendLink(type)}/assignment/update`, token, newInfo);
 };
 
 // for student
