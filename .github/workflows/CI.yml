@@ -45,14 +45,23 @@ jobs:
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
         run: yarn build
-      - name: Run tests
+      - name: Start local MongoDB
+        run: docker-compose -f "../docker-compose.local.yml" up -d mongodb
+      - name: Wait 10 seconds for it to be healthy
+        run: sleep 10
+      - name: Start test
         env:
           FIREBASE_PRIVATE_KEY: ${{ secrets.BACKEND_FIREBASE_PRIVATE_KEY }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+          USE_LOCAL_MONGO: true
+          USE_DOCKER_INTERNAL_MONGO: false
         run: yarn test -t
+      - name: Stop docker-compose
+        if: always()
+        run: docker-compose -f "../docker-compose.local.yml" down
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -124,11 +133,11 @@ jobs:
           NEXT_PUBLIC_COOKIE_SECURE: false
         run: env >> .env.local
       - name: Docker compose build
-        run: docker-compose build
+        run: docker-compose -f "docker-compose.local.yml" build
       - name: Cypress e2e
         working-directory: "./frontend"
         run: |
-          yarn start-server-and-test "docker-compose -f \"../docker-compose.yml\" up" http://localhost:3000 cypress:headless
+          yarn start-server-and-test "docker-compose -f \"../docker-compose.local.yml\" up" http://localhost:3000 cypress:headless
       - name: Stop docker-compose
         if: always()
-        run: docker-compose down
+        run: docker-compose -f "docker-compose.local.yml" down
