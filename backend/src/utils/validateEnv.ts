@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { cleanEnv, port, str } from "envalid";
+import { bool, cleanEnv, port, str } from "envalid";
 
 config({ path: ".env" });
 
@@ -11,6 +11,8 @@ const validateEnv = cleanEnv(process.env, {
     FIREBASE_CLIENT_EMAIL: str(),
     MONGODB_USERNAME: str(),
     MONGODB_PASSWORD: str(),
+    USE_LOCAL_MONGO: bool({ default: false }),
+    USE_DOCKER_INTERNAL_MONGO: bool({ default: false }),
 });
 
 export default validateEnv;
