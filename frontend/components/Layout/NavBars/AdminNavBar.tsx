@@ -1,6 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { AccessTime } from "@mui/icons-material";
+import AccessTime from "@mui/icons-material/AccessTime";
 import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
