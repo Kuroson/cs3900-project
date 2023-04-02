@@ -8,6 +8,7 @@ import {
   import { PageFull } from "./page.model";
   
   export interface PostInterface extends MongooseDocument {
+    courseId: MongooseId;
     title: string;
     question: string;
     image: string;
@@ -21,3 +22,9 @@ import {
     | "poster"
     | "responses"
   >;  
+
+  export type CreatePostType = {
+    courseId: string;
+    title: string;
+    description: string;
+  };

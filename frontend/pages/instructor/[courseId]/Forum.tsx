@@ -15,6 +15,7 @@ import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
+import { createNewPost } from "util/api/forumApi";
 import {
     getUserCourseDetails,
 } from "util/api/courseApi";
@@ -55,16 +56,19 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
 
   const postList = [
     {
+        courseId: courseData._id,
         title: "What is the meaning of life?",
         question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
         _id: "id",
     },
     {
+        courseId: courseData._id,
         title: "Why am I here?",
         question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
         _id: "id2",
     },
     {
+        courseId: courseData._id,
         title: "Is God a woman?",
         question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
         _id: "id3",
@@ -74,12 +78,11 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     const [open, setOpen] = React.useState(false);
     const [postTitle, setPostTitle] = React.useState("");
     const [postDesc, setPostDesc] = React.useState("");
-
+    const [buttonLoading, setButtonLoading] = React.useState(false);
 
     const date = new Date();
     const router = useRouter();
     
-
     function handleOnClickPostOverview(index) {
         //Clicks on a particular post overview
         setShowedPost(postList[index]);
@@ -88,11 +91,64 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    function handleNewPost() {
+    const handleCloseForm = async () => {
+        setOpen(false);
+        setPostTitle("");
+        setPostDesc("");
+    };
 
-    }
+    const handleNewPost = async (e: React.SyntheticEvent) => {
+        e.preventDefault();
 
-    const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        if ([postTitle, postDesc].some((x) => x.length === 0)) {
+          toast.error("Please fill out all fields");
+          return;
+        }
+        //TODO image
+        const title = postTitle;
+        const description = postDesc;
+        const courseId = courseData._id;
+        const dataPayload = {
+            courseId,
+            title,
+            description,
+        };
+        setButtonLoading(true);
+        const [res, err] = await createNewPost(await authUser.getIdToken(), dataPayload, "client");
+        if (err !== null) {
+            console.error(err);
+            if (err instanceof HttpException) {
+                toast.error(err.message);
+            } else {
+                toast.error(err);
+            }
+            setButtonLoading(false);
+            return;
+        }
+        if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+        console.log(res);
+        setButtonLoading(false);
+
+        // Update global state with new post
+        const newPost : BasicPostInfo = {
+            courseId: courseData._id,
+            _id: res.postId,
+            title: postTitle,
+            question: postDesc,
+        };
+
+        toast.success("Course created successfully");
+
+        //TODO add to the list of courses to global state whatever that is
+        
+        // user.setUserDetails({
+        // ...userDetails,
+        // created_courses: [...userDetails.created_courses, newCourse],
+        // });
+        //close form 
+        setOpen(false);
+        setPostTitle("");
+        setPostDesc("");
     }
 
 
@@ -123,36 +179,44 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
                     onClose={handleClose}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description">
-                    <form onSubmit={handleOnSubmit}>
-                        <FormControl sx={style}>
-                        <FormLabel sx={{color: "black"}}>Title</FormLabel>
-                        <TextField
-                            id="title"
-                            value={postTitle}
-                            sx={{ width: "500px" }}
-                            onChange={(e) => setPostTitle(e.target.value)}
-                            />
-                        <FormLabel sx={{color: "black"}}>Description</FormLabel>
-                        <TextField
-                            id="description"
-                            sx={{ width: "500px",  OverflowY: "scroll" }}
-                            value={postDesc}
-                            onChange={(e) => setPostDesc(e.target.value)}
-                            />
-                        <Button
-                            variant="contained"
-                            sx={{ marginTop: "30px",width: "90px" }}
-                            type="submit"
+                    <form 
+                        className="flex flex-col items-center justify-center gap-6" 
                         >
-                            Submit
-                        </Button>
-                        <Button
-                            variant="contained"
-                            sx={{ marginTop: "30px", width: "90px" }}
-                            type="submit"
-                        >
-                            Cancel
-                        </Button>
+                        <FormControl sx={style}>  
+                        <div className="flex flex-col gap-10">
+                            <TextField
+                                id="title"
+                                label="Title"
+                                value={postTitle}
+                                sx={{ width: "500px" }}
+                                onChange={(e) => setPostTitle(e.target.value)}
+                                />
+                            <TextField
+                                id="description"
+                                label="Description"
+                                sx={{ width: "500px", marginTop: "30px" }}
+                                value={postDesc}
+                                multiline
+                                rows={9}
+                                onChange={(e) => setPostDesc(e.target.value)}
+                                />
+                            <div> 
+                                <Button 
+                                    variant="outlined" 
+                                    color="error" 
+                                    sx={{ marginTop: "30px", width: "90px" }}
+                                    onClick={handleCloseForm}>
+                                Cancel
+                                </Button>
+                                <Button 
+                                    variant="contained" 
+                                    onClick={handleNewPost} 
+                                    sx={{ marginTop: "30px", width: "90px" }}
+                                    disabled={postTitle === "" || postDesc === ""}>
+                                Submit
+                                </Button>
+                            </div>
+                        </div>
                         </FormControl>
                     </form>
                 </Modal>

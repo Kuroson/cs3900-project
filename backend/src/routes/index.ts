@@ -44,6 +44,8 @@ import { startQuizController } from "./quiz/startQuiz.route";
 import { updateQuizController } from "./quiz/updateQuiz.route";
 import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
+import { createPostController } from "./forum/createPost.route";
+import { getForumController } from "./forum/getForum.route";
 
 export const indexRouter = Router();
 
@@ -108,3 +110,7 @@ indexRouter.post("/assignment/grade", gradeAssignmentController);
 indexRouter.get("/analytics/grades", getGradesController);
 indexRouter.get("/analytics/tags/summary", getTagSummaryController);
 indexRouter.get("/analytics/questions", getQuestionAnalyticsController);
+
+//Forum routes
+indexRouter.get("forum", getForumController);
+indexRouter.get("forum/post", createPostController);
