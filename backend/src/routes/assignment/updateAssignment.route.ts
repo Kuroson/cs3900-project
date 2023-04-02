@@ -123,5 +123,5 @@ export const updateAssignment = async (queryBody: QueryPayload, firebase_uid: st
         throw new HttpException(500, "Failed to save new assignment");
     });
 
-    return assignment._id;
+    return assignment._id.toString() as string;
 };
