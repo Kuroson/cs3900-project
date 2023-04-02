@@ -67,6 +67,7 @@ export const submitAssignment = async (
   file: File,
   assignment: SubmitAssignmentType,
   type: BackendLinkType,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<[SubmitAssignmentResponseType | null, null | Error | any]> => {
   try {
     const formData = new FormData();

@@ -49,7 +49,7 @@ const StudentAssignment: React.FC<{
       setSubmitted(res.submission !== undefined);
     };
     getAssignment();
-  }, [authUser, assignmentId]);
+  }, [authUser, courseId, assignmentId]);
 
   const handleSubmitAssignment = async () => {
     if (file === null) return;

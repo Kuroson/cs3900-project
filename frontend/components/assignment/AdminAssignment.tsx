@@ -39,7 +39,7 @@ const AdminAssignment: React.FC<{
       setAssignmentInfo(res);
     };
     getAssignment();
-  }, [authUser, assignmentId]);
+  }, [authUser, courseId, assignmentId]);
 
   const canEditAssignment = () => {
     // Can only edit quiz before opening

@@ -47,10 +47,12 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
         </TitleWithIcon>
         <div className="flex gap-1">
           {info.tags.length !== 0 &&
-            info.tags.map((tag) => <Tag text={tag} color="bg-[#009688]" />)}
+            info.tags.map((tag) => <Tag key={tag} text={tag} color="bg-[#009688]" />)}
         </div>
       </div>
-      {info.description && <p className="m-4 break-all text-lg">{info.description}</p>}
+      {info.description !== undefined && (
+        <p className="m-4 break-all text-lg">{info.description}</p>
+      )}
       {/* Just for admin -> edit information */}
       {isAdmin && (
         <Button variant="contained" onClick={() => setIsEditing((prev) => !prev)}>
