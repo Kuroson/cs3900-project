@@ -107,7 +107,10 @@ const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
                       setOpenQuiz((prev) => !prev);
                       setCurrentQuiz(quiz.quizId);
                       setIsResponded(quiz.isResponded ?? false);
-                      setIsOpen(new Date() < new Date(Date.parse(quiz.close)));
+                      setIsOpen(
+                        new Date() < new Date(Date.parse(quiz.close)) &&
+                          new Date() > new Date(Date.parse(quiz.open)),
+                      );
                     }}
                   />
                 ))}

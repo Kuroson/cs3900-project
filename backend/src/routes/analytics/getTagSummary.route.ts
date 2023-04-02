@@ -136,7 +136,10 @@ export const getTagSummary = async (queryBody: QueryPayload, firebase_uid: strin
 
     for (const quizAttempt of enrolment.quizAttempts) {
         for (const questionResponse of quizAttempt.responses) {
-            if (questionResponse.marked && questionResponse.mark === 0) {
+            if (
+                questionResponse.marked &&
+                questionResponse.mark !== questionResponse.question.marks
+            ) {
                 // Incorrect response
                 if (!(questionResponse.question.tag in retData.improvementTags)) {
                     retData.improvementTags[questionResponse.question.tag] = 0;

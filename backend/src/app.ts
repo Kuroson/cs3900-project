@@ -23,14 +23,22 @@ app.use(errorMiddleware);
 
 const MONGO_DB_NAME = "SPRINT2";
 
-const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
+const externalMongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
+const internalMongoDBURI = `mongodb://root:password@${
+    validateEnv.USE_DOCKER_INTERNAL_MONGO ? "mongodb" : "localhost"
+}:27017/?directConnection=true`;
 
 export const startupTime = new Date();
 set("strictQuery", true); // Suppress Mongoose deprecation warning for v7
 
-connect(mongoDBURI)
+connect(validateEnv.USE_LOCAL_MONGO ? internalMongoDBURI : externalMongoDBURI)
     .then(() => {
-        logger.info("Connected to MongoDB");
+        logger.info(
+            `Connected to ${validateEnv.USE_LOCAL_MONGO ? "internal" : "external"} MongoDB`,
+        );
+        if (validateEnv.USE_LOCAL_MONGO) {
+            logger.info("MongoDB URI: " + internalMongoDBURI);
+        }
     })
     .catch((err) => {
         logger.error("Failed to connected to MongoDB");

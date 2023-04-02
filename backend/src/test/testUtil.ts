@@ -9,9 +9,12 @@ import { connect, set } from "mongoose";
 
 const initialiseMongoose = async () => {
     const MONGO_DB_NAME = "jestTesting";
-    const mongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
+    const externalMongoDBURI = `mongodb+srv://${validateEnv.MONGODB_USERNAME}:${validateEnv.MONGODB_PASSWORD}@githappenscluster.zpjbjkc.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
+    const internalMongoDBURI = `mongodb://root:password@${
+        validateEnv.USE_DOCKER_INTERNAL_MONGO ? "mongodb" : "localhost"
+    }:27017/?directConnection=true`;
     set("strictQuery", true); // Suppress Mongoose deprecation warning for v7
-    await connect(mongoDBURI);
+    await connect(validateEnv.USE_LOCAL_MONGO ? internalMongoDBURI : externalMongoDBURI);
 };
 
 /**

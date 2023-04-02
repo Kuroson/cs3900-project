@@ -11,20 +11,20 @@ import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from 
 import { Request, Response } from "express";
 
 type ChoiceInfo = {
-    choiceId: string;
+    _id: string;
     text: string;
     chosen: boolean;
-    correct: boolean;
+    correct?: boolean;
 };
 
 type QuestionInfo = {
-    questionId: string;
+    _id: string;
     text: string;
     tag: string;
     type: string;
-    marksAwarded: number;
-    marksTotal: number;
-    answer?: string;
+    markAwarded: number;
+    marks: number;
+    response?: string;
     choices?: Array<ChoiceInfo>;
 };
 
@@ -147,27 +147,30 @@ export const getQuestionAnalytics = async (queryBody: QueryPayload, firebase_uid
             ) {
                 // Incorrect response
                 const questionInfo: QuestionInfo = {
-                    questionId: questionResponse.question._id,
+                    _id: questionResponse.question._id,
                     text: questionResponse.question.text,
                     tag: questionResponse.question.tag,
                     type: questionResponse.question.type,
-                    marksTotal: questionResponse.question.marks,
-                    marksAwarded: questionResponse.mark,
+                    marks: questionResponse.question.marks,
+                    markAwarded: questionResponse.mark,
                 };
 
                 if (questionResponse.question.type === MULTIPLE_CHOICE) {
                     questionInfo.choices = [];
                     for (const choice of questionResponse.question.choices) {
                         const choiceInfo: ChoiceInfo = {
-                            choiceId: choice._id,
+                            _id: choice._id,
                             text: choice.text,
-                            correct: choice.correct,
                             chosen: questionResponse.choices.includes(choice._id),
                         };
+                        // Add correct if after close
+                        if (new Date() > new Date(Date.parse(quizAttempt.quiz.close))) {
+                            choiceInfo.correct = choice.correct;
+                        }
                         questionInfo.choices.push(choiceInfo);
                     }
                 } else {
-                    questionInfo.answer = questionResponse.answer;
+                    questionInfo.response = questionResponse.answer;
                 }
 
                 retData.questions.push(questionInfo);
