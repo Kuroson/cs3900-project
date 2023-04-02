@@ -81,6 +81,11 @@ export default function StudentNavBar({
           name: page.title,
           route: `/course/${courseData?._id}/Forum`, //TODO
         };
+      } else if (page.title === "Analytics") {
+        return {
+          name: page.title,
+          route: `/course/${courseData?._id}/Analytics`,
+        };
       }
       return {
         name: page.title,

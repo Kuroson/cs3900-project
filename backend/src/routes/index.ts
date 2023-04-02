@@ -46,6 +46,15 @@ import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
 import { createPostController } from "./forum/createPost.route";
 import { getForumController } from "./forum/getForum.route";
+import { completeTaskController } from "./workloadOverview/completeTask.route";
+import { createTaskController } from "./workloadOverview/createTask.route";
+import { createWeekController } from "./workloadOverview/createWeek.route";
+import { deleteTaskController } from "./workloadOverview/deleteTask.route";
+import { deleteWeekController } from "./workloadOverview/deleteWeek.route";
+import { getWeekController } from "./workloadOverview/getWeek.route";
+import { getWorkloadController } from "./workloadOverview/getWorkload.route";
+import { updateTaskController } from "./workloadOverview/updateTask.route";
+import { updateWeekController } from "./workloadOverview/updateWeek.route";
 
 export const indexRouter = Router();
 
@@ -96,6 +105,17 @@ indexRouter.get("/quiz/start", startQuizController);
 indexRouter.post("/quiz/finish", finishQuizController);
 indexRouter.get("/quiz/submissions", getSubmissionsController);
 indexRouter.post("/quiz/question/grade", gradeQuestionController);
+
+//Workload Overview routes
+indexRouter.post("/workload/week/create", createWeekController);
+indexRouter.post("/workload/task/create", createTaskController);
+indexRouter.get("/workload/week", getWeekController);
+indexRouter.get("/workload", getWorkloadController);
+indexRouter.put("/workload/task/update", updateTaskController);
+indexRouter.put("/workload/week/update", updateWeekController);
+indexRouter.delete("/workload/task/delete", deleteTaskController);
+indexRouter.delete("/workload/week/delete", deleteWeekController);
+indexRouter.post("/workload/task/complete", completeTaskController);
 
 // Assignment routes
 indexRouter.get("/assignment/list", getAssignmentsController);

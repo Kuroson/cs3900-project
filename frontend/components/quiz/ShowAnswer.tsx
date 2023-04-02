@@ -37,7 +37,7 @@ const ShowAnswer: React.FC<ShowAnswerProps> = ({ questionInfo, isAdmin, handleDe
               checked={isAdmin ? choice.correct ?? false : choice.chosen ?? false}
               disabled
             />
-            <p className={`text-xl ${(choice.correct ?? false) && "text-lime-600"}`}>
+            <p className={`text-xl ${(choice.correct ?? false) && "text-green-600 "}`}>
               {choice.text}
             </p>
           </div>

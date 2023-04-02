@@ -113,6 +113,12 @@ export default function AdminNavBar({
           name: page.title,
           route: `/instructor/${courseData?._id}/Forum`,
         };
+      } else if (page.title === "Analytics") {
+        // TODO: analytics route
+        return {
+          name: page.title,
+          route: `/instructor/${courseData?._id}/Analytics`,
+        };
       }
       return {
         name: page.title,
@@ -243,6 +249,11 @@ export default function AdminNavBar({
                       value="Forum"
                       control={<Radio disabled={routesNames.includes("Forum")} />}
                       label="Forum"
+                    />
+                    <FormControlLabel
+                      value="Analytics"
+                      control={<Radio disabled={routesNames.includes("Analytics")} />}
+                      label="Analytics"
                     />
                     <FormControlLabel
                       id="RadioOtherPage"
