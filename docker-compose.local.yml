@@ -16,10 +16,15 @@ services:
       - ./frontend:/app
       - /app/node_modules
       - /app/.next
+    depends_on:
+      - mongodb
   backend:
     image: 3900-githappens-backend
     build: ./backend
     restart: unless-stopped
+    environment:
+      - USE_LOCAL_MONGO=true
+      - USE_DOCKER_INTERNAL_MONGO=true
     networks:
       - 3900-network
     ports:
@@ -27,6 +32,26 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    expose:
+      - "27017"
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_container:/data/db
+    networks:
+      - 3900-network
+    logging:
+      driver: none
 networks:
   3900-network:
     driver: bridge
+volumes:
+  mongodb_data_container:

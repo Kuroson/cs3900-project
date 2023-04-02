@@ -43,9 +43,9 @@ const courseSchema: Schema = new Schema<CourseInterface>({
     pages: [{ type: Schema.Types.ObjectId, ref: "Page", required: true }],
     onlineClasses: [{ type: Schema.Types.ObjectId, ref: "OnlineClass", required: true }],
     forum: { type: Schema.Types.ObjectId, ref: "Forum", required: true },
-    quizzes: [{ type: Schema.Types.ObjectId, ref: "Page", required: true }],
-    assignments: [{ type: Schema.Types.ObjectId, ref: "Page", required: true }],
-    workloadOverview: { type: Schema.Types.ObjectId, ref: "Page", required: true },
+    quizzes: [{ type: Schema.Types.ObjectId, ref: "Quiz", required: true }],
+    assignments: [{ type: Schema.Types.ObjectId, ref: "Assignment", required: true }],
+    workloadOverview: { type: Schema.Types.ObjectId, ref: "Workloadoverview", required: true },
     tags: [{ type: String, required: true }],
 });
 

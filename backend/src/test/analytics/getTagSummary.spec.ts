@@ -197,9 +197,10 @@ describe("Test getting student tag summary", () => {
         expect(tags).toEqual({
             successTags: {
                 tag1: 2,
-                tag2: 2,
+                tag2: 1,
             },
             improvementTags: {
+                tag2: 1,
                 tag4: 1,
             },
         });
