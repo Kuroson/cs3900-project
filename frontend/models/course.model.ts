@@ -5,6 +5,7 @@ import {
   ResourceInterface,
   SectionInterface,
 } from "models";
+import { OnlineClassInterface } from "./onlineClass.model";
 import { PageFull } from "./page.model";
 
 export interface CourseInterface extends MongooseDocument {
@@ -49,6 +50,5 @@ export type UserCourseInformation = Omit<
   | "workloadOverview"
 > & {
   pages: PageFull[];
+  onlineClasses: Array<OnlineClassInterface>;
 };
-
-let r: Omit<PageInterface, "section" | "resources">;

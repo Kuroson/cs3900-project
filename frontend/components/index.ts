@@ -7,6 +7,7 @@ import SingleEditableResource from "./admin/resource/SingleEditableResource";
 import AddNewSection from "./admin/section/AddNewSection";
 import PageSections from "./admin/section/PageSections";
 import Loading from "./common/Loading";
+import OnlineClassCard from "./common/OnlineClassCard";
 
 export {
   ContentContainer,
@@ -22,4 +23,5 @@ export {
   EditPanelButtons,
   Loading,
   NoUserLayout,
+  OnlineClassCard,
 };

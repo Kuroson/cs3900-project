@@ -5,7 +5,7 @@ import { UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading } from "components";
+import { AdminNavBar, ContentContainer, Loading, OnlineClassCard } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
@@ -16,6 +16,20 @@ initAuth(); // SSR maybe, i think...
 
 type AdminCoursePageProps = {
   courseData: UserCourseInformation;
+};
+
+type LectureCardProps = {
+  courseData: UserCourseInformation;
+};
+
+const LectureCards = ({ courseData }: LectureCardProps): JSX.Element => {
+  return (
+    <div className="flex flex-wrap w-full mx-3">
+      {courseData.onlineClasses.map((x) => {
+        return <OnlineClassCard key={x._id} onlineClass={x} href={`/instructor/${"hello"}`} />;
+      })}
+    </div>
+  );
 };
 
 const AdminCoursePage = ({ courseData }: AdminCoursePageProps): JSX.Element => {
@@ -47,6 +61,7 @@ const AdminCoursePage = ({ courseData }: AdminCoursePageProps): JSX.Element => {
             <span className="ml-4">Welcome to {courseData.title}</span>
           </h1>
           <p className="pt-1.5">{courseData.description}</p>
+          <LectureCards courseData={courseData} />
         </div>
       </ContentContainer>
     </>
