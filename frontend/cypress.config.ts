@@ -7,4 +7,5 @@ export default defineConfig({
     },
   },
   projectId: "usxu94",
+  defaultCommandTimeout: 30000,
 });

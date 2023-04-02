@@ -133,7 +133,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
     const courseId = await myCourse
         .save()
         .then((res) => {
-            return res._id;
+            return res._id.toString() as string;
         })
         .catch((err) => {
             throw new HttpException(500, "Failed to save new course", err);
@@ -143,7 +143,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         throw new HttpException(500, "Failed to create course");
     }
 
-    admin.created_courses.push(courseId);
+    admin.created_courses.addToSet(courseId);
 
     await admin.save().catch((err) => {
         throw new HttpException(500, "Failed to save user", err);

@@ -1,5 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
+import { AccessTime } from "@mui/icons-material";
 import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -73,6 +74,7 @@ export default function AdminNavBar({
   const [radio, setRadio] = React.useState("");
   const [pageName, setPageName] = React.useState("");
 
+  // TODO: Only add the last courseData routes if courseData !== undefined
   const navRoutes: Routes[] = [
     {
       name: "Dashboard",
@@ -94,6 +96,11 @@ export default function AdminNavBar({
       name: "Students",
       route: `/instructor/${courseData?._id}/students`,
       icon: <PeopleAltIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Schedule Lecture",
+      route: `/instructor/${courseData?._id}/schedule`,
+      icon: <AccessTime fontSize="large" color="primary" />,
       hasLine: true,
     },
     ...(courseData?.pages ?? []).map((page) => {

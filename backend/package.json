@@ -9,6 +9,7 @@
         "build": "tsc && tsc-alias",
         "test": "jest --forceExit --detectOpenHandles --silent",
         "test:verbose": "jest --forceExit --detectOpenHandles",
+        "test:local": "cross-env USE_LOCAL_MONGO=true jest --forceExit --detectOpenHandles --silent",
         "lint": "eslint './**/*.{ts,tsx,js,jsx}'",
         "lint:fix": "eslint './**/*.{ts,tsx,js,jsx}' --fix",
         "prettier": "prettier --check './**/*.{ts,tsx,js,jsx,scss,css}'",

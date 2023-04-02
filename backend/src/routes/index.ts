@@ -23,6 +23,13 @@ import { updateCourseController } from "./course/updateCourse.route";
 import { downloadFileController } from "./file/downloadFile.route";
 import { uploadFileController } from "./file/uploadFile.route";
 import { indexController } from "./index.route";
+import { createOnlineClassController } from "./onlineClasses/createOnlineClass.route";
+import { endOnlineClassController } from "./onlineClasses/endOnlineClass.route";
+import { getListOnlineClassController } from "./onlineClasses/getListOnlineClass.route";
+import { getOnlineClassController } from "./onlineClasses/getOnlineClass.route";
+import { sendChatMessageController } from "./onlineClasses/sendMessageOnlineClass.route";
+import { startOnlineClassController } from "./onlineClasses/startOnlineClass.route";
+import { updateOnlineClassController } from "./onlineClasses/updateOnlineClass.route";
 import { addResourceController } from "./page/addResource.route";
 import { addSectionController } from "./page/addSection.route";
 import { createPageController } from "./page/createPage.route";
@@ -128,3 +135,12 @@ indexRouter.post("/assignment/grade", gradeAssignmentController);
 indexRouter.get("/analytics/grades", getGradesController);
 indexRouter.get("/analytics/tags/summary", getTagSummaryController);
 indexRouter.get("/analytics/questions", getQuestionAnalyticsController);
+
+// Online Classes Routes
+indexRouter.get("/class", getOnlineClassController);
+indexRouter.get("/class/list", getListOnlineClassController);
+indexRouter.post("/class/schedule", createOnlineClassController);
+indexRouter.put("/class/update", updateOnlineClassController);
+indexRouter.put("/class/start", startOnlineClassController);
+indexRouter.put("/class/end", endOnlineClassController);
+indexRouter.post("/class/chat/send", sendChatMessageController);
