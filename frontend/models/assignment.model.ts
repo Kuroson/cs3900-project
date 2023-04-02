@@ -37,3 +37,9 @@ export type SubmitAssignmentType = {
   assignmentId: string;
   title: string;
 };
+
+export type SubmitAssignmentResponseType = {
+  submissionId: string;
+  fileType: string;
+  linkToSubmission: string; // i.e., download link
+};

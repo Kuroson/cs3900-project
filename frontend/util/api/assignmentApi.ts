@@ -2,15 +2,10 @@ import {
   AssignmentInfoType,
   AssignmentListType,
   CreateAssignmentType,
+  SubmitAssignmentResponseType,
+  SubmitAssignmentType,
 } from "models/assignment.model";
-import {
-  CreateQuizType,
-  QuizBasicInfo,
-  QuizInfoType,
-  QuizListType,
-  QuizQuestionType,
-  SubmitQuizType,
-} from "models/quiz.model";
+import { HttpException } from "util/HttpExceptions";
 import { BackendLinkType, apiDelete, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
 
@@ -67,10 +62,35 @@ export const updateAssignmentAdmin = (
 };
 
 // for student
-export const submitQuiz = (token: string | null, body: SubmitQuizType, type: BackendLinkType) => {
-  return apiPost<SubmitQuizType, { message: string }>(
-    `${getBackendLink(type)}/quiz/finish`,
-    token,
-    body,
-  );
+export const submitAssignment = async (
+  token: string | null,
+  file: File,
+  assignment: SubmitAssignmentType,
+  type: BackendLinkType,
+): Promise<[SubmitAssignmentResponseType | null, null | Error | any]> => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    for (const [key, value] of Object.entries(assignment)) {
+      formData.append(key, value);
+    }
+
+    const res = await fetch(`${getBackendLink(type)}/assignment/submit`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token ?? "bad"}`,
+      },
+      body: formData,
+    });
+    if (!res.ok) {
+      const status = res.status;
+      const data = await res.json();
+      return [null, new HttpException(status, data.message)];
+    }
+    const data = await res.json();
+    return [data, null];
+  } catch (err) {
+    console.error("Error with posting to upload");
+    return [null, err];
+  }
 };
