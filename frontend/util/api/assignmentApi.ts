@@ -6,7 +6,7 @@ import {
   SubmitAssignmentType,
 } from "models/assignment.model";
 import { HttpException } from "util/HttpExceptions";
-import { BackendLinkType, apiDelete, apiGet, apiPost, apiPut } from "./api";
+import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
 
 export const getListOfAssignments = (

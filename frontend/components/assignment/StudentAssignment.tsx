@@ -86,6 +86,10 @@ const StudentAssignment: React.FC<{
     setSubmitted(true);
   };
 
+  const afterDeadline = () => {
+    return new Date() > new Date(Date.parse(assignmentInfo.deadline));
+  };
+
   return (
     <>
       <PageHeader title={assignmentInfo?.title ?? ""}>
@@ -108,15 +112,11 @@ const StudentAssignment: React.FC<{
       </div>
       {/* Viewing/submitting assignment */}
       <div className="mt-7">
-        {submitted ? (
+        {submitted && (
           <>
             <span className="w-full text-xl font-medium flex flex-col">
               {assignmentInfo.submission?.title}
             </span>
-            {/* Comments */}
-            {assignmentInfo.submission?.comments !== undefined && (
-              <p>{assignmentInfo.submission?.comments}</p>
-            )}
             {/* Submission */}
             {assignmentInfo.submission?.linkToSubmission !== undefined && (
               <div className="mt-2">
@@ -125,8 +125,10 @@ const StudentAssignment: React.FC<{
                 </Link>
               </div>
             )}
+            {/* TODO: Add comments/tags from grading */}
           </>
-        ) : (
+        )}
+        {!submitted && !afterDeadline() && (
           <div className="w-full pt-4">
             <div className="pb-4">
               <TitleWithIcon text="Submit assignment">
@@ -184,6 +186,11 @@ const StudentAssignment: React.FC<{
               </div>
             </div>
           </div>
+        )}
+        {!submitted && afterDeadline() && (
+          <span className="w-full text-xl font-medium flex flex-col">
+            Assignment not submitted before deadline
+          </span>
         )}
       </div>
     </>
