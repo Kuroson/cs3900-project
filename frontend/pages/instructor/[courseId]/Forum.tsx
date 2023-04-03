@@ -190,15 +190,22 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   }
   showedPost.responses.push(newResponse);
 
-  toast.success("Course created successfully");
+  //toast.success("Response created successfully");
 
   //close form 
   setOpen(false);
-  setPostTitle("");
-  setPostDesc("");
-  
+  setPostResponseText("");  
   }
 
+  const handleCorrectResponse = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if ([postResponseText].some((x) => x.length === 0)) {
+      toast.error("Please fill out all fields");
+      return;
+    }
+
+    
+  }
   return (
     <>
       <Head>
@@ -276,7 +283,15 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             <div className="flex flex-col">
               <ForumPostCard post={showedPost} datePosted={date.toLocaleString()}></ForumPostCard>
               {showedPost?.responses?.map((response, index) => (
-                <ForumResponseCard response={response}/>
+                <div className="flex flex-row">
+                  <ForumResponseCard response={response}/>
+                  {response.correct === true && <Button
+                    variant="contained" 
+                    onClick={handleCorrectResponse} 
+                    sx={{ height: "30px", width: "200px" }}>
+                  Correct Answer
+                  </Button>}
+                </div>
               ))} 
               {showedPost !== null &&
               <TextField
@@ -296,7 +311,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
                   sx={{ width: "90px", marginLeft: "550px", marginTop: "15px" }}
                   disabled={postResponseText === ""}>
                 Send
-              </Button>
+                </Button>
               }
               
             </div>

@@ -3,6 +3,7 @@ import Course, { CourseInterface } from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import { ForumInterface } from "@/models/course/forum/forum.model";
 import { PostInterface } from "@/models/course/forum/post.model";
+import { ResponseInterface } from "@/models/course/forum/response.model";
 import { OnlineClassInterface } from "@/models/course/onlineClass/onlineClass.model";
 import { PageInterface } from "@/models/course/page/page.model";
 import { ResourceInterface } from "@/models/course/page/resource.model";
@@ -37,6 +38,12 @@ type UserCourseInformation = Omit<
                 | "poster"
             > & {
                 poster: UserInterface;
+                responses: Array<Omit<
+                    ResponseInterface, 
+                    | "poster"> 
+                & { 
+                    poster: UserInterface; 
+                }>;
             }>;
         };
 };
@@ -123,9 +130,23 @@ export const getCourse = async (
             path: "forum",
             populate: { 
                 path: "posts", 
+                populate: 
+                    [
+                    { path: "poster" }, 
+                    { path: "responses", 
+                        populate: 
+                            { path: "poster"} 
+                        }
+                    ]
+            },
+        })
+        .populate({
+            path: "forum",
+            populate: { 
+                path: "posts", 
                 populate: {
                     path: "poster"
-                } 
+                }
             },
         })
         .populate({

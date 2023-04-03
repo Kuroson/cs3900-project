@@ -6,6 +6,7 @@ import { LoadingButton } from "@mui/lab";
 import { UserCourseInformation } from "models/course.model";
 import { BasicForumInfo } from "models/forum.model";
 import { BasicPostInfo } from "models/post.model";
+import { BasicResponseInfo } from "models/response.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
@@ -15,12 +16,13 @@ import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
-import { createNewPost, getCourseForum } from "util/api/forumApi";
+import { createNewPost, getCourseForum, createNewResponse } from "util/api/forumApi";
 import {
     getUserCourseDetails,
 } from "util/api/courseApi";
 import ForumPostCard from "components/common/ForumPostCard";
 import ForumPostOverviewCard from "components/common/ForumPostOverviewCard";
+import ForumResponseCard from "components/common/ForumResponseCard";
 import { use } from "chai";
 import { useRouter } from "next/router";
 import { isEmpty } from "cypress/types/lodash";
@@ -50,6 +52,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     const [postTitle, setPostTitle] = React.useState("");
     const [postDesc, setPostDesc] = React.useState("");
     const [buttonLoading, setButtonLoading] = React.useState(false);
+    const [postResponseText, setPostResponseText] = React.useState("");
 
     const date = new Date();
     const router = useRouter();
@@ -142,7 +145,60 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         setPostDesc("");
     }
 
-
+    const handleNewResponse = async (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        if ([postResponseText].some((x) => x.length === 0)) {
+          toast.error("Please fill out all fields");
+          return;
+        }
+    
+        if (showedPost === null) {
+          return;
+        }
+    
+        const postId = showedPost._id;
+        const text = postResponseText;
+        const dataPayload = {
+          postId,
+          text,
+        };
+        setButtonLoading(true);
+        const [res, err] = await createNewResponse(await authUser.getIdToken(), dataPayload, "client");
+        console.log(res);
+        if (err !== null) {
+            console.error(err);
+            if (err instanceof HttpException) {
+                toast.error(err.message);
+            } else {
+                toast.error(err);
+            }
+            setButtonLoading(false);
+            return;
+        }
+        if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+        setButtonLoading(false);
+    
+        // Update global state with new post
+        const newResponse : BasicResponseInfo = {
+            _id: res.responseId,
+            response: postResponseText,
+            correct: false,
+            poster: userDetails,
+        };
+      if (showedPost.responses === null) {
+        showedPost.responses = [];
+      }
+      showedPost.responses.push(newResponse);
+    
+      toast.success("Course created successfully");
+    
+      //close form 
+      setOpen(false);
+      setPostTitle("");
+      setPostDesc("");
+      
+    }
+    
     return (
         <>
             <Head>
@@ -160,8 +216,8 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
 
                 <div className="flex inline-block w-full justify-left px-[2%]">
                     <div>
-                        <div className="flex flex-col rounded-lg shadow-md p-5 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center">
-                            <Button variant="outlined" onClick={handleOpen} id="addNewPost">
+                        <div className="flex flex-col rounded-lg shadow-md p-2 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center">
+                            <Button variant="text" onClick={handleOpen} id="addNewPost">
                                 New Thread
                             </Button>
                         </div>
@@ -217,7 +273,32 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
                             </div>
                         ))}
                     </div>
-                    <ForumPostCard post={showedPost} datePosted={date.toLocaleString()}></ForumPostCard>;
+                    <div className="flex flex-col">
+                        <ForumPostCard post={showedPost} datePosted={date.toLocaleString()}></ForumPostCard>
+                        {showedPost?.responses?.map((response, index) => (
+                            <ForumResponseCard response={response}/>
+                        ))} 
+                        {showedPost !== null &&
+                        <TextField
+                            id="response"
+                            label="Your Answer"
+                            sx={{ marginLeft: "40px", marginTop: "20px" }}
+                            value={postResponseText}
+                            multiline
+                            rows={5}
+                            onChange={(e) => setPostResponseText(e.target.value)}
+                            />
+                        }
+                        {showedPost !== null &&
+                            <Button 
+                            variant="contained" 
+                            onClick={handleNewResponse} 
+                            sx={{ width: "90px", marginLeft: "550px", marginTop: "15px" }}
+                            disabled={postResponseText === ""}>
+                            Send
+                        </Button>
+                        }   
+                    </div>
                 </div>
             </ContentContainer>
 

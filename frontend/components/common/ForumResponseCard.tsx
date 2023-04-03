@@ -12,7 +12,9 @@ type ForumResponseCardProps = {
 };
 
 const ForumResponseCard: React.FC<ForumResponseCardProps> = ({ response }): JSX.Element => {  
-  return (
+    if (response === null) return <></>
+    else
+    return (
     <div className="flex flex-col p-2 pl-10 w-[600px]">
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">

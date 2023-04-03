@@ -21,7 +21,7 @@ export type PopulatedForumInterface = Omit<
   | "posts"
   | "description"
     > & {
-  posts: Array<Omit<BasicPostInfo, "poster"> & {poster: UserDetails}>;
+  posts: Array<Omit<BasicPostInfo, "poster"> & { poster: UserDetails }>;
 }
 
 
