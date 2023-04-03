@@ -198,7 +198,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
                                 <Button 
                                     variant="contained" 
                                     onClick={handleNewPost} 
-                                    sx={{ marginTop: "30px", width: "90px" }}
+                                    sx={{ marginTop: "30px", width: "90px", marginLeft: "320px"  }}
                                     disabled={postTitle === "" || postDesc === ""}>
                                 Submit
                                 </Button>
