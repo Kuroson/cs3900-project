@@ -126,6 +126,12 @@ export default function AdminNavBar({
           name: page.title,
           route: `/instructor/${courseData?._id}/Analytics`,
         };
+      } else if (page.title === "Workload Overview") {
+        //TODO: Workload Overview Route
+        return {
+          name: page.title,
+          route: `/instructor/${courseData?._id}/WorkloadOverview`,
+        };
       }
       return {
         name: page.title,
@@ -261,6 +267,11 @@ export default function AdminNavBar({
                       value="Analytics"
                       control={<Radio disabled={routesNames.includes("Analytics")} />}
                       label="Analytics"
+                    />
+                    <FormControlLabel
+                      value="Workload Overview"
+                      control={<Radio disabled={routesNames.includes("Workload Overview")} />}
+                      label="Workload Overview"
                     />
                     <FormControlLabel
                       id="RadioOtherPage"

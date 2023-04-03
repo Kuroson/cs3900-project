@@ -1,88 +1,80 @@
 import React from "react";
 import { toast } from "react-toastify";
-import Link from "next/link";
-import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
-import { Button, TextField } from "@mui/material";
-import { FullWeekInterface } from "models/week.model";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { IconButton, ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
+import { TaskInterface } from "models/task.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import {
-  RemoveResourcePayloadRequest,
-  UpdatePagePayloadRequest,
-  removeResource,
-  updatePageResource,
-  uploadResourceFile,
-} from "util/api/pageApi";
-import {
-  DeleteWeekPayloadRequest,
-  UpdateWeekPayloadRequest,
-  deleteWeek,
-  updateWeek,
+  DeleteTaskPayloadRequest,
+  UpdateTaskPayloadRequest,
+  deleteTask,
+  updateTask,
 } from "util/api/workloadApi";
 import EditPanelButtons from "../EditPanelButtons";
-import TasksSection from "../task/TasksSection";
 
-type SingleEditableWeekProps = {
-  week: FullWeekInterface;
-  setWeeks: React.Dispatch<React.SetStateAction<FullWeekInterface[]>>;
-  courseId: string;
-  weeks: FullWeekInterface[];
+type SingleEditableTaskProps = {
+  weekId: string;
+  task: TaskInterface;
+  setTasks: React.Dispatch<React.SetStateAction<TaskInterface[]>>;
+  tasks: TaskInterface[];
 };
 
 /**
- * Component for a single Week.
- * Has an edit option
+ * Component for a single task
+ * Has the edit and delete option
+ * It is a list Item
  */
-const SingleEditableWeekSection = ({
-  weeks,
-  setWeeks,
-  courseId,
-  week,
-}: SingleEditableWeekProps): JSX.Element => {
+const SingleEditableTask = ({
+  weekId,
+  task,
+  setTasks,
+  tasks,
+}: SingleEditableTaskProps): JSX.Element => {
   const authUser = useAuthUser();
-
   const [editMode, setEditMode] = React.useState(false);
-  const [title, setTitle] = React.useState(week.title);
-  const [description, setDescription] = React.useState(week.description);
-  const [tasks, setTasks] = React.useState(week.tasks);
+  const [title, setTitle] = React.useState(task.title);
+  const [description, setDescription] = React.useState(task.description);
 
   const handleRemoveClick = async () => {
-    // Remove
-    const payload: DeleteWeekPayloadRequest = {
-      courseId: courseId,
-      weekId: week._id,
+    //remove
+    const payload: DeleteTaskPayloadRequest = {
+      weekId: weekId,
+      taskId: task._id,
     };
-
-    const [res, err] = await deleteWeek(await authUser.getIdToken(), payload, "client");
+    const [res, err] = await deleteTask(await authUser.getIdToken(), payload, "client");
 
     if (err !== null) {
       console.error(err);
       if (err instanceof HttpException) {
         toast.error(err.message);
       } else {
-        toast.error("Could not remove week overview. Please try again later.");
+        toast.error("Could not remove task. Please try again later.");
       }
       return;
     }
     if (res === null) throw new Error("Shouldn't happen");
 
     // Update UI
-    setWeeks(weeks.filter((w) => w._id !== week._id));
-    toast.success("Week removed");
+    setTasks([...tasks.filter((t) => t._id !== task._id)]);
+    toast.success("Task removed");
   };
 
   const handleEditClick = async () => {
+    // Modal where user can change the description and title
+
     if (editMode) {
       // Was already in edit mode, need to save changes now
       // Save the text
 
-      const updatedWeek: UpdateWeekPayloadRequest = {
-        weekId: week._id,
-        title: week.title,
-        description: week.description,
+      const updatedTask: UpdateTaskPayloadRequest = {
+        taskId: task._id,
+        title: task.title,
+        description: task.description,
       };
 
-      const [res, err] = await updateWeek(await authUser.getIdToken(), updatedWeek, "client");
+      const [res, err] = await updateTask(await authUser.getIdToken(), updatedTask, "client");
 
       if (err !== null) {
         // Error exists
@@ -95,7 +87,7 @@ const SingleEditableWeekSection = ({
         return;
       }
       if (res === null) throw new Error("Shouldn't happen");
-      toast.success("Week workload saved");
+      toast.success("Task changes saved");
     }
     setEditMode(!editMode);
   };
@@ -137,16 +129,19 @@ const SingleEditableWeekSection = ({
     );
   }
 
-  // Show normal interface
+  // Normal task Interface
   return (
-    <div className="w-full pt-5" data-cy={`section-${title}`}>
-      <span className="w-full text-xl font-medium flex flex-col">{title}</span>
-      {/* Description */}
-      {description !== undefined && <p>{description}</p>}
-      {/* Resource */}
-      <div>
-        <TasksSection weekId={week._id} tasks={tasks} setTasks={setTasks} />
-      </div>
+    <ListItem
+      secondaryAction={
+        <IconButton edge="end" aria-label="delete">
+          <DeleteIcon />
+        </IconButton>
+      }
+    >
+      <ListItemAvatar>
+        <ControlPointIcon fontSize="large" />
+      </ListItemAvatar>
+      <ListItemText primary={title} secondary={description} />
       <div data-cy="edit-button-section">
         <EditPanelButtons
           editMode={editMode}
@@ -154,8 +149,8 @@ const SingleEditableWeekSection = ({
           handleRemoveClick={handleRemoveClick}
         />
       </div>
-    </div>
+    </ListItem>
   );
 };
 
-export default SingleEditableWeekSection;
+export default SingleEditableTask;

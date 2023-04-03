@@ -13,7 +13,7 @@ type ResponsePayload = {
 };
 
 type QueryPayload = {
-    workloadOverviewId: string;
+    courseId: string;
     title: string;
     description: string;
 };
@@ -31,18 +31,14 @@ export const createWeekController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
-            "workloadOverviewId",
-            "title",
-            "description",
-        ];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId", "title", "description"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
-            const { workloadOverviewId, title, description } = req.body;
+            const { courseId, title, description } = req.body;
 
-            const weekId = await createWeek(workloadOverviewId, title, description, authUser.uid);
+            const weekId = await createWeek(courseId, title, description, authUser.uid);
 
             logger.info(`weekId: ${weekId}`);
             return res.status(200).json({ weekId });

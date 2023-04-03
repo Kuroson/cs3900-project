@@ -19,7 +19,7 @@ import {
   ResourcesSection,
 } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
-import AddNewWorkloadSection from "components/admin/workload/AddNewWorkloadSection";
+import AddNewWorkloadSection from "components/admin/workload/AddNewWeekSection";
 import WorkloadSection from "components/admin/workload/WorkloadSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
@@ -108,13 +108,6 @@ const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.El
             setSections={setDynamicSections}
             pageId={pageData._id}
             courseId={courseData._id}
-          />
-          <WorkloadSection
-            resources={dynamicResources}
-            setResources={setDynamicResources}
-            pageId={pageData._id}
-            courseId={courseData._id}
-            sectionId={null}
           />
           <AddNewSection
             sections={dynamicSections}

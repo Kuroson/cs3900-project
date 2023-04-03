@@ -1,44 +1,29 @@
 import { ResourceInterface } from "models";
-import AddNewWorkloadSection from "./AddNewWorkloadSection";
+import { FullWeekInterface, WeekInterface } from "models/week.model";
+import AddNewWorkloadSection from "./AddNewWeekSection";
 import SingleEditableWorkload from "./SingleEditableWorkload";
 
 type WorkloadSectionProps = {
-  resources: ResourceInterface[];
-  setResources: React.Dispatch<React.SetStateAction<ResourceInterface[]>>;
+  weeks: FullWeekInterface[];
+  setWeeks: React.Dispatch<React.SetStateAction<FullWeekInterface[]>>;
   courseId: string;
-  pageId: string;
-  sectionId: string | null;
 };
 
-const WorkloadSection = ({
-  resources,
-  setResources,
-  courseId,
-  pageId,
-  sectionId,
-}: WorkloadSectionProps): JSX.Element => {
+const WorkloadSection = ({ weeks, setWeeks, courseId }: WorkloadSectionProps): JSX.Element => {
   return (
     <div className="flex flex-col w-full mb-8">
-      {resources.map((resource) => {
+      {weeks.map((week) => {
         return (
           <SingleEditableWorkload
-            resource={resource}
-            key={resource._id}
-            setResources={setResources}
-            pageId={pageId}
+            week={week}
+            key={week._id}
+            setWeeks={setWeeks}
             courseId={courseId}
-            resources={resources}
-            sectionId={sectionId}
+            weeks={weeks}
           />
         );
       })}
-      <AddNewWorkloadSection
-        courseId={courseId}
-        pageId={pageId}
-        setResources={setResources}
-        resources={resources}
-        sectionId={sectionId}
-      />
+      <AddNewWorkloadSection courseId={courseId} setWeeks={setWeeks} weeks={weeks} />
     </div>
   );
 };
