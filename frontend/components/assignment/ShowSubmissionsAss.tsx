@@ -193,7 +193,7 @@ const Submission = ({
           </Select>
         </FormControl>
         <Button variant="contained" size="small" onClick={handleSubmit}>
-          Send
+          Mark Assignment
         </Button>
       </div>
     </Card>
