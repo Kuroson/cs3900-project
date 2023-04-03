@@ -4,10 +4,11 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import HomeIcon from "@mui/icons-material/Home";
 import { UserCourseInformation } from "models/course.model";
+import { OnlineClassInterface } from "models/onlineClass.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { ContentContainer, Loading, StudentNavBar } from "components";
+import { ContentContainer, Loading, OnlineClassCard, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
@@ -18,6 +19,28 @@ initAuth();
 
 type StudentCoursePageProps = {
   courseData: UserCourseInformation;
+};
+
+type LectureCardProps = {
+  courseId: string;
+  onlineClasses: OnlineClassInterface[];
+};
+
+const LectureCards = ({ onlineClasses, courseId }: LectureCardProps): JSX.Element => {
+  return (
+    <div className="flex flex-wrap w-full mx-3">
+      {onlineClasses.map((x) => {
+        return (
+          <OnlineClassCard
+            key={x._id}
+            onlineClass={x}
+            // Only show href for running classes
+            href={x.running ? `/course/${courseId}/onlineClass/${x._id}` : undefined}
+          />
+        );
+      })}
+    </div>
+  );
 };
 
 /**
@@ -53,6 +76,7 @@ const StudentCoursePage = ({ courseData }: StudentCoursePageProps): JSX.Element 
             <span className="ml-4">Welcome to {courseData.title}</span>
           </h1>
           <p className="mt-5">{courseData.description}</p>
+          <LectureCards onlineClasses={courseData.onlineClasses} courseId={courseData._id} />
         </div>
       </ContentContainer>
     </>

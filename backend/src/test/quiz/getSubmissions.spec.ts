@@ -143,6 +143,7 @@ describe("Test getting quiz submissions", () => {
         expect(submissions[0].question.tag).toBe("test tag");
         expect(submissions[0].responses.length).toBe(1);
         expect(submissions[0].responses[0].answer).toBe("Response");
+        expect(submissions[0].responses[0].studentName).toBe("first_name last_name");
 
         expect(submissions[1].question.questionId).toEqual(
             quizQuestions.questions[2]._id.toString(),

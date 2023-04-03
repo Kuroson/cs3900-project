@@ -8,7 +8,23 @@ import { youtubeURLParser } from "util/util";
 
 type OnlineClassCardProps = {
   onlineClass: OnlineClassUserInformation;
-  href: string;
+  href?: string;
+};
+
+type OptionalLinkProps = {
+  href?: string;
+  children: React.ReactNode;
+};
+
+const OptionalLink = ({ href, children }: OptionalLinkProps): JSX.Element => {
+  if (href !== undefined) {
+    return (
+      <Link href={href} className="cursor-pointer hover:scale-[1.01]">
+        {children}
+      </Link>
+    );
+  }
+  return <>{children}</>;
 };
 
 const OnlineClassCard: React.FC<OnlineClassCardProps> = ({ onlineClass, href }): JSX.Element => {
@@ -27,24 +43,23 @@ const OnlineClassCard: React.FC<OnlineClassCardProps> = ({ onlineClass, href }):
   const videoId = youtubeURLParser(onlineClass.linkToClass);
 
   return (
-    <Link
-      href={href}
-      className="flex flex-col rounded-lg shadow-md p-5 my-2 mx-5 w-[370px] h-[264px] cursor-pointer hover:shadow-lg hover:scale-[1.01]"
-    >
-      <div className="w-full flex flex-row justify-between items-center">
-        <h1 className="my-1.5 text-xl">{onlineClass.title}</h1>
-        <div>
-          <LiveSpan />
+    <OptionalLink href={href}>
+      <div className="flex flex-col rounded-lg w-[370px] h-[264px] shadow-md p-5 my-2 mx-5">
+        <div className="w-full flex flex-row justify-between items-center">
+          <h1 className="my-1.5 text-xl">{onlineClass.title}</h1>
+          <div>
+            <LiveSpan />
+          </div>
         </div>
+        <YouTube videoId={videoId !== false ? videoId : ""} opts={opts} />
+        <div className="flex py-2 w-full items-center justify-center">
+          <span className="bg-[#b0e3de] p-1 rounded-md font-bold text-blue-500">
+            {moment.unix(onlineClass.startTime).format("DD/MM/YYYY hh:mm A")}
+          </span>
+        </div>
+        {/* <p className="h-[150px] truncate pt-52">{onlineClass.description ?? ""}</p> */}
       </div>
-      <YouTube videoId={videoId !== false ? videoId : ""} opts={opts} />
-      <div className="flex py-2 w-full items-center justify-center">
-        <span className="bg-[#b0e3de] p-1 rounded-md font-bold text-blue-500">
-          {moment.unix(onlineClass.startTime).format("DD/MM/YYYY hh:mm A")}
-        </span>
-      </div>
-      {/* <p className="h-[150px] truncate pt-52">{onlineClass.description ?? ""}</p> */}
-    </Link>
+    </OptionalLink>
   );
 };
 

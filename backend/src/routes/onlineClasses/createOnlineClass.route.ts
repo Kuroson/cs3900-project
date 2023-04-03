@@ -102,6 +102,7 @@ export const createOnlineClass = async (
         linkToClass: linkToClass,
         running: false,
         chatMessages: [],
+        chatEnabled: true, // Enabled by default
     });
 
     const newLectureId = await newLecture

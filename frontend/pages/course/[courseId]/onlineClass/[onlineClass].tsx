@@ -1,5 +1,7 @@
 import React from "react";
+import { toast } from "react-toastify";
 import Head from "next/head";
+import { LoadingButton } from "@mui/lab";
 import { Button } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
 import { OnlineClassFull } from "models/onlineClass.model";
@@ -11,13 +13,14 @@ import {
   ChatSection,
   ContentContainer,
   EditOnlineClassSection,
-  EnableAndDisableChatButtons,
   Loading,
   OnlineClassVideoSection,
-  StartAndEndClassButtons,
+  StudentNavBar,
 } from "components";
+import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
+import { endOnlineClass, sendOnlineClassMessage, startOnlineClass } from "util/api/onlineClassApi";
 import initAuth from "util/firebase";
 
 initAuth(); // SSR maybe, i think...
@@ -31,10 +34,13 @@ type LeftColumnProps = {
   dynamicOnlineClass: OnlineClassFull;
   setDynamicOnlineClass: React.Dispatch<React.SetStateAction<OnlineClassFull>>;
 };
+
 const LeftColumn = ({
   dynamicOnlineClass,
   setDynamicOnlineClass,
 }: LeftColumnProps): JSX.Element => {
+  const authUser = useAuthUser();
+  const [runningLoading, setRunningLoading] = React.useState(false);
   const [editMode, setEditMode] = React.useState(true);
 
   React.useEffect(() => {
@@ -46,30 +52,7 @@ const LeftColumn = ({
 
   return (
     <div className="w-full flex flex-col justify-center items-center px-[5%]">
-      {editMode ? (
-        <EditOnlineClassSection
-          dynamicOnlineClass={dynamicOnlineClass}
-          setDynamicOnlineClass={setDynamicOnlineClass}
-          setEditMode={setEditMode}
-        />
-      ) : (
-        <>
-          <OnlineClassVideoSection dynamicOnlineClass={dynamicOnlineClass} />
-          <StartAndEndClassButtons
-            dynamicOnlineClass={dynamicOnlineClass}
-            setDynamicOnlineClass={setDynamicOnlineClass}
-          />
-          <div className="pt-5">
-            <Button variant="contained" onClick={() => setEditMode(true)}>
-              Edit Online Class
-            </Button>
-          </div>
-          <EnableAndDisableChatButtons
-            dynamicOnlineClass={dynamicOnlineClass}
-            setDynamicOnlineClass={setDynamicOnlineClass}
-          />
-        </>
-      )}
+      <OnlineClassVideoSection dynamicOnlineClass={dynamicOnlineClass} />
     </div>
   );
 };
@@ -79,7 +62,7 @@ type RightColumnProps = {
 };
 
 const RightColumn = ({ dynamicOnlineClass }: RightColumnProps): JSX.Element => {
-  return <ChatSection dynamicOnlineClass={dynamicOnlineClass} />;
+  return <ChatSection dynamicOnlineClass={dynamicOnlineClass} student={true} />;
 };
 
 const OnlineClassPage = ({ courseData, onlineClassData }: OnlineClassPageProps): JSX.Element => {
@@ -106,19 +89,19 @@ const OnlineClassPage = ({ courseData, onlineClassData }: OnlineClassPageProps):
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
+      <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%] pt-5 h-full">
           <div className="flex flex-row h-full">
             {/* Left col */}
-            <div className="w-full">
+            <div className="w-full h-full">
               <LeftColumn
                 dynamicOnlineClass={dynamicOnlineClass}
                 setDynamicOnlineClass={setDynamicOnlineClass}
               />
             </div>
             {/* Right col */}
-            <div className="w-full h-[90%]">
+            <div className="w-full h-full">
               <RightColumn dynamicOnlineClass={dynamicOnlineClass} />
             </div>
           </div>
@@ -154,7 +137,7 @@ export const getServerSideProps: GetServerSideProps<OnlineClassPageProps> = with
     | OnlineClassFull
     | undefined;
 
-  if (onlineClassData === undefined) return { notFound: true };
+  if (onlineClassData === undefined || !onlineClassData.running) return { notFound: true };
 
   onlineClassData.chatMessages = [];
 

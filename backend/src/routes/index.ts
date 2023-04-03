@@ -25,6 +25,8 @@ import { downloadFileController } from "./file/downloadFile.route";
 import { uploadFileController } from "./file/uploadFile.route";
 import { indexController } from "./index.route";
 import { createOnlineClassController } from "./onlineClasses/createOnlineClass.route";
+import { disableChatOnlineClassController } from "./onlineClasses/disableChatOnlineClass.route";
+import { enableChatOnlineClassController } from "./onlineClasses/enableChatOnlineClass.route";
 import { endOnlineClassController } from "./onlineClasses/endOnlineClass.route";
 import { getListOnlineClassController } from "./onlineClasses/getListOnlineClass.route";
 import { getOnlineClassController } from "./onlineClasses/getOnlineClass.route";
@@ -150,6 +152,8 @@ indexRouter.put("/class/update", updateOnlineClassController);
 indexRouter.put("/class/start", startOnlineClassController);
 indexRouter.put("/class/end", endOnlineClassController);
 indexRouter.post("/class/chat/send", sendChatMessageController);
+indexRouter.put("/class/chat/enable", enableChatOnlineClassController);
+indexRouter.put("/class/chat/disable", disableChatOnlineClassController);
 
 //Forum routes
 indexRouter.get("/forum", getForumController);
