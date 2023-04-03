@@ -59,11 +59,16 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         title: "empty",
         question: "",
         _id: "",
-        poster: ""
+        poster: "",
+        image: ""
     }
-
+    
+    // const [res1, err1] = await getCourseForum(await authUser.getIdToken(), courseData._id, "client");
+    // console.log("Getting list of forum");
+    // console.log(res1?.posts);
+    // const forum = getCourseForum(userDetails._id, courseData._id, "client");
     const [showedPost, setShowedPost] = useState<BasicPostInfo>(emptyPost);
-    const [postsList, setPostsList] = useState<Array<BasicPostInfo>>([]);
+    const [postsList, setPostsList] = useState<Array<BasicPostInfo>>(courseData.forum.posts);
     const [open, setOpen] = React.useState(false);
     const [postTitle, setPostTitle] = React.useState("");
     const [postDesc, setPostDesc] = React.useState("");
@@ -95,15 +100,20 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         }
 
         //TODO image
+        const FROG_IMAGE_URL =
+          "https://i.natgeofe.com/k/8fa25ea4-6409-47fb-b3cc-4af8e0dc9616/red-eyed-tree-frog-on-leaves-3-2_3x2.jpg";
+
         const title = postTitle;
         const question = postDesc;
         const courseId = courseData._id;
         const poster = userDetails._id;
+        const image = FROG_IMAGE_URL;
         const dataPayload = {
             courseId,
             title,
             question,
-            poster
+            poster,
+            image
         };
         setButtonLoading(true);
         const [res, err] = await createNewPost(await authUser.getIdToken(), dataPayload, "client");
@@ -126,6 +136,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         const newPost : BasicPostInfo = {
             courseId: courseData._id,
             _id: res.postId,
+            image: FROG_IMAGE_URL,
             title: postTitle,
             question: postDesc,
             poster: userDetails._id
@@ -139,11 +150,6 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         setOpen(false);
         setPostTitle("");
         setPostDesc("");
-
-        //Check by getting forum TODO this is broken, res1 is good, but posts is undefined
-        // const [res1, err1] = await getCourseForum(await authUser.getIdToken(), courseData._id, "client");
-        // console.log("Getting list of forum");
-        // console.log(res1?.posts);
     }
 
 

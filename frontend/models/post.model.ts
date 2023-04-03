@@ -18,7 +18,6 @@ import {
   
   export type BasicPostInfo = Omit<
     PostInterface,
-    | "image"
     | "responses"
   >;  
 
@@ -27,4 +26,5 @@ import {
     title: string;
     question: string;
     poster: string;
+    image: string;
   };

@@ -35,6 +35,7 @@ const ForumPostCard: React.FC<ForumPostCardProps> = ({ post, posterDetails, date
         </div>
         <div className="text-xl font-bold pt-2">{post.title}</div>
         <p className="h-[150px] overflow-hidden pt-2">{post.question}</p>
+        <img src={post.image}></img>
     </div>
   );
 };

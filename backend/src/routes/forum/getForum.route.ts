@@ -33,8 +33,6 @@ export const getForumController = async (
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        console.log("ehllo");
-
         const authUser = await checkAuth(req);
         const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId"];
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
@@ -42,7 +40,7 @@ export const getForumController = async (
 
             const forumData = await getForum(courseId, authUser.uid);
             //console.log(forumData);
-            return res.status(200).json({ ...forumData });
+            return res.status(200).json({ ...forumData.toObject() });
         } else {
             throw new HttpException(
                 400,
@@ -73,7 +71,6 @@ export const getForum = async (
     courseId: string,
     firebaseUID: string,
 ): Promise<BasicForumInfo> => {
-    console.log("hi");
 
     // Find user first
     const user = await User.findOne({ firebase_uid: firebaseUID }).catch(() => null);
