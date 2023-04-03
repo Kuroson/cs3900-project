@@ -37,8 +37,13 @@ const OnlineClassCard: React.FC<OnlineClassCardProps> = ({ onlineClass, href }):
           <LiveSpan />
         </div>
       </div>
-      <p className="h-[150px] truncate">{onlineClass.description ?? ""}</p>
       <YouTube videoId={videoId !== false ? videoId : ""} opts={opts} />
+      <div className="flex py-2 w-full items-center justify-center">
+        <span className="bg-[#b0e3de] p-1 rounded-md font-bold text-blue-500">
+          {moment.unix(onlineClass.startTime).format("DD/MM/YYYY hh:mm A")}
+        </span>
+      </div>
+      {/* <p className="h-[150px] truncate pt-52">{onlineClass.description ?? ""}</p> */}
     </Link>
   );
 };
