@@ -1,13 +1,11 @@
 import React from "react";
 import Head from "next/head";
-import { Button } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { FullWorkloadInfo, WorkloadInterface } from "models/workload.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading, WorkloadSection } from "components";
-import AddNewWorkloadSection from "components/admin/workload/AddNewWeekSection";
 import PageHeader from "components/common/PageHeader";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";

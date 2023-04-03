@@ -1,4 +1,3 @@
-import { TransitionGroup } from "react-transition-group";
 import { List } from "@mui/material";
 import { TaskInterface } from "models/task.model";
 import AddNewTaskSection from "./AddNewTaskSection";

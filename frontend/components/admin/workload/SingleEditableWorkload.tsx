@@ -1,19 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
-import Link from "next/link";
-import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { FullWeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
-import {
-  RemoveResourcePayloadRequest,
-  UpdatePagePayloadRequest,
-  removeResource,
-  updatePageResource,
-  uploadResourceFile,
-} from "util/api/pageApi";
 import {
   DeleteWeekPayloadRequest,
   UpdateWeekPayloadRequest,

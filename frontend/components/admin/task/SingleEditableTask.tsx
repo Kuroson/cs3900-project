@@ -1,8 +1,7 @@
 import React from "react";
 import { toast } from "react-toastify";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton, ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
+import { ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
 import { TaskInterface } from "models/task.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
