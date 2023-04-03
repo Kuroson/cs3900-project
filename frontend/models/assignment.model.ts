@@ -30,6 +30,7 @@ export type AssignmentInfoType = {
   marksAvailable: number;
   tags: Array<string>;
   submission?: SubmissionInfo; // just for student
+  markAwarded?: number;
 };
 
 export type SubmitAssignmentType = {
@@ -70,4 +71,5 @@ export type gradingType = {
   comment: string;
   successTags: Array<string>;
   improvementTags: Array<string>;
+  assignmentId: string;
 };

@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import CommentIcon from "@mui/icons-material/Comment";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import SendIcon from "@mui/icons-material/Send";
+import SpellcheckIcon from "@mui/icons-material/Spellcheck";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { Button, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import { AssignmentInfoType } from "models/assignment.model";
 import { useAuthUser } from "next-firebase-auth";
 import PageHeader from "components/common/PageHeader";
+import Tag from "components/common/Tag";
 import TitleWithIcon from "components/common/TitleWithIcon";
 import { HttpException } from "util/HttpExceptions";
 import { getAssignmentInfo, submitAssignment, updateAssignmentAdmin } from "util/api/assignmentApi";
@@ -105,6 +110,7 @@ const StudentAssignment: React.FC<{
             marksAvailable: assignmentInfo.marksAvailable,
             deadline: assignmentInfo.deadline,
             tags: assignmentInfo.tags,
+            markAwarded: assignmentInfo.submission?.mark,
           }}
           courseTags={courseTags}
           isAdmin={false}
@@ -112,20 +118,42 @@ const StudentAssignment: React.FC<{
         {/* Viewing/submitting assignment */}
         <div>
           {submitted && (
-            <>
-              <span className="w-full text-xl font-medium flex flex-col">
-                {assignmentInfo.submission?.title}
-              </span>
+            <div className="flex flex-col gap-4">
+              <TitleWithIcon text="Assignment Result">
+                <SpellcheckIcon color="primary" />
+              </TitleWithIcon>
               {/* Submission */}
-              {assignmentInfo.submission?.linkToSubmission !== undefined && (
-                <div className="mt-2">
+              <div>
+                <span className="w-full text-xl font-medium mr-3">
+                  {assignmentInfo.submission?.title}
+                </span>
+                {assignmentInfo.submission?.linkToSubmission !== undefined && (
                   <Link href={assignmentInfo.submission?.linkToSubmission} target="_blank">
-                    <Button variant="contained">Download File</Button>
+                    <Button variant="outlined">Download File</Button>
                   </Link>
-                </div>
-              )}
-              {/* TODO: Add comments/tags from grading */}
-            </>
+                )}
+              </div>
+              <TitleWithIcon text="Success Tags">
+                <ThumbUpIcon color="primary" />
+              </TitleWithIcon>
+              <div className="flex gap-2">
+                {assignmentInfo.submission?.successTags?.map((tag, idx) => (
+                  <Tag text={tag} key={`good_tag_${idx}`} color="bg-[#4caf50]" />
+                ))}
+              </div>
+              <TitleWithIcon text="Improvement Tags">
+                <ThumbDownIcon color="primary" />
+              </TitleWithIcon>
+              <div className="flex gap-2">
+                {assignmentInfo.submission?.improvementTags?.map((tag, idx) => (
+                  <Tag text={tag} key={`improve_tag_${idx}`} color="bg-[#e57373]" />
+                ))}
+              </div>
+              <TitleWithIcon text="Comment">
+                <CommentIcon color="primary" />
+              </TitleWithIcon>
+              <p className="font-medium">{assignmentInfo.submission?.comments}</p>
+            </div>
           )}
           {!submitted && !afterDeadline() && (
             <div className="pt-4">

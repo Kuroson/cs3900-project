@@ -109,7 +109,11 @@ const AdminAssignment: React.FC<{
           <TitleWithIcon text="Submissions">
             <UploadFileIcon color="primary" />
           </TitleWithIcon>
-          <ShowSubmissionsAss courseId={courseId} assignmentId={assignmentId} />
+          <ShowSubmissionsAss
+            courseId={courseId}
+            assignmentId={assignmentId}
+            courseTags={courseTags}
+          />
         </div>
       </div>
     </>

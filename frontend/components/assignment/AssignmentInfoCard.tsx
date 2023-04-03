@@ -41,9 +41,7 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
       <div className="flex justify-between items-center">
         <TitleWithIcon
           text={`Marks: ${
-            info.submission?.mark != undefined
-              ? info.submission?.mark + " / "
-              : `${!isAdmin ? "? / " : ""}`
+            info.markAwarded != undefined ? info.markAwarded + " / " : `${!isAdmin ? "? / " : ""}`
           }${info.marksAvailable}`}
         >
           <RuleIcon color="primary" />
