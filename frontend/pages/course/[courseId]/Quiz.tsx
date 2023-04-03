@@ -101,6 +101,7 @@ const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
                   <Card
                     text={quiz.title}
                     close={quiz.close}
+                    open={quiz.open}
                     key={quiz.quizId}
                     isQuiz={true}
                     handleOpen={() => {

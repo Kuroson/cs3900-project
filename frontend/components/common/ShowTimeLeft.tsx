@@ -10,10 +10,10 @@ type ShowTimeLeftProps = { open?: string; close: string; className?: string };
 
 const ShowTimeLeft: React.FC<ShowTimeLeftProps> = ({ open, close, className }) => {
   const timeLeft = dayjs.utc(close).endOf("minute").fromNow();
-  const pass = timeLeft.includes("ago");
+  const pass = dayjs.utc(close) < dayjs.utc();
 
   const beforeOpen = dayjs.utc(open).endOf("minute").fromNow();
-  const isOpen = beforeOpen.includes("ago") || open == null;
+  const isOpen = dayjs.utc(open) < dayjs.utc() || open == null;
 
   return (
     <span

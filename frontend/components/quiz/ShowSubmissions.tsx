@@ -3,7 +3,11 @@ import { toast } from "react-toastify";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Button, Card, TextField } from "@mui/material";
-import { EachQuestionSubmissionsType, QuizSubmissionsType } from "models/quiz.model";
+import {
+  EachQuestionSubmissionsType,
+  QuizSubmissionsType,
+  StudentResponseType,
+} from "models/quiz.model";
 import { useAuthUser } from "next-firebase-auth";
 import Tag from "components/common/Tag";
 import { HttpException } from "util/HttpExceptions";
@@ -18,17 +22,61 @@ type SubmissionsProps = {
   submissions: EachQuestionSubmissionsType;
 };
 
+type AnswerProps = {
+  response: StudentResponseType;
+  handleMarkAnswer: (responseId: string, marks: number) => Promise<void>;
+};
+
+const ShowSubmissions = ({ courseId, quizId }: MarkProps): JSX.Element => {
+  const [questions, setQuestions] = useState<EachQuestionSubmissionsType[]>();
+  const authUser = useAuthUser();
+
+  useEffect(() => {
+    const getSubmissions = async () => {
+      const [res, err] = await getQuizSubmissions(
+        await authUser.getIdToken(),
+        {
+          quizId: quizId,
+          courseId: courseId,
+        },
+        "client",
+      );
+      if (err !== null) {
+        console.error(err);
+        if (err instanceof HttpException) {
+          toast.error(err.message);
+        } else {
+          toast.error("Failed to fetch submissions");
+        }
+        return;
+      }
+      if (res !== null) {
+        setQuestions(res["submissions"]);
+      }
+    };
+    getSubmissions();
+  }, [authUser, courseId, quizId]);
+
+  return (
+    <div className="flex flex-col gap-8">
+      {questions?.map((question, idx) => (
+        <Submissions submissions={question} key={`mark_${idx}`} />
+      ))}
+    </div>
+  );
+};
+
 const Submissions = ({ submissions }: SubmissionsProps): JSX.Element => {
   const [showSubmission, setShowSubmission] = useState(false);
-  const [marks, setMarks] = useState<number>();
   const authUser = useAuthUser();
-  const handleMarkAnswer = async (responseId: string) => {
+
+  const handleMarkAnswer = async (responseId: string, marks: number) => {
     const [res, err] = await gradeSubmission(
       await authUser.getIdToken(),
       {
         questionId: submissions.question.questionId,
         responseId: responseId,
-        mark: marks ?? 0,
+        mark: marks,
       },
       "client",
     );
@@ -58,27 +106,13 @@ const Submissions = ({ submissions }: SubmissionsProps): JSX.Element => {
         {showSubmission ? "Hide submissions" : "Show submissions"}
       </Button>
       {showSubmission && (
-        <div className="flex flex-col gap-2 p-3">
+        <div className="flex flex-col gap-3 p-3">
           {submissions.responses.map((response, idx) => (
-            <Card key={`response_${idx}`} className="p-4 flex flex-col gap-3">
-              <p>{response.answer}</p>
-              <div className="flex items-center gap-3">
-                <TextField
-                  id={`marking_${idx}`}
-                  label="Marks"
-                  variant="standard"
-                  type="number"
-                  onChange={(e) => setMarks(+e.target.value)}
-                />
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => handleMarkAnswer(response.responseId)}
-                >
-                  Send
-                </Button>
-              </div>
-            </Card>
+            <Answer
+              response={response}
+              key={`response_${idx}`}
+              handleMarkAnswer={handleMarkAnswer}
+            />
           ))}
         </div>
       )}
@@ -86,72 +120,29 @@ const Submissions = ({ submissions }: SubmissionsProps): JSX.Element => {
   );
 };
 
-const sample: QuizSubmissionsType = {
-  submissions: [
-    {
-      question: {
-        questionId: "1",
-        text: "what is html? Explan it",
-        marks: "10",
-        tag: "html",
-      },
-      responses: [
-        {
-          responseId: "1",
-          studentId: "1",
-          answer: "answer here",
-        },
-        {
-          responseId: "2",
-          studentId: "2",
-          answer: "answer2 here",
-        },
-        {
-          responseId: "3",
-          studentId: "3",
-          answer: "answer2 here",
-        },
-      ],
-    },
-  ],
-};
-
-const ShowSubmissions = ({ courseId, quizId }: MarkProps): JSX.Element => {
-  const [questions, setQuestions] = useState(sample["submissions"]);
-  const authUser = useAuthUser();
-
-  useEffect(() => {
-    const getSubmissions = async () => {
-      const [res, err] = await getQuizSubmissions(
-        await authUser.getIdToken(),
-        {
-          quizId: quizId,
-          courseId: courseId,
-        },
-        "client",
-      );
-      if (err !== null) {
-        console.error(err);
-        if (err instanceof HttpException) {
-          toast.error(err.message);
-        } else {
-          toast.error("Failed to fetch submissions");
-        }
-        return;
-      }
-      if (res !== null) {
-        setQuestions(res["submissions"]);
-      }
-    };
-    // getSubmissions();
-  }, [authUser, courseId, quizId]);
+// each student answer
+const Answer = ({ response, handleMarkAnswer }: AnswerProps): JSX.Element => {
+  const [marks, setMarks] = useState<number>();
 
   return (
-    <div>
-      {questions.map((question, idx) => (
-        <Submissions submissions={question} key={`mark_${idx}`} />
-      ))}
-    </div>
+    <Card className="p-4 flex flex-col gap-3">
+      <p>{response.answer}</p>
+      <div className="flex items-center gap-3">
+        <TextField
+          label="Marks"
+          variant="standard"
+          type="number"
+          onChange={(e) => setMarks(+e.target.value)}
+        />
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => handleMarkAnswer(response.responseId, marks ?? 0)}
+        >
+          Send
+        </Button>
+      </div>
+    </Card>
   );
 };
 

@@ -27,6 +27,7 @@ const StudentQuiz: React.FC<{
     description: "",
     questions: [],
   });
+  console.log("🚀 ~ file: StudentQuiz.tsx:30 ~ quizInfo:", quizInfo);
   const [responses, setResponses] = useState<Array<ResponsesType>>([]);
   const [checkIsResponded, setCheckIsResponded] = useState(isResponded);
 
@@ -113,6 +114,7 @@ const StudentQuiz: React.FC<{
             maxMarks: quizInfo.maxMarks,
             open: quizInfo.open,
             close: quizInfo.close,
+            markAwarded: quizInfo.marksAwarded,
           }}
           isAdmin={false}
         />
@@ -168,7 +170,7 @@ const StudentQuiz: React.FC<{
           </>
         ) : (
           <>
-            {quizInfo.questions.map((question, idx) => (
+            {quizInfo?.questions?.map((question, idx) => (
               <ShowAnswer questionInfo={question} key={`q_answer_${idx}`} isAdmin={false} />
             ))}
           </>

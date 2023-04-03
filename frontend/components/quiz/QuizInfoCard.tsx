@@ -39,7 +39,9 @@ const QuizInfoCard: React.FC<QuizInfoCardProps> = ({
         </div>
       </div>
       <TitleWithIcon
-        text={`Marks: ${info.markAwarded != null ? info.markAwarded + "/" : "?/"}${info.maxMarks}`}
+        text={`Marks: ${
+          info.markAwarded != null ? info.markAwarded + "/" : `${isAdmin ? "" : "? / "}`
+        }${info.maxMarks}`}
       >
         <RuleIcon color="primary" />
       </TitleWithIcon>

@@ -8,7 +8,7 @@ type CardProps = {
   close: string;
   isQuiz: boolean;
   handleOpen: () => void;
-  open: string;
+  open?: string;
 };
 
 // Card for quiz or assignment

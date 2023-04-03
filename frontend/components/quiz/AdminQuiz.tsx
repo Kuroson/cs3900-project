@@ -284,6 +284,7 @@ const AdminQuiz: React.FC<{
                 id="question marks"
                 label="Question marks"
                 variant="outlined"
+                type="number"
                 value={questionMarks}
                 onChange={(e) => setQuestionMarks(+e.target.value)}
                 fullWidth

@@ -24,7 +24,9 @@ const ShowAnswer: React.FC<ShowAnswerProps> = ({
         {questionInfo.tag && <Tag text={questionInfo.tag} color="bg-[#009688]" />}
         <Tag
           text={`Marks: ${
-            questionInfo.markAwarded != null ? questionInfo.markAwarded + "/" : "?/"
+            questionInfo.markAwarded != null
+              ? questionInfo.markAwarded + " /"
+              : `${isAdmin ? "" : "? /"}`
           } ${String(questionInfo.marks)}`}
           color="bg-[#78909c]"
         />

@@ -65,6 +65,12 @@ export type SubmitQuizType = {
   responses: Array<ResponsesType>;
 };
 
+export type StudentResponseType = {
+  responseId: string;
+  studentId: string;
+  answer: string;
+};
+
 export type EachQuestionSubmissionsType = {
   question: {
     questionId: string;
@@ -72,11 +78,7 @@ export type EachQuestionSubmissionsType = {
     marks: string;
     tag: string;
   };
-  responses: Array<{
-    responseId: string;
-    studentId: string;
-    answer: string;
-  }>;
+  responses: Array<StudentResponseType>;
 };
 
 export type QuizSubmissionsType = {
