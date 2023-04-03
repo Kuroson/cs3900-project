@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, TextField } from "@mui/material";
+import { Avatar, Button, Card, TextField } from "@mui/material";
 import { getAllSubmissionsType, submissionType } from "models/assignment.model";
 import { useAuthUser } from "next-firebase-auth";
 import { getSubmissionsAss } from "util/api/assignmentApi";
@@ -11,10 +11,6 @@ type ShowSubmissionsAssProps = {
 
 const ShowSubmissionsAss = ({ courseId, assignmentId }: ShowSubmissionsAssProps): JSX.Element => {
   const [submissions, setSubmissions] = useState<getAllSubmissionsType>();
-  console.log(
-    "🚀 ~ file: ShowSubmissionsAss.tsx:13 ~ ShowSubmissionsAss ~ submissions:",
-    submissions,
-  );
   const authUser = useAuthUser();
 
   useEffect(() => {
@@ -47,8 +43,17 @@ const ShowSubmissionsAss = ({ courseId, assignmentId }: ShowSubmissionsAssProps)
 const Submission = ({ info }: { info: submissionType }): JSX.Element => {
   const [marks, setMarks] = useState<number>();
   const [comment, setComment] = useState("");
+  const getNameInitial = info.studentName.split(" ");
+
   return (
-    <Card className="p-4 flex flex-col gap-3">
+    <Card className="p-4 flex flex-col gap-6">
+      <div className="flex gap-3 items-center">
+        <Avatar src={info.studentAvatar}>
+          {getNameInitial[0][0]}
+          {getNameInitial[1][0]}
+        </Avatar>
+        <h3>{info.studentName}</h3>
+      </div>
       <h3>{info.title}: </h3>
       <div className="flex justify-center gap-3 flex-col">
         <TextField

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Button, Card, TextField } from "@mui/material";
+import { Avatar, Button, Card, TextField } from "@mui/material";
 import {
   EachQuestionSubmissionsType,
   QuizSubmissionsType,
@@ -123,9 +123,17 @@ const Submissions = ({ submissions }: SubmissionsProps): JSX.Element => {
 // each student answer
 const Answer = ({ response, handleMarkAnswer }: AnswerProps): JSX.Element => {
   const [marks, setMarks] = useState<number>();
+  const getNameInitial = response.studentName.split(" ");
 
   return (
     <Card className="p-4 flex flex-col gap-3">
+      <div className="flex gap-3 items-center">
+        <Avatar src={response.studentAvatar}>
+          {getNameInitial[0][0]}
+          {getNameInitial[1][0]}
+        </Avatar>
+        <h3>{response.studentName}</h3>
+      </div>
       <p>{response.answer}</p>
       <div className="flex items-center gap-3">
         <TextField

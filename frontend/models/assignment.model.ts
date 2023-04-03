@@ -50,6 +50,8 @@ export type submissionType = {
   title: string;
   linkToSubmission: string;
   fileType: string;
+  studentName: string;
+  studentAvatar: string;
 };
 
 export type getAllSubmissionsType = {

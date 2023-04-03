@@ -69,6 +69,8 @@ export type StudentResponseType = {
   responseId: string;
   studentId: string;
   answer: string;
+  studentName: string;
+  studentAvatar?: string;
 };
 
 export type EachQuestionSubmissionsType = {
