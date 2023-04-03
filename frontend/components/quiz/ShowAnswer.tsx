@@ -8,10 +8,16 @@ type ShowAnswerProps = {
   questionInfo: QuizQuestionType;
   isAdmin: boolean;
   handleDelete?: () => void;
+  isBeforeOpen?: boolean;
 };
 
 const label = { inputProps: { "aria-label": "Checkbox choice" } };
-const ShowAnswer: React.FC<ShowAnswerProps> = ({ questionInfo, isAdmin, handleDelete }) => {
+const ShowAnswer: React.FC<ShowAnswerProps> = ({
+  questionInfo,
+  isAdmin,
+  handleDelete,
+  isBeforeOpen,
+}) => {
   return (
     <div>
       <div className="flex gap-3 items-center">
@@ -22,7 +28,7 @@ const ShowAnswer: React.FC<ShowAnswerProps> = ({ questionInfo, isAdmin, handleDe
           } ${String(questionInfo.marks)}`}
           color="bg-[#78909c]"
         />
-        {isAdmin && (
+        {isAdmin && (isBeforeOpen ?? false) && (
           <IconButton aria-label="delete" onClick={handleDelete}>
             <DeleteIcon color="error" />
           </IconButton>

@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   FormControl,
   IconButton,
   InputLabel,
@@ -27,6 +28,7 @@ import {
 } from "util/api/quizApi";
 import QuizInfoCard from "./QuizInfoCard";
 import ShowAnswer from "./ShowAnswer";
+import ShowSubmissions from "./ShowSubmissions";
 
 const AdminQuiz: React.FC<{
   quizId: string;
@@ -45,11 +47,14 @@ const AdminQuiz: React.FC<{
   });
   // add question
   const [addQuestionModal, setAddQuestionModal] = useState(false);
+  const [markQuestion, setMarkQuestion] = useState(false);
   const [questionText, setQuestionText] = useState("");
   const [questionType, setQuestionType] = useState("choice");
   const [questionMarks, setQuestionMarks] = useState(0);
   const [questionTag, setQuestionTag] = useState("");
   const [choices, setChoices] = useState<{ text: string; correct: boolean }[]>([]);
+  const isBeforeOpen = dayjs.utc() < dayjs.utc(quizInfo.open);
+  const isClosed = dayjs.utc() > dayjs.utc(quizInfo.close);
 
   useEffect(() => {
     const getQuizInfo = async () => {
@@ -199,17 +204,31 @@ const AdminQuiz: React.FC<{
           isAdmin={true}
           handleEditInfo={handleEditInfo}
         />
-        {quizInfo.questions.map((question, idx) => (
-          <ShowAnswer
-            key={`answer+${idx}`}
-            questionInfo={question}
-            isAdmin={true}
-            handleDelete={() => handleDeleteQuestion(question._id ?? "", idx)}
-          />
-        ))}
-        <Button onClick={() => setAddQuestionModal((prev) => !prev)} variant="outlined">
-          Add Question
-        </Button>
+        {isClosed && (
+          <div className="flex justify-center items-center gap-2">
+            <Button onClick={() => setMarkQuestion(false)}>Show all questions</Button>
+            <Divider orientation="vertical" sx={{ height: "20px" }} />
+            <Button onClick={() => setMarkQuestion(true)}>Mark Open Questions</Button>
+          </div>
+        )}
+        {markQuestion ? (
+          <ShowSubmissions courseId={courseId} quizId={quizId} />
+        ) : (
+          quizInfo.questions.map((question, idx) => (
+            <ShowAnswer
+              key={`answer+${idx}`}
+              questionInfo={question}
+              isAdmin={true}
+              handleDelete={() => handleDeleteQuestion(question._id ?? "", idx)}
+              isBeforeOpen={isBeforeOpen}
+            />
+          ))
+        )}
+        {isBeforeOpen && (
+          <Button onClick={() => setAddQuestionModal((prev) => !prev)} variant="outlined">
+            Add Question
+          </Button>
+        )}
         <Modal
           open={addQuestionModal}
           onClose={() => setAddQuestionModal((prev) => !prev)}
