@@ -1,11 +1,13 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course, { CourseInterface } from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
+import { ForumInterface } from "@/models/course/forum/forum.model";
+import { PostInterface } from "@/models/course/forum/post.model";
 import { OnlineClassInterface } from "@/models/course/onlineClass/onlineClass.model";
 import { PageInterface } from "@/models/course/page/page.model";
 import { ResourceInterface } from "@/models/course/page/resource.model";
 import { SectionInterface } from "@/models/course/page/section.model";
-import User from "@/models/user.model";
+import User, { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -16,7 +18,7 @@ type ResponsePayload = UserCourseInformation;
 // Basically joined all the tables, contains all information about pages, sections, and resources
 type UserCourseInformation = Omit<
     CourseInterface,
-    "students" | "pages" | "creator" | "onlineClasses"
+    "students" | "pages" | "creator" | "onlineClasses" | "forum"
 > & {
     pages: Omit<PageInterface, "section" | "resources"> &
         {
@@ -27,6 +29,16 @@ type UserCourseInformation = Omit<
             resources: ResourceInterface[];
         }[];
     onlineClasses: Omit<OnlineClassInterface, "chatMessages">[];
+    forum: Omit<ForumInterface,"description | posts"> & 
+        {
+            posts: Array<Omit<
+                PostInterface,
+                | "responses"
+                | "poster"
+            > & {
+                poster: UserInterface;
+            }>;
+        };
 };
 
 type QueryPayload = {
@@ -91,7 +103,7 @@ export const getCourse = async (
 
     // Check if user is enrolled in course
     const myCourse = await Course.findById(courseId)
-        .select("_id title code description session icon pages tags onlineClasses")
+        .select("_id title code description forum session icon pages tags onlineClasses")
         .populate("pages")
         .populate({
             path: "pages",
@@ -104,6 +116,16 @@ export const getCourse = async (
                 populate: {
                     path: "resources",
                 },
+            },
+        })
+        .populate("forum")
+        .populate({
+            path: "forum",
+            populate: { 
+                path: "posts", 
+                populate: {
+                    path: "poster"
+                } 
             },
         })
         .populate({

@@ -44,6 +44,13 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
+  const [showedPost, setShowedPost] = useState<BasicPostInfo | null>(null);
+  const [postsList, setPostsList] = useState<Array<BasicPostInfo>>(courseData.forum.posts);
+  const [open, setOpen] = React.useState(false);
+  const [postTitle, setPostTitle] = React.useState("");
+  const [postDesc, setPostDesc] = React.useState("");
+  const [buttonLoading, setButtonLoading] = React.useState(false);
+
   React.useEffect(() => {
     // Build user data for user context
     if (user.userDetails !== null) {
@@ -54,28 +61,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
-    const emptyPost = {
-        courseId: "",
-        title: "empty",
-        question: "",
-        _id: "",
-        poster: "",
-        image: ""
-    }
-    
-    // const [res1, err1] = await getCourseForum(await authUser.getIdToken(), courseData._id, "client");
-    // console.log("Getting list of forum");
-    // console.log(res1?.posts);
-    // const forum = getCourseForum(userDetails._id, courseData._id, "client");
-    const [showedPost, setShowedPost] = useState<BasicPostInfo>(emptyPost);
-    const [postsList, setPostsList] = useState<Array<BasicPostInfo>>(courseData.forum.posts);
-    const [open, setOpen] = React.useState(false);
-    const [postTitle, setPostTitle] = React.useState("");
-    const [postDesc, setPostDesc] = React.useState("");
-    const [buttonLoading, setButtonLoading] = React.useState(false);
-
-    const date = new Date();
-    const router = useRouter();
+  const date = new Date();
     
     function handleOnClickPostOverview(index) {
         //Clicks on a particular post overview
@@ -106,7 +92,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         const title = postTitle;
         const question = postDesc;
         const courseId = courseData._id;
-        const poster = userDetails._id;
+        const poster = userDetails;
         const image = FROG_IMAGE_URL;
         const dataPayload = {
             courseId,
@@ -139,7 +125,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             image: FROG_IMAGE_URL,
             title: postTitle,
             question: postDesc,
-            poster: userDetails._id
+            poster: userDetails
         };
 
         postsList.push(newPost);
@@ -223,11 +209,11 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
                 </Modal>
                 {postsList?.map((post, index) => (
                     <div onClick={() => handleOnClickPostOverview(index)}>
-                        <ForumPostOverviewCard post={post} posterDetails={userDetails}></ForumPostOverviewCard>
+                        <ForumPostOverviewCard post={post}/>
                     </div>          
                 ))}  
             </div>
-            <ForumPostCard post={showedPost} posterDetails={userDetails} datePosted={date.toLocaleString()}></ForumPostCard>;
+            <ForumPostCard post={showedPost} datePosted={date.toLocaleString()}></ForumPostCard>;
         </div>
       </ContentContainer>
       

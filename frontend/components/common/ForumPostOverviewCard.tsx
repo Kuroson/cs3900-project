@@ -8,10 +8,10 @@ import { UserDetails } from "models/user.model";
 
 type ForumPostOverviewCardProps = {
   post: BasicPostInfo,
-  posterDetails: UserDetails,
 };
 
-const ForumPostOverviewCard: React.FC<ForumPostOverviewCardProps> = ({ post, posterDetails }): JSX.Element => {
+const ForumPostOverviewCard: React.FC<ForumPostOverviewCardProps> = ({ post }): JSX.Element => {
+    console.warn(post);
   
   return (
     <div className="flex flex-col rounded-lg shadow-md p-2 my-2 mx-5 w-[300px] cursor-pointer hover:shadow-lg">
@@ -20,11 +20,11 @@ const ForumPostOverviewCard: React.FC<ForumPostOverviewCardProps> = ({ post, pos
                 <div className="mt-5 flex flex-row justify-center">
                     <div className="w-[40px] h-[40px] bg-orange-500 rounded-full flex justify-center items-center">
                         <span className="text-l font-bold">
-                            {(posterDetails.first_name?.charAt(0) ?? "") + (posterDetails.last_name?.charAt(0) ?? "")}
+                            {(post.poster.first_name?.charAt(0) ?? "") + (post.poster.last_name?.charAt(0) ?? "")}
                         </span>
                     </div>
                     <div className="flex flex-col pl-2 justify-center items-center">
-                        <span className="text-start w-full">{`${posterDetails.first_name} ${posterDetails.last_name}`}</span>
+                        <span className="text-start w-full">{`${post.poster.first_name} ${post.poster.last_name}`}</span>
                         <div className="text-l font-bold pt-0.5">{post.title}</div>
                     </div>
                 </div>    

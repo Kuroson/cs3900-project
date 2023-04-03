@@ -4,6 +4,7 @@ import {
 } from "models";
 import { PageFull } from "./page.model";
 import { BasicPostInfo, PostInterface } from "./post.model";
+import { UserDetails } from "./user.model";
 
 export interface ForumInterface extends MongooseDocument {
   description: string;
@@ -20,7 +21,7 @@ export type PopulatedForumInterface = Omit<
   | "posts"
   | "description"
     > & {
-  posts: Array<BasicPostInfo>;
+  posts: Array<Omit<BasicPostInfo, "poster"> & {poster: UserDetails}>;
 }
 
 
