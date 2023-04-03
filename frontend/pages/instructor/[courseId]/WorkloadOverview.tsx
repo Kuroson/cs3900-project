@@ -8,6 +8,7 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading, WorkloadSection } from "components";
 import AddNewWorkloadSection from "components/admin/workload/AddNewWeekSection";
+import PageHeader from "components/common/PageHeader";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { getWorkload } from "util/api/workloadApi";
@@ -59,10 +60,10 @@ const WorkloadOverviewPage = ({
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>
-        <div className="flex flex-col w-full justify-center px-[5%] items-center">
+        <div className="flex flex-col w-full px-[5%] py-2">
           <h1 className="text-3xl w-ull border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between pt-3">
             <div className="flex items-center gap-4">
-              <span className="ml-4">Workload Overview</span>
+              <PageHeader title="Workload Overview" />
             </div>
           </h1>
           <WorkloadSection
@@ -70,12 +71,6 @@ const WorkloadOverviewPage = ({
             setWeeks={setDynamicWeeks}
             weeks={dynamicWeeks}
           />
-
-          {/* <AddNewWorkloadSection
-            courseId={courseData._id}
-            setWeeks={setDynamicWeeks}
-            weeks={dynamicWeeks}
-          /> */}
         </div>
       </ContentContainer>
     </>

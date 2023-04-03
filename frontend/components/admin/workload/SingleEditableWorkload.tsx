@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
+import Divider from "@mui/material/Divider";
 import { FullWeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
@@ -78,8 +79,8 @@ const SingleEditableWeekSection = ({
 
       const updatedWeek: UpdateWeekPayloadRequest = {
         weekId: week._id,
-        title: week.title,
-        description: week.description,
+        title: title,
+        description: description,
       };
 
       const [res, err] = await updateWeek(await authUser.getIdToken(), updatedWeek, "client");
@@ -139,20 +140,32 @@ const SingleEditableWeekSection = ({
 
   // Show normal interface
   return (
-    <div className="w-full pt-5" data-cy={`section-${title}`}>
-      <span className="w-full text-xl font-medium flex flex-col">{title}</span>
-      {/* Description */}
-      {description !== undefined && <p>{description}</p>}
-      {/* Resource */}
-      <div>
-        <TasksSection weekId={week._id} tasks={tasks} setTasks={setTasks} />
-      </div>
-      <div data-cy="edit-button-section">
-        <EditPanelButtons
-          editMode={editMode}
-          handleEditClick={handleEditClick}
-          handleRemoveClick={handleRemoveClick}
-        />
+    <div className="p-3">
+      <div
+        className="w-full py-5 px-10 rounded-lg border-solid border-5 border-[#26a69a;]"
+        data-cy={`section-${title}`}
+      >
+        <div className="w-full items-end">
+          <div className="flex-row flex w-full justify-between">
+            <div>
+              <span className="w-full text-xl font-medium flex flex-col">{title}</span>
+              {/* Description */}
+              {description !== undefined && <p>{description}</p>}
+              {/* Resource */}
+            </div>
+            <div data-cy="edit-button-section">
+              <EditPanelButtons
+                editMode={editMode}
+                handleEditClick={handleEditClick}
+                handleRemoveClick={handleRemoveClick}
+              />
+            </div>
+          </div>
+        </div>
+        <Divider />
+        <div>
+          <TasksSection weekId={week._id} tasks={tasks} setTasks={setTasks} />
+        </div>
       </div>
     </div>
   );

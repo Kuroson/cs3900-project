@@ -12,9 +12,9 @@ type TasksSectionProps = {
 
 const TasksSection = ({ weekId, tasks, setTasks }: TasksSectionProps): JSX.Element => {
   return (
-    <div className="flex flex-col w-full mb-8">
-      <List dense={true}>
-        <TransitionGroup>
+    <div>
+      <div className="flex flex-col w-full">
+        <List dense={true}>
           {tasks.map((task) => {
             return (
               <SingleEditableTask
@@ -27,8 +27,8 @@ const TasksSection = ({ weekId, tasks, setTasks }: TasksSectionProps): JSX.Eleme
             );
           })}
           <AddNewTaskSection weekId={weekId} setTasks={setTasks} tasks={tasks} />
-        </TransitionGroup>
-      </List>
+        </List>
+      </div>
     </div>
   );
 };

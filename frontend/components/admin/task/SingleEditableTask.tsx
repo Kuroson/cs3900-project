@@ -57,7 +57,7 @@ const SingleEditableTask = ({
     if (res === null) throw new Error("Shouldn't happen");
 
     // Update UI
-    setTasks([...tasks.filter((t) => t._id !== task._id)]);
+    setTasks(tasks.filter((t) => t._id !== task._id));
     toast.success("Task removed");
   };
 
@@ -70,8 +70,8 @@ const SingleEditableTask = ({
 
       const updatedTask: UpdateTaskPayloadRequest = {
         taskId: task._id,
-        title: task.title,
-        description: task.description,
+        title: title,
+        description: description,
       };
 
       const [res, err] = await updateTask(await authUser.getIdToken(), updatedTask, "client");
@@ -99,8 +99,8 @@ const SingleEditableTask = ({
         <div className="flex flex-col w-full">
           <div className="w-full pb-5">
             <TextField
-              id="WeekWorkloadTitle"
-              label="Week Workload Title"
+              id="TaskTitle"
+              label="Task Title"
               variant="outlined"
               sx={{ maxWidth: "500px" }}
               value={title}
@@ -108,8 +108,8 @@ const SingleEditableTask = ({
             />
           </div>
           <TextField
-            id="WorkloadDescription"
-            label="Workload Description (Optional)"
+            id="TaskDescription"
+            label="Task Description (Optional)"
             variant="outlined"
             multiline
             rows={5}
@@ -133,22 +133,19 @@ const SingleEditableTask = ({
   return (
     <ListItem
       secondaryAction={
-        <IconButton edge="end" aria-label="delete">
-          <DeleteIcon />
-        </IconButton>
+        <div data-cy="edit-button-section">
+          <EditPanelButtons
+            editMode={editMode}
+            handleEditClick={handleEditClick}
+            handleRemoveClick={handleRemoveClick}
+          />
+        </div>
       }
     >
       <ListItemAvatar>
         <ControlPointIcon fontSize="large" />
       </ListItemAvatar>
       <ListItemText primary={title} secondary={description} />
-      <div data-cy="edit-button-section">
-        <EditPanelButtons
-          editMode={editMode}
-          handleEditClick={handleEditClick}
-          handleRemoveClick={handleRemoveClick}
-        />
-      </div>
     </ListItem>
   );
 };

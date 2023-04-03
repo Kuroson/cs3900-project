@@ -122,17 +122,12 @@ const AddNewTaskSection = ({ weekId, setTasks, tasks }: AddNewTaskSectionProps):
       <ListItemButton autoFocus onClick={() => setOpen(true)}>
         <ListItemAvatar>
           <Avatar>
-            <AddIcon />
+            <AddIcon fontSize="small" />
           </Avatar>
         </ListItemAvatar>
         <ListItemText primary="Add New Task" />
       </ListItemButton>
     </ListItem>
-    // <div className="mt-4">
-    //   <Button variant="contained" onClick={() => setOpen(true)}>
-    //     Add New Task
-    //   </Button>
-    // </div>
   );
 };
 
