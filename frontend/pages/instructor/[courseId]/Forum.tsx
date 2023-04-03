@@ -15,7 +15,7 @@ import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
-import { createNewPost } from "util/api/forumApi";
+import { createNewPost, getCourseForum } from "util/api/forumApi";
 import {
     getUserCourseDetails,
 } from "util/api/courseApi";
@@ -54,27 +54,16 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
-  const postList = [
-    {
-        courseId: courseData._id,
-        title: "What is the meaning of life?",
-        question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        _id: "id",
-    },
-    {
-        courseId: courseData._id,
-        title: "Why am I here?",
-        question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        _id: "id2",
-    },
-    {
-        courseId: courseData._id,
-        title: "Is God a woman?",
-        question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        _id: "id3",
-    }]
+    const emptyPost = {
+        courseId: "",
+        title: "empty",
+        question: "",
+        _id: "",
+        poster: ""
+    }
 
-    const [showedPost, setShowedPost] = useState<BasicPostInfo>(postList[0]);
+    const [showedPost, setShowedPost] = useState<BasicPostInfo>(emptyPost);
+    const [postsList, setPostsList] = useState<Array<BasicPostInfo>>([]);
     const [open, setOpen] = React.useState(false);
     const [postTitle, setPostTitle] = React.useState("");
     const [postDesc, setPostDesc] = React.useState("");
@@ -85,7 +74,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     
     function handleOnClickPostOverview(index) {
         //Clicks on a particular post overview
-        setShowedPost(postList[index]);
+        setShowedPost(postsList[index]);
     }
 
     const handleOpen = () => setOpen(true);
@@ -104,17 +93,21 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
           toast.error("Please fill out all fields");
           return;
         }
+
         //TODO image
         const title = postTitle;
-        const description = postDesc;
+        const question = postDesc;
         const courseId = courseData._id;
+        const poster = userDetails._id;
         const dataPayload = {
             courseId,
             title,
-            description,
+            question,
+            poster
         };
         setButtonLoading(true);
         const [res, err] = await createNewPost(await authUser.getIdToken(), dataPayload, "client");
+        console.log(res);
         if (err !== null) {
             console.error(err);
             if (err instanceof HttpException) {
@@ -135,20 +128,22 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             _id: res.postId,
             title: postTitle,
             question: postDesc,
+            poster: userDetails._id
         };
 
+        postsList.push(newPost);
+        
         toast.success("Course created successfully");
 
-        //TODO add to the list of courses to global state whatever that is
-        
-        // user.setUserDetails({
-        // ...userDetails,
-        // created_courses: [...userDetails.created_courses, newCourse],
-        // });
         //close form 
         setOpen(false);
         setPostTitle("");
         setPostDesc("");
+
+        //Check by getting forum TODO this is broken, res1 is good, but posts is undefined
+        // const [res1, err1] = await getCourseForum(await authUser.getIdToken(), courseData._id, "client");
+        // console.log("Getting list of forum");
+        // console.log(res1?.posts);
     }
 
 
@@ -220,7 +215,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
                         </FormControl>
                     </form>
                 </Modal>
-                {postList?.map((post, index) => (
+                {postsList?.map((post, index) => (
                     <div onClick={() => handleOnClickPostOverview(index)}>
                         <ForumPostOverviewCard post={post} posterDetails={userDetails}></ForumPostOverviewCard>
                     </div>          

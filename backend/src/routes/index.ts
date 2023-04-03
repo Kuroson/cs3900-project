@@ -132,5 +132,5 @@ indexRouter.get("/analytics/tags/summary", getTagSummaryController);
 indexRouter.get("/analytics/questions", getQuestionAnalyticsController);
 
 //Forum routes
-indexRouter.get("forum", getForumController);
-indexRouter.get("forum/post", createPostController);
+indexRouter.get("/forum", getForumController);
+indexRouter.post("/forum/post", createPostController);

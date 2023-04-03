@@ -14,7 +14,8 @@ type ForumPostCardProps = {
 
 const ForumPostCard: React.FC<ForumPostCardProps> = ({ post, posterDetails, datePosted }): JSX.Element => {
   if (post === null) return <></> 
-  else 
+  else if (post.title == "empty") return <></>
+  else
   return (
     <div className="flex flex-col rounded-lg p-5 my-2 mx-5 w-[600px]">
         <div className="flex items-center justify-between">

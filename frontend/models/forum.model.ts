@@ -13,3 +13,7 @@ import {
     ForumInterface,
     | "description"
   >;  
+
+  export type GetForumType = {
+    courseId: string;
+  };

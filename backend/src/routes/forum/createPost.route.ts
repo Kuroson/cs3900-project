@@ -18,9 +18,9 @@ type ResponsePayload = {
 //TODO add image
 type QueryPayload = {
     courseId: string;
-    code: string;
     title: string;
-    description: string;
+    question: string;
+    poster: string;
 };
 
 /**
@@ -34,23 +34,28 @@ export const createPostController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
+    console.log("Starting to create");
     try {
         const authUser = await checkAuth(req);
         const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
             "courseId",
-            "code",
             "title",
-            "description",
+            "question",
+            "poster"
         ];
+        console.log("checked keys");
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
+            console.log("body valid");
+
             // Body has been verified
             const queryBody = req.body;
 
             const postId = await createPost(queryBody, authUser.uid);
+            console.log("created post");
 
-            logger.info(`postId: ${postId}`);
+            console.log(` ************************** postId: ${postId}`);
             return res.status(200).json({ postId });
         } else {
             throw new HttpException(
@@ -80,9 +85,7 @@ export const createPostController = async (
  * @returns The ID of the post that has been created
  */
 export const createPost = async (queryBody: QueryPayload, firebase_uid: string) => {
-    console.log("Am here");
-
-    const { courseId, code, title, description } = queryBody;
+    const { courseId, title, question, poster } = queryBody;
 
     // Find user first
     const user = await User.findOne({ firebase_uid: firebase_uid }).catch(() => null);
@@ -90,7 +93,8 @@ export const createPost = async (queryBody: QueryPayload, firebase_uid: string) 
 
     // Check if user is enrolled in course
     const myCourse = await Course.findById(courseId)
-        .select("_id title code description session icon pages tags")
+        .select("_id title code description forum session icon pages tags")
+        .populate("forum")
         .exec()
         .catch(() => null);
 
@@ -101,23 +105,24 @@ export const createPost = async (queryBody: QueryPayload, firebase_uid: string) 
     if (enrolment === null && user.role !== 0)
         throw new HttpException(400, "User is not enrolled in course");
 
-    console.log("Got to here");
     const myPost = await new Post({
         title,
-        description,
+        question,
+        poster,
+        courseId
     })
         .save()
         .catch((err) => {
             logger.error(err);
             throw new HttpException(500, "Failed to save new post");
         });
-
-    myCourse.forum.posts.push(myPost._id);
-
-    await myCourse.save().catch((err) => {
-        logger.error(err);
-        throw new HttpException(500, "Failed to save updated forum post");
-    });
     
+    myCourse.forum.posts.addToSet(myPost._id.toString());
+    console.log("hehe");
+
+    await myCourse.forum.save().catch((err) => {
+        throw new HttpException(500, "Failed to save updated forum post to course");
+    })
+
     return myPost._id;
 };

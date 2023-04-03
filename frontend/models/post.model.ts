@@ -19,12 +19,12 @@ import {
   export type BasicPostInfo = Omit<
     PostInterface,
     | "image"
-    | "poster"
     | "responses"
   >;  
 
   export type CreatePostType = {
     courseId: string;
     title: string;
-    description: string;
+    question: string;
+    poster: string;
   };

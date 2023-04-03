@@ -33,14 +33,16 @@ export const getForumController = async (
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
+        console.log("ehllo");
+
         const authUser = await checkAuth(req);
         const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId"];
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
             const { courseId } = req.query;
 
-            const courseData = await getForum(courseId, authUser.uid);
-
-            return res.status(200).json({ ...courseData });
+            const forumData = await getForum(courseId, authUser.uid);
+            //console.log(forumData);
+            return res.status(200).json({ ...forumData });
         } else {
             throw new HttpException(
                 400,
@@ -71,13 +73,20 @@ export const getForum = async (
     courseId: string,
     firebaseUID: string,
 ): Promise<BasicForumInfo> => {
+    console.log("hi");
+
     // Find user first
     const user = await User.findOne({ firebase_uid: firebaseUID }).catch(() => null);
     if (user === null) throw new HttpException(400, `User of ${firebaseUID} does not exist`);
 
     // Check if user is enrolled in course
     const myCourse = await Course.findById(courseId)
-        .select("_id title code description session icon pages tags")
+        .select("_id title forum code description session icon pages tags")
+        .populate("forum")
+        .populate({
+            path: "forum",
+            populate: { path: "posts" },
+        })
         .exec()
         .catch(() => null);
 
@@ -88,5 +97,5 @@ export const getForum = async (
     if (enrolment === null && user.role !== 0)
         throw new HttpException(400, "User is not enrolled in course");
 
-    return myCourse.forum.toJSON() as BasicForumInfo;
+    return myCourse.forum as BasicForumInfo;
 };
