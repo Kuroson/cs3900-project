@@ -15,6 +15,7 @@ import {
   EditOnlineClassSection,
   Loading,
   OnlineClassVideoSection,
+  StudentNavBar,
 } from "components";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
@@ -99,42 +100,7 @@ const LeftColumn = ({
 
   return (
     <div className="w-full flex flex-col justify-center items-center px-[5%]">
-      {editMode ? (
-        <EditOnlineClassSection
-          dynamicOnlineClass={dynamicOnlineClass}
-          setDynamicOnlineClass={setDynamicOnlineClass}
-          setEditMode={setEditMode}
-        />
-      ) : (
-        <>
-          <OnlineClassVideoSection dynamicOnlineClass={dynamicOnlineClass} />
-          <div className="w-full pt-6 flex flex-row justify-center items-center">
-            <LoadingButton
-              variant="contained"
-              className="mx-5"
-              disabled={dynamicOnlineClass.running}
-              onClick={handleStartClass}
-              loading={runningLoading && !dynamicOnlineClass.running}
-            >
-              Start Class
-            </LoadingButton>
-            <LoadingButton
-              variant="contained"
-              className="mx-5"
-              disabled={!dynamicOnlineClass.running}
-              onClick={handleEndClass}
-              loading={runningLoading && dynamicOnlineClass.running}
-            >
-              End Class
-            </LoadingButton>
-          </div>
-          <div className="pt-5">
-            <Button variant="contained" onClick={() => setEditMode(true)}>
-              Edit Online Class
-            </Button>
-          </div>
-        </>
-      )}
+      <OnlineClassVideoSection dynamicOnlineClass={dynamicOnlineClass} />
     </div>
   );
 };
@@ -171,19 +137,19 @@ const OnlineClassPage = ({ courseData, onlineClassData }: OnlineClassPageProps):
         <meta name="description" content="Home page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
+      <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%] pt-5 h-full">
           <div className="flex flex-row h-full">
             {/* Left col */}
-            <div className="w-full">
+            <div className="w-full h-full">
               <LeftColumn
                 dynamicOnlineClass={dynamicOnlineClass}
                 setDynamicOnlineClass={setDynamicOnlineClass}
               />
             </div>
             {/* Right col */}
-            <div className="w-full h-[90%]">
+            <div className="w-full h-full">
               <RightColumn dynamicOnlineClass={dynamicOnlineClass} />
             </div>
           </div>
@@ -219,7 +185,7 @@ export const getServerSideProps: GetServerSideProps<OnlineClassPageProps> = with
     | OnlineClassFull
     | undefined;
 
-  if (onlineClassData === undefined) return { notFound: true };
+  if (onlineClassData === undefined || !onlineClassData.running) return { notFound: true };
 
   onlineClassData.chatMessages = [];
 

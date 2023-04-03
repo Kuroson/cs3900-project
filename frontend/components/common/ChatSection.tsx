@@ -15,10 +15,18 @@ type ChatSectionProps = {
 
 const ChatSection = ({ dynamicOnlineClass }: ChatSectionProps): JSX.Element => {
   const authUser = useAuthUser();
-
   const [newMessage, setNewMessage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [messages, setMessages] = React.useState<MessageInterface[]>([]);
+  const scrollableRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    // ChatGPT solution to force scrolling to the bottom
+    const scrollableElement = scrollableRef.current;
+    if (scrollableElement !== null) {
+      scrollableElement.scrollTop = scrollableElement.scrollHeight;
+    }
+  }, [messages]);
 
   React.useEffect(() => {
     const getData = async () => {
@@ -101,10 +109,10 @@ const ChatSection = ({ dynamicOnlineClass }: ChatSectionProps): JSX.Element => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-between">
+    <div className="w-full flex h-[90%] flex-col">
       {/* Top */}
-      <div>
-        <h1 className="text-4xl font-bold w-full text-center">Chat messages</h1>
+      <h1 className="text-4xl font-bold w-full text-center">Chat messages</h1>
+      <div className="h-[70%] max-h-[800px] overflow-y-auto" ref={scrollableRef}>
         {messages.map((x) => {
           return (
             <div key={x._id} className="w-full flex flex-row">
@@ -116,7 +124,7 @@ const ChatSection = ({ dynamicOnlineClass }: ChatSectionProps): JSX.Element => {
         })}
       </div>
       {/* bottom */}
-      <form className="flex flex-row" onSubmit={handleSend}>
+      <form className="flex flex-row mt-3" onSubmit={handleSend}>
         <TextField
           id="Message"
           label="Message"
