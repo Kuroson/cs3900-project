@@ -1,15 +1,13 @@
 import React from "react";
-import { toast } from "react-toastify";
 import Head from "next/head";
 import { UserCourseInformation } from "models/course.model";
+import { OnlineClassInterface } from "models/onlineClass.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading, OnlineClassCard } from "components";
-import { Routes } from "components/Layout/NavBars/NavBar";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
-import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
 
 initAuth(); // SSR maybe, i think...
@@ -19,14 +17,21 @@ type AdminCoursePageProps = {
 };
 
 type LectureCardProps = {
-  courseData: UserCourseInformation;
+  courseId: string;
+  onlineClasses: OnlineClassInterface[];
 };
 
-const LectureCards = ({ courseData }: LectureCardProps): JSX.Element => {
+const LectureCards = ({ onlineClasses, courseId }: LectureCardProps): JSX.Element => {
   return (
     <div className="flex flex-wrap w-full mx-3">
-      {courseData.onlineClasses.map((x) => {
-        return <OnlineClassCard key={x._id} onlineClass={x} href={`/instructor/${"hello"}`} />;
+      {onlineClasses.map((x) => {
+        return (
+          <OnlineClassCard
+            key={x._id}
+            onlineClass={x}
+            href={`/instructor/${courseId}/onlineClass/${x._id}`}
+          />
+        );
       })}
     </div>
   );
@@ -36,6 +41,13 @@ const AdminCoursePage = ({ courseData }: AdminCoursePageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
+  const [dynamicOnlineClass, setDynamicOnlineClass] = React.useState(courseData.onlineClasses);
+
+  React.useEffect(() => {
+    if (courseData !== null) {
+      setDynamicOnlineClass(courseData.onlineClasses);
+    }
+  }, [courseData.onlineClasses, courseData]);
 
   React.useEffect(() => {
     // Build user data for user context
@@ -61,7 +73,7 @@ const AdminCoursePage = ({ courseData }: AdminCoursePageProps): JSX.Element => {
             <span className="ml-4">Welcome to {courseData.title}</span>
           </h1>
           <p className="pt-1.5">{courseData.description}</p>
-          <LectureCards courseData={courseData} />
+          <LectureCards courseId={courseData._id} onlineClasses={dynamicOnlineClass} />
         </div>
       </ContentContainer>
     </>

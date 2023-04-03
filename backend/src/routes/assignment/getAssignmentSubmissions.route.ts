@@ -1,7 +1,11 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Assignment from "@/models/course/assignment/assignment.model";
-import Course from "@/models/course/course.model";
-import AssignmentSubmission from "@/models/course/enrolment/assignmentSubmission.model";
+import Course, { CourseInterface } from "@/models/course/course.model";
+import AssignmentSubmission, {
+    AssignmentSubmissionInterface,
+} from "@/models/course/enrolment/assignmentSubmission.model";
+import { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
+import { UserInterface } from "@/models/user.model";
 import { checkAuth, recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -11,6 +15,8 @@ import { checkAdmin } from "../admin/admin.route";
 type SubmissionInfo = {
     submissionId: string;
     studentId: string;
+    studentName: string;
+    studentAvatar?: string;
     title: string;
     linkToSubmission: string;
     fileType: string;
@@ -90,16 +96,33 @@ export const getAssignmentSubmissions = async (queryBody: QueryPayload, firebase
 
     const { courseId, assignmentId } = queryBody;
 
+    type CourseInfo =
+        | (Omit<CourseInterface, "students"> & {
+              students: Array<
+                  Omit<Omit<EnrolmentInterface, "assignmentSubmissions">, "student"> & {
+                      assignmentSubmissions: Array<AssignmentSubmissionInterface>;
+                      student: UserInterface;
+                  }
+              >;
+          })
+        | null;
+
     AssignmentSubmission;
-    const course = await Course.findById(courseId)
+    const course: CourseInfo = await Course.findById(courseId)
         .populate({
             path: "students",
             model: "Enrolment",
             select: "_id assignmentSubmissions student",
-            populate: {
-                path: "assignmentSubmissions",
-                model: "AssignmentSubmission",
-            },
+            populate: [
+                {
+                    path: "assignmentSubmissions",
+                    model: "AssignmentSubmission",
+                },
+                {
+                    path: "student",
+                    model: "User",
+                },
+            ],
         })
         .catch((err) => {
             logger.error(err);
@@ -144,7 +167,9 @@ export const getAssignmentSubmissions = async (queryBody: QueryPayload, firebase
             // Found an unmarked submission
             const submissionInfo: SubmissionInfo = {
                 submissionId: submission._id,
-                studentId: currStudent,
+                studentId: currStudent._id,
+                studentName: currStudent.first_name + " " + currStudent.last_name,
+                studentAvatar: currStudent.avatar,
                 title: submission.title,
                 linkToSubmission: await recallFileUrl(submission.storedName),
                 fileType: submission.fileType,

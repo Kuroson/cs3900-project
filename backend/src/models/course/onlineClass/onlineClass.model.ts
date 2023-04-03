@@ -19,6 +19,11 @@ export interface OnlineClassInterface extends Document {
     linkToClass: string;
     running: boolean;
     chatMessages: Types.DocumentArray<MessageInterface["_id"]>;
+    /**
+     * Is the chat currently enabled for this class
+     * Enabled by default
+     */
+    chatEnabled: boolean;
 }
 
 const onlineClassSchema: Schema = new Schema<OnlineClassInterface>({
@@ -28,6 +33,7 @@ const onlineClassSchema: Schema = new Schema<OnlineClassInterface>({
     linkToClass: { type: String, required: true },
     running: { type: Boolean, required: true },
     chatMessages: [{ type: Schema.Types.ObjectId, ref: "Message", required: true }],
+    chatEnabled: { type: Boolean, required: true },
 });
 
 const OnlineClass = model<OnlineClassInterface & Document>("OnlineClass", onlineClassSchema);

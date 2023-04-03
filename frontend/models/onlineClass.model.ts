@@ -14,6 +14,7 @@ export interface OnlineClassInterface extends MongooseDocument {
   linkToClass: string;
   running: boolean;
   chatMessages: Array<MongooseId>;
+  chatEnabled: boolean;
 }
 
 export type OnlineClassFull = Omit<OnlineClassInterface, "chatMessages"> & {

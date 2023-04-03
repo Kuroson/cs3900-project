@@ -56,6 +56,7 @@ describe("Test get online class", () => {
         expect(data.startTime).toEqual(onlineClassDate);
         expect(data.running).toEqual(false);
         expect(data.chatMessages).toEqual([]);
+        expect(data.chatEnabled).toEqual(true);
     });
 
     afterAll(async () => {
