@@ -29,7 +29,7 @@ export const registerUser = async (
     lastName: string,
     email: string,
     firebaseUID: string,
-): Promise<void> => {
+): Promise<string> => {
     logger.info(`Registering user, email: ${email}, firebaseUID: ${firebaseUID}`);
 
     const role = email.toLowerCase().includes("admin") ? INSTRUCTOR_ROLE : STUDENT_ROLE;
@@ -45,17 +45,16 @@ export const registerUser = async (
         avatar: "", // TODO
     });
 
-    await newUser
+    const userId = await newUser
         .save()
         .then((res) => {
-            logger.verbose(res);
-            return res;
+            return res._id.toString() as string;
         })
         .catch((err) => {
             logger.error(err);
             throw new HttpException(500, "Could not create new user", err);
         });
-    return;
+    return userId;
 };
 
 /**

@@ -23,8 +23,9 @@ export const examplePost = async (
     const data = await res.json();
     return [data, null];
   } catch (err) {
-    console.error("Error with posting to example");
-    console.error(err);
+    if (err instanceof SyntaxError) {
+      return [null, new HttpException(500, "Message could not have been parsed", err)];
+    }
     return [null, err];
   }
 };
@@ -51,7 +52,9 @@ export const apiPost = async <T extends Record<string, unknown>, U extends Recor
     const data = await res.json();
     return [data, null];
   } catch (err) {
-    console.error("Error with posting to example");
+    if (err instanceof SyntaxError) {
+      return [null, new HttpException(500, "Message could not have been parsed", err)];
+    }
     return [null, err];
   }
 };
@@ -78,7 +81,9 @@ export const apiPut = async <T extends Record<string, unknown>, U extends Record
     const data = await res.json();
     return [data, null];
   } catch (err) {
-    console.error("Error with posting to example");
+    if (err instanceof SyntaxError) {
+      return [null, new HttpException(500, "Message could not have been parsed", err)];
+    }
     return [null, err];
   }
 };
@@ -108,7 +113,9 @@ export const apiDelete = async <
     const data = await res.json();
     return [data, null];
   } catch (err) {
-    console.error("Error with posting to example");
+    if (err instanceof SyntaxError) {
+      return [null, new HttpException(500, "Message could not have been parsed", err)];
+    }
     return [null, err];
   }
 };
@@ -139,6 +146,9 @@ export const apiGet = async <T extends Record<string, string>, U extends Record<
     const data = await res.json();
     return [data, null];
   } catch (err) {
+    if (err instanceof SyntaxError) {
+      return [null, new HttpException(500, "Message could not have been parsed", err)];
+    }
     return [null, err];
   }
 };
@@ -174,7 +184,9 @@ export const apiUploadFile = async <
     const data = await res.json();
     return [data, null];
   } catch (err) {
-    console.error("Error with posting to example");
+    if (err instanceof SyntaxError) {
+      return [null, new HttpException(500, "Message could not have been parsed", err)];
+    }
     return [null, err];
   }
 };

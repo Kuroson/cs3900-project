@@ -117,7 +117,7 @@ describe("Check if created courses are turned as a part of user details", () => 
     it("Admin created course should be in created_courses", async () => {
         const userDetails = await getUserDetails(admin.email, admin.email);
         expect(userDetails.created_courses.length).toEqual(1);
-        expect(userDetails.created_courses.at(0)?._id).toEqual(courseId);
+        expect(userDetails.created_courses.at(0)?._id.toString()).toEqual(courseId);
         expect(userDetails.created_courses.at(0)?.code).toBe("TEST");
         expect(userDetails.created_courses.at(0)?.title).toBe("Test");
         expect(userDetails.created_courses.at(0)?.session).toBe("T1");

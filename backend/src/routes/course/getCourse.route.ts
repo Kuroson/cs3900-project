@@ -1,6 +1,7 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course, { CourseInterface } from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
+import { OnlineClassInterface } from "@/models/course/onlineClass/onlineClass.model";
 import { PageInterface } from "@/models/course/page/page.model";
 import { ResourceInterface } from "@/models/course/page/resource.model";
 import { SectionInterface } from "@/models/course/page/section.model";
@@ -13,7 +14,10 @@ import { Request, Response } from "express";
 type ResponsePayload = UserCourseInformation;
 
 // Basically joined all the tables, contains all information about pages, sections, and resources
-type UserCourseInformation = Omit<CourseInterface, "students" | "pages" | "creator"> & {
+type UserCourseInformation = Omit<
+    CourseInterface,
+    "students" | "pages" | "creator" | "onlineClasses"
+> & {
     pages: Omit<PageInterface, "section" | "resources"> &
         {
             section: Omit<SectionInterface, "resources"> &
@@ -22,6 +26,7 @@ type UserCourseInformation = Omit<CourseInterface, "students" | "pages" | "creat
                 }[];
             resources: ResourceInterface[];
         }[];
+    onlineClasses: Omit<OnlineClassInterface, "chatMessages">[];
 };
 
 type QueryPayload = {
@@ -86,7 +91,7 @@ export const getCourse = async (
 
     // Check if user is enrolled in course
     const myCourse = await Course.findById(courseId)
-        .select("_id title code description session icon pages tags")
+        .select("_id title code description session icon pages tags onlineClasses")
         .populate("pages")
         .populate({
             path: "pages",
@@ -100,6 +105,10 @@ export const getCourse = async (
                     path: "resources",
                 },
             },
+        })
+        .populate({
+            path: "onlineClasses",
+            select: "_id title description startTime linkToClass running",
         })
         .exec()
         .catch(() => null);
