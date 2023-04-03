@@ -34,7 +34,7 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
           <AccessTimeFilledIcon color="primary" />
         </TitleWithIcon>
         <div className="flex items-center gap-5">
-          <ShowTimeLeft time={info.deadline} />
+          <ShowTimeLeft close={info.deadline} />
         </div>
       </div>
       <div className="flex justify-between items-center">
