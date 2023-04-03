@@ -44,7 +44,6 @@ export const getAssignmentsController = async (
 
             const assignments = await getAssignments(queryBody, authUser.uid);
 
-            logger.info(`assignments: ${assignments}`);
             return res.status(200).json({ assignments });
         } else {
             throw new HttpException(

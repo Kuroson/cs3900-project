@@ -5,6 +5,7 @@ import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
@@ -13,40 +14,35 @@ type ResponsePayload = {
 
 type QueryPayload = {
     courseId: string;
-    title: string;
+    assignmentId: string;
+    title?: string;
     description?: string;
-    deadline: string;
-    marksAvailable: number;
-    tags: Array<string>;
+    deadline?: string;
+    marksAvailable?: number;
+    tags?: Array<string>;
 };
 
 /**
- * POST /assignment/create
- * Creates a assignment
+ * PUT /assignment/update
+ * Updates an existing assignment
  * @param req
  * @param res
  * @returns
  */
-export const createAssignmentController = async (
+export const updateAssignmentController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
-            "courseId",
-            "title",
-            "deadline",
-            "marksAvailable",
-            "tags",
-        ];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId", "assignmentId"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
             const queryBody = req.body;
 
-            const assignmentId = await createAssignment(queryBody, authUser.uid);
+            const assignmentId = await updateAssignment(queryBody, authUser.uid);
 
             logger.info(`assignmentId: ${assignmentId}`);
             return res.status(200).json({ assignmentId });
@@ -69,65 +65,63 @@ export const createAssignmentController = async (
 };
 
 /**
- * Creates a new assignment with the parameters given.
+ * Updates information within an existing assignment with the parameters given.
  *
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
- * @throws { HttpException } Save error, course not available, tags not in course.
- * no tags given
- * @returns The ID of the assignment that has been created
+ * @throws { HttpException } Recall/save error, tags not in course
+ * @returns The ID of the assignment that has been updated
  */
-export const createAssignment = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const updateAssignment = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
-        throw new HttpException(401, "Must be an admin to create assignment");
+        throw new HttpException(401, "Must be an admin to update assignment");
     }
 
-    const { courseId, title, description, deadline, marksAvailable, tags } = queryBody;
+    const { courseId, assignmentId, title, description, deadline, marksAvailable, tags } =
+        queryBody;
+
+    const assignment = await Assignment.findById(assignmentId).catch((err) => null);
+    if (assignment === null) {
+        throw new HttpException(400, "Failed to recall assignment");
+    }
 
     const course = await Course.findById(courseId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch course");
-        });
-
+        .catch((err) => null);
     if (course === null) {
         throw new HttpException(500, "Failed to fetch course");
     }
 
-    const myAssignment = await new Assignment({
-        title,
-        deadline,
-        marksAvailable,
-        tags: [],
-    });
+    if (title !== undefined) {
+        assignment.title = title;
+    }
 
     if (description !== undefined) {
-        myAssignment.description = description;
+        assignment.description = description;
     }
 
-    if (tags.length === 0) {
-        throw new HttpException(400, "Must give tags for assignment");
+    if (deadline !== undefined) {
+        assignment.deadline = deadline;
     }
 
-    for (const tag of tags) {
-        if (!course.tags.includes(tag)) {
-            throw new HttpException(400, `Tag '${tag}' not in course tags`);
+    if (marksAvailable !== undefined) {
+        assignment.marksAvailable = marksAvailable;
+    }
+
+    if (tags !== undefined && tags.length !== 0) {
+        assignment.tags = new Types.Array();
+        for (const tag of tags) {
+            if (!course.tags.includes(tag)) {
+                throw new HttpException(400, `Tag '${tag}' not in course tags`);
+            }
+            assignment.tags.addToSet(tag);
         }
-        myAssignment.tags.addToSet(tag);
     }
 
-    await myAssignment.save().catch((err) => {
+    await assignment.save().catch((err) => {
         logger.error(err);
         throw new HttpException(500, "Failed to save new assignment");
     });
 
-    course.assignments.push(myAssignment._id);
-
-    await course.save().catch((err) => {
-        logger.error(err);
-        throw new HttpException(500, "Failed to save updated course");
-    });
-
-    return myAssignment._id;
+    return assignment._id.toString() as string;
 };

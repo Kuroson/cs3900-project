@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import Chart from "react-google-charts";
 import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ExpandMore } from "@mui/icons-material";
 import {
@@ -48,6 +48,8 @@ initAuth(); // SSR maybe, i think...
 type AnalyticsProps = {
   courseData: UserCourseInformation;
 };
+
+const Chart = dynamic(() => import("react-google-charts"), { ssr: false });
 
 const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
   // TODO: Fix metadata thing

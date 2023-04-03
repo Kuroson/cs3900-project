@@ -31,7 +31,7 @@ export const getOnlineClassController = async (
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
             const { classId } = req.query;
             const classData = await getClassFromId(classId);
-            return res.status(200).json({ ...classData });
+            return res.status(200).json({ ...classData.toObject() });
         } else {
             throw new HttpException(
                 400,
@@ -60,7 +60,7 @@ export const getClassFromId = async (classId: string): Promise<FullOnlineClassIn
     Message; // Load Mongoose message
 
     const onlineClass = await OnlineClass.findById(classId)
-        .populate("chatMessages")
+        .populate({ path: "chatMessages", model: "Message", options: { sort: { timestamp: 1 } } })
         .exec()
         .catch(() => null);
     if (onlineClass === null) throw new HttpException(400, `Could not find class of id ${classId}`);

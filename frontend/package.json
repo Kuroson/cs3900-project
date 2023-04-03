@@ -30,6 +30,7 @@
     "dayjs": "^1.11.7",
     "firebase": "9.15.0",
     "firebase-admin": "^11.4.1",
+    "moment": "^2.29.4",
     "next": "^13.1.1",
     "next-firebase-auth": "^1.0.0-canary.19",
     "postcss": "^8.4.21",
@@ -37,6 +38,7 @@
     "react-dom": "18.2.0",
     "react-google-charts": "^4.0.0",
     "react-toastify": "^9.1.1",
+    "react-youtube": "^10.1.0",
     "sass": "^1.58.3",
     "tailwindcss": "^3.2.7"
   },

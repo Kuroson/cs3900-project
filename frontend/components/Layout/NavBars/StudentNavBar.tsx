@@ -45,7 +45,7 @@ export default function StudentNavBar({
       user.setUserDetails(null);
     }
   };
-  console.log(courseData);
+
   const studentRoutes: Routes[] = [
     {
       name: "Dashboard",
@@ -55,7 +55,7 @@ export default function StudentNavBar({
     },
     {
       name: "Home",
-      route: "/", //TODO
+      route: `/course/${courseData?._id}`, // TODO better case handling?
       icon: <GridViewIcon fontSize="large" color="primary" />,
     },
     {
