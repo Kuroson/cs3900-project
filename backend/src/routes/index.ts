@@ -54,6 +54,7 @@ import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
 import { createPostController } from "./forum/createPost.route";
 import { getForumController } from "./forum/getForum.route";
+import { createResponseController } from "./forum/createResponse.route";
 import { completeTaskController } from "./workloadOverview/completeTask.route";
 import { createTaskController } from "./workloadOverview/createTask.route";
 import { createWeekController } from "./workloadOverview/createWeek.route";
@@ -152,3 +153,4 @@ indexRouter.post("/class/chat/send", sendChatMessageController);
 //Forum routes
 indexRouter.get("/forum", getForumController);
 indexRouter.post("/forum/post", createPostController);
+indexRouter.post("/forum/respond", createResponseController);

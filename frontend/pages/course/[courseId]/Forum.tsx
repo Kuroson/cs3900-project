@@ -95,12 +95,14 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         const courseId = courseData._id;
         const poster = userDetails;
         const image = FROG_IMAGE_URL;
+        const responses = null;
         const dataPayload = {
             courseId,
             title,
             question,
             poster,
-            image
+            image,
+            responses
         };
         setButtonLoading(true);
         const [res, err] = await createNewPost(await authUser.getIdToken(), dataPayload, "client");
@@ -126,7 +128,8 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             image: FROG_IMAGE_URL,
             title: postTitle,
             question: postDesc,
-            poster: userDetails
+            poster: userDetails,
+            responses: null
         };
 
         postsList.push(newPost);

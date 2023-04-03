@@ -15,7 +15,7 @@ import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
-import { createNewPost, getCourseForum } from "util/api/forumApi";
+import { createNewPost, getCourseForum, createNewResponse } from "util/api/forumApi";
 import {
     getUserCourseDetails,
 } from "util/api/courseApi";
@@ -34,6 +34,8 @@ import {
     RadioGroup,
     TextField,
   } from "@mui/material";
+import ForumResponseCard from "components/common/ForumResponseCard";
+import { BasicResponseInfo } from "models/response.model";
 initAuth(); // SSR maybe, i think...
 
 type ForumPageProps = {
@@ -50,6 +52,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const [postTitle, setPostTitle] = React.useState("");
   const [postDesc, setPostDesc] = React.useState("");
   const [buttonLoading, setButtonLoading] = React.useState(false);
+  const [postResponseText, setPostResponseText] = React.useState("");
 
   React.useEffect(() => {
     // Build user data for user context
@@ -63,81 +66,138 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
 
   const date = new Date();
     
-    function handleOnClickPostOverview(index) {
-        //Clicks on a particular post overview
-        setShowedPost(postsList[index]);
-    }
+  function handleOnClickPostOverview(index) {
+      //Clicks on a particular post overview
+      setShowedPost(postsList[index]);
+  }
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-    const handleCloseForm = async () => {
-        setOpen(false);
-        setPostTitle("");
-        setPostDesc("");
-    };
+  const handleCloseForm = async () => {
+      setOpen(false);
+      setPostTitle("");
+      setPostDesc("");
+  };
 
-    const handleNewPost = async (e: React.SyntheticEvent) => {
-        e.preventDefault();
+  const handleNewPost = async (e: React.SyntheticEvent) => {
+      e.preventDefault();
 
-        if ([postTitle, postDesc].some((x) => x.length === 0)) {
-          toast.error("Please fill out all fields");
+      if ([postTitle, postDesc].some((x) => x.length === 0)) {
+        toast.error("Please fill out all fields");
+        return;
+      }
+
+      //TODO image
+      const FROG_IMAGE_URL =
+        "https://i.natgeofe.com/k/8fa25ea4-6409-47fb-b3cc-4af8e0dc9616/red-eyed-tree-frog-on-leaves-3-2_3x2.jpg";
+
+      const title = postTitle;
+      const question = postDesc;
+      const courseId = courseData._id;
+      const poster = userDetails;
+      const image = FROG_IMAGE_URL;
+      const responses = null;
+      const dataPayload = {
+          courseId,
+          title,
+          question,
+          poster,
+          image,
+          responses,
+      };
+      setButtonLoading(true);
+      const [res, err] = await createNewPost(await authUser.getIdToken(), dataPayload, "client");
+      console.log(res);
+      if (err !== null) {
+          console.error(err);
+          if (err instanceof HttpException) {
+              toast.error(err.message);
+          } else {
+              toast.error(err);
+          }
+          setButtonLoading(false);
           return;
-        }
+      }
+      if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+      console.log(res);
+      setButtonLoading(false);
 
-        //TODO image
-        const FROG_IMAGE_URL =
-          "https://i.natgeofe.com/k/8fa25ea4-6409-47fb-b3cc-4af8e0dc9616/red-eyed-tree-frog-on-leaves-3-2_3x2.jpg";
+      // Update global state with new post
+      const newPost : BasicPostInfo = {
+          courseId: courseData._id,
+          _id: res.postId,
+          image: FROG_IMAGE_URL,
+          title: postTitle,
+          question: postDesc,
+          poster: userDetails,
+          responses: null
+      };
 
-        const title = postTitle;
-        const question = postDesc;
-        const courseId = courseData._id;
-        const poster = userDetails;
-        const image = FROG_IMAGE_URL;
-        const dataPayload = {
-            courseId,
-            title,
-            question,
-            poster,
-            image
-        };
-        setButtonLoading(true);
-        const [res, err] = await createNewPost(await authUser.getIdToken(), dataPayload, "client");
-        console.log(res);
-        if (err !== null) {
-            console.error(err);
-            if (err instanceof HttpException) {
-                toast.error(err.message);
-            } else {
-                toast.error(err);
-            }
-            setButtonLoading(false);
-            return;
-        }
-        if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
-        console.log(res);
-        setButtonLoading(false);
+      postsList.push(newPost);
+      
+      toast.success("Course created successfully");
 
-        // Update global state with new post
-        const newPost : BasicPostInfo = {
-            courseId: courseData._id,
-            _id: res.postId,
-            image: FROG_IMAGE_URL,
-            title: postTitle,
-            question: postDesc,
-            poster: userDetails
-        };
+      //close form 
+      setOpen(false);
+      setPostTitle("");
+      setPostDesc("");
+      
+  }
 
-        postsList.push(newPost);
-        
-        toast.success("Course created successfully");
-
-        //close form 
-        setOpen(false);
-        setPostTitle("");
-        setPostDesc("");
+  const handleNewResponse = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if ([postResponseText].some((x) => x.length === 0)) {
+      toast.error("Please fill out all fields");
+      return;
     }
 
+    if (showedPost === null) {
+      return;
+    }
+
+    const postId = showedPost._id;
+    const text = postResponseText;
+    const dataPayload = {
+      postId,
+      text,
+    };
+    setButtonLoading(true);
+    const [res, err] = await createNewResponse(await authUser.getIdToken(), dataPayload, "client");
+    console.log(res);
+    if (err !== null) {
+        console.error(err);
+        if (err instanceof HttpException) {
+            toast.error(err.message);
+        } else {
+            toast.error(err);
+        }
+        setButtonLoading(false);
+        return;
+    }
+    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
+    setButtonLoading(false);
+
+    // Update global state with new post
+    const newResponse : BasicResponseInfo = {
+        _id: res.responseId,
+        response: postResponseText,
+        correct: true,
+        poster: userDetails,
+    };
+  if (showedPost.responses === null) {
+    showedPost.responses = [];
+  }
+  showedPost.responses.push(newResponse);
+
+  toast.success("Course created successfully");
+
+  //close form 
+  setOpen(false);
+  setPostTitle("");
+  setPostDesc("");
+  
+  }
 
   return (
     <>
@@ -156,8 +216,8 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
          
         <div className="flex inline-block w-full justify-left px-[2%]">
             <div>
-                <div className="flex flex-col rounded-lg shadow-md p-5 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center">
-                    <Button variant="outlined" onClick={handleOpen} id="addNewPost">
+                <div className="flex flex-col rounded-lg shadow-md p-2 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center">
+                    <Button variant="text" onClick={handleOpen} id="addNewPost">
                         New Thread
                     </Button>
                 </div>
@@ -213,7 +273,33 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
                     </div>          
                 ))}  
             </div>
-            <ForumPostCard post={showedPost} datePosted={date.toLocaleString()}></ForumPostCard>;
+            <div className="flex flex-col">
+              <ForumPostCard post={showedPost} datePosted={date.toLocaleString()}></ForumPostCard>
+              {showedPost?.responses?.map((response, index) => (
+                <ForumResponseCard response={response}/>
+              ))} 
+              {showedPost !== null &&
+              <TextField
+                id="response"
+                label="Your Answer"
+                sx={{ marginLeft: "40px", marginTop: "20px" }}
+                value={postResponseText}
+                multiline
+                rows={5}
+                onChange={(e) => setPostResponseText(e.target.value)}
+                />
+              }
+              {showedPost !== null &&
+                <Button 
+                  variant="contained" 
+                  onClick={handleNewResponse} 
+                  sx={{ width: "90px", marginLeft: "550px", marginTop: "15px" }}
+                  disabled={postResponseText === ""}>
+                Send
+              </Button>
+              }
+              
+            </div>
         </div>
       </ContentContainer>
       

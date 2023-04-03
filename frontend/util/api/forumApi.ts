@@ -2,6 +2,7 @@ import { CreatePostType } from "models/post.model";
 import { BasicForumInfo, GetForumType } from "models/forum.model";
 import { BackendLinkType, apiDelete, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
+import { CreateResponseType } from "models/response.model";
   
 
 export const createNewPost = (
@@ -28,3 +29,14 @@ return apiGet<GetForumType, BasicForumInfo>(
 );
 };
 
+export const createNewResponse = (
+  token: string | null,
+  payload: CreateResponseType,
+  type: BackendLinkType,
+) => {
+return apiPost<CreateResponseType, { responseId: string }>(
+  `${getBackendLink(type)}/forum/respond`,
+  token,
+  payload,
+);
+};

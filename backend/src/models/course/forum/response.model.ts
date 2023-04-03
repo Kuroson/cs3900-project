@@ -17,6 +17,7 @@ const responseSchema: Schema = new Schema<ResponseInterface>({
     poster: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
-const Response = model<ResponseInterface & Document>("Response", responseSchema);
+const ForumResponse = model<ResponseInterface & Document>("Response", responseSchema);
 
-export default Response;
+export default ForumResponse;
+
