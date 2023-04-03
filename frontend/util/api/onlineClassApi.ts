@@ -60,9 +60,62 @@ export const startOnlineClass = (token: string | null, classId: string, type: Ba
 type EndOnlineClassPayloadResponse = StartOnlineClassPayloadResponse;
 type EndOnlineClassPayloadRequest = StartOnlineClassPayloadRequest;
 
+/**
+ * Sends a request to end the online class
+ * @param token
+ * @param classId id of the class to end
+ * @param type
+ * @returns
+ */
 export const endOnlineClass = (token: string | null, classId: string, type: BackendLinkType) => {
   return apiPut<EndOnlineClassPayloadRequest, EndOnlineClassPayloadResponse>(
     `${getBackendLink(type)}/class/end`,
+    token,
+    { classId },
+  );
+};
+
+type EnableChatPayloadResponse = {
+  message: string;
+};
+
+type EnableChatPayloadRequest = {
+  classId: string;
+};
+
+/**
+ * Sends a request to enable the chat
+ * @param token
+ * @param classId id of class to enable chat
+ * @param type
+ * @returns
+ */
+export const enableChat = (token: string | null, classId: string, type: BackendLinkType) => {
+  return apiPut<EnableChatPayloadRequest, EnableChatPayloadResponse>(
+    `${getBackendLink(type)}/class/chat/enable`,
+    token,
+    { classId },
+  );
+};
+
+type DisableChatPayloadResponse = {
+  message: string;
+};
+
+type DisableChatPayloadRequest = {
+  classId: string;
+};
+
+/**
+ * Sends a request to disable the chat
+ * @param token
+ * @param classId id of class to disable chat
+ * @param type
+ * @returns
+ */
+export const disableChat = (token: string | null, classId: string, type: BackendLinkType) => {
+  return apiPut<DisableChatPayloadRequest, DisableChatPayloadResponse>(
+    `${getBackendLink(type)}/class/chat/disable`,
     token,
     { classId },
   );

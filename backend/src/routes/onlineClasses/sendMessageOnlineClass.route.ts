@@ -6,6 +6,7 @@ import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
     messageId: string;
@@ -71,6 +72,8 @@ export const sendChatMessageController = async (
  * @param classId
  * @param senderFirebaseUID
  * @param message
+ * @throws { HttpException } classID or senderFirebaseUID does not match any existing class or user.
+ * Or if chat functionality is disabled and they are not an admin
  * @returns
  */
 export const addNewChatMessage = async (
@@ -86,6 +89,13 @@ export const addNewChatMessage = async (
     const sender = await User.findOne({ firebase_uid: senderFirebaseUID }).catch(() => null);
     if (sender === null)
         throw new HttpException(400, `User with firebase_uid ${senderFirebaseUID} not found`);
+
+    const isAdmin = await checkAdmin(senderFirebaseUID);
+
+    if (!onlineClass.chatEnabled && !isAdmin) {
+        // Chat is disabled and they are not an admin
+        throw new HttpException(400, "Chat is disabled for this class for a student");
+    }
 
     // Create message and save message
     const newMessage = new Message({

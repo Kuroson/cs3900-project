@@ -11,13 +11,18 @@ import { getOnlineClassDetails, sendOnlineClassMessage } from "util/api/onlineCl
 
 type ChatSectionProps = {
   dynamicOnlineClass: OnlineClassFull;
+  /**
+   * Students will not always have access to the chat
+   */
+  student?: boolean;
 };
 
-const ChatSection = ({ dynamicOnlineClass }: ChatSectionProps): JSX.Element => {
+const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Element => {
   const authUser = useAuthUser();
   const [newMessage, setNewMessage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [messages, setMessages] = React.useState<MessageInterface[]>([]);
+  const [chatEnabled, setChatEnabled] = React.useState(dynamicOnlineClass.chatEnabled);
   const scrollableRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -28,54 +33,40 @@ const ChatSection = ({ dynamicOnlineClass }: ChatSectionProps): JSX.Element => {
     }
   }, [messages]);
 
-  React.useEffect(() => {
-    const getData = async () => {
-      const [res, err] = await getOnlineClassDetails(
-        await authUser.getIdToken(),
-        dynamicOnlineClass._id,
-        "client",
-      );
-      if (err !== null) {
-        console.error(err);
-        if (err instanceof HttpException) {
-          toast.error(err.message);
-        } else {
-          toast.error(err);
-        }
-        return;
+  const getData = async () => {
+    const [res, err] = await getOnlineClassDetails(
+      await authUser.getIdToken(),
+      dynamicOnlineClass._id,
+      "client",
+    );
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
       }
-      if (res === null) throw new Error("Res should not have been null");
-      setMessages(res.chatMessages);
-    };
+      return;
+    }
+    if (res === null) throw new Error("Res should not have been null");
+    setMessages(res.chatMessages);
+    setChatEnabled(res.chatEnabled);
+  };
+
+  React.useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser, dynamicOnlineClass._id]);
 
   // Polling
   React.useEffect(() => {
-    const getData = async () => {
-      const [res, err] = await getOnlineClassDetails(
-        await authUser.getIdToken(),
-        dynamicOnlineClass._id,
-        "client",
-      );
-      if (err !== null) {
-        console.error(err);
-        if (err instanceof HttpException) {
-          toast.error(err.message);
-        } else {
-          toast.error(err);
-        }
-        return;
-      }
-      if (res === null) throw new Error("Res should not have been null");
-      setMessages(res.chatMessages);
-    };
     const intervalId = setInterval(() => {
       console.log("Polling!!!");
       getData();
     }, 2000);
 
     return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser, dynamicOnlineClass._id]);
 
   /**
@@ -136,7 +127,7 @@ const ChatSection = ({ dynamicOnlineClass }: ChatSectionProps): JSX.Element => {
         <LoadingButton
           variant="contained"
           loading={loading}
-          disabled={newMessage.length === 0}
+          disabled={newMessage.length === 0 || (student === true ? !chatEnabled : false)}
           type="submit"
         >
           Send

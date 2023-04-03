@@ -50,54 +50,6 @@ const LeftColumn = ({
     }
   }, [dynamicOnlineClass, editMode]);
 
-  const handleStartClass = async () => {
-    setRunningLoading(true);
-    const [res, err] = await startOnlineClass(
-      await authUser.getIdToken(),
-      dynamicOnlineClass._id,
-      "client",
-    );
-
-    if (err !== null) {
-      console.error(err);
-      if (err instanceof HttpException) {
-        toast.error(err.message);
-      } else {
-        toast.error(err);
-      }
-      setRunningLoading(false);
-      return;
-    }
-    if (res === null) throw new Error("Res should not have been null");
-    setRunningLoading(false);
-    setDynamicOnlineClass({ ...dynamicOnlineClass, running: true });
-    toast.success(res.message);
-  };
-
-  const handleEndClass = async () => {
-    setRunningLoading(true);
-    const [res, err] = await endOnlineClass(
-      await authUser.getIdToken(),
-      dynamicOnlineClass._id,
-      "client",
-    );
-
-    if (err !== null) {
-      console.error(err);
-      if (err instanceof HttpException) {
-        toast.error(err.message);
-      } else {
-        toast.error(err);
-      }
-      setRunningLoading(false);
-      return;
-    }
-    if (res === null) throw new Error("Res should not have been null");
-    setRunningLoading(false);
-    setDynamicOnlineClass({ ...dynamicOnlineClass, running: false });
-    toast.success(res.message);
-  };
-
   return (
     <div className="w-full flex flex-col justify-center items-center px-[5%]">
       <OnlineClassVideoSection dynamicOnlineClass={dynamicOnlineClass} />
@@ -110,7 +62,7 @@ type RightColumnProps = {
 };
 
 const RightColumn = ({ dynamicOnlineClass }: RightColumnProps): JSX.Element => {
-  return <ChatSection dynamicOnlineClass={dynamicOnlineClass} />;
+  return <ChatSection dynamicOnlineClass={dynamicOnlineClass} student={true} />;
 };
 
 const OnlineClassPage = ({ courseData, onlineClassData }: OnlineClassPageProps): JSX.Element => {
