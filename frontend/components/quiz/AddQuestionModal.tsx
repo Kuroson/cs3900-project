@@ -1,12 +1,47 @@
-import React from "react";
-import { Box, Modal } from "@mui/material";
+import React, { useState } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from "@mui/material";
+import { QuizQuestionType } from "models/quiz.model";
 
 type AddQuestionModalProps = {
   open: boolean;
-  setOpen: () => void;
+  setOpen: (value: React.SetStateAction<boolean>) => void;
+  courseTags: Array<string>;
+  handleAddQuestion: (newQuestion: QuizQuestionType, clearForm: () => void) => Promise<void>;
 };
 
-const AddQuestionModal: React.FC<AddQuestionModalProps> = ({ open, setOpen }): JSX.Element => {
+const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
+  open,
+  setOpen,
+  courseTags,
+  handleAddQuestion,
+}): JSX.Element => {
+  const [questionText, setQuestionText] = useState("");
+  const [questionType, setQuestionType] = useState("choice");
+  const [questionMarks, setQuestionMarks] = useState(0);
+  const [questionTag, setQuestionTag] = useState("");
+  const [choices, setChoices] = useState<{ text: string; correct: boolean }[]>([]);
+
+  const clearForm = () => {
+    setQuestionText("");
+    setQuestionMarks(0);
+    setQuestionTag("");
+    setQuestionType("choice");
+    setChoices([]);
+  };
+
   return (
     <Modal
       open={open}
@@ -64,6 +99,7 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({ open, setOpen }): J
             label="Question marks"
             variant="outlined"
             value={questionMarks}
+            type="number"
             onChange={(e) => setQuestionMarks(+e.target.value)}
             fullWidth
           />
@@ -129,7 +165,22 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({ open, setOpen }): J
             </Button>
           </Box>
         )}
-        <Button variant="contained" disabled={questionText === ""} onClick={handleAddQuestion}>
+        <Button
+          variant="contained"
+          disabled={questionText === ""}
+          onClick={() => {
+            handleAddQuestion(
+              {
+                text: questionText,
+                type: questionType,
+                marks: questionMarks,
+                choices: choices,
+                tag: questionTag,
+              },
+              clearForm,
+            );
+          }}
+        >
           Add Question
         </Button>
       </Box>

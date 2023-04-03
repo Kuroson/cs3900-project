@@ -1,22 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Modal,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Button, Divider } from "@mui/material";
 import dayjs from "dayjs";
-import { QuizBasicInfo, QuizInfoType } from "models/quiz.model";
+import { QuizBasicInfo, QuizInfoType, QuizQuestionType } from "models/quiz.model";
 import { useAuthUser } from "next-firebase-auth";
 import PageHeader from "components/common/PageHeader";
 import { HttpException } from "util/HttpExceptions";
@@ -26,16 +12,24 @@ import {
   getQuizInfoAdmin,
   updateQuizAdmin,
 } from "util/api/quizApi";
+import AddQuestionModal from "./AddQuestionModal";
 import QuizInfoCard from "./QuizInfoCard";
 import ShowAnswer from "./ShowAnswer";
 import ShowSubmissions from "./ShowSubmissions";
 
-const AdminQuiz: React.FC<{
+type AdminQuizProps = {
   quizId: string;
   handleClose: () => void;
   courseId: string;
   courseTags: Array<string>;
-}> = ({ quizId, handleClose, courseId, courseTags }): JSX.Element => {
+};
+
+const AdminQuiz: React.FC<AdminQuizProps> = ({
+  quizId,
+  handleClose,
+  courseId,
+  courseTags,
+}): JSX.Element => {
   const authUser = useAuthUser();
   const [quizInfo, setQuizInfo] = useState<QuizInfoType>({
     title: "",
@@ -48,11 +42,6 @@ const AdminQuiz: React.FC<{
   // add question
   const [addQuestionModal, setAddQuestionModal] = useState(false);
   const [markQuestion, setMarkQuestion] = useState(false);
-  const [questionText, setQuestionText] = useState("");
-  const [questionType, setQuestionType] = useState("choice");
-  const [questionMarks, setQuestionMarks] = useState(0);
-  const [questionTag, setQuestionTag] = useState("");
-  const [choices, setChoices] = useState<{ text: string; correct: boolean }[]>([]);
   const isBeforeOpen = dayjs.utc() < dayjs.utc(quizInfo.open);
   const isClosed = dayjs.utc() > dayjs.utc(quizInfo.close);
 
@@ -110,19 +99,12 @@ const AdminQuiz: React.FC<{
     }));
   };
 
-  const handleAddQuestion = async () => {
+  const handleAddQuestion = async (newQuestion: QuizQuestionType, clearForm: () => void) => {
     if (!canEditQuiz()) {
       setAddQuestionModal((prev) => !prev);
       return;
     }
 
-    const newQuestion = {
-      text: questionText,
-      type: questionType,
-      marks: questionMarks,
-      choices: choices,
-      tag: questionTag,
-    };
     const [res, err] = await createNewQuestion(
       await authUser.getIdToken(),
       {
@@ -150,11 +132,7 @@ const AdminQuiz: React.FC<{
     }));
 
     setAddQuestionModal((prev) => !prev);
-    setQuestionText("");
-    setQuestionMarks(0);
-    setQuestionTag("");
-    setQuestionType("choice");
-    setChoices([]);
+    clearForm();
   };
 
   const handleDeleteQuestion = async (questionId: string, idx: number) => {
@@ -229,133 +207,12 @@ const AdminQuiz: React.FC<{
             Add Question
           </Button>
         )}
-        <Modal
+        <AddQuestionModal
           open={addQuestionModal}
-          onClose={() => setAddQuestionModal((prev) => !prev)}
-          aria-labelledby="add question"
-          aria-describedby="add question"
-        >
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: "100vw",
-              maxWidth: "700px",
-              bgcolor: "background.paper",
-              boxShadow: 24,
-              p: 4,
-              borderRadius: 20,
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-            }}
-          >
-            <h2>Add Question</h2>
-            <TextField
-              id="question text"
-              label="Question Text"
-              variant="outlined"
-              value={questionText}
-              onChange={(e) => setQuestionText(e.target.value)}
-            />
-            <Box sx={{ display: "flex", justifyContent: "space-between", gap: "20px" }}>
-              <FormControl fullWidth>
-                <InputLabel id="question-tag-label">Question Tag</InputLabel>
-                <Select
-                  labelId="question-tag-label"
-                  id="question tag"
-                  label="Question Tag"
-                  value={questionTag}
-                  onChange={(e) => setQuestionTag(e.target.value as string)}
-                  fullWidth
-                >
-                  {courseTags.map((tag) => {
-                    return (
-                      <MenuItem value={tag} key={tag}>
-                        {tag}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-              <TextField
-                id="question marks"
-                label="Question marks"
-                variant="outlined"
-                type="number"
-                value={questionMarks}
-                onChange={(e) => setQuestionMarks(+e.target.value)}
-                fullWidth
-              />
-            </Box>
-            <FormControl fullWidth>
-              <InputLabel id="question type">Type</InputLabel>
-              <Select
-                labelId="select type"
-                id="select type"
-                value={questionType}
-                label="choice"
-                onChange={(e) => setQuestionType(e.target.value)}
-              >
-                <MenuItem value="choice">Choice question</MenuItem>
-                <MenuItem value="open">Open question</MenuItem>
-              </Select>
-            </FormControl>
-            {questionType === "choice" && (
-              <Box sx={{ display: "flex", gap: "10px", flexDirection: "column" }}>
-                {choices?.map((choice, idx) => (
-                  <Box key={`choice_${idx}`} sx={{ display: "flex", gap: "10px" }}>
-                    <Checkbox
-                      value={choice.correct}
-                      onChange={(e) =>
-                        setChoices((prev) => {
-                          prev[idx].correct = e.target.checked;
-                          return [...prev];
-                        })
-                      }
-                    />
-                    <TextField
-                      id={`choice_text_${idx}`}
-                      label="Choice Text"
-                      variant="outlined"
-                      fullWidth
-                      value={choice.text}
-                      onChange={(e) =>
-                        setChoices((prev) => {
-                          prev[idx].text = e.target.value;
-                          return [...prev];
-                        })
-                      }
-                    />
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() =>
-                        setChoices((prev) => {
-                          prev.splice(idx, 1);
-                          return [...prev];
-                        })
-                      }
-                    >
-                      <DeleteIcon color="error" />
-                    </IconButton>
-                  </Box>
-                ))}
-                <Button
-                  startIcon={<AddIcon />}
-                  sx={{ width: "fit-content" }}
-                  onClick={() => setChoices((prev) => [...prev, { text: "", correct: false }])}
-                >
-                  Add Choice
-                </Button>
-              </Box>
-            )}
-            <Button variant="contained" disabled={questionText === ""} onClick={handleAddQuestion}>
-              Add Question
-            </Button>
-          </Box>
-        </Modal>
+          setOpen={setAddQuestionModal}
+          courseTags={courseTags}
+          handleAddQuestion={handleAddQuestion}
+        />
       </div>
     </>
   );
