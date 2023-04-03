@@ -40,3 +40,15 @@ return apiPost<CreateResponseType, { responseId: string }>(
   payload,
 );
 };
+
+export const markCorrectResponse = (
+  token: string | null,
+  responseId: string,
+  type: BackendLinkType,
+) => {
+return apiPost<{ responseId: string }, { responseId: string }>(
+  `${getBackendLink(type)}/forum/post/correct`,
+  token,
+  { responseId: responseId },
+);
+};
