@@ -109,71 +109,69 @@ const StudentAssignment: React.FC<{
           courseTags={courseTags}
           isAdmin={false}
         />
-      </div>
-      {/* Viewing/submitting assignment */}
-      <div className="mt-7">
-        {submitted && (
-          <>
-            <span className="w-full text-xl font-medium flex flex-col">
-              {assignmentInfo.submission?.title}
-            </span>
-            {/* Submission */}
-            {assignmentInfo.submission?.linkToSubmission !== undefined && (
-              <div className="mt-2">
-                <Link href={assignmentInfo.submission?.linkToSubmission} target="_blank">
-                  <Button variant="contained">Download File</Button>
-                </Link>
-              </div>
-            )}
-            {/* TODO: Add comments/tags from grading */}
-          </>
-        )}
-        {!submitted && !afterDeadline() && (
-          <div className="w-full pt-4">
-            <div className="pb-4">
-              <TitleWithIcon text="Submit assignment">
-                <SendIcon color="primary" />
-              </TitleWithIcon>
-            </div>
-            <div className="flex flex-col w-full">
-              <div className="w-full pb-5">
-                <TextField
-                  id="AssignmentTitle"
-                  label="Assignment Title"
-                  variant="outlined"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-[300px] max-w-[500px]"
-                />
-              </div>
-              <div className="w-full flex justify-between">
-                <div className="flex items-center">
-                  <Button
-                    variant="outlined"
-                    component="label"
-                    sx={{ width: "220px" }}
-                    startIcon={<DriveFolderUploadIcon />}
-                    id="uploadAssignmentMaterial"
-                  >
-                    Upload Assignment
-                    <input
-                      id="uploadFileInput"
-                      hidden
-                      type="file"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        if (e.target.files && e.target.files.length > 0) {
-                          setFile(e.target.files[0]);
-                        }
-                      }}
-                    />
-                  </Button>
-                  {file !== null && (
-                    <p className="pl-5">
-                      <i>{file.name}</i>
-                    </p>
-                  )}
+        {/* Viewing/submitting assignment */}
+        <div>
+          {submitted && (
+            <>
+              <span className="w-full text-xl font-medium flex flex-col">
+                {assignmentInfo.submission?.title}
+              </span>
+              {/* Submission */}
+              {assignmentInfo.submission?.linkToSubmission !== undefined && (
+                <div className="mt-2">
+                  <Link href={assignmentInfo.submission?.linkToSubmission} target="_blank">
+                    <Button variant="contained">Download File</Button>
+                  </Link>
                 </div>
-                <div className="flex gap-2">
+              )}
+              {/* TODO: Add comments/tags from grading */}
+            </>
+          )}
+          {!submitted && !afterDeadline() && (
+            <div className="pt-4">
+              <div className="pb-4">
+                <TitleWithIcon text="Submit assignment">
+                  <SendIcon color="primary" />
+                </TitleWithIcon>
+              </div>
+              <div className="flex flex-col w-full">
+                <div className="w-full pb-5">
+                  <TextField
+                    id="AssignmentTitle"
+                    label="Assignment Title"
+                    variant="outlined"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    fullWidth
+                  />
+                </div>
+                <div className="w-full flex justify-between">
+                  <div className="flex items-center">
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      sx={{ width: "220px" }}
+                      startIcon={<DriveFolderUploadIcon />}
+                      id="uploadAssignmentMaterial"
+                    >
+                      Upload Assignment
+                      <input
+                        id="uploadFileInput"
+                        hidden
+                        type="file"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            setFile(e.target.files[0]);
+                          }
+                        }}
+                      />
+                    </Button>
+                    {file !== null && (
+                      <p className="pl-5">
+                        <i>{file.name}</i>
+                      </p>
+                    )}
+                  </div>
                   <Button
                     id="submitAssignmentButton"
                     variant="contained"
@@ -185,13 +183,13 @@ const StudentAssignment: React.FC<{
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        {!submitted && afterDeadline() && (
-          <span className="w-full text-xl font-medium flex flex-col">
-            Assignment not submitted before deadline
-          </span>
-        )}
+          )}
+          {!submitted && afterDeadline() && (
+            <span className="w-full text-xl font-medium flex flex-col text-center">
+              Assignment not submitted before deadline
+            </span>
+          )}
+        </div>
       </div>
     </>
   );

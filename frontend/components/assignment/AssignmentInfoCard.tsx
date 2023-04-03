@@ -24,6 +24,7 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
   handleEditInfo,
 }): JSX.Element => {
   const [isEditing, setIsEditing] = useState(false);
+  const passDdl = dayjs.utc(info.deadline) < dayjs.utc();
 
   return (
     <div className="shadow-md p-4 rounded-lg outline outline-1 outline-gray-400 flex gap-2 flex-col">
@@ -39,9 +40,11 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
       </div>
       <div className="flex justify-between items-center">
         <TitleWithIcon
-          text={`Marks: ${info.submission?.mark != undefined ? info.submission?.mark + "/" : "?/"}${
-            info.marksAvailable
-          }`}
+          text={`Marks: ${
+            info.submission?.mark != undefined
+              ? info.submission?.mark + " / "
+              : `${!isAdmin ? "? / " : ""}`
+          }${info.marksAvailable}`}
         >
           <RuleIcon color="primary" />
         </TitleWithIcon>
@@ -54,7 +57,7 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
         <p className="m-4 break-all text-lg">{info.description}</p>
       )}
       {/* Just for admin -> edit information */}
-      {isAdmin && (
+      {isAdmin && !passDdl && (
         <Button variant="contained" onClick={() => setIsEditing((prev) => !prev)}>
           Edit Assignment Infomation
         </Button>

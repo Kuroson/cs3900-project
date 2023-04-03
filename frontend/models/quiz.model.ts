@@ -75,7 +75,7 @@ export type EachQuestionSubmissionsType = {
   question: {
     questionId: string;
     text: string;
-    marks: string;
+    marks: number;
     tag: string;
   };
   responses: Array<StudentResponseType>;

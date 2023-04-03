@@ -43,3 +43,29 @@ export type SubmitAssignmentResponseType = {
   fileType: string;
   linkToSubmission: string; // i.e., download link
 };
+
+export type submissionType = {
+  submissionId: string;
+  studentId: string;
+  title: string;
+  linkToSubmission: string;
+  fileType: string;
+};
+
+export type getAllSubmissionsType = {
+  assignment: {
+    assignmentId: string;
+    title: string;
+    marks: string;
+    tags: Array<string>;
+  };
+  submissions: Array<submissionType>;
+};
+
+export type gradingType = {
+  submissionId: string;
+  mark: number;
+  comment: string;
+  successTags: Array<string>;
+  improvementTags: Array<string>;
+};

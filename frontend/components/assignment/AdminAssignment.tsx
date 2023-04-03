@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { Button } from "@mui/material";
 import dayjs from "dayjs";
 import { AssignmentInfoType } from "models/assignment.model";
 import { useAuthUser } from "next-firebase-auth";
 import PageHeader from "components/common/PageHeader";
+import TitleWithIcon from "components/common/TitleWithIcon";
 import { HttpException } from "util/HttpExceptions";
 import { getAssignmentInfo, updateAssignmentAdmin } from "util/api/assignmentApi";
 import AssignmentInfoCard from "./AssignmentInfoCard";
+import ShowSubmissionsAss from "./ShowSubmissionsAss";
 
 const AdminAssignment: React.FC<{
   assignmentId: string;
@@ -22,6 +25,7 @@ const AdminAssignment: React.FC<{
     marksAvailable: 0,
     tags: [],
   });
+  const passDdl = dayjs.utc(assignmentInfo.deadline) < dayjs.utc();
 
   useEffect(() => {
     const getAssignment = async () => {
@@ -101,7 +105,12 @@ const AdminAssignment: React.FC<{
           isAdmin={true}
           handleEditInfo={handleEditInfo}
         />
-        {/* TODO: Add grading assignments */}
+        <div className="flex flex-col gap-5 ">
+          <TitleWithIcon text="Submissions">
+            <UploadFileIcon color="primary" />
+          </TitleWithIcon>
+          <ShowSubmissionsAss courseId={courseId} assignmentId={assignmentId} />
+        </div>
       </div>
     </>
   );
