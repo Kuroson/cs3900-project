@@ -1,6 +1,7 @@
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, TextField } from "@mui/material";
+import { TaskInterface } from "models/task.model";
 import { FullWeekInterface, WeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
@@ -8,14 +9,18 @@ import { createNewWeek } from "util/api/workloadApi";
 
 type AddNewWeekSectionProps = {
   courseId: string;
+  pageId: string;
   setWeeks: React.Dispatch<React.SetStateAction<FullWeekInterface[]>>;
   weeks: FullWeekInterface[];
+  setWeek: React.Dispatch<React.SetStateAction<FullWeekInterface | undefined>>;
 };
 
 const AddNewWorkloadSection = ({
   courseId,
+  pageId,
   setWeeks,
   weeks,
+  setWeek,
 }: AddNewWeekSectionProps): JSX.Element => {
   const authUser = useAuthUser();
 
@@ -39,6 +44,7 @@ const AddNewWorkloadSection = ({
     const [res, err] = await createNewWeek(
       await authUser.getIdToken(),
       courseId,
+      pageId,
       title,
       description,
       "client",
@@ -65,6 +71,8 @@ const AddNewWorkloadSection = ({
     };
 
     setWeeks([...weeks, weekToAdd]);
+
+    setWeek(weekToAdd);
 
     handleCloseForm();
   };

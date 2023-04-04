@@ -1,10 +1,12 @@
 import Course from "@/models/course/course.model";
 import WorkloadCompletion from "@/models/course/enrolment/workloadCompletion.model";
+import Page from "@/models/course/page/page.model";
 import Task from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
+import { createPage } from "@/routes/page/createPage.route";
 import { registerUser } from "@/routes/user/register.route";
 import { completeTask } from "@/routes/workloadOverview/completeTask.route";
 import { createTask } from "@/routes/workloadOverview/createTask.route";
@@ -19,6 +21,7 @@ describe("Test completing a task", () => {
     let weekId: string;
     let task1Id: string;
     let task2Id: string;
+    let pageId: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -38,7 +41,15 @@ describe("Test completing a task", () => {
 
         await registerUser("first_name", "last_name", `student1${id}@email.com`, `acc1${id}`);
 
-        weekId = await createWeek(`${courseId}`, "Week 1", "Week 1 Description", `acc${id}`);
+        pageId = await createPage(courseId, "Test page 1", `acc${id}`);
+
+        weekId = await createWeek(
+            `${courseId}`,
+            pageId,
+            "Week 1",
+            "Week 1 Description",
+            `acc${id}`,
+        );
         task1Id = await createTask(weekId, "Do Task 1", "Look at week 1", `acc${id}`);
         task2Id = await createTask(weekId, "Do Task 2", "Look at week 1", `acc${id}`);
 
@@ -88,6 +99,7 @@ describe("Test completing a task", () => {
         await User.deleteOne({ firebase_uid: `acc${id}` }).exec();
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await Page.findByIdAndDelete(pageId).exec();
         await Week.findByIdAndDelete(weekId).exec();
         await Task.findByIdAndDelete(task1Id).exec();
         await Task.findByIdAndDelete(task2Id).exec();

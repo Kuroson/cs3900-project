@@ -8,6 +8,8 @@ import { ResourceInterface } from "models";
 import { UserCourseInformation } from "models/course.model";
 import { PageFull } from "models/page.model";
 import { UserDetails } from "models/user.model";
+import { FullWeekInterface } from "models/week.model";
+import { FullWorkloadInfo } from "models/workload.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import {
@@ -20,12 +22,14 @@ import {
 } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
 import AddNewWorkloadSection from "components/admin/workload/AddNewWeekSection";
+import SingleEditableWeekSection from "components/admin/workload/SingleEditableWorkload";
 import WorkloadSection from "components/admin/workload/WorkloadSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { deletePage } from "util/api/pageApi";
 import { getFileDownloadLink } from "util/api/resourceApi";
 import { getUserDetails } from "util/api/userApi";
+import { getWorkload } from "util/api/workloadApi";
 import initAuth from "util/firebase";
 
 initAuth(); // SSR maybe, i think...
@@ -33,9 +37,14 @@ initAuth(); // SSR maybe, i think...
 type AdminCoursePageProps = {
   courseData: UserCourseInformation;
   pageData: PageFull;
+  workloadData: FullWorkloadInfo;
 };
 
-const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.Element => {
+const AdminCoursePage = ({
+  courseData,
+  pageData,
+  workloadData,
+}: AdminCoursePageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const router = useRouter();
@@ -43,12 +52,18 @@ const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.El
   // const [dynamicPageData, setDynamicPageData] = React.useState(pageData);
   const [dynamicResources, setDynamicResources] = React.useState(pageData.resources);
   const [dynamicSections, setDynamicSections] = React.useState(pageData.sections);
+  const [dynamicWeeks, setDynamicWeeks] = React.useState(workloadData.weeks);
+  const [dynamicWorkload, setDynamicWorkload] = React.useState<FullWeekInterface | undefined>(
+    pageData.workload,
+  );
 
   React.useEffect(() => {
     // Trigger a re-render when pageData props change from server
     setDynamicResources(pageData.resources);
     setDynamicSections(pageData.sections);
-  }, [pageData]);
+    setDynamicWeeks(workloadData.weeks);
+    setDynamicWorkload(pageData.workload);
+  }, [pageData, workloadData]);
 
   React.useEffect(() => {
     // Build user data for user context
@@ -73,6 +88,9 @@ const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.El
     router.push(`/instructor/${courseData._id}`);
   };
 
+  console.log("THIS is " + dynamicWorkload);
+  console.log(pageData);
+
   return (
     <>
       <Head>
@@ -96,6 +114,23 @@ const AdminCoursePage = ({ courseData, pageData }: AdminCoursePageProps): JSX.El
               Delete page
             </Button>
           </h1>
+          {dynamicWorkload === undefined ? (
+            <AddNewWorkloadSection
+              courseId={courseData._id}
+              pageId={pageData._id}
+              setWeeks={setDynamicWeeks}
+              weeks={dynamicWeeks}
+              setWeek={setDynamicWorkload}
+            />
+          ) : (
+            <SingleEditableWeekSection
+              courseId={courseData._id}
+              setWeeks={setDynamicWeeks}
+              weeks={dynamicWeeks}
+              week={dynamicWorkload}
+              setWeek={setDynamicWorkload}
+            />
+          )}
           <ResourcesSection
             resources={dynamicResources}
             setResources={setDynamicResources}
@@ -190,10 +225,26 @@ export const getServerSideProps: GetServerSideProps<AdminCoursePageProps> = with
   for (const section of page.sections) {
     section.resources = await parseResource(section.resources);
   }
+
+  const [workloadDetails, workloadError] = await getWorkload(
+    await AuthUser.getIdToken(),
+    courseId as string,
+    "ssr",
+  );
+
+  if (workloadError !== null) {
+    console.error(workloadError);
+    // handle error
+    return { notFound: true };
+  }
+
+  if (workloadDetails === null) throw new Error("This shouldn't have happened");
+
   return {
     props: {
       pageData: page,
       courseData: courseDetails,
+      workloadData: workloadDetails.workload,
     },
   };
 });

@@ -1,6 +1,7 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Page from "@/models/course/page/page.model";
+import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -68,6 +69,17 @@ export const deletePage = async (queryBody: QueryPayload, firebase_uid: string):
     // Find and remove page from course
     const course = await Course.findById(courseId).catch(() => null);
     if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
+
+    const page = await Page.findById(pageId).catch(() => null);
+    if (page === null) throw new HttpException(400, `Cannot find page of ${pageId}`);
+
+    await Week.findByIdAndDelete(page.workload).catch((err) => {
+        throw new HttpException(
+            500,
+            `Could not find and delete weekly workload ${page.workload} from page`,
+            err,
+        );
+    });
 
     // Remove from course and overall
     course.pages.remove(pageId);

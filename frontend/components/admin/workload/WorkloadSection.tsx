@@ -22,9 +22,9 @@ const WorkloadSection = ({ weeks, setWeeks, courseId }: WorkloadSectionProps): J
           />
         );
       })}
-      <div className="flex justify-center">
+      {/* <div className="flex justify-center">
         <AddNewWorkloadSection courseId={courseId} setWeeks={setWeeks} weeks={weeks} />
-      </div>
+      </div> */}
     </div>
   );
 };
