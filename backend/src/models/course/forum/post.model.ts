@@ -15,9 +15,11 @@ export interface PostInterface extends Document {
     image?: string;
     poster: UserInterface["_id"];
     responses: Types.DocumentArray<ResponseInterface["_id"]>;
+    /**
+     * UNIX timestamp
+     */
+    timeCreated: number;
 }
-
-//Note changed image and responses to not required, to be changed back to remain consistent
 const postSchema: Schema = new Schema<PostInterface>({
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     title: { type: String, required: true },
@@ -25,6 +27,7 @@ const postSchema: Schema = new Schema<PostInterface>({
     image: { type: String },
     poster: { type: Schema.Types.ObjectId, ref: "User", required: true },
     responses: [{ type: Schema.Types.ObjectId, ref: "Response", required: true }],
+    timeCreated: { type: Number, required: true },
 });
 
 const Post = model<PostInterface & Document>("Post", postSchema);

@@ -166,7 +166,7 @@ const PostColumn = ({ showedPost, userDetails, setShowedPost }: PostColumnProps)
   return (
     <div className="flex flex-col">
       <ForumPostCard post={showedPost} />
-      {showedPost?.responses?.map((resp, index) => (
+      {showedPost.responses.map((resp, index) => (
         <div key={index} className="flex flex-row">
           <ForumResponseCard response={resp} />
           {resp.correct === false && (
@@ -217,6 +217,14 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       setLoading(false);
     }
   }, [user.userDetails]);
+
+  React.useEffect(() => {
+    // Every time showPost gets updated, update in main postList
+    if (showedPost !== null) {
+      setPostList([...postList.filter((x) => x._id !== showedPost._id), showedPost]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showedPost]);
 
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;

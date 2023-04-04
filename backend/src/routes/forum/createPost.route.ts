@@ -109,6 +109,7 @@ export const createPost = async (
         courseId,
         image,
         responses: [],
+        timeCreated: Date.now() / 1000,
     })
         .save()
         .catch((err) => {

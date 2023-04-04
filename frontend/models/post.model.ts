@@ -8,6 +8,10 @@ export interface PostInterface extends MongooseDocument {
   image?: string;
   poster: MongooseId;
   responses: Array<MongooseId>;
+  /**
+   * UNIX timestamp
+   */
+  timeCreated: number;
 }
 
 export type FullPostInfo = Omit<PostInterface, "poster" | "responses"> & {
