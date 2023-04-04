@@ -30,6 +30,10 @@ const PostColumn = ({
   const [buttonLoading, setButtonLoading] = React.useState(false);
   const [postResponseText, setPostResponseText] = React.useState("");
 
+  React.useEffect(() => {
+    setPostResponseText("");
+  }, [showedPost]);
+
   const handleNewResponse = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (showedPost === null) return; // Should never be null basically
