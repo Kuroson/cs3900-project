@@ -1,13 +1,8 @@
 import React from "react";
-import Link from "next/link";
-import { Avatar } from "@mui/material";
-import { BasicPostInfo } from "models/post.model";
-import { UserDetails } from "models/user.model";
-import { useUser } from "util/UserContext";
-import UserDetailsSection from "../Layout/NavBars/UserDetailSection";
+import { FullPostInfo } from "models/post.model";
 
 type ForumPostOverviewCardProps = {
-  post: BasicPostInfo;
+  post: FullPostInfo;
 };
 
 const ForumPostOverviewCard: React.FC<ForumPostOverviewCardProps> = ({ post }): JSX.Element => {

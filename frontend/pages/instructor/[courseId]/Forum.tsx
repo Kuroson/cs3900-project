@@ -2,16 +2,13 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { Button, FormControl, Modal, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
-import { BasicPostInfo, FullPostInfo } from "models/post.model";
-import { BasicResponseInfo } from "models/response.model";
+import { FullPostInfo } from "models/post.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading, ThreadCreationModal } from "components";
-import ForumPostCard from "components/common/ForumPostCard";
 import ForumPostOverviewCard from "components/common/ForumPostOverviewCard";
 import ForumResponseCard from "components/common/ForumResponseCard";
 import { HttpException } from "util/HttpExceptions";
@@ -42,7 +39,7 @@ const ThreadListColumn = ({
 }: ThreadListColumnProps): JSX.Element => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-  function handleOnClickPostOverview(post: BasicPostInfo) {
+  function handleOnClickPostOverview(post: FullPostInfo) {
     //Clicks on a particular post overview
     // if (showedPost !== null) {
     //   setPostList([...postList.filter((x) => x._id !== showedPost._id), showedPost]);
@@ -63,6 +60,7 @@ const ThreadListColumn = ({
         setOpen={setOpen}
         courseId={courseId}
         userDetails={userDetails}
+        setPostList={setPostList}
       />
       {postList.map((post, index) => (
         <div key={index} onClick={() => handleOnClickPostOverview(post)}>
