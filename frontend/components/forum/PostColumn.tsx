@@ -16,9 +16,15 @@ type PostColumnProps = {
   showedPost: FullPostInfo | null;
   userDetails: UserDetails;
   setShowedPost: React.Dispatch<React.SetStateAction<FullPostInfo | null>>;
+  admin?: true;
 };
 
-const PostColumn = ({ showedPost, userDetails, setShowedPost }: PostColumnProps): JSX.Element => {
+const PostColumn = ({
+  showedPost,
+  userDetails,
+  setShowedPost,
+  admin,
+}: PostColumnProps): JSX.Element => {
   const authUser = useAuthUser();
 
   const [buttonLoading, setButtonLoading] = React.useState(false);
@@ -69,7 +75,7 @@ const PostColumn = ({ showedPost, userDetails, setShowedPost }: PostColumnProps)
       {showedPost.responses.map((resp, index) => (
         <div key={index} className="flex flex-row h-full w-full">
           <ForumResponseCard response={resp} />
-          {!resp.correct && (
+          {!resp.correct && admin && (
             <CorrectResponseButton
               resp={resp}
               setShowedPost={setShowedPost}

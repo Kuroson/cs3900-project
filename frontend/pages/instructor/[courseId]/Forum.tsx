@@ -72,6 +72,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             showedPost={showedPost}
             userDetails={userDetails}
             setShowedPost={setShowedPost}
+            admin={true}
           />
         </div>
       </ContentContainer>
