@@ -86,6 +86,11 @@ export default function StudentNavBar({
           name: page.title,
           route: `/course/${courseData?._id}/Analytics`,
         };
+      } else if (page.title === "Workload Overview") {
+        return {
+          name: page.title,
+          route: `/course/${courseData?._id}/WorkloadOverview`,
+        };
       }
       return {
         name: page.title,

@@ -9,6 +9,7 @@ import ResourcesSection from "./admin/resource/ResourcesSection";
 import SingleEditableResource from "./admin/resource/SingleEditableResource";
 import AddNewSection from "./admin/section/AddNewSection";
 import PageSections from "./admin/section/PageSections";
+import WorkloadSection from "./admin/workload/WorkloadSection";
 import ChatSection from "./common/ChatSection";
 import Loading from "./common/Loading";
 import OnlineClassCard from "./common/OnlineClassCard";
@@ -28,6 +29,7 @@ export {
   EditPanelButtons,
   Loading,
   NoUserLayout,
+  WorkloadSection,
   OnlineClassCard,
   EditOnlineClassSection,
   ChatSection,

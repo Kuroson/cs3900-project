@@ -110,7 +110,7 @@ export const getCourse = async (
         .populate("pages")
         .populate({
             path: "pages",
-            populate: { path: "resources" },
+            populate: [{ path: "resources" }, { path: "workload", populate: { path: "tasks" } }],
         })
         .populate({
             path: "pages",

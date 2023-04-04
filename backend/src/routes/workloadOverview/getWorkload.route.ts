@@ -17,8 +17,9 @@ export type WorkloadData = Omit<WorkloadOverviewInterface, "weeks"> & {
         }
     >;
 };
-type ResponsePayload = WorkloadData & {
+type ResponsePayload = {
     courseId: string;
+    workload: WorkloadData;
 };
 
 type QueryPayload = {
@@ -44,7 +45,7 @@ export const getWorkloadController = async (
             const data = await getWorkload(courseId);
             return res.status(200).json({
                 courseId: courseId,
-                ...data,
+                workload: data,
             });
         } else {
             throw new HttpException(
