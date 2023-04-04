@@ -136,6 +136,7 @@ export const getCourse = async (
                 populate: {
                     path: "poster",
                 },
+                options: { sort: { timeCreated: -1 } },
             },
         })
         .populate({

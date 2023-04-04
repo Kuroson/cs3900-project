@@ -1,30 +1,18 @@
-import {
-  MongooseDocument,
-  MongooseId,
-} from "models";
-import { PageFull } from "./page.model";
-import { BasicPostInfo, PostInterface } from "./post.model";
-import { UserDetails } from "./user.model";
+import { MongooseDocument, MongooseId } from "models";
+import { FullPostInfo } from "./post.model";
 
 export interface ForumInterface extends MongooseDocument {
   description: string;
   posts: Array<MongooseId>;
 }
 
-export type BasicForumInfo = Omit<
-  ForumInterface,
-  | "description"
->;
+export type BasicForumInfo = Omit<ForumInterface, "description">;
 
-export type PopulatedForumInterface = Omit<
-  ForumInterface,
-  | "posts"
-  | "description"
-    > & {
-  posts: Array<Omit<BasicPostInfo, "poster"> & { poster: UserDetails }>;
-}
+export type FullForumInfo = Omit<ForumInterface, "posts" | "description"> & {
+  posts: Array<FullPostInfo>;
+};
 
-
+// FIXME remove this
 export type GetForumType = {
   courseId: string;
 };

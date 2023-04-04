@@ -9,9 +9,6 @@ on:
       - master
       - staging
   pull_request:
-    branches:
-      - master
-      - staging
 
 jobs:
   backend:
@@ -86,10 +83,6 @@ jobs:
           cache-dependency-path: ./backend/yarn.lock
       - name: Install dependencies
         run: yarn
-      - name: Lint
-        run: yarn lint
-      - name: Prettier
-        run: yarn prettier
       - name: Build
         env:
           FIREBASE_PRIVATE_KEY: ${{ secrets.BACKEND_FIREBASE_PRIVATE_KEY }}

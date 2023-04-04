@@ -1,19 +1,21 @@
-import { MongooseDocument, MongooseId } from "models";
-import { UserDetails } from "./user.model";
+import { MongooseDocument, MongooseId, UserInterface } from "models";
 
 export interface ResponseInterface extends MongooseDocument {
+  /**
+   * Response text
+   */
   response: string;
   correct: boolean;
+  /**
+   * Poster's id
+   */
   poster: MongooseId;
+  /**
+   * UNIX time stamp
+   */
   timePosted: number;
 }
 
-export type BasicResponseInfo = Omit<ResponseInterface, "poster"> & {
-  poster: UserDetails;
-};
-
-export type CreateResponseType = {
-  postId: string;
-  text: string;
-  timePosted: Number;
+export type FullResponseInfo = Omit<ResponseInterface, "poster"> & {
+  poster: UserInterface;
 };

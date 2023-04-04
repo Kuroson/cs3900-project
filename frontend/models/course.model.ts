@@ -5,7 +5,7 @@ import {
   ResourceInterface,
   SectionInterface,
 } from "models";
-import { ForumInterface, BasicForumInfo, PopulatedForumInterface } from "./forum.model";
+import { BasicForumInfo, ForumInterface, FullForumInfo } from "./forum.model";
 import { OnlineClassInterface } from "./onlineClass.model";
 import { PageFull } from "./page.model";
 
@@ -52,5 +52,5 @@ export type UserCourseInformation = Omit<
 > & {
   pages: PageFull[];
   onlineClasses: Array<OnlineClassInterface>;
-  forum: PopulatedForumInterface;
+  forum: FullForumInfo;
 };
