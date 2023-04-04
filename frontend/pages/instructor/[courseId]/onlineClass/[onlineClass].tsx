@@ -42,7 +42,8 @@ const LeftColumn = ({
       // On page change, set the edit mode to false
       setEditMode(false);
     }
-  }, [dynamicOnlineClass, editMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dynamicOnlineClass]);
 
   return (
     <div className="w-full flex flex-col justify-center items-center px-[5%]">

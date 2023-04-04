@@ -15,14 +15,14 @@ export const getCourseURL = (courseCode: string | null): string => {
 
 /**
  * Parses a YoutubeURL to get the video ID
- * https://stackoverflow.com/questions/3452546/how-do-i-get-the-youtube-video-id-from-a-url
  * @param url
  * @returns
  */
 export const youtubeURLParser = (url: string): string | false => {
-  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-  const match = url.match(regExp);
-  return match && match[7].length == 11 ? match[7] : false;
+  // https://stackoverflow.com/questions/71000139/javascript-regex-for-youtube-video-and-shorts-id
+  const regex = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
+  const res = regex.exec(url);
+  return res === null ? false : res[3];
 };
 
 // From COMP6080 starter code

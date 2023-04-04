@@ -107,15 +107,15 @@ export const addNewChatMessage = async (
     const messageId = await newMessage
         .save()
         .then((res) => res._id.toString() as string)
-        .catch(() => {
-            throw new HttpException(500, "Error saving message");
+        .catch((err) => {
+            throw new HttpException(500, "Error saving message", err);
         });
     // Add to class
     onlineClass.chatMessages.addToSet(messageId);
 
     // Save class
-    await onlineClass.save().catch(() => {
-        throw new HttpException(500, "Error saving class");
+    await onlineClass.save().catch((err) => {
+        throw new HttpException(500, "Error saving class", err);
     });
     return messageId;
 };
