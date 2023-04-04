@@ -1,10 +1,10 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course, { CourseInterface } from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
+import Forum, { ForumInterface } from "@/models/course/forum/forum.model";
 import { PageInterface } from "@/models/course/page/page.model";
 import { ResourceInterface } from "@/models/course/page/resource.model";
 import { SectionInterface } from "@/models/course/page/section.model";
-import Forum, { ForumInterface } from "@/models/course/forum/forum.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -67,11 +67,7 @@ export const getForumController = async (
  * @param firebaseUID The firebaseUID of the user requesting the course
  * @returns Base information on the course based on return requirements in ResponsePayload
  */
-export const getForum = async (
-    courseId: string,
-    firebaseUID: string,
-): Promise<BasicForumInfo> => {
-
+export const getForum = async (courseId: string, firebaseUID: string): Promise<BasicForumInfo> => {
     // Find user first
     const user = await User.findOne({ firebase_uid: firebaseUID }).catch(() => null);
     if (user === null) throw new HttpException(400, `User of ${firebaseUID} does not exist`);
