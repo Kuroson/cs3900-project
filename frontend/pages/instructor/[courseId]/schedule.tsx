@@ -7,6 +7,7 @@ import { TextField } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
+import moment from "moment";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
@@ -30,7 +31,7 @@ const SchedulePage = ({ courseData }: SchedulePageProps): JSX.Element => {
   const [loading, setLoading] = React.useState(user.userDetails === null);
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [startTime, setStartTime] = React.useState<null | number>(null);
+  const [startTime, setStartTime] = React.useState<number>(Date.now() / 1000);
   const [url, setUrl] = React.useState("");
   const [buttonLoading, setButtonLoading] = React.useState(false);
 
@@ -102,7 +103,7 @@ const SchedulePage = ({ courseData }: SchedulePageProps): JSX.Element => {
               <div>
                 <TextField
                   id="Title"
-                  label="Course Title"
+                  label="Title"
                   variant="outlined"
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-[600px]"
@@ -115,6 +116,7 @@ const SchedulePage = ({ courseData }: SchedulePageProps): JSX.Element => {
                   className="w-[600px]"
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onChange={(e: any) => setStartTime(e.unix())}
+                  value={moment.unix(startTime)}
                 />
               </div>
               <div className="pt-5">

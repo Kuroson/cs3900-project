@@ -17,6 +17,35 @@ type ChatSectionProps = {
   student?: boolean;
 };
 
+type ChatMessageProps = {
+  message: MessageInterface;
+};
+
+const ChatMessage = ({ message }: ChatMessageProps): JSX.Element => {
+  return (
+    <div className="w-full flex flex-row py-3">
+      <div className="mr-3">
+        <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
+          <div className="font-bold text-2xl">{`${message.senderName
+            .charAt(0)
+            .toUpperCase()}${message.senderName.split(" ")[1].charAt(1).toUpperCase()}`}</div>
+        </div>
+      </div>
+      <div className="w-full flex flex-col">
+        <div className="mb-1">
+          <span className="font-semibold text-black">{message.senderName}</span>
+          <span className="ml-2 text-[#959595]">
+            {moment.utc(message.timestamp).format("DD/MM h:m A")}
+          </span>
+        </div>
+        <div>
+          <span className="break-all">{message.message}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Element => {
   const authUser = useAuthUser();
   const [newMessage, setNewMessage] = React.useState("");
@@ -24,14 +53,25 @@ const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Ele
   const [messages, setMessages] = React.useState<MessageInterface[]>([]);
   const [chatEnabled, setChatEnabled] = React.useState(dynamicOnlineClass.chatEnabled);
   const scrollableRef = React.useRef<HTMLDivElement>(null);
+  const [messageSent, setMessageSent] = React.useState(false);
 
   React.useEffect(() => {
-    // ChatGPT solution to force scrolling to the bottom
+    // On load, set to bottom scroll
     const scrollableElement = scrollableRef.current;
     if (scrollableElement !== null) {
       scrollableElement.scrollTop = scrollableElement.scrollHeight;
     }
-  }, [messages]);
+  }, []);
+
+  React.useEffect(() => {
+    // ChatGPT solution to force scrolling to the bottom
+    // This solution will work as useEffects are only triggered after the UI re-renders
+    // As such, it will be able to scroll down to the new message we just rendered
+    const scrollableElement = scrollableRef.current;
+    if (scrollableElement !== null) {
+      scrollableElement.scrollTop = scrollableElement.scrollHeight;
+    }
+  }, [messageSent]);
 
   const getData = async () => {
     const [res, err] = await getOnlineClassDetails(
@@ -63,7 +103,7 @@ const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Ele
     const intervalId = setInterval(() => {
       console.log("Polling!!!");
       getData();
-    }, 2000);
+    }, 1000);
 
     return () => clearInterval(intervalId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,6 +137,10 @@ const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Ele
     setMessages([...res.chatMessages]);
     setLoading(false);
     setNewMessage("");
+
+    // Set scroll bottom when sending a new message
+    // Do this by changing this state
+    setMessageSent(!messageSent);
   };
 
   return (
@@ -105,13 +149,7 @@ const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Ele
       <h1 className="text-4xl font-bold w-full text-center">Chat messages</h1>
       <div className="h-[70%] max-h-[800px] overflow-y-auto" ref={scrollableRef}>
         {messages.map((x) => {
-          return (
-            <div key={x._id} className="w-full flex flex-row">
-              <span>{`${moment.unix(x.timestamp).format("DD/MM/YY-hh:mm:ss A")} ${x.senderName}: ${
-                x.message
-              }`}</span>
-            </div>
-          );
+          return <ChatMessage key={x._id} message={x} />;
         })}
       </div>
       {/* bottom */}
