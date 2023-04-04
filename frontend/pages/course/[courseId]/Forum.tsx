@@ -5,7 +5,7 @@ import { FullPostInfo } from "models/post.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading, PostColumn, ThreadListColumn } from "components";
+import { ContentContainer, Loading, PostColumn, StudentNavBar, ThreadListColumn } from "components";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import initAuth from "util/firebase";
@@ -50,7 +50,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         <meta name="description" content="Create forum test" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar userDetails={userDetails} courseData={courseData} />
+      <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE] pt-3">
@@ -71,7 +71,6 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             showedPost={showedPost}
             userDetails={userDetails}
             setShowedPost={setShowedPost}
-            admin={true}
           />
         </div>
       </ContentContainer>
