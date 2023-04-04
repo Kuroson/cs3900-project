@@ -124,6 +124,7 @@ const PostColumn = ({ showedPost, userDetails, setShowedPost }: PostColumnProps)
     // Update global state with new post
     setShowedPost({ ...showedPost, responses: [...showedPost.responses, res.responseData] });
     toast.success("Response sent successfully");
+    setPostResponseText("");
   };
 
   const handleCorrectResponse = async (e: React.SyntheticEvent, response: FullResponseInfo) => {
