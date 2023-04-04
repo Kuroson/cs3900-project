@@ -57,15 +57,15 @@ const ThreadCreationModal = ({
     }
 
     // Handle image
-    let encoded_image = "";
+    let encodedImage = "";
     if (postFile !== null) {
       try {
-        encoded_image = (await fileToDataUrl(postFile)) as string;
+        encodedImage = (await fileToDataUrl(postFile)) as string;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
         toast.error(e.message);
         setPostFile(null);
-        encoded_image = "";
+        encodedImage = "";
         return;
       }
     }
@@ -75,7 +75,7 @@ const ThreadCreationModal = ({
       title: postTitle,
       question: postDesc,
       poster: userDetails,
-      image: encoded_image,
+      image: encodedImage,
       responses: null,
     };
     setButtonLoading(true);
@@ -99,7 +99,7 @@ const ThreadCreationModal = ({
     const newPost: BasicPostInfo = {
       courseId: courseId,
       _id: res.postId,
-      image: encoded_image,
+      image: encodedImage,
       title: postTitle,
       question: postDesc,
       poster: userDetails,
