@@ -80,6 +80,60 @@ const ThreadListColumn = ({
   );
 };
 
+type CorrectResponseButtonProps = {
+  resp: FullResponseInfo;
+  setShowedPost: React.Dispatch<React.SetStateAction<FullPostInfo | null>>;
+  showedPost: FullPostInfo | null;
+};
+
+const CorrectResponseButton = ({
+  resp,
+  setShowedPost,
+  showedPost,
+}: CorrectResponseButtonProps): JSX.Element => {
+  const authUser = useAuthUser();
+
+  const handleCorrectResponse = async (e: React.SyntheticEvent, response: FullResponseInfo) => {
+    e.preventDefault();
+    if (showedPost === null) return;
+
+    const [res, err] = await markCorrectResponse(await authUser.getIdToken(), resp._id, "client");
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
+      }
+      return;
+    }
+    if (res === null) throw new Error("Didn't save the correct state correctly"); // Actual error that should never happen
+
+    // Update global state with new response state
+    const newResponses = [
+      ...showedPost.responses.filter((x) => x._id !== response._id),
+      { ...response, correct: true },
+    ];
+
+    setShowedPost({
+      ...showedPost,
+      responses: newResponses.sort((a, b) => (a.timePosted > b.timePosted ? 1 : -1)),
+    });
+  };
+
+  return (
+    <div className="outline flex items-center justify-center h-full">
+      <Button
+        variant="contained"
+        onClick={(e) => handleCorrectResponse(e, resp)}
+        sx={{ height: "30px", width: "200px" }}
+      >
+        Correct Answer
+      </Button>
+    </div>
+  );
+};
+
 type PostColumnProps = {
   showedPost: FullPostInfo | null;
   userDetails: UserDetails;
@@ -127,39 +181,6 @@ const PostColumn = ({ showedPost, userDetails, setShowedPost }: PostColumnProps)
     setPostResponseText("");
   };
 
-  const handleCorrectResponse = async (e: React.SyntheticEvent, response: FullResponseInfo) => {
-    // e.preventDefault();
-    // const responseId = response._id;
-    // const [res, err] = await markCorrectResponse(await authUser.getIdToken(), responseId, "client");
-    // if (err !== null) {
-    //   console.error(err);
-    //   if (err instanceof HttpException) {
-    //     toast.error(err.message);
-    //   } else {
-    //     toast.error(err);
-    //   }
-    //   setButtonLoading(false);
-    //   return;
-    // }
-    // if (res === null) throw new Error("Didn't save the correct state correctly"); // Actual error that should never happen
-    // setButtonLoading(false);
-    // // Update global state with new response state
-    // if (showedPost !== null && showedPost.responses !== null) {
-    //   const newResponse = {
-    //     _id: response._id,
-    //     correct: true,
-    //     poster: response.poster,
-    //     timePosted: response.timePosted,
-    //     response: response.response,
-    //   };
-    //   setShowedPost({
-    //     ...showedPost,
-    //     responses: [...showedPost.responses.filter((x) => x._id !== response._id), newResponse],
-    //   });
-    //   setPostList([...postList.filter((x) => x._id !== showedPost._id), showedPost]);
-    // }
-  };
-
   if (showedPost === null) {
     return <div></div>;
   }
@@ -168,16 +189,14 @@ const PostColumn = ({ showedPost, userDetails, setShowedPost }: PostColumnProps)
     <div className="flex flex-col">
       <ForumPostCard post={showedPost} />
       {showedPost.responses.map((resp, index) => (
-        <div key={index} className="flex flex-row">
+        <div key={index} className="flex flex-row h-full w-full outline">
           <ForumResponseCard response={resp} />
-          {resp.correct === false && (
-            <Button
-              variant="contained"
-              onClick={(e) => handleCorrectResponse(e, resp)}
-              sx={{ height: "30px", width: "200px" }}
-            >
-              Correct Answer
-            </Button>
+          {!resp.correct && (
+            <CorrectResponseButton
+              resp={resp}
+              setShowedPost={setShowedPost}
+              showedPost={showedPost}
+            />
           )}
         </div>
       ))}
@@ -225,6 +244,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       // Sort it so that it doesn't re-order
       const newList = [...postList.filter((x) => x._id !== showedPost._id), { ...showedPost }];
       setPostList([...newList.sort((a, b) => (a.timeCreated < b.timeCreated ? 1 : -1))]);
+      // console.log([...newList.sort((a, b) => (a.timeCreated < b.timeCreated ? 1 : -1))]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showedPost]);
