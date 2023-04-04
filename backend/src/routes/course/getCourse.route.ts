@@ -106,23 +106,12 @@ export const getCourse = async (
                 },
             },
         })
-        // .populate({
-        //     path: "pages",
-        //     populate: {
-        //         path: "Week",
-        //         populate: {
-        //             path: "tasks",
-        //         },
-        //     },
-        // })
         .populate({
             path: "onlineClasses",
             select: "_id title description startTime linkToClass running",
         })
         .exec()
         .catch(() => null);
-
-    console.log(myCourse);
 
     if (myCourse === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
 

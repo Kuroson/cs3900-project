@@ -1,7 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, TextField } from "@mui/material";
-import { TaskInterface } from "models/task.model";
 import { FullWeekInterface, WeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
@@ -27,7 +26,6 @@ const AddNewWorkloadSection = ({
   const [open, setOpen] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
   const handleCloseForm = () => {
     setOpen(false);
@@ -71,9 +69,7 @@ const AddNewWorkloadSection = ({
     };
 
     setWeeks([...weeks, weekToAdd]);
-
     setWeek(weekToAdd);
-
     handleCloseForm();
   };
 
