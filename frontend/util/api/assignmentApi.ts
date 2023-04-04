@@ -4,6 +4,8 @@ import {
   CreateAssignmentType,
   SubmitAssignmentResponseType,
   SubmitAssignmentType,
+  getAllSubmissionsType,
+  gradingType,
 } from "models/assignment.model";
 import { HttpException } from "util/HttpExceptions";
 import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
@@ -94,4 +96,32 @@ export const submitAssignment = async (
     console.error("Error with posting to upload");
     return [null, err];
   }
+};
+
+export const getSubmissionsAss = (
+  token: string | null,
+  courseId: string,
+  assignmentId: string,
+  type: BackendLinkType,
+) => {
+  return apiGet<{ courseId: string; assignmentId: string }, getAllSubmissionsType>(
+    `${getBackendLink(type)}/assignment/submissions`,
+    token,
+    {
+      courseId,
+      assignmentId,
+    },
+  );
+};
+
+export const gradeSubmission = (
+  token: string | null,
+  grading: gradingType,
+  type: BackendLinkType,
+) => {
+  return apiPost<gradingType, { message: string }>(
+    `${getBackendLink(type)}/assignment/grade`,
+    token,
+    grading,
+  );
 };

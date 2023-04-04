@@ -26,20 +26,6 @@ initAuth();
 type StudentCoursePageProps = {
   courseData: UserCourseInformation;
 };
-const quizzes: QuizListType[] = [
-  {
-    quizId: "1",
-    title: "Quiz1",
-    open: dayjs().format(),
-    close: dayjs().add(30, "minute").format(),
-  },
-  {
-    quizId: "2",
-    title: "Quiz2",
-    open: dayjs().format(),
-    close: dayjs().subtract(1, "day").format(),
-  },
-];
 
 const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
   const [quizList, setQuizList] = useState<QuizListType[]>([]);
@@ -101,6 +87,7 @@ const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
                   <Card
                     text={quiz.title}
                     close={quiz.close}
+                    open={quiz.open}
                     key={quiz.quizId}
                     isQuiz={true}
                     handleOpen={() => {

@@ -142,7 +142,14 @@ const AddOrEditAssignment: React.FC<AddOrEditAssignmentProps> = ({
             <TitleWithIcon text="Timing">
               <AccessTimeIcon color="primary" />
             </TitleWithIcon>
-            <div className="flex gap-9 mt-6 items-center">
+            <Box
+              sx={{
+                display: "flex",
+                gap: "9px",
+                marginTop: "6px",
+                flexDirection: "column",
+              }}
+            >
               <h3>Assignment deadline</h3>
               <DateTimePicker
                 views={["year", "month", "day", "hours", "minutes"]}
@@ -154,7 +161,7 @@ const AddOrEditAssignment: React.FC<AddOrEditAssignmentProps> = ({
                   }
                 }}
               />
-            </div>
+            </Box>
           </div>
         </LocalizationProvider>
         <Box sx={{ display: "flex", gap: "10px", maxWidth: "800px", justifyContent: "end" }}>

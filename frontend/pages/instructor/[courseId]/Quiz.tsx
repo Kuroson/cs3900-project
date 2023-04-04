@@ -37,7 +37,6 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
   const [currentQuiz, setCurrentQuiz] = useState("");
 
   const handleAddNewQuiz = async (newQuiz: CreateQuizType) => {
-    // TODO: backend
     const [res, err] = await createNewQuiz(await authUser.getIdToken(), newQuiz, "client");
     if (err !== null) {
       console.error(err);
@@ -113,6 +112,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
                 {quizList.map((quiz) => (
                   <Card
                     text={quiz.title}
+                    open={quiz.open}
                     close={quiz.close}
                     key={quiz.quizId}
                     isQuiz={true}
@@ -123,7 +123,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
                   />
                 ))}
                 <div
-                  className="flex flex-col rounded-lg items-center justify-center gap-2 shadow-md p-5 my-2 mx-5 w-[350px] h-[160px] cursor-pointer hover:shadow-lg"
+                  className="flex flex-col rounded-lg items-center justify-center gap-2 shadow-md p-5 my-2 mx-5 w-[330px] h-[160px] cursor-pointer hover:shadow-lg"
                   onClick={() => setAddNewQuiz((prev) => !prev)}
                 >
                   <AddIcon color="primary" fontSize="large" />

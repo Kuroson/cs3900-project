@@ -113,6 +113,7 @@ const StudentQuiz: React.FC<{
             maxMarks: quizInfo.maxMarks,
             open: quizInfo.open,
             close: quizInfo.close,
+            markAwarded: quizInfo.marksAwarded,
           }}
           isAdmin={false}
         />
@@ -128,24 +129,12 @@ const StudentQuiz: React.FC<{
                 {question.type === "choice" ? (
                   <>
                     {question.choices?.map((choice, choiceIdx) => (
-                      <div key={`answer_choice_${choiceIdx}`} className="flex items-center">
-                        <Checkbox
-                          id={`choice_${choiceIdx}`}
-                          onChange={(e) => {
-                            setResponses((prev) => {
-                              if (e.target.checked) {
-                                prev[questionIdx].choiceId?.push(choice._id ?? "");
-                              } else {
-                                prev[questionIdx].choiceId = prev[questionIdx].choiceId?.filter(
-                                  (id) => id !== choice._id,
-                                );
-                              }
-                              return [...prev];
-                            });
-                          }}
-                        />
-                        <p className="text-xl">{choice.text}</p>
-                      </div>
+                      <AnswerChoice
+                        key={`answer_choice_${choiceIdx}`}
+                        choice={choice}
+                        questionIdx={questionIdx}
+                        setResponses={setResponses}
+                      />
                     ))}
                   </>
                 ) : (
@@ -168,7 +157,7 @@ const StudentQuiz: React.FC<{
           </>
         ) : (
           <>
-            {quizInfo.questions.map((question, idx) => (
+            {quizInfo?.questions?.map((question, idx) => (
               <ShowAnswer questionInfo={question} key={`q_answer_${idx}`} isAdmin={false} />
             ))}
           </>
@@ -178,6 +167,39 @@ const StudentQuiz: React.FC<{
         </Button>
       </div>
     </>
+  );
+};
+
+type AnswerChoiceProps = {
+  choice: {
+    _id?: string | undefined;
+    text: string;
+    correct?: boolean | undefined;
+    chosen?: boolean | undefined;
+  };
+  setResponses: React.Dispatch<React.SetStateAction<ResponsesType[]>>;
+  questionIdx: number;
+};
+
+const AnswerChoice = ({ choice, setResponses, questionIdx }: AnswerChoiceProps): JSX.Element => {
+  return (
+    <div className="flex items-center">
+      <Checkbox
+        onChange={(e) => {
+          setResponses((prev) => {
+            if (e.target.checked) {
+              prev[questionIdx].choiceId?.push(choice._id ?? "");
+            } else {
+              prev[questionIdx].choiceId = prev[questionIdx].choiceId?.filter(
+                (id) => id !== choice._id,
+              );
+            }
+            return [...prev];
+          });
+        }}
+      />
+      <p className="text-xl">{choice.text}</p>
+    </div>
   );
 };
 
