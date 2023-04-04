@@ -1,7 +1,7 @@
 import { UserInterface } from "@/models/user.model";
 import { Document, Schema, Types, model } from "mongoose";
 import { CourseInterface } from "../course.model";
-import { ResponseInterface } from "./response.model";
+import { FullResponseInfo, ResponseInterface } from "./response.model";
 
 /**
  * This is a post that is made within the online forum by a student.
@@ -24,9 +24,14 @@ const postSchema: Schema = new Schema<PostInterface>({
     question: { type: String, required: true },
     image: { type: String },
     poster: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    responses: [{ type: Schema.Types.ObjectId, ref: "Response" }],
+    responses: [{ type: Schema.Types.ObjectId, ref: "Response", required: true }],
 });
 
 const Post = model<PostInterface & Document>("Post", postSchema);
+
+export type FullPostInfo = Omit<PostInterface, "poster" | "responses"> & {
+    poster: UserInterface;
+    responses: Array<FullResponseInfo>;
+};
 
 export default Post;

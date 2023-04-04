@@ -1,7 +1,8 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course/course.model";
+import Course, { CourseInterface } from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
-import Post from "@/models/course/forum/post.model";
+import { ForumInterface } from "@/models/course/forum/forum.model";
+import Post, { FullPostInfo } from "@/models/course/forum/post.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -9,7 +10,7 @@ import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/ut
 import { Request, Response } from "express";
 
 type ResponsePayload = {
-    postId: string;
+    postData: FullPostInfo;
 };
 
 //TODO add image
@@ -22,7 +23,7 @@ type QueryPayload = {
 };
 
 /**
- * GET /forum/post
+ * POST /forum/post
  * Creates a post in the forum of a given course based on the body
  * @param req
  * @param res
@@ -32,7 +33,6 @@ export const createPostController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
-    console.log("Starting to create");
     try {
         const authUser = await checkAuth(req);
         const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
@@ -41,20 +41,13 @@ export const createPostController = async (
             "question",
             "poster",
         ];
-        console.log("checked keys");
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
-            console.log("body valid");
-
             // Body has been verified
             const queryBody = req.body;
-
-            const postId = await createPost(queryBody, authUser.uid);
-            console.log("created post");
-
-            console.log(` ************************** postId: ${postId}`);
-            return res.status(200).json({ postId });
+            const postData = await createPost(queryBody, authUser.uid);
+            return res.status(200).json({ postData });
         } else {
             throw new HttpException(
                 400,
@@ -80,9 +73,12 @@ export const createPostController = async (
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
  * @throws { HttpException } Invalid user in database
- * @returns The ID of the post that has been created
+ * @returns the object of the post created
  */
-export const createPost = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const createPost = async (
+    queryBody: QueryPayload,
+    firebase_uid: string,
+): Promise<FullPostInfo> => {
     const { courseId, title, question, poster, image } = queryBody;
 
     // Find user first
@@ -90,8 +86,11 @@ export const createPost = async (queryBody: QueryPayload, firebase_uid: string) 
     if (user === null) throw new HttpException(400, `User of ${firebase_uid} does not exist`);
 
     // Check if user is enrolled in course
-    const myCourse = await Course.findById(courseId)
-        .select("_id title code description forum session icon pages tags")
+    type ResCourseType = Omit<CourseInterface, "forum"> & {
+        forum: ForumInterface;
+    };
+
+    const myCourse: ResCourseType | null = await Course.findById(courseId)
         .populate("forum")
         .exec()
         .catch(() => null);
@@ -109,6 +108,7 @@ export const createPost = async (queryBody: QueryPayload, firebase_uid: string) 
         poster,
         courseId,
         image,
+        responses: [],
     })
         .save()
         .catch((err) => {
@@ -117,11 +117,12 @@ export const createPost = async (queryBody: QueryPayload, firebase_uid: string) 
         });
 
     myCourse.forum.posts.addToSet(myPost._id.toString());
-    console.log("hehe");
 
     await myCourse.forum.save().catch((err) => {
-        throw new HttpException(500, "Failed to save updated forum post to course");
+        throw new HttpException(500, "Failed to save updated forum post to course", err);
     });
 
-    return myPost._id;
+    // NOTE: don't have to fill responses as guaranteed to be [] array
+
+    return { ...myPost.toObject(), userDetails: user.toObject() };
 };
