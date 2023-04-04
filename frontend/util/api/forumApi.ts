@@ -55,12 +55,20 @@ export const createNewResponse = (
   );
 };
 
+type MarkCorrectResponsePayloadResponse = {
+  responseId: string;
+};
+
+export type MarkCorrectResponsePayloadRequest = {
+  responseId: string;
+};
+
 export const markCorrectResponse = (
   token: string | null,
   responseId: string,
   type: BackendLinkType,
 ) => {
-  return apiPost<{ responseId: string }, { responseId: string }>(
+  return apiPost<MarkCorrectResponsePayloadRequest, MarkCorrectResponsePayloadResponse>(
     `${getBackendLink(type)}/forum/post/correct`,
     token,
     { responseId: responseId },
