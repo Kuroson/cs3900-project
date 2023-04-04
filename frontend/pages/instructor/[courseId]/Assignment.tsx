@@ -126,7 +126,7 @@ const Assignment = ({ courseData }: AssignmentProps): JSX.Element => {
                   />
                 ))}
                 <div
-                  className="flex flex-col rounded-lg items-center justify-center gap-2 shadow-md p-5 my-2 mx-5 w-[350px] h-[160px] cursor-pointer hover:shadow-lg"
+                  className="flex flex-col rounded-lg items-center justify-center gap-2 shadow-md p-5 my-2 mx-5 w-[330px] h-[160px] cursor-pointer hover:shadow-lg"
                   onClick={() => setAddNewAssignment((prev) => !prev)}
                 >
                   <AddIcon color="primary" fontSize="large" />

@@ -4,7 +4,9 @@ import {
   QuizInfoType,
   QuizListType,
   QuizQuestionType,
+  QuizSubmissionsType,
   SubmitQuizType,
+  markSubmission,
 } from "models/quiz.model";
 import { BackendLinkType, apiDelete, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
@@ -100,6 +102,30 @@ export const getQuizInfoAfterSubmit = (
 export const submitQuiz = (token: string | null, body: SubmitQuizType, type: BackendLinkType) => {
   return apiPost<SubmitQuizType, { message: string }>(
     `${getBackendLink(type)}/quiz/finish`,
+    token,
+    body,
+  );
+};
+
+export const getQuizSubmissions = (
+  token: string | null,
+  ids: { quizId: string; courseId: string },
+  type: BackendLinkType,
+) => {
+  return apiGet<{ courseId: string; quizId: string }, QuizSubmissionsType>(
+    `${getBackendLink(type)}/quiz/submissions`,
+    token,
+    ids,
+  );
+};
+
+export const gradeSubmission = (
+  token: string | null,
+  body: markSubmission,
+  type: BackendLinkType,
+) => {
+  return apiPost<markSubmission, { message: string }>(
+    `${getBackendLink(type)}/quiz/question/grade`,
     token,
     body,
   );
