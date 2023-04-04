@@ -3,7 +3,7 @@ import Course, { CourseInterface } from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import { ForumInterface } from "@/models/course/forum/forum.model";
 import Post, { FullPostInfo } from "@/models/course/forum/post.model";
-import User from "@/models/user.model";
+import User, { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -124,5 +124,5 @@ export const createPost = async (
 
     // NOTE: don't have to fill responses as guaranteed to be [] array
 
-    return { ...myPost.toObject(), userDetails: user.toObject() };
+    return { ...myPost.toObject(), poster: user.toObject() };
 };
