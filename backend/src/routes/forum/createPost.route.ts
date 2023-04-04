@@ -1,15 +1,12 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
-import Forum from "@/models/course/forum/forum.model";
+import Enrolment from "@/models/course/enrolment/enrolment.model";
 import Post from "@/models/course/forum/post.model";
-import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
-import { checkAdmin } from "../admin/admin.route";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
 
 type ResponsePayload = {
     postId: string;
@@ -21,6 +18,7 @@ type QueryPayload = {
     title: string;
     question: string;
     poster: string;
+    image?: string;
 };
 
 /**
@@ -41,7 +39,7 @@ export const createPostController = async (
             "courseId",
             "title",
             "question",
-            "poster"
+            "poster",
         ];
         console.log("checked keys");
 
@@ -85,7 +83,7 @@ export const createPostController = async (
  * @returns The ID of the post that has been created
  */
 export const createPost = async (queryBody: QueryPayload, firebase_uid: string) => {
-    const { courseId, title, question, poster } = queryBody;
+    const { courseId, title, question, poster, image } = queryBody;
 
     // Find user first
     const user = await User.findOne({ firebase_uid: firebase_uid }).catch(() => null);
@@ -109,20 +107,21 @@ export const createPost = async (queryBody: QueryPayload, firebase_uid: string) 
         title,
         question,
         poster,
-        courseId
+        courseId,
+        image,
     })
         .save()
         .catch((err) => {
             logger.error(err);
             throw new HttpException(500, "Failed to save new post");
         });
-    
+
     myCourse.forum.posts.addToSet(myPost._id.toString());
     console.log("hehe");
 
     await myCourse.forum.save().catch((err) => {
         throw new HttpException(500, "Failed to save updated forum post to course");
-    })
+    });
 
     return myPost._id;
 };

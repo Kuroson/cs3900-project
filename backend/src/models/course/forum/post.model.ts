@@ -12,7 +12,7 @@ export interface PostInterface extends Document {
     courseId: CourseInterface["_id"];
     title: string;
     question: string;
-    image: string;
+    image?: string;
     poster: UserInterface["_id"];
     responses: Types.DocumentArray<ResponseInterface["_id"]>;
 }
@@ -22,9 +22,9 @@ const postSchema: Schema = new Schema<PostInterface>({
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     title: { type: String, required: true },
     question: { type: String, required: true },
-    image: { type: String, required: false },
+    image: { type: String },
     poster: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    responses: [{ type: Schema.Types.ObjectId, ref: "Response", required: false }],
+    responses: [{ type: Schema.Types.ObjectId, ref: "Response" }],
 });
 
 const Post = model<PostInterface & Document>("Post", postSchema);
