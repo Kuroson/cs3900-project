@@ -1,31 +1,31 @@
 import React from "react";
 import { toast } from "react-toastify";
-import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
-import { ResourceInterface } from "models";
 import { FullWeekInterface, WeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
-import { UploadFilePayloadResponse, addNewResource, uploadResourceFile } from "util/api/pageApi";
 import { createNewWeek } from "util/api/workloadApi";
 
 type AddNewWeekSectionProps = {
   courseId: string;
+  pageId: string;
   setWeeks: React.Dispatch<React.SetStateAction<FullWeekInterface[]>>;
   weeks: FullWeekInterface[];
+  setWeek: React.Dispatch<React.SetStateAction<FullWeekInterface | undefined>>;
 };
 
 const AddNewWorkloadSection = ({
   courseId,
+  pageId,
   setWeeks,
   weeks,
+  setWeek,
 }: AddNewWeekSectionProps): JSX.Element => {
   const authUser = useAuthUser();
 
   const [open, setOpen] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
   const handleCloseForm = () => {
     setOpen(false);
@@ -42,6 +42,7 @@ const AddNewWorkloadSection = ({
     const [res, err] = await createNewWeek(
       await authUser.getIdToken(),
       courseId,
+      pageId,
       title,
       description,
       "client",
@@ -68,7 +69,7 @@ const AddNewWorkloadSection = ({
     };
 
     setWeeks([...weeks, weekToAdd]);
-
+    setWeek(weekToAdd);
     handleCloseForm();
   };
 

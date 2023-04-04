@@ -1,8 +1,10 @@
 import Course from "@/models/course/course.model";
+import Page from "@/models/course/page/page.model";
 import Task from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { createCourse } from "@/routes/course/createCourse.route";
+import { createPage } from "@/routes/page/createPage.route";
 import { registerUser } from "@/routes/user/register.route";
 import { createTask } from "@/routes/workloadOverview/createTask.route";
 import { createWeek } from "@/routes/workloadOverview/createWeek.route";
@@ -14,6 +16,8 @@ import initialiseMongoose from "../testUtil";
 describe("Test getting a workload for a course", () => {
     const id = uuidv4();
     let courseId: string;
+    let page1Id: string;
+    let page2Id: string;
     let week1Id: string;
     let week2Id: string;
     let task1Id: string;
@@ -34,11 +38,26 @@ describe("Test getting a workload for a course", () => {
             `acc${id}`,
         );
 
-        week1Id = await createWeek(`${courseId}`, "Week 1", "Week 1 Description", `acc${id}`);
+        page1Id = await createPage(courseId, "Test page 1", `acc${id}`);
+        page2Id = await createPage(courseId, "Test page 2", `acc${id}`);
+
+        week1Id = await createWeek(
+            `${courseId}`,
+            page1Id,
+            "Week 1",
+            "Week 1 Description",
+            `acc${id}`,
+        );
         task1Id = await createTask(week1Id, "Do Task 1", "Look at week 1", `acc${id}`);
         task2Id = await createTask(week1Id, "Do Task 2", "Look at week 1", `acc${id}`);
 
-        week2Id = await createWeek(`${courseId}`, "Week 2", "Week 2 Description", `acc${id}`);
+        week2Id = await createWeek(
+            `${courseId}`,
+            page2Id,
+            "Week 2",
+            "Week 2 Description",
+            `acc${id}`,
+        );
     });
 
     it("Should retreive an entire workload for a course", async () => {
@@ -59,6 +78,8 @@ describe("Test getting a workload for a course", () => {
     afterAll(async () => {
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await Page.findByIdAndDelete(page1Id).exec();
+        await Page.findByIdAndDelete(page2Id).exec();
         await Week.findByIdAndDelete(week1Id).exec();
         await Week.findByIdAndDelete(week2Id).exec();
         await Task.findByIdAndDelete(task1Id).exec();

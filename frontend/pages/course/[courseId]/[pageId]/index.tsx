@@ -8,10 +8,14 @@ import { ResourceInterface } from "models";
 import { UserCourseInformation } from "models/course.model";
 import { PageFull } from "models/page.model";
 import { UserDetails } from "models/user.model";
+import { FullWeekInterface } from "models/week.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
+import SingleEditableWeekSection from "components/admin/workload/SingleEditableWorkload";
+import SingleStudentWeekSection from "components/workloadOverview/workload/SingleWorkload";
+import StudentWorkloadSection from "components/workloadOverview/workload/StudentWorkloadSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { getFileDownloadLink } from "util/api/resourceApi";
@@ -77,6 +81,9 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
+  const [dynamicWorkload, setDynamicWorkload] = React.useState<FullWeekInterface | undefined>(
+    pageData.workload,
+  );
 
   React.useEffect(() => {
     // Build user data for user context
@@ -101,6 +108,8 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
           <h1 className="text-3xl w-full border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between pt-5">
             <span className="ml-4">{pageData.title}</span>
           </h1>
+
+          {dynamicWorkload !== undefined && <SingleStudentWeekSection week={dynamicWorkload} />}
 
           {/* First list out all the base resources */}
           <div className="bg-gray-400 rounded-xl px-[2.5%] py-[2.5%] mb-5">

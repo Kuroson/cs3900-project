@@ -1,10 +1,12 @@
 import Course from "@/models/course/course.model";
+import Page from "@/models/course/page/page.model";
 import Task from "@/models/course/workloadOverview/Task.model";
 import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { getCourse } from "@/routes/course/getCourse.route";
+import { createPage } from "@/routes/page/createPage.route";
 import { registerUser } from "@/routes/user/register.route";
 import { createTask } from "@/routes/workloadOverview/createTask.route";
 import { createWeek } from "@/routes/workloadOverview/createWeek.route";
@@ -17,6 +19,7 @@ describe("Test creating a week", () => {
     const id = uuidv4();
     let courseId: string;
     let weekId: string;
+    let pageId: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -34,7 +37,15 @@ describe("Test creating a week", () => {
             `acc${id}`,
         );
 
-        weekId = await createWeek(`${courseId}`, "Week 1", "Week 1 Description", `acc${id}`);
+        pageId = await createPage(courseId, "Test page 1", `acc${id}`);
+
+        weekId = await createWeek(
+            `${courseId}`,
+            pageId,
+            "Week 1",
+            "Week 1 Description",
+            `acc${id}`,
+        );
     });
 
     it("Should create a new tasks within week", async () => {
@@ -57,6 +68,7 @@ describe("Test creating a week", () => {
         // Clean up
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
+        await Page.findByIdAndDelete(pageId).exec();
         await Week.findByIdAndDelete(weekId).exec();
         await disconnect();
     });

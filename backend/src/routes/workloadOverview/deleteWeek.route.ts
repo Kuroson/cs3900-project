@@ -1,5 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
+import Page from "@/models/course/page/page.model";
 import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
@@ -94,6 +95,17 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(400, "Failed to fetch week");
     }
 
+    // Get Page
+    const page = await Page.findOne({
+        workload: weekId,
+    })
+        .exec()
+        .catch(() => null);
+
+    if (page === null) {
+        throw new HttpException(400, "Could not fetch page");
+    }
+
     // Check that the week exists in the workload overview
     if (!workloadOverview.weeks.includes(weekId)) {
         throw new HttpException(
@@ -109,6 +121,14 @@ export const deleteWeek = async (queryBody: QueryPayload, firebase_uid: string) 
             "Cannot delete Week. Week contains tasks. Delete Tasks first.",
         );
     }
+
+    // Remove week from page
+    page.workload = undefined;
+
+    //Save the page
+    await page.save().catch((err) => {
+        throw new HttpException(500, "Failed to save week workload to the page", err);
+    });
 
     // Delete Week
     await Week.findByIdAndDelete(weekId).catch((err) => {
