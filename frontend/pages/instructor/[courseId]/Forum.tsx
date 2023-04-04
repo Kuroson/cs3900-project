@@ -1,35 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
-import { toast } from "react-toastify";
+import React from "react";
 import Head from "next/head";
-import { LoadingButton } from "@mui/lab";
-import { Button, TextField } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
 import { FullPostInfo } from "models/post.model";
-import { FullResponseInfo } from "models/response.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import {
-  AdminNavBar,
-  ContentContainer,
-  ForumPostOverviewCard,
-  Loading,
-  ThreadCreationModal,
-} from "components";
-import ForumPostCard from "components/common/ForumPostCard";
-import ForumResponseCard from "components/common/ForumResponseCard";
-import { HttpException } from "util/HttpExceptions";
+import { AdminNavBar, ContentContainer, Loading, PostColumn, ThreadListColumn } from "components";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
-import {
-  CreateNewForumReplyPayloadRequest,
-  createNewPost,
-  createNewResponse,
-  markCorrectResponse,
-} from "util/api/forumApi";
 import initAuth from "util/firebase";
-import { fileToDataUrl } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -37,199 +16,12 @@ type ForumPageProps = {
   courseData: UserCourseInformation;
 };
 
-type ThreadListColumnProps = {
-  courseId: string;
-  userDetails: UserDetails;
-  postList: FullPostInfo[];
-  setPostList: React.Dispatch<React.SetStateAction<FullPostInfo[]>>;
-  setShowedPost: React.Dispatch<React.SetStateAction<FullPostInfo | null>>;
-};
-
-const ThreadListColumn = ({
-  courseId,
-  userDetails,
-  postList,
-  setPostList,
-  setShowedPost,
-}: ThreadListColumnProps): JSX.Element => {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-
-  return (
-    <div>
-      <div className="flex rounded-lg my-5 mx-5 w-[300px] items-center justify-center">
-        <Button variant="contained" onClick={handleOpen} id="addNewPost" className="w-full">
-          New Thread
-        </Button>
-      </div>
-      <ThreadCreationModal
-        open={open}
-        setOpen={setOpen}
-        courseId={courseId}
-        userDetails={userDetails}
-        setPostList={setPostList}
-      />
-      <div className="overflow-y-auto h-[700px]">
-        {postList.map((post, index) => (
-          <div key={index} onClick={() => setShowedPost(post)}>
-            <ForumPostOverviewCard post={post} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-type CorrectResponseButtonProps = {
-  resp: FullResponseInfo;
-  setShowedPost: React.Dispatch<React.SetStateAction<FullPostInfo | null>>;
-  showedPost: FullPostInfo | null;
-};
-
-const CorrectResponseButton = ({
-  resp,
-  setShowedPost,
-  showedPost,
-}: CorrectResponseButtonProps): JSX.Element => {
-  const authUser = useAuthUser();
-
-  const handleCorrectResponse = async (e: React.SyntheticEvent, response: FullResponseInfo) => {
-    e.preventDefault();
-    if (showedPost === null) return;
-
-    const [res, err] = await markCorrectResponse(await authUser.getIdToken(), resp._id, "client");
-    if (err !== null) {
-      console.error(err);
-      if (err instanceof HttpException) {
-        toast.error(err.message);
-      } else {
-        toast.error(err);
-      }
-      return;
-    }
-    if (res === null) throw new Error("Didn't save the correct state correctly"); // Actual error that should never happen
-
-    // Update global state with new response state
-    const newResponses = [
-      ...showedPost.responses.filter((x) => x._id !== response._id),
-      { ...response, correct: true },
-    ];
-
-    setShowedPost({
-      ...showedPost,
-      responses: newResponses.sort((a, b) => (a.timePosted > b.timePosted ? 1 : -1)),
-    });
-  };
-
-  return (
-    <div className="flex items-center justify-center h-full">
-      <Button
-        variant="contained"
-        onClick={(e) => handleCorrectResponse(e, resp)}
-        sx={{ height: "30px", width: "200px" }}
-      >
-        Correct Answer
-      </Button>
-    </div>
-  );
-};
-
-type PostColumnProps = {
-  showedPost: FullPostInfo | null;
-  userDetails: UserDetails;
-  setShowedPost: React.Dispatch<React.SetStateAction<FullPostInfo | null>>;
-};
-
-const PostColumn = ({ showedPost, userDetails, setShowedPost }: PostColumnProps): JSX.Element => {
-  const authUser = useAuthUser();
-
-  const [buttonLoading, setButtonLoading] = React.useState(false);
-  const [postResponseText, setPostResponseText] = React.useState("");
-
-  const handleNewResponse = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    if (showedPost === null) return; // Should never be null basically
-
-    if ([postResponseText].some((x) => x.length === 0)) {
-      toast.error("Please fill out all fields");
-      return;
-    }
-
-    setButtonLoading(true);
-
-    const payload: CreateNewForumReplyPayloadRequest = {
-      postId: showedPost._id,
-      text: postResponseText,
-    };
-
-    const [res, err] = await createNewResponse(await authUser.getIdToken(), payload, "client");
-    if (err !== null) {
-      console.error(err);
-      if (err instanceof HttpException) {
-        toast.error(err.message);
-      } else {
-        toast.error(err);
-      }
-      setButtonLoading(false);
-      return;
-    }
-    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
-    setButtonLoading(false);
-    // Update global state with new post
-    setShowedPost({ ...showedPost, responses: [...showedPost.responses, res.responseData] });
-    toast.success("Response sent successfully");
-    setPostResponseText("");
-  };
-
-  if (showedPost === null) {
-    return <div></div>;
-  }
-
-  return (
-    <div className="flex flex-col">
-      <ForumPostCard post={showedPost} />
-      {showedPost.responses.map((resp, index) => (
-        <div key={index} className="flex flex-row h-full w-full">
-          <ForumResponseCard response={resp} />
-          {!resp.correct && (
-            <CorrectResponseButton
-              resp={resp}
-              setShowedPost={setShowedPost}
-              showedPost={showedPost}
-            />
-          )}
-        </div>
-      ))}
-      <form className="w-full flex flex-col" onSubmit={handleNewResponse}>
-        <TextField
-          id="response"
-          label="Your Answer"
-          sx={{ marginLeft: "40px", marginTop: "20px" }}
-          value={postResponseText}
-          multiline
-          rows={5}
-          onChange={(e) => setPostResponseText(e.target.value)}
-        />
-        <LoadingButton
-          variant="contained"
-          sx={{ width: "90px", marginLeft: "550px", marginTop: "15px" }}
-          disabled={postResponseText === ""}
-          type="submit"
-          loading={buttonLoading}
-        >
-          Send
-        </LoadingButton>
-      </form>
-    </div>
-  );
-};
-
 const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
-  const [showedPost, setShowedPost] = useState<FullPostInfo | null>(null); // The current displayed Thread
-  const [postList, setPostList] = useState([...courseData.forum.posts]);
+  const [showedPost, setShowedPost] = React.useState<FullPostInfo | null>(null); // The current displayed Thread
+  const [postList, setPostList] = React.useState([...courseData.forum.posts]);
 
   React.useEffect(() => {
     // Build user data for user context
