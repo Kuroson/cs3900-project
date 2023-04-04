@@ -75,7 +75,7 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
 
     const user = await User.findOne({ firebase_uid: firebase_uid }).catch(() => null);
     if (user === null) throw new HttpException(400, `User of ${firebase_uid} does not exist`);
-    
+
     const myResponse = await ForumResponse.findById(responseId)
         .select("_id correct")
         .exec()
@@ -89,5 +89,5 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
         throw new HttpException(500, "Failed to save correct state to response");
     });
 
-    return myResponse._id;
+    return myResponse._id.toString() as string;
 };
