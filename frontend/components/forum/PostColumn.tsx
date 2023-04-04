@@ -73,7 +73,7 @@ const PostColumn = ({
     <div className="flex flex-col">
       <ForumPostCard post={showedPost} />
       {showedPost.responses.map((resp, index) => (
-        <div key={index} className="flex flex-row h-full w-full">
+        <div key={index} className="flex flex-row w-full">
           <ForumResponseCard response={resp} />
           {!resp.correct && admin && (
             <CorrectResponseButton
