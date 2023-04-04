@@ -38,6 +38,13 @@ export const markCorrectResponseController = async (
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
+
+            if (!(await checkAdmin(authUser.uid))) {
+                throw new HttpException(
+                    401,
+                    "User is not an admin. Cannot mark response as correct",
+                );
+            }
             const queryBody = req.body;
 
             const responseId = await markCorrectResponse(queryBody, authUser.uid);
