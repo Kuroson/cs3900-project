@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import ImageIcon from "@mui/icons-material/Image";
 import { Button, FormControl, Modal, TextField } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
 import { BasicPostInfo } from "models/post.model";
@@ -11,7 +10,7 @@ import { BasicResponseInfo } from "models/response.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading } from "components";
+import { AdminNavBar, ContentContainer, Loading, ThreadCreationModal } from "components";
 import ForumPostCard from "components/common/ForumPostCard";
 import ForumPostOverviewCard from "components/common/ForumPostOverviewCard";
 import ForumResponseCard from "components/common/ForumResponseCard";
@@ -35,10 +34,8 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const [showedPost, setShowedPost] = useState<BasicPostInfo | null>(null);
   const [postsList, setPostsList] = useState<Array<BasicPostInfo>>(courseData.forum.posts);
   const [open, setOpen] = React.useState(false);
-  const [postTitle, setPostTitle] = React.useState("");
-  const [postDesc, setPostDesc] = React.useState("");
-  const [postFile, setPostFile] = React.useState<File | null>(null);
   const [buttonLoading, setButtonLoading] = React.useState(false);
+
   const [postResponseText, setPostResponseText] = React.useState("");
 
   console.log(courseData.forum);
@@ -59,93 +56,11 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     if (showedPost !== null) {
       setPostsList([...postsList.filter((x) => x._id !== showedPost._id), showedPost]);
     }
-    setShowedPost(postsList?.filter((x) => x._id === post._id).pop());
+    // FIXME
+    // setShowedPost(postsList?.filter((x) => x._id === post._id).pop());
   }
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const handleCloseForm = async () => {
-    setOpen(false);
-    setPostTitle("");
-    setPostDesc("");
-    setPostFile(null);
-  };
-
-  const handleNewPost = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-
-    if ([postTitle, postDesc].some((x) => x.length === 0)) {
-      toast.error("Please fill out all fields");
-      return;
-    }
-
-    // Handle image
-    let encoded_image = "";
-    if (postFile !== null) {
-      try {
-        encoded_image = (await fileToDataUrl(postFile)) as string;
-      } catch (e: any) {
-        toast.error(e.message);
-        setPostFile(null);
-        encoded_image = "";
-        return;
-      }
-    }
-
-    const title = postTitle;
-    const question = postDesc;
-    const courseId = courseData._id;
-    const poster = userDetails;
-    const image = encoded_image;
-    const responses = null;
-    const dataPayload = {
-      courseId,
-      title,
-      question,
-      poster,
-      image,
-      responses,
-    };
-    setButtonLoading(true);
-    const [res, err] = await createNewPost(await authUser.getIdToken(), dataPayload, "client");
-    console.log(res);
-    if (err !== null) {
-      console.error(err);
-      if (err instanceof HttpException) {
-        toast.error(err.message);
-      } else {
-        toast.error(err);
-      }
-      setButtonLoading(false);
-      return;
-    }
-    if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
-    console.log(res);
-    setButtonLoading(false);
-
-    // Update global state with new post
-    const newPost: BasicPostInfo = {
-      courseId: courseData._id,
-      _id: res.postId,
-      image: encoded_image,
-      title: postTitle,
-      question: postDesc,
-      poster: userDetails,
-      responses: null,
-    };
-
-    postsList.push(newPost);
-
-    toast.success("Post sent successfully");
-
-    //close form
-    setOpen(false);
-    setPostTitle("");
-    setPostDesc("");
-    setPostFile(null);
-    encoded_image = "";
-  };
 
   const handleNewResponse = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -196,11 +111,11 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
 
     toast.success("Response sent successfully");
 
-    //close form
-    setOpen(false);
-    setPostTitle("");
-    setPostDesc("");
-    setPostResponseText("");
+    // //close form
+    // setOpen(false);
+    // setPostTitle("");
+    // setPostDesc("");
+    // setPostResponseText("");
   };
 
   const handleCorrectResponse = async (e: React.SyntheticEvent, response: BasicResponseInfo) => {
@@ -247,90 +162,22 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE] pt-3">
-            <span className="ml-4">Class Forum</span>
+            <span className="ml-4"></span>
           </h1>
         </div>
-
-        <div className="flex inline-block w-full justify-left px-[2%]">
+        <div className="flex w-full justify-left px-[2%] outline">
           <div>
             <div className="flex flex-col rounded-lg shadow-md p-2 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center">
               <Button variant="text" onClick={handleOpen} id="addNewPost">
                 New Thread
               </Button>
             </div>
-            <Modal
+            <ThreadCreationModal
               open={open}
-              onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <form className="flex flex-col items-center justify-center gap-6">
-                <FormControl sx={style}>
-                  <div className="flex flex-col gap-10">
-                    <TextField
-                      id="title"
-                      label="Title"
-                      value={postTitle}
-                      sx={{ width: "500px" }}
-                      onChange={(e) => setPostTitle(e.target.value)}
-                    />
-                    <TextField
-                      id="description"
-                      label="Description"
-                      sx={{ width: "500px", marginTop: "30px" }}
-                      value={postDesc}
-                      multiline
-                      rows={9}
-                      onChange={(e) => setPostDesc(e.target.value)}
-                    />
-                    <div className="flex items-center">
-                      <Button
-                        variant="outlined"
-                        component="label"
-                        sx={{ width: "170px", marginTop: "30px" }}
-                        startIcon={<ImageIcon />}
-                        id="uploadAssignmentMaterial"
-                      >
-                        Upload image
-                        <input
-                          id="uploadFileInput"
-                          hidden
-                          type="file"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            if (e.target.files && e.target.files.length > 0) {
-                              setPostFile(e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </Button>
-                      {postFile !== null && (
-                        <p className="pl-5">
-                          <i>{postFile.name}</i>
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        sx={{ marginTop: "30px", width: "90px" }}
-                        onClick={handleCloseForm}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={handleNewPost}
-                        sx={{ marginTop: "30px", width: "90px", marginLeft: "320px" }}
-                        disabled={postTitle === "" || postDesc === ""}
-                      >
-                        Submit
-                      </Button>
-                    </div>
-                  </div>
-                </FormControl>
-              </form>
-            </Modal>
+              setOpen={setOpen}
+              courseId={courseData._id}
+              userDetails={userDetails}
+            />
             {postsList?.map((post, index) => (
               <div key={index} onClick={() => handleOnClickPostOverview(post)}>
                 <ForumPostOverviewCard post={post} />
@@ -411,14 +258,3 @@ export default withAuthUser<ForumPageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(ForumPage);
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-  width: "570px",
-};

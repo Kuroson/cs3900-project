@@ -14,6 +14,7 @@ import ChatSection from "./common/ChatSection";
 import Loading from "./common/Loading";
 import OnlineClassCard from "./common/OnlineClassCard";
 import OnlineClassVideoSection from "./common/OnlineClassVideoSection";
+import ThreadCreationModal from "./forum/ThreadCreationModal";
 
 export {
   ContentContainer,
@@ -36,4 +37,5 @@ export {
   OnlineClassVideoSection,
   StartAndEndClassButtons,
   EnableAndDisableChatButtons,
+  ThreadCreationModal,
 };
