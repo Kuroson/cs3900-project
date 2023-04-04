@@ -6,12 +6,18 @@ import { Document, Schema, Types, model } from "mongoose";
  * can be marked as 'correct' to indicate it is accepted.
  */
 export interface ResponseInterface extends Document {
+    /**
+     * Response text
+     */
     response: string;
     correct: boolean;
     /**
      * Poster's id
      */
     poster: UserInterface["_id"];
+    /**
+     * UNIX time stamp
+     */
     timePosted: number;
 }
 
@@ -25,7 +31,7 @@ const responseSchema: Schema = new Schema<ResponseInterface>({
 const Response = model<ResponseInterface & Document>("Response", responseSchema);
 
 export type FullResponseInfo = Omit<ResponseInterface, "poster"> & {
-    user: UserInterface;
+    poster: UserInterface;
 };
 
 export default Response;

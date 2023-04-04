@@ -5,7 +5,7 @@ export interface PostInterface extends MongooseDocument {
   courseId: MongooseId;
   title: string;
   question: string;
-  image: string;
+  image?: string;
   poster: MongooseId;
   responses: Array<MongooseId>;
 }

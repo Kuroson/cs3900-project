@@ -1,13 +1,12 @@
 import { BasicForumInfo, GetForumType } from "models/forum.model";
 import { FullPostInfo } from "models/post.model";
+import { FullResponseInfo } from "models/response.model";
 import { BackendLinkType, apiGet, apiPost } from "./api";
 import { getBackendLink } from "./userApi";
 
 type CreateNewPostPayloadResponse = {
   postData: FullPostInfo;
 };
-
-type CreateResponseType = any; //FIXME
 
 export type CreateNewPostPayloadRequest = {
   courseId: string;
@@ -35,12 +34,21 @@ export const getCourseForum = (token: string | null, courseId: string, type: Bac
   });
 };
 
+type CreateNewForumReplyPayloadResponse = {
+  responseData: FullResponseInfo;
+};
+
+export type CreateNewForumReplyPayloadRequest = {
+  postId: string;
+  text: string;
+};
+
 export const createNewResponse = (
   token: string | null,
-  payload: CreateResponseType,
+  payload: CreateNewForumReplyPayloadRequest,
   type: BackendLinkType,
 ) => {
-  return apiPost<CreateResponseType, { responseId: string }>(
+  return apiPost<CreateNewForumReplyPayloadRequest, CreateNewForumReplyPayloadResponse>(
     `${getBackendLink(type)}/forum/respond`,
     token,
     payload,
