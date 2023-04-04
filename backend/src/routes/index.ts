@@ -23,6 +23,10 @@ import { removeStudentsController } from "./course/removeStudents.route";
 import { updateCourseController } from "./course/updateCourse.route";
 import { downloadFileController } from "./file/downloadFile.route";
 import { uploadFileController } from "./file/uploadFile.route";
+import { createPostController } from "./forum/createPost.route";
+import { createResponseController } from "./forum/createResponse.route";
+import { getForumController } from "./forum/getForum.route";
+import { markCorrectResponseController } from "./forum/markCorrectResponse.route";
 import { indexController } from "./index.route";
 import { createOnlineClassController } from "./onlineClasses/createOnlineClass.route";
 import { disableChatOnlineClassController } from "./onlineClasses/disableChatOnlineClass.route";
@@ -150,3 +154,9 @@ indexRouter.put("/class/end", endOnlineClassController);
 indexRouter.post("/class/chat/send", sendChatMessageController);
 indexRouter.put("/class/chat/enable", enableChatOnlineClassController);
 indexRouter.put("/class/chat/disable", disableChatOnlineClassController);
+
+//Forum routes
+indexRouter.get("/forum", getForumController);
+indexRouter.post("/forum/post", createPostController);
+indexRouter.post("/forum/respond", createResponseController);
+indexRouter.post("/forum/post/correct", markCorrectResponseController);

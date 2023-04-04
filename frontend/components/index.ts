@@ -14,6 +14,11 @@ import ChatSection from "./common/ChatSection";
 import Loading from "./common/Loading";
 import OnlineClassCard from "./common/OnlineClassCard";
 import OnlineClassVideoSection from "./common/OnlineClassVideoSection";
+import CorrectResponseButton from "./forum/CorrectResponseButton";
+import ForumPostOverviewCard from "./forum/ForumPostOverviewCard";
+import PostColumn from "./forum/PostColumn";
+import ThreadCreationModal from "./forum/ThreadCreationModal";
+import ThreadListColumn from "./forum/ThreadListColumn";
 
 export {
   ContentContainer,
@@ -36,4 +41,9 @@ export {
   OnlineClassVideoSection,
   StartAndEndClassButtons,
   EnableAndDisableChatButtons,
+  ThreadCreationModal,
+  ForumPostOverviewCard,
+  CorrectResponseButton,
+  PostColumn,
+  ThreadListColumn,
 };

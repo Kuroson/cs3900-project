@@ -5,6 +5,7 @@ import {
   ResourceInterface,
   SectionInterface,
 } from "models";
+import { BasicForumInfo, ForumInterface, FullForumInfo } from "./forum.model";
 import { OnlineClassInterface } from "./onlineClass.model";
 import { PageFull } from "./page.model";
 
@@ -43,12 +44,13 @@ export type UserCourseInformation = Omit<
   | "creator"
   | "students"
   | "pages"
-  | "onlineClasses"
   | "forum"
+  | "onlineClasses"
   | "quizzes"
   | "assignments"
   | "workloadOverview"
 > & {
   pages: PageFull[];
   onlineClasses: Array<OnlineClassInterface>;
+  forum: FullForumInfo;
 };

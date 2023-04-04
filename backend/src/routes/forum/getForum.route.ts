@@ -1,63 +1,34 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course, { CourseInterface } from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
-import { ForumInterface } from "@/models/course/forum/forum.model";
-import { PostInterface } from "@/models/course/forum/post.model";
-import { ResponseInterface } from "@/models/course/forum/response.model";
-import { OnlineClassInterface } from "@/models/course/onlineClass/onlineClass.model";
+import Forum, { ForumInterface } from "@/models/course/forum/forum.model";
 import { PageInterface } from "@/models/course/page/page.model";
 import { ResourceInterface } from "@/models/course/page/resource.model";
 import { SectionInterface } from "@/models/course/page/section.model";
-import User, { UserInterface } from "@/models/user.model";
+import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 
-type ResponsePayload = UserCourseInformation;
+type ResponsePayload = BasicForumInfo;
 
 // Basically joined all the tables, contains all information about pages, sections, and resources
-type UserCourseInformation = Omit<
-    CourseInterface,
-    "students" | "pages" | "creator" | "onlineClasses" | "forum"
-> & {
-    pages: Omit<PageInterface, "section" | "resources"> &
-        {
-            section: Omit<SectionInterface, "resources"> &
-                {
-                    resources: ResourceInterface[];
-                }[];
-            resources: ResourceInterface[];
-        }[];
-    onlineClasses: Omit<OnlineClassInterface, "chatMessages">[];
-    forum: Omit<ForumInterface, "description | posts"> & {
-        posts: Array<
-            Omit<PostInterface, "responses" | "poster"> & {
-                poster: UserInterface;
-                responses: Array<
-                    Omit<ResponseInterface, "poster"> & {
-                        poster: UserInterface;
-                    }
-                >;
-            }
-        >;
-    };
-};
+type BasicForumInfo = Omit<ForumInterface, "description">;
 
 type QueryPayload = {
     courseId: string;
 };
 
 /**
- * GET /course
- * Gets the course's information. Must be enrolled in said course or be an admin
+ * GET /forum
+ * Gets the forum from a course information. Must be enrolled in said course or be an admin
  *
- * NOTE: untested atm
  * @param req
  * @param res
  * @returns
  */
-export const getCourseController = async (
+export const getForumController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
@@ -67,9 +38,9 @@ export const getCourseController = async (
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
             const { courseId } = req.query;
 
-            const courseData = await getCourse(courseId, authUser.uid);
-
-            return res.status(200).json({ ...courseData });
+            const forumData = await getForum(courseId, authUser.uid);
+            //console.log(forumData);
+            return res.status(200).json({ ...forumData.toObject() });
         } else {
             throw new HttpException(
                 400,
@@ -96,52 +67,18 @@ export const getCourseController = async (
  * @param firebaseUID The firebaseUID of the user requesting the course
  * @returns Base information on the course based on return requirements in ResponsePayload
  */
-export const getCourse = async (
-    courseId: string,
-    firebaseUID: string,
-): Promise<UserCourseInformation> => {
+export const getForum = async (courseId: string, firebaseUID: string): Promise<BasicForumInfo> => {
     // Find user first
     const user = await User.findOne({ firebase_uid: firebaseUID }).catch(() => null);
     if (user === null) throw new HttpException(400, `User of ${firebaseUID} does not exist`);
 
     // Check if user is enrolled in course
     const myCourse = await Course.findById(courseId)
-        .select("_id title code description forum session icon pages tags onlineClasses")
-        .populate("pages")
-        .populate({
-            path: "pages",
-            populate: [{ path: "resources" }, { path: "workload", populate: { path: "tasks" } }],
-        })
-        .populate({
-            path: "pages",
-            populate: {
-                path: "sections",
-                populate: {
-                    path: "resources",
-                },
-            },
-        })
+        .select("_id title forum code description session icon pages tags")
         .populate("forum")
         .populate({
             path: "forum",
-            populate: {
-                path: "posts",
-                populate: [{ path: "poster" }, { path: "responses", populate: { path: "poster" } }],
-            },
-        })
-        .populate({
-            path: "forum",
-            populate: {
-                path: "posts",
-                populate: {
-                    path: "poster",
-                },
-                options: { sort: { timeCreated: -1 } },
-            },
-        })
-        .populate({
-            path: "onlineClasses",
-            select: "_id title description startTime linkToClass running",
+            populate: { path: "posts" },
         })
         .exec()
         .catch(() => null);
@@ -153,5 +90,5 @@ export const getCourse = async (
     if (enrolment === null && user.role !== 0)
         throw new HttpException(400, "User is not enrolled in course");
 
-    return myCourse.toJSON() as UserCourseInformation;
+    return myCourse.forum as BasicForumInfo;
 };
