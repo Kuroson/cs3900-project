@@ -1,28 +1,18 @@
 import { List } from "@mui/material";
 import { TaskInterface } from "models/task.model";
-import SingleEditableTask from "./SingleTask";
+import SingleTask from "./SingleTask";
 
-type TasksSectionProps = {
-  weekId: string;
+type StudentTasksSectionProps = {
   tasks: TaskInterface[];
-  setTasks: React.Dispatch<React.SetStateAction<TaskInterface[]>>;
 };
 
-const TasksSection = ({ weekId, tasks, setTasks }: TasksSectionProps): JSX.Element => {
+const StudentTasksSection = ({ tasks }: StudentTasksSectionProps): JSX.Element => {
   return (
     <div>
       <div className="flex flex-col w-full">
         <List dense={true}>
           {tasks.map((task) => {
-            return (
-              <SingleEditableTask
-                task={task}
-                key={task._id}
-                setTasks={setTasks}
-                weekId={weekId}
-                tasks={tasks}
-              />
-            );
+            return <SingleTask task={task} key={task._id} />;
           })}
         </List>
       </div>
@@ -30,4 +20,4 @@ const TasksSection = ({ weekId, tasks, setTasks }: TasksSectionProps): JSX.Eleme
   );
 };
 
-export default TasksSection;
+export default StudentTasksSection;

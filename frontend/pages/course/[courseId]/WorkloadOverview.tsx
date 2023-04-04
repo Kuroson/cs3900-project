@@ -5,7 +5,7 @@ import { UserDetails } from "models/user.model";
 import { FullWorkloadInfo } from "models/workload.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading } from "components";
+import { AdminNavBar, ContentContainer, Loading, StudentNavBar } from "components";
 import PageHeader from "components/common/PageHeader";
 import StudentWorkloadSection from "components/workloadOverview/workload/StudentWorkloadSection";
 import { useUser } from "util/UserContext";
@@ -54,7 +54,7 @@ const StudentWorkloadPage = ({
         <meta name="description" content="Add Workload Overview" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
+      <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>
         <div className="flex flex-col w-full px-[5%] py-2">
           <h1 className="text-3xl w-ull border-solid border-t-0 border-x-0 border-[#EEEEEE] flex justify-between pt-3">

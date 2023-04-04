@@ -1,4 +1,5 @@
 import { FullWeekInterface } from "models/week.model";
+import SingleStudentWeekSection from "./SingleWorkload";
 import SingleEditableWorkload from "./SingleWorkload";
 
 type StudentWorkloadSectionProps = {
@@ -7,23 +8,11 @@ type StudentWorkloadSectionProps = {
   courseId: string;
 };
 
-const StudentWorkloadSection = ({
-  weeks,
-  setWeeks,
-  courseId,
-}: StudentWorkloadSectionProps): JSX.Element => {
+const StudentWorkloadSection = ({ weeks }: StudentWorkloadSectionProps): JSX.Element => {
   return (
     <div className="flex flex-col w-full mb-8">
       {weeks.map((week) => {
-        return (
-          <SingleEditableWorkload
-            week={week}
-            key={week._id}
-            setWeeks={setWeeks}
-            courseId={courseId}
-            weeks={weeks}
-          />
-        );
+        return <SingleStudentWeekSection week={week} key={week._id} />;
       })}
     </div>
   );
