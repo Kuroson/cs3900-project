@@ -6,6 +6,7 @@ import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
     responseId: string;
@@ -72,7 +73,7 @@ export const createResponse = async (queryBody: QueryPayload, firebase_uid: stri
     // Find user first
     const user = await User.findOne({ firebase_uid: firebase_uid }).catch(() => null);
     if (user === null) throw new HttpException(400, `User of ${firebase_uid} does not exist`);
-
+    
     // Check if user is enrolled in course
     const myPost = await Post.findById(postId)
         .select("_id responses")
@@ -83,7 +84,8 @@ export const createResponse = async (queryBody: QueryPayload, firebase_uid: stri
     if (myPost === null) throw new HttpException(400, `Post of ${postId} does not exist`);
     const response = text;
     const poster = user._id;
-    const correct = false;
+    const correct = user.role == 0; //If they are admin, the post is automatically correct
+
     const myResponse = await new ForumResponse({
         response,
         correct,

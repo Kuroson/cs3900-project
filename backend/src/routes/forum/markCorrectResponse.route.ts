@@ -75,7 +75,7 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
 
     const user = await User.findOne({ firebase_uid: firebase_uid }).catch(() => null);
     if (user === null) throw new HttpException(400, `User of ${firebase_uid} does not exist`);
-
+    
     const myResponse = await ForumResponse.findById(responseId)
         .select("_id correct")
         .exec()

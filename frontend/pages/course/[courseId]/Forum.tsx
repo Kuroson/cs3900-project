@@ -66,6 +66,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     setOpen(false);
     setPostTitle("");
     setPostDesc("");
+    setPostFile(null);
   };
 
   const handleNewPost = async (e: React.SyntheticEvent) => {
@@ -83,6 +84,8 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         encoded_image = (await fileToDataUrl(postFile)) as string;
       } catch (e: any) {
         toast.error(e.message);
+        setPostFile(null);
+        encoded_image = "";
         return;
       }
     }
@@ -137,6 +140,9 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     setOpen(false);
     setPostTitle("");
     setPostDesc("");
+    setPostFile(null);
+    encoded_image = "";
+
   };
 
   const handleNewResponse = async (e: React.SyntheticEvent) => {
@@ -190,6 +196,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     setOpen(false);
     setPostTitle("");
     setPostDesc("");
+    setPostResponseText("");
   };
 
   return (

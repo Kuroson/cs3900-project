@@ -18,7 +18,7 @@ import ForumResponseCard from "components/common/ForumResponseCard";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
-import { createNewPost, createNewResponse } from "util/api/forumApi";
+import { createNewPost, createNewResponse, markCorrectResponse } from "util/api/forumApi";
 import initAuth from "util/firebase";
 import { fileToDataUrl } from "util/util";
 
@@ -40,7 +40,9 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const [postFile, setPostFile] = React.useState<File | null>(null);
   const [buttonLoading, setButtonLoading] = React.useState(false);
   const [postResponseText, setPostResponseText] = React.useState("");
+  const [correctResponsesList, setCorrectResponsesList] = useState<Array<BasicResponseInfo>>([]);
 
+  console.log(courseData.forum);
   React.useEffect(() => {
     // Build user data for user context
     if (user.userDetails !== null) {
@@ -65,6 +67,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     setOpen(false);
     setPostTitle("");
     setPostDesc("");
+    setPostFile(null);
   };
 
   const handleNewPost = async (e: React.SyntheticEvent) => {
@@ -82,6 +85,8 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         encoded_image = (await fileToDataUrl(postFile)) as string;
       } catch (e: any) {
         toast.error(e.message);
+        setPostFile(null);
+        encoded_image = "";
         return;
       }
     }
@@ -136,6 +141,8 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     setOpen(false);
     setPostTitle("");
     setPostDesc("");
+    setPostFile(null);
+    encoded_image = "";
   };
 
   const handleNewResponse = async (e: React.SyntheticEvent) => {
@@ -157,7 +164,6 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     };
     setButtonLoading(true);
     const [res, err] = await createNewResponse(await authUser.getIdToken(), dataPayload, "client");
-    console.log(res);
     if (err !== null) {
       console.error(err);
       if (err instanceof HttpException) {
@@ -182,6 +188,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       showedPost.responses = [];
     }
     showedPost.responses.push(newResponse);
+    correctResponsesList.push(newResponse);
 
     toast.success("Response sent successfully");
 
@@ -190,12 +197,27 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     setPostResponseText("");
   };
 
-  const handleCorrectResponse = async (e: React.SyntheticEvent) => {
+  const handleCorrectResponse = async (e: React.SyntheticEvent, response: BasicResponseInfo) => {
     e.preventDefault();
-    if ([postResponseText].some((x) => x.length === 0)) {
-      toast.error("Please fill out all fields");
+    const responseId = response._id;
+    const [res, err] = await markCorrectResponse(await authUser.getIdToken(), responseId, "client");
+    if (err !== null) {
+      console.error(err);
+      if (err instanceof HttpException) {
+        toast.error(err.message);
+      } else {
+        toast.error(err);
+      }
+      setButtonLoading(false);
       return;
     }
+    if (res === null) throw new Error("Didn't save the correct state correctly"); // Actual error that should never happen
+    setButtonLoading(false);
+
+    // Update global state with new response state
+    response.correct = true; //This doesn't actually update
+    correctResponsesList.push(response);
+    //window.location.reload();
   };
   return (
     <>
@@ -300,13 +322,13 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
           </div>
           <div className="flex flex-col">
             <ForumPostCard post={showedPost} datePosted={date.toLocaleString()}></ForumPostCard>
-            {showedPost?.responses?.map((response, index) => (
+            {showedPost?.responses?.map((resp, index) => (
               <div key={index} className="flex flex-row">
-                <ForumResponseCard response={response} />
-                {response.correct === true && (
+                <ForumResponseCard response={resp} />
+                {correctResponsesList.includes(resp) === true && (
                   <Button
                     variant="contained"
-                    onClick={handleCorrectResponse}
+                    onClick={(e) => handleCorrectResponse(e, resp)}
                     sx={{ height: "30px", width: "200px" }}
                   >
                     Correct Answer

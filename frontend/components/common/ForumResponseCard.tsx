@@ -13,7 +13,8 @@ type ForumResponseCardProps = {
 
 const ForumResponseCard: React.FC<ForumResponseCardProps> = ({ response }): JSX.Element => {
   if (response === null) return <></>;
-  else
+  else {
+    console.log(response);
     return (
       <div className="flex flex-col p-2 pl-10 w-[600px]">
         <div className="flex items-center justify-between">
@@ -38,6 +39,7 @@ const ForumResponseCard: React.FC<ForumResponseCardProps> = ({ response }): JSX.
         </div>
       </div>
     );
+  }
 };
 
 export default ForumResponseCard;
