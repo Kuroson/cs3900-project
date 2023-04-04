@@ -36,7 +36,6 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       // Sort it so that it doesn't re-order
       const newList = [...postList.filter((x) => x._id !== showedPost._id), { ...showedPost }];
       setPostList([...newList.sort((a, b) => (a.timeCreated < b.timeCreated ? 1 : -1))]);
-      // console.log([...newList.sort((a, b) => (a.timeCreated < b.timeCreated ? 1 : -1))]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showedPost]);
