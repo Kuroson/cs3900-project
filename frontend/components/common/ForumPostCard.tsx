@@ -1,5 +1,6 @@
 import React from "react";
 import { FullPostInfo } from "models/post.model";
+import moment from "moment";
 
 type ForumPostCardProps = {
   post: FullPostInfo;
@@ -20,8 +21,9 @@ const ForumPostCard: React.FC<ForumPostCardProps> = ({ post }): JSX.Element => {
             </div>
             <div className="flex flex-col pl-2 justify-center items-center">
               <span className="text-start w-full">{`${post.poster.first_name} ${post.poster.last_name}`}</span>
-              <span>{"TODO DATE"}</span>
-              {/* TODO */}
+              <span className="w-full text-start">
+                {moment.unix(post.timeCreated).format("DD/MM/YY hh:mm A")}
+              </span>
             </div>
           </div>
         </div>
