@@ -30,22 +30,18 @@ type UserCourseInformation = Omit<
             resources: ResourceInterface[];
         }[];
     onlineClasses: Omit<OnlineClassInterface, "chatMessages">[];
-    forum: Omit<ForumInterface,"description | posts"> & 
-        {
-            posts: Array<Omit<
-                PostInterface,
-                | "responses"
-                | "poster"
-            > & {
+    forum: Omit<ForumInterface, "description | posts"> & {
+        posts: Array<
+            Omit<PostInterface, "responses" | "poster"> & {
                 poster: UserInterface;
-                responses: Array<Omit<
-                    ResponseInterface, 
-                    | "poster"> 
-                & { 
-                    poster: UserInterface; 
-                }>;
-            }>;
-        };
+                responses: Array<
+                    Omit<ResponseInterface, "poster"> & {
+                        poster: UserInterface;
+                    }
+                >;
+            }
+        >;
+    };
 };
 
 type QueryPayload = {
@@ -128,25 +124,18 @@ export const getCourse = async (
         .populate("forum")
         .populate({
             path: "forum",
-            populate: { 
-                path: "posts", 
-                populate: 
-                    [
-                    { path: "poster" }, 
-                    { path: "responses", 
-                        populate: 
-                            { path: "poster"} 
-                        }
-                    ]
+            populate: {
+                path: "posts",
+                populate: [{ path: "poster" }, { path: "responses", populate: { path: "poster" } }],
             },
         })
         .populate({
             path: "forum",
-            populate: { 
-                path: "posts", 
+            populate: {
+                path: "posts",
                 populate: {
-                    path: "poster"
-                }
+                    path: "poster",
+                },
             },
         })
         .populate({

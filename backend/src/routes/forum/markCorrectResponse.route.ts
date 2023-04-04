@@ -1,5 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
+import Enrolment from "@/models/course/enrolment/enrolment.model";
 import Forum from "@/models/course/forum/forum.model";
 import Post from "@/models/course/forum/post.model";
 import ForumResponse from "@/models/course/forum/response.model";
@@ -10,7 +11,6 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
 
 type ResponsePayload = {
     responseId: string;
@@ -33,13 +33,10 @@ export const markCorrectResponseController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
-            "responseId",
-        ];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["responseId"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
-
             // Body has been verified
             const queryBody = req.body;
 
@@ -84,12 +81,13 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
         .exec()
         .catch(() => null);
 
-    if (myResponse === null) throw new HttpException(400, `Response of ${responseId} does not exist`);
+    if (myResponse === null)
+        throw new HttpException(400, `Response of ${responseId} does not exist`);
 
     myResponse.correct = true;
     await myResponse.save().catch((err) => {
         throw new HttpException(500, "Failed to save correct state to response");
-    })
+    });
 
     return myResponse._id;
 };

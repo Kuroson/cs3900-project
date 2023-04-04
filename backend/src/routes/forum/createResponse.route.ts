@@ -1,16 +1,11 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course/course.model";
-import Forum from "@/models/course/forum/forum.model";
 import Post from "@/models/course/forum/post.model";
 import ForumResponse from "@/models/course/forum/response.model";
-import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
-import { checkAdmin } from "../admin/admin.route";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
 
 type ResponsePayload = {
     responseId: string;
@@ -34,14 +29,10 @@ export const createResponseController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
-            "postId",
-            "text",
-        ];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["postId", "text"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
-
             // Body has been verified
             const queryBody = req.body;
 
@@ -96,18 +87,18 @@ export const createResponse = async (queryBody: QueryPayload, firebase_uid: stri
     const myResponse = await new ForumResponse({
         response,
         correct,
-        poster
+        poster,
     })
         .save()
         .catch((err) => {
             logger.error(err);
             throw new HttpException(500, "Failed to save new response");
         });
-    
+
     myPost.responses.addToSet(myResponse._id.toString());
     await myPost.save().catch((err) => {
         throw new HttpException(500, "Failed to save updated response to post");
-    })
+    });
 
     return myResponse._id;
 };
