@@ -57,9 +57,9 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   function handleOnClickPostOverview(post: BasicPostInfo) {
     //Clicks on a particular post overview
     if (showedPost !== null) {
-      setPostsList([...postsList.filter(x => x._id !== showedPost._id), showedPost]);
+      setPostsList([...postsList.filter((x) => x._id !== showedPost._id), showedPost]);
     }
-    setShowedPost(postsList?.filter(x => x._id === post._id).pop());
+    setShowedPost(postsList?.filter((x) => x._id === post._id).pop());
   }
 
   const handleOpen = () => setOpen(true);
@@ -164,7 +164,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     const dataPayload = {
       postId,
       text,
-      timePosted
+      timePosted,
     };
     setButtonLoading(true);
     const [res, err] = await createNewResponse(await authUser.getIdToken(), dataPayload, "client");
@@ -187,7 +187,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       response: postResponseText,
       correct: true,
       poster: userDetails,
-      timePosted: Date.now() / 1000
+      timePosted: Date.now() / 1000,
     };
     if (showedPost.responses === null) {
       showedPost.responses = [];
@@ -199,7 +199,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     //close form
     setOpen(false);
     setPostTitle("");
-    setPostDesc("");   
+    setPostDesc("");
     setPostResponseText("");
   };
 
@@ -221,10 +221,19 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     setButtonLoading(false);
 
     // Update global state with new response state
-    if(showedPost !== null && showedPost.responses !== null ) {
-      const newResponse = {_id: response._id, correct: true, poster: response.poster, timePosted: response.timePosted, response: response.response};
-      setShowedPost({...showedPost, responses: [...showedPost.responses.filter(x => x._id !== response._id), newResponse]});
-      setPostsList([...postsList.filter(x => x._id !== showedPost._id), showedPost]);
+    if (showedPost !== null && showedPost.responses !== null) {
+      const newResponse = {
+        _id: response._id,
+        correct: true,
+        poster: response.poster,
+        timePosted: response.timePosted,
+        response: response.response,
+      };
+      setShowedPost({
+        ...showedPost,
+        responses: [...showedPost.responses.filter((x) => x._id !== response._id), newResponse],
+      });
+      setPostsList([...postsList.filter((x) => x._id !== showedPost._id), showedPost]);
     }
   };
   return (
@@ -333,7 +342,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             {showedPost?.responses?.map((resp, index) => (
               <div key={index} className="flex flex-row">
                 <ForumResponseCard response={resp} />
-                { resp.correct === false && (
+                {resp.correct === false && (
                   <Button
                     variant="contained"
                     onClick={(e) => handleCorrectResponse(e, resp)}
