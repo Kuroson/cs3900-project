@@ -6,17 +6,30 @@ import { BasicResponseInfo } from "models/response.model";
 import { UserDetails } from "models/user.model";
 import { useUser } from "util/UserContext";
 import UserDetailsSection from "../Layout/NavBars/UserDetailSection";
-import ShowTimePosted from "components/common/ShowTimePosted";
 
 type ForumResponseCardProps = {
   response: BasicResponseInfo;
-  time: string;
 };
 
-const ForumResponseCard: React.FC<ForumResponseCardProps> = ({ response, time }): JSX.Element => {
+const ForumResponseCard: React.FC<ForumResponseCardProps> = ({ response }): JSX.Element => {
   if (response === null) return <></>;
   else {
     console.log(response);
+    var timeDiff = (Date.now() / 1000 - response.timePosted).toFixed(0);
+    var timeUnit = "";
+    if (parseInt(timeDiff) < 60) {
+        //seconds
+        timeUnit = "sec ago";
+    } else if (parseInt(timeDiff) >= 60 && parseInt(timeDiff) < 3600) {
+        timeDiff = (parseInt(timeDiff) / 60).toFixed(0);
+        timeUnit = "min ago";
+    } else if (parseInt(timeDiff) >= 3600 && parseInt(timeDiff) < 3600*24) {
+        timeDiff = (parseInt(timeDiff) / 3600).toFixed(0);
+        timeUnit = "hours ago";
+    } else {
+        timeDiff = (parseInt(timeDiff) / (3600*24)).toFixed(0);
+        timeUnit = "days ago";
+    }
     return (
       <div className="flex flex-col p-2 pl-10 w-[600px]">
         <div className="flex items-center justify-between">
@@ -30,8 +43,7 @@ const ForumResponseCard: React.FC<ForumResponseCardProps> = ({ response, time })
               </div>
               <div className="flex flex-col justify-center items-center">
                 <span className="text-start pl-3">{`${response.poster.first_name} ${response.poster.last_name}`}</span>
-                {/* <span>{"1 hour ago"}</span> */}
-                <ShowTimePosted time={time}/>
+                <span>{timeDiff} {timeUnit}</span>
                 <div className="text-l font-bold pt-3">
                   {response.correct === true && <DoneIcon style={{ fill: "#00A400" }} />}
                   <span className="pl-2">{response.response}</span>

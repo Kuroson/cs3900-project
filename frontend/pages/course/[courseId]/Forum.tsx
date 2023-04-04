@@ -21,6 +21,7 @@ import { getUserCourseDetails } from "util/api/courseApi";
 import { createNewPost, createNewResponse, getCourseForum } from "util/api/forumApi";
 import initAuth from "util/firebase";
 import { fileToDataUrl } from "util/util";
+import dayjs from "dayjs";
 
 initAuth(); // SSR maybe, i think...
 
@@ -158,9 +159,11 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
 
     const postId = showedPost._id;
     const text = postResponseText;
+    const timePosted = Date.now() / 1000;
     const dataPayload = {
       postId,
       text,
+      timePosted
     };
     setButtonLoading(true);
     const [res, err] = await createNewResponse(await authUser.getIdToken(), dataPayload, "client");
@@ -184,6 +187,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       response: postResponseText,
       correct: false,
       poster: userDetails,
+      timePosted: Date.now() / 1000
     };
     if (showedPost.responses === null) {
       showedPost.responses = [];

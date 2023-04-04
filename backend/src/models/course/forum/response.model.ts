@@ -9,15 +9,17 @@ export interface ResponseInterface extends Document {
     response: string;
     correct: boolean;
     poster: UserInterface["_id"];
+    timePosted: Number;
 }
 
 const responseSchema: Schema = new Schema<ResponseInterface>({
     response: { type: String, required: true },
     correct: { type: Boolean, required: true },
     poster: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    timePosted: { type: Number, required: true }
 });
 
-const ForumResponse = model<ResponseInterface & Document>("Response", responseSchema);
+const Response = model<ResponseInterface & Document>("Response", responseSchema);
 
-export default ForumResponse;
+export default Response;
 

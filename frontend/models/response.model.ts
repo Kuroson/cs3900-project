@@ -5,6 +5,7 @@ export interface ResponseInterface extends MongooseDocument {
   response: string;
   correct: boolean;
   poster: MongooseId;
+  timePosted: number;
 }
 
 export type BasicResponseInfo = Omit<ResponseInterface, "poster"> & {
@@ -14,4 +15,5 @@ export type BasicResponseInfo = Omit<ResponseInterface, "poster"> & {
 export type CreateResponseType = {
   postId: string;
   text: string;
+  timePosted: Number;
 };

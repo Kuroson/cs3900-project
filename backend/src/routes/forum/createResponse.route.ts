@@ -15,6 +15,7 @@ type ResponsePayload = {
 type QueryPayload = {
     postId: string;
     text: string;
+    timePosted: Number;
 };
 
 /**
@@ -68,7 +69,7 @@ export const createResponseController = async (
  * @returns The ID of the post that has been created
  */
 export const createResponse = async (queryBody: QueryPayload, firebase_uid: string) => {
-    const { postId, text } = queryBody;
+    const { postId, text, timePosted } = queryBody;
 
     // Find user first
     const user = await User.findOne({ firebase_uid: firebase_uid }).catch(() => null);
@@ -85,11 +86,11 @@ export const createResponse = async (queryBody: QueryPayload, firebase_uid: stri
     const response = text;
     const poster = user._id;
     const correct = user.role == 0; //If they are admin, the post is automatically correct
-
     const myResponse = await new ForumResponse({
         response,
         correct,
         poster,
+        timePosted
     })
         .save()
         .catch((err) => {
