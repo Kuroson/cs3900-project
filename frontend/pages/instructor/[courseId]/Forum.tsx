@@ -122,7 +122,7 @@ const CorrectResponseButton = ({
   };
 
   return (
-    <div className="outline flex items-center justify-center h-full">
+    <div className="flex items-center justify-center h-full">
       <Button
         variant="contained"
         onClick={(e) => handleCorrectResponse(e, resp)}
@@ -189,7 +189,7 @@ const PostColumn = ({ showedPost, userDetails, setShowedPost }: PostColumnProps)
     <div className="flex flex-col">
       <ForumPostCard post={showedPost} />
       {showedPost.responses.map((resp, index) => (
-        <div key={index} className="flex flex-row h-full w-full outline">
+        <div key={index} className="flex flex-row h-full w-full">
           <ForumResponseCard response={resp} />
           {!resp.correct && (
             <CorrectResponseButton
