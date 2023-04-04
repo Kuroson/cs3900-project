@@ -2,11 +2,12 @@ import React from "react";
 import Head from "next/head";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
-import { FullWorkloadInfo, WorkloadInterface } from "models/workload.model";
+import { FullWorkloadInfo } from "models/workload.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading, WorkloadSection } from "components";
+import { AdminNavBar, ContentContainer, Loading } from "components";
 import PageHeader from "components/common/PageHeader";
+import StudentWorkloadSection from "components/workloadOverview/workload/StudentWorkloadSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { getWorkload } from "util/api/workloadApi";
@@ -14,15 +15,15 @@ import initAuth from "util/firebase";
 
 initAuth();
 
-type WorkloadOverviewPageProps = {
+type StudentWorkloadPageProps = {
   courseData: UserCourseInformation;
   workloadData: FullWorkloadInfo;
 };
 
-const WorkloadOverviewPage = ({
+const StudentWorkloadPage = ({
   courseData,
   workloadData,
-}: WorkloadOverviewPageProps): JSX.Element => {
+}: StudentWorkloadPageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
@@ -61,7 +62,7 @@ const WorkloadOverviewPage = ({
               <PageHeader title="Workload Overview" />
             </div>
           </h1>
-          <WorkloadSection
+          <StudentWorkloadSection
             courseId={courseData._id}
             setWeeks={setDynamicWeeks}
             weeks={dynamicWeeks}
@@ -72,14 +73,14 @@ const WorkloadOverviewPage = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps<WorkloadOverviewPageProps> =
+export const getServerSideProps: GetServerSideProps<StudentWorkloadPageProps> =
   withAuthUserTokenSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
   })(
     async ({
       AuthUser,
       query,
-    }): Promise<{ props: WorkloadOverviewPageProps } | { notFound: true }> => {
+    }): Promise<{ props: StudentWorkloadPageProps } | { notFound: true }> => {
       const { courseId } = query;
 
       if (courseId === undefined || typeof courseId !== "string") {
@@ -114,17 +115,11 @@ export const getServerSideProps: GetServerSideProps<WorkloadOverviewPageProps> =
 
       if (workloadDetails === null) throw new Error("This shouldn't have happened");
 
-      return {
-        props: {
-          courseData: courseDetails,
-          workloadData: workloadDetails.workload,
-        },
-      };
+      return { props: { courseData: courseDetails, workloadData: workloadDetails.workload } };
     },
   );
 
-export default withAuthUser<WorkloadOverviewPageProps>({
+export default withAuthUser<StudentWorkloadPageProps>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-  // LoaderComponent: MyLoader,
-})(WorkloadOverviewPage);
+})(StudentWorkloadPage);
