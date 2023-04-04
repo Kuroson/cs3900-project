@@ -19,6 +19,8 @@ import {
   ResourcesSection,
 } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
+import AddNewWorkloadSection from "components/admin/workload/AddNewWeekSection";
+import WorkloadSection from "components/admin/workload/WorkloadSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { deletePage } from "util/api/pageApi";
