@@ -95,7 +95,7 @@ const ThreadCreationModal = ({
 
     if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
 
-    setPostList((x) => [...x, res.postData]);
+    setPostList((x) => [res.postData, ...x]);
     toast.success("Post sent successfully");
     setButtonLoading(false);
     handleCloseForm(); // Close form and reset variables

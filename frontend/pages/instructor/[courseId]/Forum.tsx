@@ -209,7 +209,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
   const [showedPost, setShowedPost] = useState<FullPostInfo | null>(null); // The current displayed Thread
-  const [postList, setPostList] = useState(courseData.forum.posts);
+  const [postList, setPostList] = useState([...courseData.forum.posts]);
 
   React.useEffect(() => {
     // Build user data for user context
@@ -221,7 +221,9 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   React.useEffect(() => {
     // Every time showPost gets updated, update in main postList
     if (showedPost !== null) {
-      setPostList([...postList.filter((x) => x._id !== showedPost._id), showedPost]);
+      // Sort it so that it doesn't re-order
+      const newList = [...postList.filter((x) => x._id !== showedPost._id), { ...showedPost }];
+      setPostList([...newList.sort((a, b) => (a.timeCreated < b.timeCreated ? 1 : -1))]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showedPost]);
