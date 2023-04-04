@@ -55,10 +55,10 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       <ContentContainer>
         <div className="flex flex-col w-full justify-center px-[5%]">
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE] pt-3">
-            <span className="ml-4"></span>
+            <span className="ml-4">Forum</span>
           </h1>
         </div>
-        <div className="flex w-full justify-left px-[2%]">
+        <div className="flex w-full justify-left px-[3%] ml-4">
           {/* LEFT COLUMN */}
           <ThreadListColumn
             courseId={courseData._id}
