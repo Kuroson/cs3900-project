@@ -3,19 +3,12 @@ import { toast } from "react-toastify";
 import ImageIcon from "@mui/icons-material/Image";
 import { LoadingButton } from "@mui/lab";
 import { Button, FormControl, Modal, TextField } from "@mui/material";
-import { BasicPostInfo } from "models/post.model";
+import { FullPostInfo } from "models/post.model";
 import { UserDetails } from "models/user.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
-import { createNewPost } from "util/api/forumApi";
+import { CreateNewPostPayloadRequest, createNewPost } from "util/api/forumApi";
 import { fileToDataUrl } from "util/util";
-
-type ThreadCreationModalProps = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  courseId: string;
-  userDetails: UserDetails;
-};
 
 const style = {
   position: "absolute",
@@ -28,11 +21,20 @@ const style = {
   width: "570px",
 };
 
+type ThreadCreationModalProps = {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  courseId: string;
+  userDetails: UserDetails;
+  setPostList: React.Dispatch<React.SetStateAction<FullPostInfo[]>>;
+};
+
 const ThreadCreationModal = ({
   setOpen,
   open,
   courseId,
   userDetails,
+  setPostList,
 }: ThreadCreationModalProps): JSX.Element => {
   const authUser = useAuthUser();
 
@@ -70,17 +72,16 @@ const ThreadCreationModal = ({
       }
     }
 
-    const dataPayload = {
+    setButtonLoading(true);
+
+    const dataPayload: CreateNewPostPayloadRequest = {
       courseId: courseId,
       title: postTitle,
       question: postDesc,
-      poster: userDetails,
+      poster: userDetails._id,
       image: encodedImage,
-      responses: null,
     };
-    setButtonLoading(true);
     const [res, err] = await createNewPost(await authUser.getIdToken(), dataPayload, "client");
-    console.log(res);
     if (err !== null) {
       console.error(err);
       if (err instanceof HttpException) {
@@ -91,31 +92,19 @@ const ThreadCreationModal = ({
       setButtonLoading(false);
       return;
     }
+
     if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
-    console.log(res);
-    setButtonLoading(false);
 
-    // Update global state with new post
-    const newPost: BasicPostInfo = {
-      courseId: courseId,
-      _id: res.postId,
-      image: encodedImage,
-      title: postTitle,
-      question: postDesc,
-      poster: userDetails,
-      responses: null,
-    };
-
-    // FIXME
-    // postsList.push(newPost);
+    setPostList((x) => [...x, res.postData]);
     toast.success("Post sent successfully");
+    setButtonLoading(false);
     handleCloseForm(); // Close form and reset variables
   };
 
   return (
     <Modal
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={handleCloseForm}
       aria-labelledby="modal-create-thread"
       aria-describedby="modal-thread-description"
     >

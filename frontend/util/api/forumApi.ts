@@ -1,15 +1,28 @@
 import { BasicForumInfo, GetForumType } from "models/forum.model";
-import { CreatePostType } from "models/post.model";
-import { CreateResponseType } from "models/response.model";
-import { BackendLinkType, apiDelete, apiGet, apiPost, apiPut } from "./api";
+import { FullPostInfo } from "models/post.model";
+import { BackendLinkType, apiGet, apiPost } from "./api";
 import { getBackendLink } from "./userApi";
+
+type CreateNewPostPayloadResponse = {
+  postData: FullPostInfo;
+};
+
+type CreateResponseType = any; //FIXME
+
+export type CreateNewPostPayloadRequest = {
+  courseId: string;
+  title: string;
+  question: string;
+  poster: string;
+  image?: string;
+};
 
 export const createNewPost = (
   token: string | null,
-  payload: CreatePostType,
+  payload: CreateNewPostPayloadRequest,
   type: BackendLinkType,
 ) => {
-  return apiPost<CreatePostType, { postId: string }>(
+  return apiPost<CreateNewPostPayloadRequest, CreateNewPostPayloadResponse>(
     `${getBackendLink(type)}/forum/post`,
     token,
     payload,

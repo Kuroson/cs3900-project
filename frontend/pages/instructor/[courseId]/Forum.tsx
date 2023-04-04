@@ -5,7 +5,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { Button, FormControl, Modal, TextField } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
-import { BasicPostInfo } from "models/post.model";
+import { BasicPostInfo, FullPostInfo } from "models/post.model";
 import { BasicResponseInfo } from "models/response.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -27,18 +27,63 @@ type ForumPageProps = {
   courseData: UserCourseInformation;
 };
 
+type ThreadListColumnProps = {
+  courseId: string;
+  userDetails: UserDetails;
+  postList: FullPostInfo[];
+  setPostList: React.Dispatch<React.SetStateAction<FullPostInfo[]>>;
+};
+
+const ThreadListColumn = ({
+  courseId,
+  userDetails,
+  postList,
+  setPostList,
+}: ThreadListColumnProps): JSX.Element => {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  function handleOnClickPostOverview(post: BasicPostInfo) {
+    //Clicks on a particular post overview
+    // if (showedPost !== null) {
+    //   setPostList([...postList.filter((x) => x._id !== showedPost._id), showedPost]);
+    // }
+    // FIXME
+    // setShowedPost(postList?.filter((x) => x._id === post._id).pop());
+  }
+
+  return (
+    <div className="outline">
+      <div className="flex rounded-lg my-5 mx-5 w-[300px] items-center justify-center">
+        <Button variant="contained" onClick={handleOpen} id="addNewPost" className="w-full">
+          New Thread
+        </Button>
+      </div>
+      <ThreadCreationModal
+        open={open}
+        setOpen={setOpen}
+        courseId={courseId}
+        userDetails={userDetails}
+      />
+      {postList.map((post, index) => (
+        <div key={index} onClick={() => handleOnClickPostOverview(post)}>
+          <ForumPostOverviewCard post={post} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
   const [showedPost, setShowedPost] = useState<BasicPostInfo | null>(null);
-  const [postsList, setPostsList] = useState<Array<BasicPostInfo>>(courseData.forum.posts);
-  const [open, setOpen] = React.useState(false);
+  const [postList, setPostList] = useState(courseData.forum.posts);
+
   const [buttonLoading, setButtonLoading] = React.useState(false);
 
   const [postResponseText, setPostResponseText] = React.useState("");
 
-  console.log(courseData.forum);
   React.useEffect(() => {
     // Build user data for user context
     if (user.userDetails !== null) {
@@ -50,17 +95,6 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const userDetails = user.userDetails as UserDetails;
 
   const date = new Date();
-
-  function handleOnClickPostOverview(post: BasicPostInfo) {
-    //Clicks on a particular post overview
-    if (showedPost !== null) {
-      setPostsList([...postsList.filter((x) => x._id !== showedPost._id), showedPost]);
-    }
-    // FIXME
-    // setShowedPost(postsList?.filter((x) => x._id === post._id).pop());
-  }
-
-  const handleOpen = () => setOpen(true);
 
   const handleNewResponse = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -148,7 +182,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
         ...showedPost,
         responses: [...showedPost.responses.filter((x) => x._id !== response._id), newResponse],
       });
-      setPostsList([...postsList.filter((x) => x._id !== showedPost._id), showedPost]);
+      setPostList([...postList.filter((x) => x._id !== showedPost._id), showedPost]);
     }
   };
   return (
@@ -165,26 +199,15 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             <span className="ml-4"></span>
           </h1>
         </div>
-        <div className="flex w-full justify-left px-[2%] outline">
-          <div>
-            <div className="flex flex-col rounded-lg shadow-md p-2 my-5 mx-5 w-[300px] cursor-pointer hover:shadow-lg items-center justify-center">
-              <Button variant="text" onClick={handleOpen} id="addNewPost">
-                New Thread
-              </Button>
-            </div>
-            <ThreadCreationModal
-              open={open}
-              setOpen={setOpen}
-              courseId={courseData._id}
-              userDetails={userDetails}
-            />
-            {postsList?.map((post, index) => (
-              <div key={index} onClick={() => handleOnClickPostOverview(post)}>
-                <ForumPostOverviewCard post={post} />
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-col">
+        <div className="flex w-full justify-left px-[2%]">
+          {/* HERE */}
+          <ThreadListColumn
+            courseId={courseData._id}
+            userDetails={userDetails}
+            postList={postList}
+            setPostList={setPostList}
+          />
+          {/* <div className="flex flex-col">
             <ForumPostCard post={showedPost} datePosted={date.toLocaleString()}></ForumPostCard>
             {showedPost?.responses?.map((resp, index) => (
               <div key={index} className="flex flex-row">
@@ -221,7 +244,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
                 </Button>
               </>
             )}
-          </div>
+          </div> */}
         </div>
       </ContentContainer>
     </>
