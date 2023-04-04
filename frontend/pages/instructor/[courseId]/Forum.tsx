@@ -5,11 +5,17 @@ import Head from "next/head";
 import { Button } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
 import { FullPostInfo } from "models/post.model";
+import { FullResponseInfo } from "models/response.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { AdminNavBar, ContentContainer, Loading, ThreadCreationModal } from "components";
-import ForumPostOverviewCard from "components/common/ForumPostOverviewCard";
+import {
+  AdminNavBar,
+  ContentContainer,
+  ForumPostOverviewCard,
+  Loading,
+  ThreadCreationModal,
+} from "components";
 import ForumResponseCard from "components/common/ForumResponseCard";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
@@ -49,7 +55,7 @@ const ThreadListColumn = ({
   }
 
   return (
-    <div className="outline">
+    <div>
       <div className="flex rounded-lg my-5 mx-5 w-[300px] items-center justify-center">
         <Button variant="contained" onClick={handleOpen} id="addNewPost" className="w-full">
           New Thread
@@ -62,11 +68,13 @@ const ThreadListColumn = ({
         userDetails={userDetails}
         setPostList={setPostList}
       />
-      {postList.map((post, index) => (
-        <div key={index} onClick={() => handleOnClickPostOverview(post)}>
-          <ForumPostOverviewCard post={post} />
-        </div>
-      ))}
+      <div className="overflow-y-auto h-[700px]">
+        {postList.map((post, index) => (
+          <div key={index} onClick={() => handleOnClickPostOverview(post)}>
+            <ForumPostOverviewCard post={post} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -75,11 +83,9 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
-  const [showedPost, setShowedPost] = useState<BasicPostInfo | null>(null);
+  const [showedPost, setShowedPost] = useState<FullPostInfo | null>(null);
   const [postList, setPostList] = useState(courseData.forum.posts);
-
   const [buttonLoading, setButtonLoading] = React.useState(false);
-
   const [postResponseText, setPostResponseText] = React.useState("");
 
   React.useEffect(() => {
@@ -91,8 +97,6 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
 
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
-
-  const date = new Date();
 
   const handleNewResponse = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -150,7 +154,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
     // setPostResponseText("");
   };
 
-  const handleCorrectResponse = async (e: React.SyntheticEvent, response: BasicResponseInfo) => {
+  const handleCorrectResponse = async (e: React.SyntheticEvent, response: FullResponseInfo) => {
     e.preventDefault();
     const responseId = response._id;
     const [res, err] = await markCorrectResponse(await authUser.getIdToken(), responseId, "client");
@@ -183,6 +187,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
       setPostList([...postList.filter((x) => x._id !== showedPost._id), showedPost]);
     }
   };
+
   return (
     <>
       <Head>
