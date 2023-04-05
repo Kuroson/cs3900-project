@@ -51,9 +51,7 @@ const AssignmentInfoCard: React.FC<AssignmentInfoCardProps> = ({
             info.tags.map((tag) => <Tag key={tag} text={tag} color="bg-[#009688]" />)}
         </div>
       </div>
-      {info.description !== undefined && (
-        <p className="m-4 break-all text-lg">{info.description}</p>
-      )}
+      {info.description !== undefined && <p className="m-4 text-lg">{info.description}</p>}
       {/* Just for admin -> edit information */}
       {isAdmin && !passDdl && (
         <Button variant="contained" onClick={() => setIsEditing((prev) => !prev)}>
