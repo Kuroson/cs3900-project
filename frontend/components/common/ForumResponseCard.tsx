@@ -1,5 +1,6 @@
 import React from "react";
 import DoneIcon from "@mui/icons-material/Done";
+import { Divider } from "@mui/material";
 import { FullResponseInfo } from "models/response.model";
 
 type ForumResponseCardProps = {
@@ -27,27 +28,28 @@ const parseTimeIntoText = (response: FullResponseInfo): string => {
 
 const ForumResponseCard: React.FC<ForumResponseCardProps> = ({ response }): JSX.Element => {
   return (
-    <div className="flex flex-col p-2 pl-10 w-[600px]">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="mt-5 flex flex-row justify-center">
-            <div className="w-[40px] h-[40px] bg-orange-500 rounded-full flex justify-center items-center">
-              <span className="text-l font-bold">
-                {(response.poster.first_name?.charAt(0) ?? "") +
-                  (response.poster.last_name?.charAt(0) ?? "")}
-              </span>
-            </div>
-            <div className="flex flex-col justify-center items-center">
-              <span className="text-start pl-3">{`${response.poster.first_name} ${response.poster.last_name}`}</span>
-              <span>{parseTimeIntoText(response)}</span>
-              <div className="text-l font-bold pt-3">
-                {response.correct === true && <DoneIcon style={{ fill: "#00A400" }} />}
-                <span className="pl-2">{response.response}</span>
-              </div>
-            </div>
+    <div className="flex p-2 pl-10 w-[600px]">
+      <div className="flex flex-row items-left justify-between">
+        <div className="flex flex-row">
+          <div className="w-[40px] h-[40px] bg-orange-500 rounded-full flex justify-center items-center">
+            <span className="text-l font-bold">
+              {(response.poster.first_name?.charAt(0) ?? "") +
+                (response.poster.last_name?.charAt(0) ?? "")}
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-col justify-center items-left">
+          <div className="flex flex-col justify-center items-left ">
+            <span className="text-start pl-3">{`${response.poster.first_name} ${response.poster.last_name}`}</span>
+            <span className="text-start pl-3">{parseTimeIntoText(response)}</span>
+          </div>
+          <div className="flex flex-wrap text-l font-bold pt-3 break-all">
+            {response.correct === true && <DoneIcon style={{ fill: "#00A400" }} />}
+            <span className="text-start pl-3">{response.response}</span>
           </div>
         </div>
       </div>
+      <Divider />
     </div>
   );
 };
