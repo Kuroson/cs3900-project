@@ -58,7 +58,11 @@ const ResourcesDisplay = ({ resources }: ResourceDisplayProps): JSX.Element => {
               <div className="my-5">
                 {resource.file_type?.includes("image") ?? false ? (
                   <div>
-                    <img src={resource.stored_name ?? FROG_IMAGE_URL} alt={resource.description} />
+                    <img
+                      style={{ maxWidth: "30%" }}
+                      src={resource.stored_name}
+                      alt={resource.description}
+                    />
                   </div>
                 ) : (
                   <Link href={resource.stored_name} target="_blank">

@@ -215,7 +215,7 @@ const SingleEditableResource = ({
         <div className="my-5">
           {fileType?.includes("image") ?? false ? (
             <div>
-              <img src={storedName ?? FROG_IMAGE_URL} alt={description} />
+              <img style={{ maxWidth: "30%" }} src={storedName} alt={description} />
             </div>
           ) : (
             <Link href={storedName} target="_blank">

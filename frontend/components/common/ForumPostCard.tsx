@@ -33,7 +33,7 @@ const ForumPostCard: React.FC<ForumPostCardProps> = ({ post }): JSX.Element => {
         <div className="text-xl font-bold pt-6 pb-3">{post.title}</div>
         <p className="mh-[150px] overflow-hidden pt-2">{post.question}</p>
         {post.image !== undefined && post.image.length !== 0 && (
-          <img src={post.image} alt="post image here" />
+          <img style={{ maxWidth: "60%" }} src={post.image} alt="post image here" />
         )}
       </div>
       <div className="ml-8 pb-2">
