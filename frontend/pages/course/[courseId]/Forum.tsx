@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import { Divider } from "@mui/material";
 import { UserCourseInformation } from "models/course.model";
 import { FullPostInfo } from "models/post.model";
 import { UserDetails } from "models/user.model";
@@ -66,6 +67,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             setPostList={setPostList}
             setShowedPost={setShowedPost}
           />
+          <Divider orientation="vertical" />
           {/* RIGHT COLUMN */}
           <PostColumn
             showedPost={showedPost}
