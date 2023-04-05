@@ -31,6 +31,7 @@ type LeftColumnProps = {
   dynamicOnlineClass: OnlineClassFull;
   setDynamicOnlineClass: React.Dispatch<React.SetStateAction<OnlineClassFull>>;
 };
+
 const LeftColumn = ({
   dynamicOnlineClass,
   setDynamicOnlineClass,

@@ -141,7 +141,7 @@ export const getCourse = async (
         })
         .populate({
             path: "onlineClasses",
-            select: "_id title description startTime linkToClass running",
+            select: "_id title description startTime linkToClass running chatEnabled",
         })
         .exec()
         .catch(() => null);

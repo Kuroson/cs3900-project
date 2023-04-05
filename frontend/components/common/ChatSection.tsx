@@ -28,7 +28,7 @@ const ChatMessage = ({ message }: ChatMessageProps): JSX.Element => {
         <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
           <div className="font-bold text-2xl">{`${message.senderName
             .charAt(0)
-            .toUpperCase()}${message.senderName.split(" ")[1].charAt(1).toUpperCase()}`}</div>
+            .toUpperCase()}${message.senderName.split(" ")[1].charAt(0).toUpperCase()}`}</div>
         </div>
       </div>
       <div className="w-full flex flex-col">
