@@ -67,7 +67,6 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
             setPostList={setPostList}
             setShowedPost={setShowedPost}
           />
-          <Divider orientation="vertical" />
           {/* RIGHT COLUMN */}
           <PostColumn
             showedPost={showedPost}
