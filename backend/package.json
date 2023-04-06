@@ -17,6 +17,7 @@
     },
     "private": true,
     "dependencies": {
+        "@sendgrid/mail": "^7.7.0",
         "@types/multer": "^1.4.7",
         "cors": "^2.8.5",
         "dotenv": "^16.0.3",

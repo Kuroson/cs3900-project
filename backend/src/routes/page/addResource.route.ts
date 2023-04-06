@@ -3,6 +3,7 @@ import Course from "@/models/course/course.model";
 import Page from "@/models/course/page/page.model";
 import Resource from "@/models/course/page/resource.model";
 import Section from "@/models/course/page/section.model";
+import { sendEmail } from "@/utils/email";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -36,6 +37,8 @@ export const addResourceController = async (
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
+        sendEmail();
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const authUser = await checkAuth(req as any);
         const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
