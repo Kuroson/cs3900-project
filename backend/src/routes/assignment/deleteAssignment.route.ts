@@ -78,7 +78,10 @@ export const deleteAssignment = async (queryBody: QueryPayload, firebase_uid: st
 
     course.assignments.pull(assignmentId);
 
-    await Assignment.findByIdAndDelete(assignmentId).catch((err) => null);
+    await Assignment.findByIdAndDelete(assignmentId).catch((err) => {
+        logger.error(err);
+        throw new HttpException(500, "Failed to delete assignment");
+    });
 
     await course.save().catch((err) => {
         logger.error(err);
