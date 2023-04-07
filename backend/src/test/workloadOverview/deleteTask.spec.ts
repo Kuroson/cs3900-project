@@ -1,7 +1,9 @@
 import Course from "@/models/course/course.model";
+import Page from "@/models/course/page/page.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { createCourse } from "@/routes/course/createCourse.route";
+import { createPage } from "@/routes/page/createPage.route";
 import { registerUser } from "@/routes/user/register.route";
 import { createTask } from "@/routes/workloadOverview/createTask.route";
 import { createWeek } from "@/routes/workloadOverview/createWeek.route";
@@ -14,6 +16,7 @@ describe("Test deleting a task", () => {
     const id = uuidv4();
     let courseId: string;
     let weekId: string;
+    let pageId: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -30,7 +33,15 @@ describe("Test deleting a task", () => {
             },
             `acc${id}`,
         );
-        weekId = await createWeek(`${courseId}`, "Week 1", "Week 1 Description", `acc${id}`);
+        pageId = await createPage(courseId, "Test page 1", `acc${id}`);
+
+        weekId = await createWeek(
+            `${courseId}`,
+            pageId,
+            "Week 1",
+            "Week 1 Description",
+            `acc${id}`,
+        );
     });
 
     it("Should delete task from week", async () => {
@@ -60,6 +71,7 @@ describe("Test deleting a task", () => {
         await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
         await Week.findByIdAndDelete(weekId).exec();
+        await Page.findByIdAndDelete(pageId).exec();
         await disconnect();
     });
 });

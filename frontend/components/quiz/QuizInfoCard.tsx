@@ -22,7 +22,7 @@ const QuizInfoCard: React.FC<QuizInfoCardProps> = ({
   handleEditInfo,
 }): JSX.Element => {
   const [isEditing, setIsEditing] = useState(false);
-
+  const isBeforeOpen = dayjs.utc() < dayjs.utc(info.open);
   return (
     <div className="shadow-md p-4 rounded-lg outline outline-1 outline-gray-400 flex gap-2 flex-col">
       <div className="flex justify-between">
@@ -35,17 +35,19 @@ const QuizInfoCard: React.FC<QuizInfoCardProps> = ({
           >
             <AccessTimeFilledIcon color="primary" />
           </TitleWithIcon>
-          <ShowTimeLeft time={info.close} />
+          <ShowTimeLeft close={info.close} open={info.open} />
         </div>
       </div>
       <TitleWithIcon
-        text={`Marks: ${info.markAwarded != null ? info.markAwarded + "/" : "?/"}${info.maxMarks}`}
+        text={`Marks: ${
+          info.markAwarded != null ? info.markAwarded + "/" : `${isAdmin ? "" : "? / "}`
+        }${info.maxMarks}`}
       >
         <RuleIcon color="primary" />
       </TitleWithIcon>
       <p className="m-4 break-all text-lg">{info.description}</p>
       {/* Just for admin -> edit information */}
-      {isAdmin && (
+      {isAdmin && isBeforeOpen && (
         <Button variant="contained" onClick={() => setIsEditing((prev) => !prev)}>
           Edit Quiz Infomation
         </Button>

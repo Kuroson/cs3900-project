@@ -1,10 +1,14 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course, { CourseInterface } from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
+import { ForumInterface } from "@/models/course/forum/forum.model";
+import { PostInterface } from "@/models/course/forum/post.model";
+import { ResponseInterface } from "@/models/course/forum/response.model";
+import { OnlineClassInterface } from "@/models/course/onlineClass/onlineClass.model";
 import { PageInterface } from "@/models/course/page/page.model";
 import { ResourceInterface } from "@/models/course/page/resource.model";
 import { SectionInterface } from "@/models/course/page/section.model";
-import User from "@/models/user.model";
+import User, { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -13,7 +17,10 @@ import { Request, Response } from "express";
 type ResponsePayload = UserCourseInformation;
 
 // Basically joined all the tables, contains all information about pages, sections, and resources
-type UserCourseInformation = Omit<CourseInterface, "students" | "pages" | "creator"> & {
+type UserCourseInformation = Omit<
+    CourseInterface,
+    "students" | "pages" | "creator" | "onlineClasses" | "forum"
+> & {
     pages: Omit<PageInterface, "section" | "resources"> &
         {
             section: Omit<SectionInterface, "resources"> &
@@ -22,6 +29,19 @@ type UserCourseInformation = Omit<CourseInterface, "students" | "pages" | "creat
                 }[];
             resources: ResourceInterface[];
         }[];
+    onlineClasses: Omit<OnlineClassInterface, "chatMessages">[];
+    forum: Omit<ForumInterface, "description | posts"> & {
+        posts: Array<
+            Omit<PostInterface, "responses" | "poster"> & {
+                poster: UserInterface;
+                responses: Array<
+                    Omit<ResponseInterface, "poster"> & {
+                        poster: UserInterface;
+                    }
+                >;
+            }
+        >;
+    };
 };
 
 type QueryPayload = {
@@ -86,11 +106,11 @@ export const getCourse = async (
 
     // Check if user is enrolled in course
     const myCourse = await Course.findById(courseId)
-        .select("_id title code description session icon pages tags")
+        .select("_id title code description forum session icon pages tags onlineClasses")
         .populate("pages")
         .populate({
             path: "pages",
-            populate: { path: "resources" },
+            populate: [{ path: "resources" }, { path: "workload", populate: { path: "tasks" } }],
         })
         .populate({
             path: "pages",
@@ -100,6 +120,28 @@ export const getCourse = async (
                     path: "resources",
                 },
             },
+        })
+        .populate("forum")
+        .populate({
+            path: "forum",
+            populate: {
+                path: "posts",
+                populate: [{ path: "poster" }, { path: "responses", populate: { path: "poster" } }],
+            },
+        })
+        .populate({
+            path: "forum",
+            populate: {
+                path: "posts",
+                populate: {
+                    path: "poster",
+                },
+                options: { sort: { timeCreated: -1 } },
+            },
+        })
+        .populate({
+            path: "onlineClasses",
+            select: "_id title description startTime linkToClass running chatEnabled",
         })
         .exec()
         .catch(() => null);

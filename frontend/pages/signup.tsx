@@ -1,6 +1,7 @@
 import React from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
+import Link from "next/link";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
@@ -256,6 +257,11 @@ const SignUpPage = ({ CLIENT_BACKEND_URL }: SignUpPageProps): JSX.Element => {
                   Sign Up
                 </LoadingButton>
               </div>
+            </div>
+            <div className="flex items-start pt-4">
+              <Link href="/login">
+                <span className="underline text-base mx-1 py-1">Back</span>
+              </Link>
             </div>
           </div>
         </form>

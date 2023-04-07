@@ -1,5 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
+import AccessTime from "@mui/icons-material/AccessTime";
 import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -73,6 +74,7 @@ export default function AdminNavBar({
   const [radio, setRadio] = React.useState("");
   const [pageName, setPageName] = React.useState("");
 
+  // TODO: Only add the last courseData routes if courseData !== undefined
   const navRoutes: Routes[] = [
     {
       name: "Dashboard",
@@ -94,6 +96,11 @@ export default function AdminNavBar({
       name: "Students",
       route: `/instructor/${courseData?._id}/students`,
       icon: <PeopleAltIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Schedule Lecture",
+      route: `/instructor/${courseData?._id}/schedule`,
+      icon: <AccessTime fontSize="large" color="primary" />,
       hasLine: true,
     },
     ...(courseData?.pages ?? []).map((page) => {
@@ -118,6 +125,11 @@ export default function AdminNavBar({
         return {
           name: page.title,
           route: `/instructor/${courseData?._id}/Analytics`,
+        };
+      } else if (page.title === "Workload Overview") {
+        return {
+          name: page.title,
+          route: `/instructor/${courseData?._id}/WorkloadOverview`,
         };
       }
       return {
@@ -254,6 +266,11 @@ export default function AdminNavBar({
                       value="Analytics"
                       control={<Radio disabled={routesNames.includes("Analytics")} />}
                       label="Analytics"
+                    />
+                    <FormControlLabel
+                      value="Workload Overview"
+                      control={<Radio disabled={routesNames.includes("Workload Overview")} />}
+                      label="Workload Overview"
                     />
                     <FormControlLabel
                       id="RadioOtherPage"

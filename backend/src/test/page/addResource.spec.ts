@@ -56,6 +56,7 @@ describe("Test adding a resource", () => {
                 resourceId: null,
             },
             `acc${id}`,
+            false,
         );
 
         const myPage = await Page.findById(pageId);
@@ -90,6 +91,7 @@ describe("Test adding a resource", () => {
                 description: "",
             },
             `acc${id}`,
+            false,
         );
 
         const mySection = await Section.findById(sectionId);
@@ -116,6 +118,7 @@ describe("Test adding a resource", () => {
                 description: "",
             },
             `acc${id}`,
+            false,
         );
 
         let myPage = await Page.findById(pageId);
@@ -138,6 +141,7 @@ describe("Test adding a resource", () => {
                 sectionId: null,
             },
             `acc${id}`,
+            false,
         );
 
         myPage = await Page.findById(pageId);

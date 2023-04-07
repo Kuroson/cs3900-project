@@ -1,5 +1,5 @@
 import { Document, Schema, Types, model } from "mongoose";
-import { PostInterface } from "./post.model";
+import { FullPostInfo, PostInterface } from "./post.model";
 
 /**
  * This is the course forum that can contain many posts from students.
@@ -15,5 +15,9 @@ const forumSchema: Schema = new Schema<ForumInterface>({
 });
 
 const Forum = model<ForumInterface & Document>("Forum", forumSchema);
+
+export type FullForumInfo = Omit<ForumInterface, "posts"> & {
+    posts: FullPostInfo[];
+};
 
 export default Forum;

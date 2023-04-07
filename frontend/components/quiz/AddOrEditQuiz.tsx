@@ -98,7 +98,14 @@ const AddOrEditQuiz: React.FC<AddOrEditQuizProps> = ({
             <TitleWithIcon text="Timing">
               <AccessTimeIcon color="primary" />
             </TitleWithIcon>
-            <div className="flex gap-9 mt-6 items-center">
+            <Box
+              sx={{
+                display: "flex",
+                gap: "9px",
+                marginTop: "6px",
+                flexDirection: "column",
+              }}
+            >
               <h3>Open the quiz</h3>
               <DateTimePicker
                 views={["year", "month", "day", "hours", "minutes"]}
@@ -110,8 +117,15 @@ const AddOrEditQuiz: React.FC<AddOrEditQuizProps> = ({
                   }
                 }}
               />
-            </div>
-            <div className="flex gap-9 mt-6 items-center">
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                gap: "9px",
+                marginTop: "6px",
+                flexDirection: "column",
+              }}
+            >
               <h3>Close the quiz</h3>
               <DateTimePicker
                 views={["year", "month", "day", "hours", "minutes"]}
@@ -123,7 +137,7 @@ const AddOrEditQuiz: React.FC<AddOrEditQuizProps> = ({
                   }
                 }}
               />
-            </div>
+            </Box>
           </div>
         </LocalizationProvider>
         <Box sx={{ display: "flex", gap: "10px", maxWidth: "800px", justifyContent: "end" }}>

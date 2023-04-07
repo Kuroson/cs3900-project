@@ -4,6 +4,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import type { AppProps } from "next/app";
 import { StyledEngineProvider, ThemeProvider, createTheme } from "@mui/material/styles";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth";
 import * as forgetPasswordSSR from "pages/forgetPassword";
 import * as loginAuthSSR from "pages/login";
@@ -42,19 +44,23 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
     <>
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <UserProvider>
-            {renderWithoutBars ? (
-              <NoUserLayout className={renderWithoutBars ? styles.loginLayout : styles.mainContent}>
-                <Component {...pageProps} />
-              </NoUserLayout>
-            ) : (
-              <Layout className={renderWithoutBars ? styles.loginLayout : styles.mainContent}>
-                <Component {...pageProps} />
-              </Layout>
-            )}
-          </UserProvider>
-        </ThemeProvider>
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <ThemeProvider theme={theme}>
+            <UserProvider>
+              {renderWithoutBars ? (
+                <NoUserLayout
+                  className={renderWithoutBars ? styles.loginLayout : styles.mainContent}
+                >
+                  <Component {...pageProps} />
+                </NoUserLayout>
+              ) : (
+                <Layout className={renderWithoutBars ? styles.loginLayout : styles.mainContent}>
+                  <Component {...pageProps} />
+                </Layout>
+              )}
+            </UserProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
       </StyledEngineProvider>
       <ToastContainer
         position="top-center"

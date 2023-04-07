@@ -19,6 +19,7 @@ import {
 } from "util/api/courseApi";
 import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
+import { adminRouteAccess } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -171,6 +172,10 @@ export const getServerSideProps: GetServerSideProps<AddStudentPageProps> = withA
   const { courseId } = query;
 
   if (courseId === undefined || typeof courseId !== "string") {
+    return { notFound: true };
+  }
+
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 

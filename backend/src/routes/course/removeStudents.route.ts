@@ -107,6 +107,15 @@ export const removeStudents = async (
                     logger.error(`Failed to update enrolments for ${email}.`);
                     logger.error(err);
                 });
+
+                // Delete enrolment
+                await enrolment.delete().catch((err) => {
+                    // throw new HttpException(500, "Failed to delete enrolment", err);
+                    // Just add to invalidEmails
+                    invalidEmails.push(email);
+                    logger.error(`Failed to update enrolments for ${email}.`);
+                    logger.error(err);
+                });
             } else {
                 invalidEmails.push(email);
             }

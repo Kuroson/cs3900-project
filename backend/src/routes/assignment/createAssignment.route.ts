@@ -114,7 +114,10 @@ export const createAssignment = async (queryBody: QueryPayload, firebase_uid: st
         myAssignment.tags.addToSet(tag);
     }
 
-    myAssignment.save().catch((err) => null);
+    await myAssignment.save().catch((err) => {
+        logger.error(err);
+        throw new HttpException(500, "Failed to save new assignment");
+    });
 
     course.assignments.push(myAssignment._id);
 

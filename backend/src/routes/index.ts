@@ -13,6 +13,7 @@ import { getAssignmentSubmissionsController } from "./assignment/getAssignmentSu
 import { getAssignmentsController } from "./assignment/getAssignments.route";
 import { gradeAssignmentController } from "./assignment/gradeAssignment.route";
 import { submitAssignmentController } from "./assignment/submitAssignment.route";
+import { updateAssignmentController } from "./assignment/updateAssignment.route";
 import { addStudentsController } from "./course/addStudents.route";
 import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
@@ -23,7 +24,20 @@ import { removeStudentsController } from "./course/removeStudents.route";
 import { updateCourseController } from "./course/updateCourse.route";
 import { downloadFileController } from "./file/downloadFile.route";
 import { uploadFileController } from "./file/uploadFile.route";
+import { createPostController } from "./forum/createPost.route";
+import { createResponseController } from "./forum/createResponse.route";
+import { getForumController } from "./forum/getForum.route";
+import { markCorrectResponseController } from "./forum/markCorrectResponse.route";
 import { indexController } from "./index.route";
+import { createOnlineClassController } from "./onlineClasses/createOnlineClass.route";
+import { disableChatOnlineClassController } from "./onlineClasses/disableChatOnlineClass.route";
+import { enableChatOnlineClassController } from "./onlineClasses/enableChatOnlineClass.route";
+import { endOnlineClassController } from "./onlineClasses/endOnlineClass.route";
+import { getListOnlineClassController } from "./onlineClasses/getListOnlineClass.route";
+import { getOnlineClassController } from "./onlineClasses/getOnlineClass.route";
+import { sendChatMessageController } from "./onlineClasses/sendMessageOnlineClass.route";
+import { startOnlineClassController } from "./onlineClasses/startOnlineClass.route";
+import { updateOnlineClassController } from "./onlineClasses/updateOnlineClass.route";
 import { addResourceController } from "./page/addResource.route";
 import { addSectionController } from "./page/addSection.route";
 import { createPageController } from "./page/createPage.route";
@@ -121,6 +135,7 @@ indexRouter.get("/assignment/list", getAssignmentsController);
 indexRouter.get("/assignment", getAssignmentController);
 indexRouter.post("/assignment/create", createAssignmentController);
 indexRouter.delete("/assignment/delete", deleteAssignmentController);
+indexRouter.put("/assignment/update", updateAssignmentController);
 indexRouter.post("/assignment/submit", firebaseUpload.single("file"), submitAssignmentController);
 indexRouter.get("/assignment/submissions", getAssignmentSubmissionsController);
 indexRouter.post("/assignment/grade", gradeAssignmentController);
@@ -129,3 +144,20 @@ indexRouter.post("/assignment/grade", gradeAssignmentController);
 indexRouter.get("/analytics/grades", getGradesController);
 indexRouter.get("/analytics/tags/summary", getTagSummaryController);
 indexRouter.get("/analytics/questions", getQuestionAnalyticsController);
+
+// Online Classes Routes
+indexRouter.get("/class", getOnlineClassController);
+indexRouter.get("/class/list", getListOnlineClassController);
+indexRouter.post("/class/schedule", createOnlineClassController);
+indexRouter.put("/class/update", updateOnlineClassController);
+indexRouter.put("/class/start", startOnlineClassController);
+indexRouter.put("/class/end", endOnlineClassController);
+indexRouter.post("/class/chat/send", sendChatMessageController);
+indexRouter.put("/class/chat/enable", enableChatOnlineClassController);
+indexRouter.put("/class/chat/disable", disableChatOnlineClassController);
+
+//Forum routes
+indexRouter.get("/forum", getForumController);
+indexRouter.post("/forum/post", createPostController);
+indexRouter.post("/forum/respond", createResponseController);
+indexRouter.post("/forum/post/correct", markCorrectResponseController);

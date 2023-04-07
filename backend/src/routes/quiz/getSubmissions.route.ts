@@ -1,5 +1,10 @@
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course/course.model";
+import Course, { CourseInterface } from "@/models/course/course.model";
+import { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
+import { QuestionResponseInterface } from "@/models/course/enrolment/questionResponse.model";
+import { QuizAttemptInterface } from "@/models/course/enrolment/quizAttempt.model";
+import { QuestionInterface } from "@/models/course/quiz/question.model";
+import { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -9,14 +14,16 @@ import { checkAdmin } from "../admin/admin.route";
 type QuestionInfo = {
     questionId: string;
     text: string;
-    marks: string;
+    marks: number;
     tag: string;
 };
 
 type ResponseInfo = {
     responseId: string;
     studentId: string;
-    answer: string;
+    studentName: string;
+    studentAvatar?: string;
+    answer?: string;
 };
 
 type QuestionsInfo = {
@@ -90,16 +97,35 @@ export const getSubmissions = async (queryBody: QueryPayload, firebase_uid: stri
 
     const { courseId, quizId } = queryBody;
 
-    const course = await Course.findById(courseId)
+    type CourseInfo =
+        | (Omit<CourseInterface, "students"> & {
+              students: Array<
+                  Omit<Omit<EnrolmentInterface, "quizAttempts">, "student"> & {
+                      quizAttempts: Array<
+                          Omit<QuizAttemptInterface, "responses"> & {
+                              responses: Array<
+                                  Omit<QuestionResponseInterface, "question"> & {
+                                      question: QuestionInterface;
+                                  }
+                              >;
+                          }
+                      >;
+                      student: UserInterface;
+                  }
+              >;
+          })
+        | null;
+
+    const course: CourseInfo = await Course.findById(courseId)
         .populate({
             path: "students",
             model: "Enrolment",
             select: "_id quizAttempts student",
-            populate: {
-                path: "quizAttempts",
-                model: "QuizAttempt",
-                populate: [
-                    {
+            populate: [
+                {
+                    path: "quizAttempts",
+                    model: "QuizAttempt",
+                    populate: {
                         path: "responses",
                         model: "QuestionResponse",
                         populate: {
@@ -107,8 +133,12 @@ export const getSubmissions = async (queryBody: QueryPayload, firebase_uid: stri
                             model: "Question",
                         },
                     },
-                ],
-            },
+                },
+                {
+                    path: "student",
+                    model: "User",
+                },
+            ],
         })
         .catch((err) => null);
     if (course === null) {
@@ -144,7 +174,9 @@ export const getSubmissions = async (queryBody: QueryPayload, firebase_uid: stri
 
                     const responseInfo: ResponseInfo = {
                         responseId: response._id,
-                        studentId: currStudent,
+                        studentId: currStudent._id,
+                        studentName: currStudent.first_name + " " + currStudent.last_name,
+                        studentAvatar: currStudent.avatar,
                         answer: response.answer,
                     };
                     questions[response.question._id.toString()].responses.push(responseInfo);
