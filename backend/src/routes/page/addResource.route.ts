@@ -3,12 +3,13 @@ import Course from "@/models/course/course.model";
 import Page from "@/models/course/page/page.model";
 import Resource from "@/models/course/page/resource.model";
 import Section from "@/models/course/page/section.model";
-import { sendEmail } from "@/utils/email";
+import { RecipientsType, sendEmail } from "@/utils/email";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { getStudents } from "../course/getStudents.route";
 
 type ResponsePayload = {
     resourceId: string;
@@ -37,8 +38,6 @@ export const addResourceController = async (
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
     try {
-        sendEmail();
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const authUser = await checkAuth(req as any);
         const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
@@ -144,6 +143,22 @@ export const addResource = async (queryBody: QueryPayload, firebase_uid: string)
             throw new HttpException(500, "Failed to save updated section", err);
         });
     }
+
+    // Send an email about a new resource uploaded
+    // Need course code, students in course, name of new resource
+    const students = await getStudents(courseId);
+    const recipients: RecipientsType = [];
+    for (const student of students) {
+        recipients.push({
+            name: student.student.first_name + student.student.last_name,
+            email: student.student.email,
+        });
+    }
+    sendEmail(
+        recipients,
+        `New material added to ${course.code}`,
+        "Your instructor has uploaded new material to your course. Log in to view now.",
+    );
 
     return newResourceId;
 };

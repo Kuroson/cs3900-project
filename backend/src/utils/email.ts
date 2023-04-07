@@ -1,6 +1,7 @@
 // using Twilio SendGrid's v3 Node.js Library
 // https://github.com/sendgrid/sendgrid-nodejs
 import sgMail from "@sendgrid/mail";
+import { logger } from "./logger";
 import validateEnv from "./validateEnv";
 
 const SENDGRID_KEY = (): string => {
@@ -14,28 +15,28 @@ const SENDGRID_KEY = (): string => {
 };
 sgMail.setApiKey(SENDGRID_KEY());
 
-export const sendEmail = () => {
-    const recipients = [
-        {
-            email: "cs3900githappens23t1@gmail.com",
-            name: "Git Happens",
-        },
-        // Add more recipients as needed
-    ];
+type RecipientType = {
+    email: string;
+    name: string;
+};
 
+export type RecipientsType = Array<RecipientType>;
+
+export const sendEmail = (recipients: RecipientsType, subject: string, text: string) => {
     const msg = {
         to: recipients,
         from: "cs3900githappens23t1@gmail.com", // Verified sender on sendgrid
-        subject: "Sending with SendGrid is Fun",
-        text: "and easy to do anywhere, even with Node.js",
-        html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+        subject: subject,
+        text: text,
+        // html: "<strong></strong>",
     };
+
     sgMail
         .send(msg)
         .then(() => {
-            console.log("Email sent");
+            logger.info("Email sent");
         })
         .catch((error) => {
-            console.error(error);
+            logger.error(error);
         });
 };
