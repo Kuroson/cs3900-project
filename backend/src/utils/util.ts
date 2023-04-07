@@ -66,7 +66,7 @@ export type ErrorResponsePayload = {
 };
 
 export const adminRoute = (
-    routeHandler: (req: Request, res: Response) => any,
+    routeHandler: (req, res) => any,
 ): ((req: Request, res: Response) => Promise<void>) => {
     return async (req, res) => {
         const authUser = await checkAuth(req);

@@ -84,61 +84,61 @@ indexRouter.post("/user/register", registerController);
 
 // Course routes
 indexRouter.get("/course", getCourseController);
-indexRouter.post("/course/create", createCourseController);
+indexRouter.post("/course/create", adminRoute(createCourseController));
 indexRouter.get("/course/all", getAllCoursesController);
-indexRouter.put("/course/update", updateCourseController);
+indexRouter.put("/course/update", adminRoute(updateCourseController));
 indexRouter.get("/course/page", getCoursePageController);
-indexRouter.get("/course/students", getStudentsController);
-indexRouter.put("/course/students/add", addStudentsController);
-indexRouter.put("/course/students/remove", removeStudentsController);
+indexRouter.get("/course/students", adminRoute(getStudentsController));
+indexRouter.put("/course/students/add", adminRoute(addStudentsController));
+indexRouter.put("/course/students/remove", adminRoute(removeStudentsController));
 
 // Page routes
 indexRouter.get("/page", getPagesController);
-indexRouter.delete("/page", deletePageController);
-indexRouter.put("/page/update", updatePageController);
-indexRouter.post("/page/create", createPageController);
-indexRouter.put("/page/add/resource", addResourceController); // This updates and create, should split up
-indexRouter.put("/page/add/section", addSectionController);
-indexRouter.delete("/page/remove/resource", deleteResourceController);
-indexRouter.delete("/page/removes/section", deleteSectionController);
+indexRouter.delete("/page", adminRoute(deletePageController));
+indexRouter.put("/page/update", adminRoute(updatePageController));
+indexRouter.post("/page/create", adminRoute(createPageController));
+indexRouter.put("/page/add/resource", adminRoute(addResourceController)); // This updates and create, should split up
+indexRouter.put("/page/add/section", adminRoute(addSectionController));
+indexRouter.delete("/page/remove/resource", adminRoute(deleteResourceController));
+indexRouter.delete("/page/removes/section", adminRoute(deleteSectionController));
 
 // File routes
-indexRouter.post("/file/upload", firebaseUpload.single("file"), uploadFileController);
+indexRouter.post("/file/upload", firebaseUpload.single("file"), adminRoute(uploadFileController));
 indexRouter.get("/file", downloadFileController);
 
 // Quiz routes
 indexRouter.get("/quiz/list", getQuizzesController);
 indexRouter.get("/quiz", getQuizController);
-indexRouter.get("/quiz/questions", getQuestionsController);
-indexRouter.post("/quiz/create", createQuizController);
-indexRouter.put("/quiz/update", updateQuizController);
-indexRouter.post("/quiz/question/create", createQuestionController);
-indexRouter.delete("/quiz/question/delete", deleteQuestionController);
+indexRouter.get("/quiz/questions", adminRoute(getQuestionsController));
+indexRouter.post("/quiz/create", adminRoute(createQuizController));
+indexRouter.put("/quiz/update", adminRoute(updateQuizController));
+indexRouter.post("/quiz/question/create", adminRoute(createQuestionController));
+indexRouter.delete("/quiz/question/delete", adminRoute(deleteQuestionController));
 indexRouter.get("/quiz/start", startQuizController);
 indexRouter.post("/quiz/finish", finishQuizController);
-indexRouter.get("/quiz/submissions", getSubmissionsController);
-indexRouter.post("/quiz/question/grade", gradeQuestionController);
-
-//Workload Overview routes
-indexRouter.post("/workload/week/create", createWeekController);
-indexRouter.post("/workload/task/create", createTaskController);
-indexRouter.get("/workload/week", getWeekController);
-indexRouter.get("/workload", getWorkloadController);
-indexRouter.put("/workload/task/update", updateTaskController);
-indexRouter.put("/workload/week/update", updateWeekController);
-indexRouter.delete("/workload/task/delete", deleteTaskController);
-indexRouter.delete("/workload/week/delete", deleteWeekController);
-indexRouter.post("/workload/task/complete", completeTaskController);
+indexRouter.get("/quiz/submissions", adminRoute(getSubmissionsController));
+indexRouter.post("/quiz/question/grade", adminRoute(gradeQuestionController));
 
 // Assignment routes
 indexRouter.get("/assignment/list", getAssignmentsController);
 indexRouter.get("/assignment", getAssignmentController);
-indexRouter.post("/assignment/create", createAssignmentController);
-indexRouter.delete("/assignment/delete", deleteAssignmentController);
-indexRouter.put("/assignment/update", updateAssignmentController);
+indexRouter.post("/assignment/create", adminRoute(createAssignmentController));
+indexRouter.delete("/assignment/delete", adminRoute(deleteAssignmentController));
+indexRouter.put("/assignment/update", adminRoute(updateAssignmentController));
 indexRouter.post("/assignment/submit", firebaseUpload.single("file"), submitAssignmentController);
-indexRouter.get("/assignment/submissions", getAssignmentSubmissionsController);
-indexRouter.post("/assignment/grade", gradeAssignmentController);
+indexRouter.get("/assignment/submissions", adminRoute(getAssignmentSubmissionsController));
+indexRouter.post("/assignment/grade", adminRoute(gradeAssignmentController));
+
+//Workload Overview routes
+indexRouter.post("/workload/week/create", adminRoute(createWeekController));
+indexRouter.post("/workload/task/create", adminRoute(createTaskController));
+indexRouter.get("/workload/week", getWeekController);
+indexRouter.get("/workload", getWorkloadController);
+indexRouter.put("/workload/task/update", adminRoute(updateTaskController));
+indexRouter.put("/workload/week/update", adminRoute(updateWeekController));
+indexRouter.delete("/workload/task/delete", adminRoute(deleteTaskController));
+indexRouter.delete("/workload/week/delete", adminRoute(deleteWeekController));
+indexRouter.post("/workload/task/complete", completeTaskController);
 
 // Analytics routes
 indexRouter.get("/analytics/grades", getGradesController);
@@ -148,16 +148,16 @@ indexRouter.get("/analytics/questions", getQuestionAnalyticsController);
 // Online Classes Routes
 indexRouter.get("/class", getOnlineClassController);
 indexRouter.get("/class/list", getListOnlineClassController);
-indexRouter.post("/class/schedule", createOnlineClassController);
-indexRouter.put("/class/update", updateOnlineClassController);
-indexRouter.put("/class/start", startOnlineClassController);
-indexRouter.put("/class/end", endOnlineClassController);
+indexRouter.post("/class/schedule", adminRoute(createOnlineClassController));
+indexRouter.put("/class/update", adminRoute(updateOnlineClassController));
+indexRouter.put("/class/start", adminRoute(startOnlineClassController));
+indexRouter.put("/class/end", adminRoute(endOnlineClassController));
 indexRouter.post("/class/chat/send", sendChatMessageController);
-indexRouter.put("/class/chat/enable", enableChatOnlineClassController);
-indexRouter.put("/class/chat/disable", disableChatOnlineClassController);
+indexRouter.put("/class/chat/enable", adminRoute(enableChatOnlineClassController));
+indexRouter.put("/class/chat/disable", adminRoute(disableChatOnlineClassController));
 
 //Forum routes
 indexRouter.get("/forum", getForumController);
 indexRouter.post("/forum/post", createPostController);
 indexRouter.post("/forum/respond", createResponseController);
-indexRouter.post("/forum/post/correct", markCorrectResponseController);
+indexRouter.post("/forum/post/correct", adminRoute(markCorrectResponseController));
