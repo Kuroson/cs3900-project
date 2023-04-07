@@ -1,6 +1,7 @@
 import React from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
+import Link from "next/link";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
@@ -96,6 +97,11 @@ const ForgetPasswordPage = (): JSX.Element => {
             >
               Request Reset
             </LoadingButton>
+          </div>
+          <div className="flex">
+            <Link href="/login">
+              <span className="underline text-base mx-1 py-1">Back</span>
+            </Link>
           </div>
         </form>
       </ContentContainer>

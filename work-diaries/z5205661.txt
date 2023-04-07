@@ -1,0 +1,35 @@
+
+
+- What was planned for the period since the last work diary entry
+- What was finished
+- What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- What was finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- What is planned for the next period (e.g., next week)
+
+WEEK 1
+
+WEEK 2
+
+Week 3
+
+WEEK 4
+
+Week 5
+
+WEEK 6
+
+WEEK 7
+
+WEEK 8
+
+Since last week, I aimed to complete the frontend for my Workload Overview feature. There were two main pieces of functionality achieved from this: The instructor view and functionality and the student view and functionality.
+The instructor can create a To do list of action items for students to complete. These lists of action items are specific to each page/week. These action items can be edited and deleted and whole lists can be removed. 
+A student can view the To do list on each specific course page. Alternatively they can view all workloads on a single page
+
+The main technical obstacles was that I wasn't as familiar with frontend as I was with the backend. The last time I had worked with React or implemented some kind of frontend was when I did COMP6080 in Term 3 2022
+I was also not familiar with Next.Js, or Typescript for frontend, so it took time getting use to it. I mostly struggled with understanding how types work in typescript. Thankfully I had Alvin Cherk on the team to explain and help me debug typescript errors. 
+I will get better with the more typescript I use.
+
+I also helped Aditi complete her ticket" GH-15- Manage student forums" by fixing up the frontend and styling of the forums for both the instructor and the student view.
+This was completed and had no affect on the overall project progress. 
+
