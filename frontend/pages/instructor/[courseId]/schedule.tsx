@@ -16,7 +16,7 @@ import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { CreateOnlineClassPayloadRequest, createOnlineClass } from "util/api/onlineClassApi";
 import initAuth from "util/firebase";
-import { youtubeURLParser } from "util/util";
+import { adminRouteAccess, youtubeURLParser } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -165,6 +165,10 @@ export const getServerSideProps: GetServerSideProps<SchedulePageProps> = withAut
   const { courseId } = query;
 
   if (courseId === undefined || typeof courseId !== "string") {
+    return { notFound: true };
+  }
+
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
@@ -10,6 +8,7 @@ import { AdminNavBar, ContentContainer, Loading } from "components";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import initAuth from "util/firebase";
+import { adminRouteAccess } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -60,6 +59,10 @@ export const getServerSideProps: GetServerSideProps<AnalyticsProps> = withAuthUs
   const { courseId } = query;
 
   if (courseId === undefined || typeof courseId !== "string") {
+    return { notFound: true };
+  }
+
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 

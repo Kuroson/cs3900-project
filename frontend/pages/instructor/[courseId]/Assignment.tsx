@@ -19,6 +19,7 @@ import { useUser } from "util/UserContext";
 import { createNewAssignment, getListOfAssignments } from "util/api/assignmentApi";
 import { getUserCourseDetails } from "util/api/courseApi";
 import initAuth from "util/firebase";
+import { adminRouteAccess } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -163,6 +164,10 @@ export const getServerSideProps: GetServerSideProps<AssignmentProps> = withAuthU
   const { courseId } = query;
 
   if (courseId === undefined || typeof courseId !== "string") {
+    return { notFound: true };
+  }
+
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 

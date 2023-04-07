@@ -19,6 +19,7 @@ import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { createNewQuiz, getListOfQuizzes } from "util/api/quizApi";
 import initAuth from "util/firebase";
+import { adminRouteAccess } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -159,6 +160,10 @@ export const getServerSideProps: GetServerSideProps<QuizProps> = withAuthUserTok
   const { courseId } = query;
 
   if (courseId === undefined || typeof courseId !== "string") {
+    return { notFound: true };
+  }
+
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 

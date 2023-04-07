@@ -9,6 +9,7 @@ import { AdminNavBar, ContentContainer, Loading, OnlineClassCard } from "compone
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import initAuth from "util/firebase";
+import { adminRouteAccess } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -86,6 +87,10 @@ export const getServerSideProps: GetServerSideProps<AdminCoursePageProps> = with
   const { courseId } = query;
 
   if (courseId === undefined || typeof courseId !== "string") {
+    return { notFound: true };
+  }
+
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 

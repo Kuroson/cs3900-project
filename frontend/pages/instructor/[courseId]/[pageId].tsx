@@ -1,5 +1,4 @@
 import React from "react";
-import { toast } from "react-toastify";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -20,17 +19,15 @@ import {
   PageSections,
   ResourcesSection,
 } from "components";
-import { Routes } from "components/Layout/NavBars/NavBar";
 import AddNewWorkloadSection from "components/admin/workload/AddNewWeekSection";
 import SingleEditableWeekSection from "components/admin/workload/SingleEditableWorkload";
-import WorkloadSection from "components/admin/workload/WorkloadSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { deletePage } from "util/api/pageApi";
 import { getFileDownloadLink } from "util/api/resourceApi";
-import { getUserDetails } from "util/api/userApi";
 import { getWorkload } from "util/api/workloadApi";
 import initAuth from "util/firebase";
+import { adminRouteAccess } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -199,6 +196,10 @@ export const getServerSideProps: GetServerSideProps<AdminCoursePageProps> = with
     pageId === undefined ||
     typeof pageId !== "string"
   ) {
+    return { notFound: true };
+  }
+
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 

@@ -1,3 +1,5 @@
+import { getUserDetails } from "./api/userApi";
+
 export type Nullable<T> = { [K in keyof T]: T[K] | null };
 
 export const INSTRUCTOR_NUMBER = 0;
@@ -57,4 +59,17 @@ export const fileToDataUrl = (file: File) => {
   });
   reader.readAsDataURL(file);
   return dataUrlPromise;
+};
+
+/**
+ * SSR only function used to check if they have admin access to this route
+ * @param token
+ * @param email
+ * @returns
+ */
+export const adminRouteAccess = async (token: string | null, email: string): Promise<boolean> => {
+  const [res, err] = await getUserDetails(token, email ?? "", "ssr");
+  console.log(res);
+  console.log(res?.userDetails.role !== 0);
+  return res !== null && res.userDetails !== null && res.userDetails.role === 0;
 };

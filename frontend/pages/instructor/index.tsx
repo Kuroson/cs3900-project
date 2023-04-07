@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { toast } from "react-toastify";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
@@ -7,19 +6,13 @@ import { TextField } from "@mui/material";
 import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
-import {
-  AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserSSR,
-  withAuthUserTokenSSR,
-} from "next-firebase-auth";
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
 import { defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import CourseCard from "components/common/CourseCard";
 import { useUser } from "util/UserContext";
-import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
+import { adminRouteAccess } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -103,9 +96,7 @@ const Admin = (): JSX.Element => {
 export const getServerSideProps: GetServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser }) => {
-  const [res, err] = await getUserDetails(await AuthUser.getIdToken(), AuthUser.email ?? "", "ssr");
-
-  if (res?.userDetails === null || res?.userDetails.role !== 0) {
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 

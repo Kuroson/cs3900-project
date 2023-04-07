@@ -22,7 +22,7 @@ import { UpdateCoursePayloadRequest, createNewCourse, updateCourse } from "util/
 import { getUserCourseDetails } from "util/api/courseApi";
 import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
-import { Nullable } from "util/util";
+import { Nullable, adminRouteAccess } from "util/util";
 
 initAuth(); // SSR maybe, i think...
 
@@ -193,20 +193,6 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
   );
 };
 
-// export const getServerSideProps: GetServerSideProps = withAuthUserTokenSSR({
-//   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-// })(async ({ AuthUser }) => {
-//   const [res, err] = await getUserDetails(await AuthUser.getIdToken(), AuthUser.email ?? "", "ssr");
-
-//   if (res?.userDetails === null || res?.userDetails.role !== 0) {
-//     return { notFound: true };
-//   }
-
-//   return {
-//     props: {},
-//   };
-// });
-
 export const getServerSideProps: GetServerSideProps<UpdateSettingsPageProps> = withAuthUserTokenSSR(
   {
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -215,6 +201,10 @@ export const getServerSideProps: GetServerSideProps<UpdateSettingsPageProps> = w
   const { courseId } = query;
 
   if (courseId === undefined || typeof courseId !== "string") {
+    return { notFound: true };
+  }
+
+  if (!(await adminRouteAccess(await AuthUser.getIdToken(), AuthUser.email ?? ""))) {
     return { notFound: true };
   }
 
