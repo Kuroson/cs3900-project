@@ -66,7 +66,8 @@ export type ErrorResponsePayload = {
 };
 
 export const adminRoute = (
-    routeHandler: (req, res) => any,
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    routeHandler: (req: Request<any>, res: Response<any>) => any,
 ): ((req: Request, res: Response) => Promise<void>) => {
     return async (req, res) => {
         const authUser = await checkAuth(req);
