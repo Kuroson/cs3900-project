@@ -155,7 +155,7 @@ export const addResource = async (
         const recipients: RecipientsType = [];
         for (const student of students) {
             recipients.push({
-                name: student.student.first_name + student.student.last_name,
+                name: `${student.student.first_name} ${student.student.last_name}`,
                 email: student.student.email,
             });
         }

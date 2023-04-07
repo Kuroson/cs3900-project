@@ -78,7 +78,7 @@ export const getStudents = async (courseId: string): Promise<StudentInfo[]> => {
                 select: "_id email firebase_uid first_name last_name role avatar",
             },
         })
-        .catch((err) => null);
+        .catch(() => null);
     if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
     return course.students;
 };
