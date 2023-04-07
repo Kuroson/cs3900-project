@@ -1,5 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
+import Enrolment from "@/models/course/enrolment/enrolment.model";
 import { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -64,6 +65,7 @@ export const getStudentsController = async (
  */
 export const getStudents = async (courseId: string): Promise<StudentInfo[]> => {
     // 1. Find the course
+    Enrolment;
     const course = await Course.findById(courseId, "students")
         // .populate("students", "_id email firebase_uid first_name last_name role avatar")
         .populate({
@@ -76,7 +78,7 @@ export const getStudents = async (courseId: string): Promise<StudentInfo[]> => {
                 select: "_id email firebase_uid first_name last_name role avatar",
             },
         })
-        .catch(() => null);
+        .catch((err) => null);
     if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
     return course.students;
 };

@@ -81,7 +81,11 @@ export const addResourceController = async (
  * @throws { HttpException }
  * @returns The ID of the new resource that has been created
  */
-export const addResource = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const addResource = async (
+    queryBody: QueryPayload,
+    firebase_uid: string,
+    sendEmails = true,
+) => {
     if (!(await checkAdmin(firebase_uid))) {
         throw new HttpException(403, "Must be an admin to add a resource");
     }
@@ -146,19 +150,21 @@ export const addResource = async (queryBody: QueryPayload, firebase_uid: string)
 
     // Send an email about a new resource uploaded
     // Need course code, students in course, name of new resource
-    const students = await getStudents(courseId);
-    const recipients: RecipientsType = [];
-    for (const student of students) {
-        recipients.push({
-            name: student.student.first_name + student.student.last_name,
-            email: student.student.email,
-        });
+    if (sendEmails) {
+        const students = await getStudents(courseId);
+        const recipients: RecipientsType = [];
+        for (const student of students) {
+            recipients.push({
+                name: student.student.first_name + student.student.last_name,
+                email: student.student.email,
+            });
+        }
+        sendEmail(
+            recipients,
+            `New material added to ${course.code}`,
+            "Your instructor has uploaded new material to your course. Log in to view now.",
+        );
     }
-    sendEmail(
-        recipients,
-        `New material added to ${course.code}`,
-        "Your instructor has uploaded new material to your course. Log in to view now.",
-    );
 
     return newResourceId;
 };
