@@ -13,6 +13,7 @@ const validateEnv = cleanEnv(process.env, {
     MONGODB_PASSWORD: str(),
     USE_LOCAL_MONGO: bool({ default: false }),
     USE_DOCKER_INTERNAL_MONGO: bool({ default: false }),
+    SENDGRID_API_KEY: str(),
 });
 
 export default validateEnv;
