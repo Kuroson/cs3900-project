@@ -92,9 +92,9 @@ export const addNewChatMessage = async (
 
     const isAdmin = await checkAdmin(senderFirebaseUID);
 
-    if (!onlineClass.chatEnabled && !isAdmin) {
-        // Chat is disabled and they are not an admin
-        throw new HttpException(400, "Chat is disabled for this class for a student");
+    if ((!onlineClass.chatEnabled || !onlineClass.running) && !isAdmin) {
+        // Chat is disabled or class is over and they are not an admin
+        throw new HttpException(400, "Cannot send a message at the moment");
     }
 
     // Create message and save message

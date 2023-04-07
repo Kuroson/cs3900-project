@@ -137,7 +137,7 @@ export const getServerSideProps: GetServerSideProps<OnlineClassPageProps> = with
     | OnlineClassFull
     | undefined;
 
-  if (onlineClassData === undefined || !onlineClassData.running) return { notFound: true };
+  if (onlineClassData === undefined) return { notFound: true };
 
   onlineClassData.chatMessages = [];
 

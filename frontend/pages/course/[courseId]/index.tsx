@@ -35,7 +35,7 @@ const LectureCards = ({ onlineClasses, courseId }: LectureCardProps): JSX.Elemen
             key={x._id}
             onlineClass={x}
             // Only show href for running classes
-            href={x.running ? `/course/${courseId}/onlineClass/${x._id}` : undefined}
+            href={`/course/${courseId}/onlineClass/${x._id}`}
           />
         );
       })}

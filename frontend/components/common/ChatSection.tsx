@@ -54,6 +54,7 @@ const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Ele
   const [chatEnabled, setChatEnabled] = React.useState(dynamicOnlineClass.chatEnabled);
   const scrollableRef = React.useRef<HTMLDivElement>(null);
   const [messageSent, setMessageSent] = React.useState(false);
+  const [classRunning, setClassRunning] = React.useState(dynamicOnlineClass.running);
 
   React.useEffect(() => {
     // On load, set to bottom scroll
@@ -91,6 +92,7 @@ const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Ele
     if (res === null) throw new Error("Res should not have been null");
     setMessages(res.chatMessages);
     setChatEnabled(res.chatEnabled);
+    setClassRunning(res.running);
   };
 
   React.useEffect(() => {
@@ -165,7 +167,9 @@ const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Ele
         <LoadingButton
           variant="contained"
           loading={loading}
-          disabled={newMessage.length === 0 || (student === true ? !chatEnabled : false)}
+          disabled={
+            newMessage.length === 0 || (student === true ? !chatEnabled || !classRunning : false)
+          }
           type="submit"
         >
           Send
