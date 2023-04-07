@@ -25,7 +25,7 @@ export type RecipientsType = Array<RecipientType>;
 export const sendEmail = (recipients: RecipientsType, subject: string, text: string) => {
     const msg = {
         to: recipients,
-        from: "cs3900githappens23t1@gmail.com", // Verified sender on sendgrid
+        from: { email: "cs3900githappens23t1@gmail.com", name: "Git Happens" }, // Verified sender on sendgrid
         subject: subject,
         text: text,
         // html: "<strong></strong>",
