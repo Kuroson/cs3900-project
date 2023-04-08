@@ -89,12 +89,9 @@ export const getAssignmentController = async (
 export const getAssignment = async (queryBody: QueryPayload, firebase_uid: string) => {
     const { courseId, assignmentId } = queryBody;
 
-    const assignment = await Assignment.findById(assignmentId).catch((err) => {
-        logger.error(err);
-        throw new HttpException(500, "Failed to recall assignment");
-    });
+    const assignment = await Assignment.findById(assignmentId).catch((err) => null);
     if (assignment === null) {
-        throw new HttpException(500, "Failed to recall assignment");
+        throw new HttpException(400, "Failed to recall assignment");
     }
 
     const ret_data: ResponsePayload = {
@@ -181,12 +178,9 @@ const getAssignmentSubmission = async (
             path: "assignmentSubmissions",
             model: "AssignmentSubmission",
         })
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch enrolment");
-        });
+        .catch((err) => null);
     if (enrolment === null) {
-        throw new HttpException(500, "Failed to fetch enrolment");
+        throw new HttpException(400, "Failed to fetch enrolment");
     }
 
     for (const submission of enrolment.assignmentSubmissions) {

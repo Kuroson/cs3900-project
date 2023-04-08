@@ -94,9 +94,9 @@ export const createQuestion = async (queryBody: QueryPayload, firebase_uid: stri
     const { courseId, quizId, text, type, marks, choices, tag } = queryBody;
 
     // Get course tags
-    const course = await Course.findById(courseId);
+    const course = await Course.findById(courseId).catch((err) => null);
     if (course === null) {
-        throw new HttpException(500, "Failed to fetch course");
+        throw new HttpException(400, "Failed to recall course");
     }
 
     if (!course.tags.includes(tag)) {
@@ -115,13 +115,10 @@ export const createQuestion = async (queryBody: QueryPayload, firebase_uid: stri
 
     const quiz = await Quiz.findById(quizId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch quiz");
-        });
+        .catch((err) => null);
 
     if (quiz === null) {
-        throw new HttpException(500, "Failed to fetch quiz");
+        throw new HttpException(400, "Failed to fetch quiz");
     }
 
     const myQuestion = new Question({
@@ -139,10 +136,7 @@ export const createQuestion = async (queryBody: QueryPayload, firebase_uid: stri
                 correct: choice.correct,
             })
                 .save()
-                .catch((err) => {
-                    logger.error(err);
-                    throw new HttpException(500, "Failed to save choice");
-                });
+                .catch((err) => null);
 
             if (myChoice === null) {
                 throw new HttpException(500, "Failed to save choice");

@@ -71,12 +71,9 @@ export const deleteAssignment = async (queryBody: QueryPayload, firebase_uid: st
 
     const course = await Course.findById(courseId)
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch course");
-        });
+        .catch((err) => null);
     if (course === null) {
-        throw new HttpException(500, "Failed to fetch course");
+        throw new HttpException(400, "Failed to fetch course");
     }
 
     course.assignments.pull(assignmentId);
@@ -88,6 +85,6 @@ export const deleteAssignment = async (queryBody: QueryPayload, firebase_uid: st
 
     await course.save().catch((err) => {
         logger.error(err);
-        throw new HttpException(500, "Failed to save updated course");
+        throw new HttpException(400, "Failed to save updated course");
     });
 };

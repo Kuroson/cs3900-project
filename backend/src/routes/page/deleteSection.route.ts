@@ -72,7 +72,7 @@ export const deleteSection = async (queryBody: QueryPayload, firebase_uid: strin
 
     // Remove from page
     const currPage = await Page.findById(pageId);
-    if (currPage === null) throw new HttpException(500, `Failed to fetch page of ${pageId}`);
+    if (currPage === null) throw new HttpException(400, `Failed to fetch page of ${pageId}`);
 
     currPage.sections.remove(sectionId);
 

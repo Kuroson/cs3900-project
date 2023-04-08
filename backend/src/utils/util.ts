@@ -1,5 +1,8 @@
 import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
+import { checkAdmin } from "@/routes/admin/admin.route";
+import { Request, Response } from "express";
+import { checkAuth } from "./firebase";
 import { logger } from "./logger";
 
 /**
@@ -38,17 +41,12 @@ export const getMissingBodyIDs = <T extends Record<string, unknown>>(
  * @returns the mongoDB id of the user
  */
 export const getUserId = async (firebase_uid: string) => {
-    return await User.findOne({ firebase_uid })
-        .then((res) => {
-            if (res === null) {
-                throw new HttpException(500, "Failed to recall user");
-            }
-            return res._id;
-        })
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to recall user");
-        });
+    const user = await User.findOne({ firebase_uid }).catch((err) => null);
+
+    if (user === null) {
+        throw new HttpException(400, "Failed to recall user");
+    }
+    return user._id;
 };
 
 export type UserInfo = {
@@ -65,4 +63,21 @@ export type Nullable<T> = { [K in keyof T]: T[K] | null };
 
 export type ErrorResponsePayload = {
     message: string;
+};
+
+export const adminRoute = (
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    routeHandler: (req: Request<any>, res: Response<any>) => any,
+): ((req: Request, res: Response) => Promise<void>) => {
+    return async (req, res) => {
+        const authUser = await checkAuth(req);
+        if (!(await checkAdmin(authUser.uid))) {
+            const adminFailed = async (req: Request, res: Response) => {
+                return res.status(403).json({ message: "Must be an admin to access route" });
+            };
+            return await adminFailed(req, res);
+        }
+
+        return await routeHandler(req, res);
+    };
 };

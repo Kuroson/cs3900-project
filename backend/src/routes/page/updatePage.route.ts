@@ -160,7 +160,7 @@ export const updatePage = async (
         } else {
             currSection = await Section.findById(sectionId).catch(() => null);
             if (currSection === null)
-                throw new HttpException(500, `Cannot retrieve section of ${sectionId}`);
+                throw new HttpException(400, `Cannot retrieve section of ${sectionId}`);
         }
 
         for (const resource of section.resources) {

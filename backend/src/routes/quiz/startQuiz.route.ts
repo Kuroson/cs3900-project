@@ -73,16 +73,18 @@ export const startQuiz = async (queryBody: QueryPayload, firebase_uid: string) =
     }
 
     // Get the quiz with subset of fields
-    const quiz = await Quiz.findById(quizId).populate({
-        path: "questions",
-        model: "Question",
-        select: "_id text type marks choices tag",
-        populate: {
-            path: "choices",
-            model: "Choice",
-            select: "text",
-        },
-    });
+    const quiz = await Quiz.findById(quizId)
+        .populate({
+            path: "questions",
+            model: "Question",
+            select: "_id text type marks choices tag",
+            populate: {
+                path: "choices",
+                model: "Choice",
+                select: "text",
+            },
+        })
+        .catch((err) => null);
 
     if (quiz === null) {
         throw new HttpException(500, "Failed to recall quiz");

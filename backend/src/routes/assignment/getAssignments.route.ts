@@ -80,13 +80,9 @@ export const getAssignments = async (queryBody: QueryPayload, firebase_uid: stri
             model: "Assignment",
         })
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch course");
-        });
-
+        .catch((err) => null);
     if (course === null) {
-        throw new HttpException(500, "Failed to fetch course");
+        throw new HttpException(400, "Failed to fetch course");
     }
 
     const assignments: Array<AssignmentInfo> = [];
@@ -94,12 +90,9 @@ export const getAssignments = async (queryBody: QueryPayload, firebase_uid: stri
     for (const assignment of course.assignments) {
         const isAdmin = await checkAdmin(firebase_uid);
 
-        const user = await User.findOne({ firebase_uid }).catch((err) => {
-            throw new HttpException(500, "Cannot fetch user");
-        });
-
+        const user = await User.findOne({ firebase_uid }).catch((err) => null);
         if (user === null) {
-            throw new HttpException(500, "Cannot fetch user");
+            throw new HttpException(400, "Failed to fetch user");
         }
 
         const assignmentInfo: AssignmentInfo = {

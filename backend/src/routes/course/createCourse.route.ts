@@ -86,16 +86,10 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
 
     const { code, title, session, description, icon } = queryBody;
 
-    const admin = await User.findOne({ firebase_uid })
-        .then((res) => {
-            if (res === null) {
-                throw new HttpException(500, "Invalid user in database");
-            }
-            return res;
-        })
-        .catch((err) => {
-            throw new HttpException(500, "Invalid user in database");
-        });
+    const admin = await User.findOne({ firebase_uid }).catch((err) => null);
+    if (admin === null) {
+        throw new HttpException(400, "Invalid user in database");
+    }
 
     const courseForum = await new Forum({
         posts: [],
@@ -135,9 +129,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         .then((res) => {
             return res._id.toString() as string;
         })
-        .catch((err) => {
-            throw new HttpException(500, "Failed to save new course", err);
-        });
+        .catch((err) => null);
 
     if (courseId === null) {
         throw new HttpException(500, "Failed to create course");

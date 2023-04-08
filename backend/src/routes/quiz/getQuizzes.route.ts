@@ -83,13 +83,10 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
             model: "Quiz",
         })
         .exec()
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to fetch course");
-        });
+        .catch((err) => null);
 
     if (course === null) {
-        throw new HttpException(500, "Failed to fetch course");
+        throw new HttpException(400, "Failed to fetch course");
     }
 
     const quizzes: Array<QuizInfo> = [];
@@ -97,12 +94,10 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
     for (const quiz of course.quizzes) {
         const isAdmin = await checkAdmin(firebase_uid);
 
-        const user = await User.findOne({ firebase_uid }).catch((err) => {
-            throw new HttpException(500, "Cannot fetch user");
-        });
+        const user = await User.findOne({ firebase_uid }).catch((err) => null);
 
         if (user === null) {
-            throw new HttpException(500, "Cannot fetch user");
+            throw new HttpException(400, "Failed to fetch user");
         }
 
         const quizInfo: QuizInfo = {
@@ -122,13 +117,10 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
                     path: "quizAttempts",
                     model: "QuizAttempt",
                 })
-                .catch((err) => {
-                    logger.error(err);
-                    throw new HttpException(500, "Cannot fetch enrolment");
-                });
+                .catch((err) => null);
 
             if (enrolment === null) {
-                throw new HttpException(500, "Cannot fetch enrolment");
+                throw new HttpException(400, "Failed to fetch enrolment");
             }
 
             quizInfo.isResponded = enrolment.quizAttempts.some((attempt) => {

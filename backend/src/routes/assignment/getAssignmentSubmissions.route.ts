@@ -124,10 +124,7 @@ export const getAssignmentSubmissions = async (queryBody: QueryPayload, firebase
                 },
             ],
         })
-        .catch((err) => {
-            logger.error(err);
-            throw new HttpException(400, "Failed to fetch course and submission info");
-        });
+        .catch((err) => null);
     if (course === null) {
         throw new HttpException(400, "Failed to fetch course and submission info");
     }

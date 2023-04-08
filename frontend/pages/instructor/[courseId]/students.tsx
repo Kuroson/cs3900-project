@@ -105,12 +105,12 @@ const AddStudentsPage = ({ courseData }: AddStudentPageProps): JSX.Element => {
     }
     if (res === null) throw new Error("Response and error are null"); // Actual error that should never happen
     if (res.invalidEmails.length !== 0) {
-      toast.error(`${res.invalidEmails.length} emails were not added: ${res.invalidEmails}`);
+      toast.error(`${res.invalidEmails.length} emails were not removed: ${res.invalidEmails}`);
       setButtonLoading(false);
       return;
     }
 
-    toast.info("Student added successfully");
+    toast.info("Student removed successfully");
     setButtonLoading(false);
   };
 
