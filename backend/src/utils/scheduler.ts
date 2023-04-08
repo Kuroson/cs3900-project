@@ -107,7 +107,9 @@ export const checkWorkloadNotifications = async () => {
                 sendEmail(
                     recipients,
                     "You have imcomplete tasks due in the next hour",
-                    `You have imcomplete tasks for ${week.title} in the course ${course.code} which are due within the next hour. Log in to view them now.`,
+                    `You have imcomplete tasks for ${week.title} in` +
+                        `the course ${course.code} which are due within` +
+                        "the next hour. Log in to view them now.",
                 );
             }
         }

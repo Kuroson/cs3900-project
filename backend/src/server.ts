@@ -19,11 +19,6 @@ app.listen(port, () => {
     console.error(err);
 });
 
-// new cron.CronJob("* * * * *", async () => {
-//     console.log("running a task every minute");
-
-// }).start();
-
 new cron.CronJob("0 * * * *", async () => {
     await checkWorkloadNotifications();
 }).start();
