@@ -149,7 +149,6 @@ export const addResource = async (
     }
 
     // Send an email about a new resource uploaded
-    // Need course code, students in course, name of new resource
     if (sendEmails) {
         const students = await getStudents(courseId);
         const recipients: RecipientsType = [];

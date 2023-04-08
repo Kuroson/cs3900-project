@@ -4,10 +4,12 @@ import Enrolment from "@/models/course/enrolment/enrolment.model";
 import { ForumInterface } from "@/models/course/forum/forum.model";
 import Post, { FullPostInfo } from "@/models/course/forum/post.model";
 import User, { UserInterface } from "@/models/user.model";
+import { RecipientsType, sendEmail } from "@/utils/email";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { getStudents } from "../course/getStudents.route";
 
 type ResponsePayload = {
     postData: FullPostInfo;
@@ -78,6 +80,7 @@ export const createPostController = async (
 export const createPost = async (
     queryBody: QueryPayload,
     firebase_uid: string,
+    sendEmails = true,
 ): Promise<FullPostInfo> => {
     const { courseId, title, question, poster, image } = queryBody;
 
@@ -124,6 +127,26 @@ export const createPost = async (
     });
 
     // NOTE: don't have to fill responses as guaranteed to be [] array
+
+    // Send an email about a new post is added
+    if (sendEmails) {
+        const course = await Course.findById(courseId).catch(() => null);
+        if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
+
+        const students = await getStudents(courseId);
+        const recipients: RecipientsType = [];
+        for (const student of students) {
+            recipients.push({
+                name: `${student.student.first_name} ${student.student.last_name}`,
+                email: student.student.email,
+            });
+        }
+        sendEmail(
+            recipients,
+            `New forum post in ${course.code}`,
+            "A new post has been added to the course forum. Log in to view now.",
+        );
+    }
 
     return { ...myPost.toObject(), poster: user.toObject() };
 };
