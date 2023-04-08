@@ -70,6 +70,7 @@ const AddNewWorkloadSection = ({
       _id: res.weekId,
       title: title,
       description: description,
+      deadline: deadline.format(),
       tasks: [],
     };
 
@@ -104,20 +105,18 @@ const AddNewWorkloadSection = ({
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
-            <div>
-              <div className="w-full pb-5">
-                <DateTimePicker
-                  views={["year", "month", "day", "hours", "minutes"]}
-                  sx={{ width: "100%", maxWidth: "300px" }}
-                  value={deadline}
-                  onChange={(value) => {
-                    if (value) {
-                      setDeadline(value);
-                    }
-                  }}
-                />
-              </div>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div className="w-full pb-5">
+              <DateTimePicker
+                views={["year", "month", "day", "hours", "minutes"]}
+                sx={{ width: "100%", maxWidth: "300px" }}
+                value={deadline}
+                onChange={(value) => {
+                  if (value) {
+                    setDeadline(value);
+                  }
+                }}
+              />
             </div>
           </LocalizationProvider>
           <div className="pt-4 w-full flex justify-between">

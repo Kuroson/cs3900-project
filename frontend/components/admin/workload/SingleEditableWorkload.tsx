@@ -2,6 +2,11 @@ import React from "react";
 import { toast } from "react-toastify";
 import { Button, TextField } from "@mui/material";
 import Divider from "@mui/material/Divider";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
+import relativeTimePlugin from "dayjs/plugin/relativeTime";
+import utcPlugin from "dayjs/plugin/utc";
 import { FullWeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
@@ -13,6 +18,9 @@ import {
 } from "util/api/workloadApi";
 import EditPanelButtons from "../EditPanelButtons";
 import TasksSection from "../task/TasksSection";
+
+dayjs.extend(utcPlugin);
+dayjs.extend(relativeTimePlugin);
 
 type SingleEditableWeekProps = {
   week: FullWeekInterface;
@@ -38,6 +46,7 @@ const SingleEditableWeekSection = ({
   const [editMode, setEditMode] = React.useState(false);
   const [title, setTitle] = React.useState(week.title);
   const [description, setDescription] = React.useState(week.description);
+  const [deadline, setDeadline] = React.useState<Dayjs>(dayjs.utc(week.deadline).local());
   const [tasks, setTasks] = React.useState(week.tasks);
 
   const handleRemoveClick = async () => {
@@ -113,16 +122,32 @@ const SingleEditableWeekSection = ({
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          <TextField
-            id="WorkloadDescription"
-            label="Workload Description (Optional)"
-            variant="outlined"
-            multiline
-            rows={5}
-            sx={{ maxWidth: "1000px" }}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+          <div className="w-full pb-5">
+            <TextField
+              id="WorkloadDescription"
+              label="Workload Description (Optional)"
+              variant="outlined"
+              multiline
+              rows={5}
+              sx={{ maxWidth: "1000px" }}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div className="w-full pb-5">
+              <DateTimePicker
+                views={["year", "month", "day", "hours", "minutes"]}
+                sx={{ width: "100%", maxWidth: "300px" }}
+                value={deadline}
+                onChange={(value) => {
+                  if (value) {
+                    setDeadline(value);
+                  }
+                }}
+              />
+            </div>
+          </LocalizationProvider>
         </div>
         <div>
           <EditPanelButtons
@@ -146,6 +171,9 @@ const SingleEditableWeekSection = ({
           <div className="flex-row flex w-full justify-between">
             <div>
               <span className="w-full text-xl font-medium flex flex-col">{title}</span>
+              <span className="w-full text-sm flex flex-col">
+                <i>Due {dayjs.utc(deadline.format()).endOf("minute").fromNow()}</i>
+              </span>
               {/* Description */}
               {description !== undefined && <p>{description}</p>}
               {/* Resource */}

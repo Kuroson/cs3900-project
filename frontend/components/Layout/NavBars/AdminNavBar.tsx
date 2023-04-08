@@ -196,7 +196,7 @@ export default function AdminNavBar({
         ...dynamicRoutes,
         {
           name: radio,
-          route: `/instructor/${courseData?._id ?? "123"}/${radio}`,
+          route: `/instructor/${courseData?._id ?? "123"}/${radio.replace(" ", "")}`,
         },
       ]);
     }
