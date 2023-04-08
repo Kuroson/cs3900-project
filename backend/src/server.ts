@@ -1,5 +1,6 @@
 import { logger } from "@utils/logger";
 import validateEnv from "@utils/validateEnv";
+import cron from "cron";
 import { app } from "./app";
 
 const port = process.env.PORT ?? 8080;
@@ -16,3 +17,11 @@ app.listen(port, () => {
     logger.error(err.message);
     console.error(err);
 });
+
+// new cron.CronJob("* * * * * *", () => {
+//     console.log("running a task every second");
+// }).start();
+
+new cron.CronJob("0 * * * *", () => {
+    console.log("running a task every hour");
+}).start();

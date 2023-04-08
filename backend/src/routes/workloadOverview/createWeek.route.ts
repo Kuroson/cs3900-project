@@ -18,6 +18,7 @@ type QueryPayload = {
     pageId: string;
     title: string;
     description: string;
+    deadline: string;
 };
 
 /**
@@ -38,14 +39,22 @@ export const createWeekController = async (
             "pageId",
             "title",
             "description",
+            "deadline",
         ];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
             // Body has been verified
-            const { courseId, pageId, title, description } = req.body;
+            const { courseId, pageId, title, description, deadline } = req.body;
 
-            const weekId = await createWeek(courseId, pageId, title, description, authUser.uid);
+            const weekId = await createWeek(
+                courseId,
+                pageId,
+                title,
+                description,
+                deadline,
+                authUser.uid,
+            );
 
             logger.info(`weekId: ${weekId}`);
             return res.status(200).json({ weekId });
@@ -79,6 +88,7 @@ export const createWeek = async (
     pageId: string,
     title: string,
     description: string,
+    deadline: string,
     firebase_uid: string,
 ): Promise<string> => {
     if (!(await checkAdmin(firebase_uid))) {
@@ -112,9 +122,12 @@ export const createWeek = async (
         );
     }
 
+    console.log(deadline);
+
     const newWeek = new Week({
         title: title,
         description: description,
+        deadline: deadline,
         tasks: [],
     });
 
