@@ -61,6 +61,7 @@ describe("Test creating a week", () => {
             page1Id,
             "Week 1",
             "Week 1 description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
         const week = await Week.findById(weekId);
@@ -81,6 +82,7 @@ describe("Test creating a week", () => {
             page2Id,
             "Week 1",
             "Week 1 description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
         const week2Id = await createWeek(
@@ -88,6 +90,7 @@ describe("Test creating a week", () => {
             page3Id,
             "Week 2",
             "Week 2 description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
 

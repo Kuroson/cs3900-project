@@ -48,6 +48,7 @@ describe("Test deleting a week", () => {
             page1Id,
             "Week 1",
             "Week 1 Description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
 
@@ -87,6 +88,7 @@ describe("Test deleting a week", () => {
             page2Id,
             "Week 1",
             "Week 1 Description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
         const taskId = await createTask(weekId, "Do Task 1", "Look at week 1", `acc${id}`);

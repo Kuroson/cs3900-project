@@ -2,6 +2,7 @@ import { logger } from "@utils/logger";
 import validateEnv from "@utils/validateEnv";
 import cron from "cron";
 import { app } from "./app";
+import { checkWorkloadNotifications } from "./utils/scheduler";
 
 const port = process.env.PORT ?? 8080;
 
@@ -18,10 +19,11 @@ app.listen(port, () => {
     console.error(err);
 });
 
-// new cron.CronJob("* * * * * *", () => {
-//     console.log("running a task every second");
+// new cron.CronJob("* * * * *", async () => {
+//     console.log("running a task every minute");
+
 // }).start();
 
-new cron.CronJob("0 * * * *", () => {
-    console.log("running a task every hour");
+new cron.CronJob("0 * * * *", async () => {
+    await checkWorkloadNotifications();
 }).start();

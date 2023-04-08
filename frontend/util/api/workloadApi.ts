@@ -98,6 +98,7 @@ export type UpdateWeekPayloadRequest = {
   weekId: string;
   title?: string;
   description?: string;
+  deadline?: string;
 };
 
 type UpdateWeekPayloadResponse = {

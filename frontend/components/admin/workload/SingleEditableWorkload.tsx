@@ -86,6 +86,7 @@ const SingleEditableWeekSection = ({
       const updatedWeek: UpdateWeekPayloadRequest = {
         weekId: week._id,
         title: title,
+        deadline: deadline.format(),
         description: description,
       };
 

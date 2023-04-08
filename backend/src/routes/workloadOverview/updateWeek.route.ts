@@ -14,6 +14,7 @@ type QueryPayload = {
     weekId: string;
     title?: string;
     description?: string;
+    deadline?: string;
 };
 
 /**
@@ -68,7 +69,7 @@ export const updateWeek = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(401, "Must be an admin to update tasks");
     }
 
-    const { weekId, title, description } = queryBody;
+    const { weekId, title, description, deadline } = queryBody;
 
     const week = await Week.findById(weekId)
         .exec()
@@ -83,6 +84,9 @@ export const updateWeek = async (queryBody: QueryPayload, firebase_uid: string) 
     }
     if (description !== undefined) {
         week.description = description;
+    }
+    if (deadline !== undefined) {
+        week.deadline = deadline;
     }
 
     const myWeek = await week.save().catch((err) => {
