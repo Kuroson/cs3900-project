@@ -45,7 +45,7 @@ export const getUserDetails = async (
             populate: {
                 path: "course",
                 model: "Course",
-                select: "_id title code description session icon",
+                select: "_id title code description session icon archived",
             },
         })
         // Because only admins have this array filled,its ok to probably just request everything

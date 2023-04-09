@@ -24,6 +24,7 @@ export interface CourseInterface extends MongooseDocument {
   assignments: Array<MongooseId>;
   workloadOverview: MongooseId;
   tags: Array<string>;
+  archived: boolean;
 }
 
 export type BasicCourseInfo = Omit<
