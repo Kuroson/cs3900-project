@@ -12,11 +12,22 @@ import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "nex
 import { ContentContainer, Loading, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
 import CourseCard from "components/common/CourseCard";
+import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
-import { getUserDetails } from "util/api/userApi";
+import { getUserDetails, getUserSchedule } from "util/api/userApi";
 import initAuth from "util/firebase";
 
 initAuth(); // SSR maybe, i think...
+
+type ScheduleItem = {
+  title: string;
+  tooltip?: string;
+  color: string;
+  start: Date;
+  end: Date;
+  allDay: boolean;
+  editable: boolean;
+};
 
 export type Course = {
   courseId: string;
@@ -38,6 +49,7 @@ const HomePage = (): JSX.Element => {
   const [searchCode, setSearchCode] = useState("");
   const [showedCourses, setShowedCourses] = useState<UserEnrolmentInformation[]>([]);
   const [archivedCourses, setArchivedCourses] = useState<UserEnrolmentInformation[]>([]);
+  const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([]);
 
   React.useEffect(() => {
     if (user.userDetails !== null) {
@@ -51,6 +63,77 @@ const HomePage = (): JSX.Element => {
       ]);
     }
   }, [user.userDetails]);
+
+  React.useEffect(() => {
+    const getSchedule = async () => {
+      const [res, err] = await getUserSchedule(await authUser.getIdToken(), "client");
+      if (err !== null) {
+        console.error(err);
+        if (err instanceof HttpException) {
+          toast.error(err.message);
+        } else {
+          toast.error(err);
+        }
+        return;
+      }
+      if (res === null) throw new Error("Response and error are null");
+
+      // TODO: process schedule
+      // type ScheduleItem = {
+      //   title: string;
+      //   tooltip?: string;
+      //   color: string;
+      //   start: Date;
+      //   end: Date;
+      //   allDay: boolean;
+      //   editable: boolean;
+      // };
+
+      const colors: Record<string, string> = {
+        quiz: "#FF0000",
+        assignment: "#FF0000",
+        class: "#FF0000",
+        workload: "#FF0000",
+      };
+
+      const constructScheduleItems: ScheduleItem[] = [];
+      for (const item of res.deadlines) {
+        if (item.type === "quiz") {
+          constructScheduleItems.push({
+            title: `${item.courseCode} ${item.type}`,
+            color: colors[item.type],
+            start: new Date(Date.parse(item.start)),
+            end: new Date(Date.parse(item.deadline)),
+            allDay: true,
+            editable: false,
+          });
+        } else if (item.type === "class") {
+          constructScheduleItems.push({
+            title: `${item.courseCode} ${item.type}`,
+            color: colors[item.type],
+            start: new Date(item.deadlineTimestamp),
+            end: new Date(item.deadlineTimestamp),
+            allDay: true,
+            editable: false,
+          });
+        } else {
+          constructScheduleItems.push({
+            title: `${item.courseCode} ${item.type}`,
+            color: colors[item.type],
+            start: new Date(Date.parse(item.deadline)),
+            end: new Date(Date.parse(item.deadline)),
+            allDay: true,
+            editable: false,
+          });
+        }
+      }
+      setScheduleItems(constructScheduleItems);
+      console.error("Hmm");
+      console.log(constructScheduleItems);
+      // TODO
+    };
+    getSchedule();
+  }, [authUser]);
 
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
