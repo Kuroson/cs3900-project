@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
-import { TextField } from "@mui/material";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -21,17 +28,18 @@ const Admin = (): JSX.Element => {
   const authUser = useAuthUser();
   const router = useRouter();
   const [loading, setLoading] = React.useState(user.userDetails === null);
-  const [showedCourses, setShowedCourses] = useState<BasicCourseInfo[]>(
-    user.userDetails?.created_courses ?? [],
-  );
+  const [showedCourses, setShowedCourses] = useState<BasicCourseInfo[]>([]);
+  const [archivedCourses, setArchivedCourses] = useState<BasicCourseInfo[]>([]);
   const [searchCode, setSearchCode] = useState("");
 
   React.useEffect(() => {
     // Build user data for user context
     if (user.userDetails !== null) {
       setLoading(false);
+
+      setShowedCourses([...user.userDetails.created_courses.filter((course) => !course.archived)]);
+      setArchivedCourses([...user.userDetails.created_courses.filter((course) => course.archived)]);
     }
-    setShowedCourses(user.userDetails?.created_courses ?? []);
   }, [user.userDetails]);
 
   if (loading || user.userDetails === null) return <Loading />;
@@ -42,7 +50,9 @@ const Admin = (): JSX.Element => {
     if (e.key === "Enter") {
       if (userDetails.created_courses !== undefined) {
         setShowedCourses([
-          ...userDetails.created_courses.filter((course) => course.code.includes(searchCode)),
+          ...userDetails.created_courses.filter(
+            (course) => course.code.includes(searchCode) && !course.archived,
+          ),
         ]);
       }
     }
@@ -87,6 +97,22 @@ const Admin = (): JSX.Element => {
               <AddIcon fontSize="large" color="primary" />
             </div>
           </div>
+          {archivedCourses.length > 0 && (
+            <div>
+              <Accordion elevation={3} className="mt-5 mb-5">
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography>
+                    <h3>Archived Courses</h3>
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {archivedCourses?.map((course, index) => (
+                    <CourseCard key={index} course={course} href={`/instructor/${course._id}`} />
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            </div>
+          )}
         </div>
       </ContentContainer>
     </>
