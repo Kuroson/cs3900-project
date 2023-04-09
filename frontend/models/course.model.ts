@@ -6,6 +6,7 @@ import {
   SectionInterface,
 } from "models";
 import { BasicForumInfo, ForumInterface, FullForumInfo } from "./forum.model";
+import { KudosValuesInterface } from "./kudosValue.model";
 import { OnlineClassInterface } from "./onlineClass.model";
 import { PageFull } from "./page.model";
 
@@ -24,6 +25,7 @@ export interface CourseInterface extends MongooseDocument {
   assignments: Array<MongooseId>;
   workloadOverview: MongooseId;
   tags: Array<string>;
+  kudosValues: MongooseId;
   archived: boolean;
 }
 
@@ -38,6 +40,7 @@ export type BasicCourseInfo = Omit<
   | "assignments"
   | "workloadOverview"
   | "tags"
+  | "kudosValues"
 >;
 
 export type UserCourseInformation = Omit<
@@ -50,8 +53,10 @@ export type UserCourseInformation = Omit<
   | "quizzes"
   | "assignments"
   | "workloadOverview"
+  | "kudosValues"
 > & {
   pages: PageFull[];
   onlineClasses: Array<OnlineClassInterface>;
   forum: FullForumInfo;
+  kudosValues: KudosValuesInterface;
 };

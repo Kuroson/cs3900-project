@@ -1,5 +1,6 @@
 import Course from "@/models/course/course.model";
 import Forum from "@/models/course/forum/forum.model";
+import KudosValues from "@/models/course/kudosValues.model";
 import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import User from "@/models/user.model";
 import { checkAccess } from "@/routes/admin/access.route";
@@ -51,6 +52,10 @@ describe("Test checking if user has access to a course", () => {
                 throw new Error("Failed to create workload overview for test");
             });
 
+        const kudosValues = await new KudosValues().save().catch((err) => {
+            throw new Error("Failed to create kudos values for test");
+        });
+
         const myCourse = new Course({
             title: "Test course",
             code: "TEST",
@@ -58,6 +63,7 @@ describe("Test checking if user has access to a course", () => {
             creator: adminId,
             forum: courseForum,
             workloadOverview: courseWorkloadOverview,
+            kudosValues: kudosValues._id,
         });
 
         courseId = await myCourse

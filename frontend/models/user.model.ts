@@ -10,10 +10,14 @@ export interface UserInterface extends MongooseDocument {
   email: string;
   first_name: string;
   last_name: string;
-  role: number; // 0=instructor, 1=student
+  /**
+   * 0=instructor, 1=student
+   */
+  role: number;
   enrolments: Array<MongooseId>;
   created_courses: Array<MongooseId>;
   avatar?: string;
+  kudos: number;
 }
 
 export type UserDetails = Omit<UserInterface, "enrolments" | "created_courses"> & {

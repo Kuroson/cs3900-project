@@ -1,5 +1,6 @@
 import { CourseInterface } from "models";
 import { UserCourseInformation } from "models/course.model";
+import { KudosValuesInterface, KudosValuesType } from "models/kudosValue.model";
 import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
 
@@ -27,6 +28,7 @@ type CreateNewCoursePayloadRequest = {
   session: string;
   description: string;
   icon: string;
+  kudosValues?: KudosValuesType;
 };
 
 type CreateNewCoursePayloadResponse = {
@@ -53,6 +55,7 @@ export type UpdateCoursePayloadRequest = {
   description?: string;
   icon?: string;
   tags?: Array<string>;
+  kudosValues?: KudosValuesType;
   archived: boolean;
 };
 

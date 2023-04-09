@@ -4,6 +4,7 @@ import Enrolment from "@/models/course/enrolment/enrolment.model";
 import { ForumInterface } from "@/models/course/forum/forum.model";
 import { PostInterface } from "@/models/course/forum/post.model";
 import { ResponseInterface } from "@/models/course/forum/response.model";
+import KudosValues, { KudosValuesInterface } from "@/models/course/kudosValues.model";
 import { OnlineClassInterface } from "@/models/course/onlineClass/onlineClass.model";
 import { PageInterface } from "@/models/course/page/page.model";
 import { ResourceInterface } from "@/models/course/page/resource.model";
@@ -19,7 +20,7 @@ type ResponsePayload = UserCourseInformation;
 // Basically joined all the tables, contains all information about pages, sections, and resources
 type UserCourseInformation = Omit<
     CourseInterface,
-    "students" | "pages" | "creator" | "onlineClasses" | "forum"
+    "students" | "pages" | "creator" | "onlineClasses" | "forum" | "kudosValues"
 > & {
     pages: Omit<PageInterface, "section" | "resources"> &
         {
@@ -42,6 +43,7 @@ type UserCourseInformation = Omit<
             }
         >;
     };
+    kudosValues: KudosValuesInterface;
 };
 
 type QueryPayload = {
@@ -106,7 +108,10 @@ export const getCourse = async (
 
     // Check if user is enrolled in course
     const myCourse = await Course.findById(courseId)
-        .select("_id title code description forum session icon pages tags onlineClasses archived")
+        .select(
+            "_id title code description forum session icon pages tags onlineClasses kudosValues archived",
+        )
+        .populate("kudosValues")
         .populate("pages")
         .populate({
             path: "pages",

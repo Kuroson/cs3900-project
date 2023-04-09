@@ -17,10 +17,14 @@ export interface UserInterface extends Document {
     email: string;
     first_name: string;
     last_name: string;
-    role: number; // 0=instructor, 1=student
+    /**
+     * 0=instructor, 1=student
+     */
+    role: number;
     enrolments: Types.DocumentArray<EnrolmentInterface["_id"]>;
     created_courses: Types.DocumentArray<CourseInterface["_id"]>;
     avatar?: string;
+    kudos: number;
 }
 
 const userSchema: Schema = new Schema<UserInterface>({
@@ -32,6 +36,7 @@ const userSchema: Schema = new Schema<UserInterface>({
     enrolments: [{ type: Schema.Types.ObjectId, ref: "Enrolment", required: true }],
     created_courses: [{ type: Schema.Types.ObjectId, ref: "Course", required: true }],
     avatar: String,
+    kudos: { type: Number, default: 0 },
 });
 
 const User = model<UserInterface & Document>("User", userSchema);

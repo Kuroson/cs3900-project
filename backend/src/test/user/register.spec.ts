@@ -1,5 +1,7 @@
+import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { registerUser } from "@/routes/user/register.route";
+import { getUserDetails } from "@/routes/user/userDetails.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
@@ -10,6 +12,8 @@ describe("Test creation of new User", () => {
     const uid1 = `normal-${id}`;
     const email2 = `admin-${id}@delete.com`;
     const uid2 = `admin-${id}`;
+    const email3 = `new-${id}@delete.com`;
+    const uid3 = `new-${id}`;
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -40,9 +44,20 @@ describe("Test creation of new User", () => {
         expect(user?.role).toBe(0); // admin
     });
 
+    it("Test default value of 0 for kudos", async () => {
+        const userId = await registerUser(`firstJest${id}`, `lastJest${id}`, email3, uid3);
+        const userDB = await User.findOne({ _id: userId }).catch(() => null);
+        expect(userDB).not.toBeNull();
+        expect(userDB?.kudos).toEqual(0);
+
+        Course; // Load course model
+        const userDetails = await getUserDetails(email3, email3);
+        expect(userDetails.kudos).toEqual(0);
+    });
+
     afterAll(async () => {
         // Clean up
-        await User.deleteMany({ email: [email1, email2] }).exec();
+        await User.deleteMany({ email: [email1, email2, email3] }).exec();
         await disconnect();
     });
 });

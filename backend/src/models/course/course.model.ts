@@ -3,6 +3,7 @@ import { UserInterface } from "../user.model";
 import { AssignmentInterface } from "./assignment/assignment.model";
 import { EnrolmentInterface } from "./enrolment/enrolment.model";
 import { ForumInterface } from "./forum/forum.model";
+import { KudosValuesInterface } from "./kudosValues.model";
 import { OnlineClassInterface } from "./onlineClass/onlineClass.model";
 import { PageInterface } from "./page/page.model";
 import { QuizInterface } from "./quiz/quiz.model";
@@ -30,6 +31,7 @@ export interface CourseInterface extends Document {
     assignments: Types.DocumentArray<AssignmentInterface["_id"]>;
     workloadOverview: WorkloadOverviewInterface["_id"];
     tags: Types.Array<string>;
+    kudosValues: KudosValuesInterface["_id"];
     archived: boolean;
 }
 
@@ -48,6 +50,7 @@ const courseSchema: Schema = new Schema<CourseInterface>({
     assignments: [{ type: Schema.Types.ObjectId, ref: "Assignment", required: true }],
     workloadOverview: { type: Schema.Types.ObjectId, ref: "WorkloadOverview", required: true },
     tags: [{ type: String, required: true }],
+    kudosValues: { type: Schema.Types.ObjectId, ref: "KudosValues", required: true },
     archived: { type: Boolean, required: true, default: false },
 });
 
