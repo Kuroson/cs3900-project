@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Button, TextField } from "@mui/material";
+import { Avatar, Button, FormControlLabel, Switch, TextField } from "@mui/material";
 import { BasicCourseInfo, UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -37,11 +37,12 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
   const [loading, setLoading] = React.useState(user.userDetails === null);
 
   const [image, setImage] = useState<string>();
-  const [code, setCode] = useState<string>("");
-  const [title, setTitle] = useState<string>("");
-  const [session, setSession] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [tags, setTags] = useState<string>("");
+  const [code, setCode] = useState<string>(courseData.code);
+  const [title, setTitle] = useState<string>(courseData.title);
+  const [session, setSession] = useState<string>(courseData.session);
+  const [description, setDescription] = useState<string>(courseData.description ?? "");
+  const [tags, setTags] = useState<string>(courseData.tags.toString());
+  const [archived, setArchived] = useState<boolean>(courseData.archived);
   const [icon, setIcon] = useState<string>("");
   const [buttonLoading, setButtonLoading] = React.useState(false);
 
@@ -51,6 +52,12 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
       setLoading(false);
     }
   }, [user.userDetails]);
+
+  React.useEffect(() => {
+    console.error("Settings");
+    console.log(courseData);
+    console.error("Settings");
+  }, []);
 
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
@@ -77,6 +84,7 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
     }
     const dataPayload: UpdateCoursePayloadRequest = {
       courseId: courseData._id,
+      archived,
     };
 
     if (code !== "") {
@@ -150,18 +158,21 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
               id="Course ID"
               label="Course Code"
               variant="outlined"
+              value={code}
               onChange={(e) => setCode(e.target.value)}
             />
             <TextField
               id="Title"
               label="Course Title"
               variant="outlined"
+              value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <TextField
               id="Session"
               label="Course Session"
               variant="outlined"
+              value={session}
               onChange={(e) => setSession(e.target.value)}
             />
             <TextField
@@ -170,6 +181,7 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
               variant="outlined"
               multiline
               rows={9}
+              value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
             <TextField
@@ -178,7 +190,14 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
               variant="outlined"
               multiline
               rows={5}
+              value={tags}
               onChange={(e) => setTags(e.target.value)}
+            />
+            <FormControlLabel
+              control={
+                <Switch checked={archived} onChange={(e) => setArchived(e.target.checked)} />
+              }
+              label="Archived"
             />
             <p style={{ textAlign: "right" }}>
               <i>Enter tags as comma separated list</i>
