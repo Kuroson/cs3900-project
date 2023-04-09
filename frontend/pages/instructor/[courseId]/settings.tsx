@@ -53,12 +53,6 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
     }
   }, [user.userDetails]);
 
-  React.useEffect(() => {
-    console.error("Settings");
-    console.log(courseData);
-    console.error("Settings");
-  }, []);
-
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 

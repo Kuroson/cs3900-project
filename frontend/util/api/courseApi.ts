@@ -82,7 +82,7 @@ export const archiveCourse = (
   payload: ArchiveCoursePayloadRequest,
   type: BackendLinkType,
 ) => {
-  return apiPost<ArchiveCoursePayloadRequest, {}>(
+  return apiPost<ArchiveCoursePayloadRequest, Record<string, never>>(
     `${getBackendLink(type)}/course/archive`,
     token,
     payload,

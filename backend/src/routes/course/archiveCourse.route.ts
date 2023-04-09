@@ -6,7 +6,7 @@ import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/ut
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
-type ResponsePayload = {};
+type ResponsePayload = Record<string, never>;
 
 type QueryPayload = {
     courseId: string;
