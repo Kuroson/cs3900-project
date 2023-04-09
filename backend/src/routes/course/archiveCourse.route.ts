@@ -20,7 +20,7 @@ type QueryPayload = {
  * @param res
  * @returns
  */
-export const createCourseController = async (
+export const archiveCourseController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
@@ -33,7 +33,7 @@ export const createCourseController = async (
             // Body has been verified
             const queryBody = req.body;
 
-            await createCourse(queryBody, authUser.uid);
+            await archiveCourse(queryBody, authUser.uid);
 
             return res.status(200).json({});
         } else {
@@ -61,7 +61,7 @@ export const createCourseController = async (
  * @param firebase_uid Unique identifier of user
  * @throws { HttpException } Recall/save failure
  */
-export const createCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const archiveCourse = async (queryBody: QueryPayload, firebase_uid: string) => {
     if (!(await checkAdmin(firebase_uid))) {
         throw new HttpException(401, "Must be an admin to archive course");
     }
