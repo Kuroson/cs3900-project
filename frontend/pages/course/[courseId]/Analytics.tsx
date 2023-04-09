@@ -4,19 +4,7 @@ import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ExpandMore } from "@mui/icons-material";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import {
   AnalyticsGradesType,
   AnalyticsQuestionsType,
@@ -191,9 +179,7 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
           <div className="py-4">
             <Accordion elevation={3} defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMore />}>
-                <Typography>
-                  <h3>Grades</h3>
-                </Typography>
+                <h3>Grades</h3>
               </AccordionSummary>
               <AccordionDetails>
                 {grades && (
@@ -209,9 +195,7 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
             </Accordion>
             <Accordion elevation={3}>
               <AccordionSummary expandIcon={<ExpandMore />}>
-                <Typography>
-                  <h3>Topic Summary</h3>
-                </Typography>
+                <h3>Topic Summary</h3>
               </AccordionSummary>
               <AccordionDetails>
                 {tagsSummary && (
@@ -244,9 +228,7 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
             </Accordion>
             <Accordion elevation={3}>
               <AccordionSummary expandIcon={<ExpandMore />}>
-                <Typography>
-                  <h3>Incorrect Questions</h3>
-                </Typography>
+                <h3>Incorrect Questions</h3>
               </AccordionSummary>
               <AccordionDetails>
                 <div className="mt-7 mx-4 flex flex-col gap-9 w-full max-w-[800px]">

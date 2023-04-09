@@ -58,6 +58,7 @@ import { getSubmissionsController } from "./quiz/getSubmissions.route";
 import { gradeQuestionController } from "./quiz/gradeQuestion.route";
 import { startQuizController } from "./quiz/startQuiz.route";
 import { updateQuizController } from "./quiz/updateQuiz.route";
+import { getScheduleController } from "./user/getSchedule.route";
 import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
 import { completeTaskController } from "./workloadOverview/completeTask.route";
@@ -82,6 +83,7 @@ indexRouter.get("/admin/access", accessController);
 // User routes
 indexRouter.get("/user/details", userDetailsController);
 indexRouter.post("/user/register", registerController);
+indexRouter.get("/user/schedule", getScheduleController);
 
 // Course routes
 indexRouter.get("/course", getCourseController);

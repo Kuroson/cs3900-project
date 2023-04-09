@@ -4,13 +4,7 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import HomeIcon from "@mui/icons-material/Home";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, TextField } from "@mui/material";
 import { UserEnrolmentInformation } from "models/enrolment.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -122,9 +116,7 @@ const HomePage = (): JSX.Element => {
             <div>
               <Accordion elevation={3} className="mt-5 mb-5">
                 <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography>
-                    <h3>Archived Courses</h3>
-                  </Typography>
+                  <h3>Archived Courses</h3>
                 </AccordionSummary>
                 <AccordionDetails>
                   {archivedCourses?.map((x, index) => {
