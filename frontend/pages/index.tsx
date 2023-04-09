@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
+import { Calendar, Views, momentLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -7,6 +9,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { Accordion, AccordionDetails, AccordionSummary, TextField } from "@mui/material";
 import { UserEnrolmentInformation } from "models/enrolment.model";
 import { UserDetails } from "models/user.model";
+import moment from "moment";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
@@ -17,16 +20,16 @@ import { useUser } from "util/UserContext";
 import { getUserDetails, getUserSchedule } from "util/api/userApi";
 import initAuth from "util/firebase";
 
+const localizer = momentLocalizer(moment);
+
 initAuth(); // SSR maybe, i think...
 
 type ScheduleItem = {
   title: string;
-  tooltip?: string;
-  color: string;
   start: Date;
   end: Date;
   allDay: boolean;
-  editable: boolean;
+  resource?: any;
 };
 
 export type Course = {
@@ -81,49 +84,41 @@ const HomePage = (): JSX.Element => {
       // TODO: process schedule
       // type ScheduleItem = {
       //   title: string;
-      //   tooltip?: string;
-      //   color: string;
       //   start: Date;
       //   end: Date;
       //   allDay: boolean;
-      //   editable: boolean;
+      //   resource?: any;
       // };
 
-      const colors: Record<string, string> = {
-        quiz: "#FF0000",
-        assignment: "#FF0000",
-        class: "#FF0000",
-        workload: "#FF0000",
-      };
+      // const colors: Record<string, string> = {
+      //   quiz: "#FF0000",
+      //   assignment: "#FF0000",
+      //   class: "#FF0000",
+      //   workload: "#FF0000",
+      // };
 
       const constructScheduleItems: ScheduleItem[] = [];
       for (const item of res.deadlines) {
         if (item.type === "quiz") {
           constructScheduleItems.push({
             title: `${item.courseCode} ${item.type}`,
-            color: colors[item.type],
             start: new Date(Date.parse(item.start)),
             end: new Date(Date.parse(item.deadline)),
             allDay: true,
-            editable: false,
           });
         } else if (item.type === "class") {
           constructScheduleItems.push({
             title: `${item.courseCode} ${item.type}`,
-            color: colors[item.type],
             start: new Date(item.deadlineTimestamp),
             end: new Date(item.deadlineTimestamp),
             allDay: true,
-            editable: false,
           });
         } else {
           constructScheduleItems.push({
             title: `${item.courseCode} ${item.type}`,
-            color: colors[item.type],
             start: new Date(Date.parse(item.deadline)),
             end: new Date(Date.parse(item.deadline)),
             allDay: true,
-            editable: false,
           });
         }
       }
@@ -194,6 +189,16 @@ const HomePage = (): JSX.Element => {
             {showedCourses?.map((x, index) => {
               return <CourseCard key={index} course={x.course} href={`/course/${x.course._id}`} />;
             })}
+          </div>
+          <div style={{ height: "500px" }} className="w-full my-5">
+            <Calendar
+              localizer={localizer}
+              events={scheduleItems}
+              views={[Views.MONTH]}
+              defaultView={Views.MONTH}
+              startAccessor="start"
+              endAccessor="end"
+            />
           </div>
           {archivedCourses.length > 0 && (
             <div>
