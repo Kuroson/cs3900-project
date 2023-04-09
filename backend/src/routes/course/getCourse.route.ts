@@ -106,7 +106,7 @@ export const getCourse = async (
 
     // Check if user is enrolled in course
     const myCourse = await Course.findById(courseId)
-        .select("_id title code description forum session icon pages tags onlineClasses")
+        .select("_id title code description forum session icon pages tags onlineClasses archived")
         .populate("pages")
         .populate({
             path: "pages",

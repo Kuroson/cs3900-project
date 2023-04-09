@@ -15,6 +15,7 @@ import { gradeAssignmentController } from "./assignment/gradeAssignment.route";
 import { submitAssignmentController } from "./assignment/submitAssignment.route";
 import { updateAssignmentController } from "./assignment/updateAssignment.route";
 import { addStudentsController } from "./course/addStudents.route";
+import { archiveCourseController } from "./course/archiveCourse.route";
 import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
 import { getCourseController } from "./course/getCourse.route";
@@ -91,6 +92,7 @@ indexRouter.get("/course/page", getCoursePageController);
 indexRouter.get("/course/students", adminRoute(getStudentsController));
 indexRouter.put("/course/students/add", adminRoute(addStudentsController));
 indexRouter.put("/course/students/remove", adminRoute(removeStudentsController));
+indexRouter.post("/course/archive", adminRoute(archiveCourseController));
 
 // Page routes
 indexRouter.get("/page", getPagesController);

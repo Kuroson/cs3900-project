@@ -2,8 +2,15 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 import HomeIcon from "@mui/icons-material/Home";
-import { TextField } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { UserEnrolmentInformation } from "models/enrolment.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -35,15 +42,20 @@ const HomePage = (): JSX.Element => {
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails !== null);
   const [searchCode, setSearchCode] = useState("");
-  const [showedCourses, setShowedCourses] = useState<UserEnrolmentInformation[]>(
-    user.userDetails?.enrolments ?? [],
-  );
+  const [showedCourses, setShowedCourses] = useState<UserEnrolmentInformation[]>([]);
+  const [archivedCourses, setArchivedCourses] = useState<UserEnrolmentInformation[]>([]);
 
   React.useEffect(() => {
     if (user.userDetails !== null) {
       setLoading(false);
+
+      setShowedCourses([
+        ...user.userDetails.enrolments.filter((course) => !course.course.archived),
+      ]);
+      setArchivedCourses([
+        ...user.userDetails.enrolments.filter((course) => course.course.archived),
+      ]);
     }
-    setShowedCourses(user.userDetails?.enrolments ?? []);
   }, [user.userDetails]);
 
   if (loading || user.userDetails === null) return <Loading />;
@@ -54,7 +66,9 @@ const HomePage = (): JSX.Element => {
     if (e.key === "Enter") {
       if (userDetails.enrolments !== undefined) {
         setShowedCourses([
-          ...userDetails.enrolments.filter((course) => course.course.code.includes(searchCode)),
+          ...userDetails.enrolments.filter(
+            (course) => course.course.code.includes(searchCode) && !course.course.archived,
+          ),
         ]);
       }
     }
@@ -104,6 +118,24 @@ const HomePage = (): JSX.Element => {
               return <CourseCard key={index} course={x.course} href={`/course/${x.course._id}`} />;
             })}
           </div>
+          {archivedCourses.length > 0 && (
+            <div>
+              <Accordion elevation={3} className="mt-5 mb-5">
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography>
+                    <h3>Archived Courses</h3>
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {archivedCourses?.map((x, index) => {
+                    return (
+                      <CourseCard key={index} course={x.course} href={`/course/${x.course._id}`} />
+                    );
+                  })}
+                </AccordionDetails>
+              </Accordion>
+            </div>
+          )}
         </div>
       </ContentContainer>
     </>

@@ -30,6 +30,7 @@ export interface CourseInterface extends Document {
     assignments: Types.DocumentArray<AssignmentInterface["_id"]>;
     workloadOverview: WorkloadOverviewInterface["_id"];
     tags: Types.Array<string>;
+    archived: boolean;
 }
 
 const courseSchema: Schema = new Schema<CourseInterface>({
@@ -47,6 +48,7 @@ const courseSchema: Schema = new Schema<CourseInterface>({
     assignments: [{ type: Schema.Types.ObjectId, ref: "Assignment", required: true }],
     workloadOverview: { type: Schema.Types.ObjectId, ref: "WorkloadOverview", required: true },
     tags: [{ type: String, required: true }],
+    archived: { type: Boolean, required: true, default: false },
 });
 
 const Course = model<CourseInterface & Document>("Course", courseSchema);

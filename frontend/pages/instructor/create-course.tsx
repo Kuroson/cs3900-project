@@ -95,6 +95,7 @@ const CreateCourse = (): JSX.Element => {
       code: code,
       title: title,
       session: session,
+      archived: false,
     };
     toast.success("Course created successfully");
     if (userDetails === null) {

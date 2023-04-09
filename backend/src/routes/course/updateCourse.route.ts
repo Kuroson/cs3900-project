@@ -18,6 +18,7 @@ type QueryPayload = {
     description?: string;
     icon?: string;
     tags?: Array<string>;
+    archived?: boolean;
 };
 
 /**
@@ -79,7 +80,7 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
         throw new HttpException(401, "Must be an admin to update course");
     }
 
-    const { courseId, code, title, session, description, icon, tags } = queryBody;
+    const { courseId, code, title, session, description, icon, tags, archived } = queryBody;
 
     const myCourse = await Course.findById(courseId).exec();
 
@@ -108,6 +109,10 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
     if (tags !== undefined && tags.length !== 0) {
         myCourse.tags.length = 0;
         tags.forEach((tag) => myCourse.tags.addToSet(tag));
+    }
+
+    if (archived !== undefined) {
+        myCourse.archived = archived;
     }
 
     const retCourseId = await myCourse

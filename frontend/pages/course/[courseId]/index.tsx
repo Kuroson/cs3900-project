@@ -75,6 +75,11 @@ const StudentCoursePage = ({ courseData }: StudentCoursePageProps): JSX.Element 
           <h1 className="text-3xl w-full text-left border-solid border-t-0 border-x-0 border-[#EEEEEE] mt-5">
             <span className="ml-4">Welcome to {courseData.title}</span>
           </h1>
+          {courseData.archived && (
+            <div className="w-full text-center bg-[#F2D467] p-1 border-radius-10">
+              Course has been archived
+            </div>
+          )}
           <p className="mt-5">{courseData.description}</p>
           <LectureCards onlineClasses={courseData.onlineClasses} courseId={courseData._id} />
         </div>
