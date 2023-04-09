@@ -43,6 +43,7 @@ describe("Test getting a week of courses", () => {
             pageId,
             "Week 1",
             "Week 1 Description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
         task1Id = await createTask(weekId, "Do Task 1", "Look at week 1", `acc${id}`);

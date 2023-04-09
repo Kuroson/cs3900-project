@@ -4,6 +4,7 @@ import { TaskInterface } from "./task.model";
 export interface WeekInterface extends MongooseDocument {
   title: string;
   description?: string;
+  deadline: string;
   tasks: Array<MongooseId>;
 }
 

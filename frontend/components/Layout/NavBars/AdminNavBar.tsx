@@ -179,7 +179,6 @@ export default function AdminNavBar({
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.warn("here");
     // Add to page list
     if (radio === "Other Page") {
       const res = await sendRequest(pageName);
@@ -196,7 +195,7 @@ export default function AdminNavBar({
         ...dynamicRoutes,
         {
           name: radio,
-          route: `/instructor/${courseData?._id ?? "123"}/${radio}`,
+          route: `/instructor/${courseData?._id ?? "123"}/${radio.replace(" ", "")}`,
         },
       ]);
     }

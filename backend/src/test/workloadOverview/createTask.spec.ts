@@ -44,6 +44,7 @@ describe("Test creating a week", () => {
             pageId,
             "Week 1",
             "Week 1 Description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
     });

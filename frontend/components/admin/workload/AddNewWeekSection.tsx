@@ -1,6 +1,9 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { FullWeekInterface, WeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
@@ -26,6 +29,7 @@ const AddNewWorkloadSection = ({
   const [open, setOpen] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [deadline, setDeadline] = React.useState<Dayjs>(dayjs().add(1, "day"));
 
   const handleCloseForm = () => {
     setOpen(false);
@@ -45,6 +49,7 @@ const AddNewWorkloadSection = ({
       pageId,
       title,
       description,
+      deadline.format(),
       "client",
     );
 
@@ -65,6 +70,7 @@ const AddNewWorkloadSection = ({
       _id: res.weekId,
       title: title,
       description: description,
+      deadline: deadline.format(),
       tasks: [],
     };
 
@@ -99,6 +105,20 @@ const AddNewWorkloadSection = ({
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div className="w-full pb-5">
+              <DateTimePicker
+                views={["year", "month", "day", "hours", "minutes"]}
+                sx={{ width: "100%", maxWidth: "300px" }}
+                value={deadline}
+                onChange={(value) => {
+                  if (value) {
+                    setDeadline(value);
+                  }
+                }}
+              />
+            </div>
+          </LocalizationProvider>
           <div className="pt-4 w-full flex justify-between">
             <div className="flex gap-2">
               <Button variant="outlined" color="error" onClick={handleCloseForm}>

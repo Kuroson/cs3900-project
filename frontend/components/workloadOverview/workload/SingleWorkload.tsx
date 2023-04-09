@@ -1,7 +1,13 @@
 import React from "react";
 import Divider from "@mui/material/Divider";
+import dayjs from "dayjs";
+import relativeTimePlugin from "dayjs/plugin/relativeTime";
+import utcPlugin from "dayjs/plugin/utc";
 import { FullWeekInterface } from "models/week.model";
 import StudentTasksSection from "../task/StudentTasksSection";
+
+dayjs.extend(utcPlugin);
+dayjs.extend(relativeTimePlugin);
 
 type SingleStudentWeekProps = {
   week: FullWeekInterface;
@@ -22,6 +28,9 @@ const SingleStudentWeekSection = ({ week }: SingleStudentWeekProps): JSX.Element
           <div className="flex-row flex w-full justify-between">
             <div>
               <span className="w-full text-xl font-medium flex flex-col">{week.title}</span>
+              <span className="w-full text-sm flex flex-col">
+                <i>Due {dayjs.utc(week.deadline).endOf("minute").fromNow()}</i>
+              </span>
               {/* Description */}
               {week.description !== undefined && <p>{week.description}</p>}
               {/* Resource */}

@@ -46,6 +46,7 @@ describe("Test getting a workload for a course", () => {
             page1Id,
             "Week 1",
             "Week 1 Description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
         task1Id = await createTask(week1Id, "Do Task 1", "Look at week 1", `acc${id}`);
@@ -56,6 +57,7 @@ describe("Test getting a workload for a course", () => {
             page2Id,
             "Week 2",
             "Week 2 Description",
+            "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
     });
