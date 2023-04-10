@@ -100,8 +100,6 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
 
     //Update kudos for user as they have answered correctly 
     const courseKudos = await getKudos(courseId);
-    console.log("Student id is ");
-    console.log(myResponse.poster);
     const myStudent = await User.findOne({_id: myResponse.poster})
         .select("_id first_name kudos")
         .exec()
@@ -109,9 +107,6 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
 
     if (myStudent === null)
         throw new HttpException(400, `Student of ${myResponse.poster} does not exist`);
-
-    console.log("Student name is ");
-    console.log(myStudent.first_name);
     myStudent.kudos = myStudent.kudos + courseKudos.forumPostCorrectAnswer; //myCourse.kudosValues.forumPostCreation;
 
     await myStudent.save().catch((err) => {
