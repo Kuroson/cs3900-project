@@ -61,10 +61,7 @@ export const getKudosController = async (
  * @returns All students for a given courseId
  */
 export const getKudos = async (courseId: string): Promise<KudosValuesInterface> => {
-    // 1. Find the course
-    Enrolment;
     const course = await Course.findById(courseId, "students")
-        // .populate("students", "_id email firebase_uid first_name last_name role avatar")
         .populate({
             path: "kudosValues",
         })

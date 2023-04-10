@@ -107,7 +107,7 @@ export const submitAssignment = async (
     //Update kudos for user as they have submitted quiz
     const courseKudos = await getKudos(courseId);
     const myStudent = await User.findOne({ _id: enrolment.student })
-        .select("_id first_name kudos")
+        .select("_id kudos")
         .exec()
         .catch(() => null);
 

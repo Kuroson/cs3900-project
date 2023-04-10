@@ -122,7 +122,7 @@ export const addNewChatMessage = async (
     });
 
     //Mark attendance for attending and engaging in class
-    if (onlineClass.attendanceList.includes(sender._id) == false) {
+    if (onlineClass.attendanceList.includes(sender._id) === false) {
         //Student isn't already marked as attended
         onlineClass.attendanceList.addToSet(sender._id);
         await onlineClass.save().catch((err) => {
@@ -131,7 +131,7 @@ export const addNewChatMessage = async (
         //Give kudos for attending
         const courseKudos = await getKudos(courseId);
         const myStudent = await User.findOne({ _id: sender._id })
-            .select("_id first_name kudos")
+            .select("_id kudos")
             .exec()
             .catch(() => null);
 
