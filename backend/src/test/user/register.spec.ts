@@ -1,5 +1,5 @@
 import Course from "@/models/course/course.model";
-import User from "@/models/user.model";
+import User, { INSTRUCTOR_ROLE } from "@/models/user.model";
 import { registerUser } from "@/routes/user/register.route";
 import { getUserDetails } from "@/routes/user/userDetails.route";
 import { disconnect } from "mongoose";
@@ -90,5 +90,24 @@ describe("Test function - Create multiple users", () => {
         await User.deleteMany({ email: userData.map((x) => x.email) });
 
         await disconnect();
+    });
+});
+
+describe("First account should be instructor", () => {
+    const id = uuidv4();
+    const email1 = `jest-${id}@delete.com`;
+    const uid1 = `normal-${id}`;
+
+    beforeAll(async () => {
+        await initialiseMongoose();
+        await User.deleteMany({}).exec();
+    });
+
+    it("First user should be instructor always", async () => {
+        expect(await User.countDocuments()).toEqual(0);
+        await registerUser(`firstJest${id}`, `lastJest${id}`, email1, uid1, false); // Use the prod version
+        expect(await User.countDocuments()).toEqual(1);
+        const userDetails = await getUserDetails(email1, email1);
+        expect(userDetails.role).toEqual(INSTRUCTOR_ROLE);
     });
 });
