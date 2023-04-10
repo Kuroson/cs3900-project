@@ -42,6 +42,7 @@ jobs:
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          EMAIL_ENABLE: ${{ secrets.EMAIL_ENABLE }}
         run: yarn build
       - name: Start local MongoDB
         run: docker-compose -f "../docker-compose.local.yml" up -d mongodb
@@ -55,6 +56,7 @@ jobs:
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          EMAIL_ENABLE: ${{ secrets.EMAIL_ENABLE }}
           USE_LOCAL_MONGO: true
           USE_DOCKER_INTERNAL_MONGO: false
         run: yarn test -t
@@ -93,6 +95,7 @@ jobs:
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          EMAIL_ENABLE: ${{ secrets.EMAIL_ENABLE }}
         run: yarn build
       - name: Dump backend env
         env:
@@ -102,6 +105,7 @@ jobs:
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          EMAIL_ENABLE: ${{ secrets.EMAIL_ENABLE }}
         run: env >> .env
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
@@ -185,6 +189,7 @@ jobs:
           MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
           MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          EMAIL_ENABLE: ${{ secrets.EMAIL_ENABLE }}
         run: env >> .env
       - name: Dump frontend env
         working-directory: "./frontend"
