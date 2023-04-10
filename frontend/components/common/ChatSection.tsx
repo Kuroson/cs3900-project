@@ -8,6 +8,7 @@ import moment from "moment";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { getOnlineClassDetails, sendOnlineClassMessage } from "util/api/onlineClassApi";
+import CourseId from "pages/course/[courseId]";
 
 type ChatSectionProps = {
   dynamicOnlineClass: OnlineClassFull;
@@ -15,6 +16,7 @@ type ChatSectionProps = {
    * Students will not always have access to the chat
    */
   student?: boolean;
+  courseId: string;
 };
 
 type ChatMessageProps = {
@@ -46,7 +48,7 @@ const ChatMessage = ({ message }: ChatMessageProps): JSX.Element => {
   );
 };
 
-const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Element => {
+const ChatSection = ({ dynamicOnlineClass, student, courseId }: ChatSectionProps): JSX.Element => {
   const authUser = useAuthUser();
   const [newMessage, setNewMessage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -122,6 +124,7 @@ const ChatSection = ({ dynamicOnlineClass, student }: ChatSectionProps): JSX.Ele
       await authUser.getIdToken(),
       dynamicOnlineClass._id,
       newMessage,
+      courseId,
       "client",
     );
 

@@ -171,17 +171,19 @@ type SendOnlineClassMessagePayloadResponse = {
 type SendOnlineClassMessagePayloadRequest = {
   classId: string;
   message: string;
+  courseId: string;
 };
 
 export const sendOnlineClassMessage = (
   token: string | null,
   classId: string,
   message: string,
+  courseId: string,
   type: BackendLinkType,
 ) => {
   return apiPost<SendOnlineClassMessagePayloadRequest, SendOnlineClassMessagePayloadResponse>(
     `${getBackendLink(type)}/class/chat/send`,
     token,
-    { classId, message },
+    { classId, message, courseId },
   );
 };

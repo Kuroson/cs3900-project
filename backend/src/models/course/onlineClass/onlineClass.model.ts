@@ -1,5 +1,6 @@
 import { Document, Schema, Types, model } from "mongoose";
 import { MessageInterface } from "./message.model";
+import { UserInterface } from "../../user.model";
 
 /**
  * An online class that occurs within a course. The link to the class will
@@ -24,6 +25,7 @@ export interface OnlineClassInterface extends Document {
      * Enabled by default
      */
     chatEnabled: boolean;
+    attendanceList: Types.DocumentArray<UserInterface["_id"]>;
 }
 
 const onlineClassSchema: Schema = new Schema<OnlineClassInterface>({
@@ -34,6 +36,7 @@ const onlineClassSchema: Schema = new Schema<OnlineClassInterface>({
     running: { type: Boolean, required: true },
     chatMessages: [{ type: Schema.Types.ObjectId, ref: "Message", required: true }],
     chatEnabled: { type: Boolean, required: true },
+    attendanceList: [{ type: Schema.Types.ObjectId, ref: "User", required: true }]
 });
 
 const OnlineClass = model<OnlineClassInterface & Document>("OnlineClass", onlineClassSchema);
