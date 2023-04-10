@@ -46,7 +46,6 @@ export const getScheduleController = async (
         // User has been verified
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
             // Body has been verified
-            const queryBody = req.query;
 
             const deadlines = await getSchedule(authUser.uid);
 
@@ -135,6 +134,9 @@ export const getSchedule = async (firebase_uid: string) => {
 
     // Move through each course user is enrolled in
     for (const enrolment of user.enrolments) {
+        if (enrolment.course.archived) {
+            continue;
+        }
         // Move through quizzes, assignments, classes, and workloads
         for (const quiz of enrolment.course.quizzes) {
             deadlines.push({

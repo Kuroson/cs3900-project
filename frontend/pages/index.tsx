@@ -24,13 +24,14 @@ const localizer = momentLocalizer(moment);
 
 initAuth(); // SSR maybe, i think...
 
-type ScheduleItem = {
+interface ScheduleItem {
   title: string;
   start: Date;
   end: Date;
   allDay: boolean;
   resource?: any;
-};
+  category: string;
+}
 
 export type Course = {
   courseId: string;
@@ -81,51 +82,35 @@ const HomePage = (): JSX.Element => {
       }
       if (res === null) throw new Error("Response and error are null");
 
-      // TODO: process schedule
-      // type ScheduleItem = {
-      //   title: string;
-      //   start: Date;
-      //   end: Date;
-      //   allDay: boolean;
-      //   resource?: any;
-      // };
-
-      // const colors: Record<string, string> = {
-      //   quiz: "#FF0000",
-      //   assignment: "#FF0000",
-      //   class: "#FF0000",
-      //   workload: "#FF0000",
-      // };
-
       const constructScheduleItems: ScheduleItem[] = [];
       for (const item of res.deadlines) {
         if (item.type === "quiz") {
           constructScheduleItems.push({
-            title: `${item.courseCode} ${item.type}`,
+            title: `${item.courseCode} ${item.type}: ${item.title}`,
             start: new Date(Date.parse(item.start)),
             end: new Date(Date.parse(item.deadline)),
-            allDay: true,
+            allDay: false,
+            category: item.type,
           });
         } else if (item.type === "class") {
           constructScheduleItems.push({
-            title: `${item.courseCode} ${item.type}`,
-            start: new Date(item.deadlineTimestamp),
-            end: new Date(item.deadlineTimestamp),
-            allDay: true,
+            title: `${item.courseCode} ${item.type}: ${item.title}`,
+            start: new Date(item.deadlineTimestamp * 1000),
+            end: new Date(item.deadlineTimestamp * 1000),
+            allDay: false,
+            category: item.type,
           });
         } else {
           constructScheduleItems.push({
-            title: `${item.courseCode} ${item.type}`,
+            title: `${item.courseCode} ${item.type}: ${item.title}`,
             start: new Date(Date.parse(item.deadline)),
             end: new Date(Date.parse(item.deadline)),
-            allDay: true,
+            allDay: false,
+            category: item.type,
           });
         }
       }
       setScheduleItems(constructScheduleItems);
-      console.error("Hmm");
-      console.log(constructScheduleItems);
-      // TODO
     };
     getSchedule();
   }, [authUser]);
@@ -156,6 +141,39 @@ const HomePage = (): JSX.Element => {
       };
     }),
   ];
+
+  const eventStyleGetter = (event: ScheduleItem, start: Date, end: Date, isSelected: boolean) => {
+    let backgroundColor = "";
+    switch (event.category) {
+      case "class":
+        backgroundColor = "blue";
+        break;
+      case "quiz":
+        backgroundColor = "green";
+        break;
+      case "assignment":
+        backgroundColor = "orange";
+        break;
+      case "workload":
+        backgroundColor = "black";
+        break;
+      default:
+        backgroundColor = "";
+    }
+
+    const style = {
+      backgroundColor,
+      borderRadius: "5px",
+      opacity: 0.8,
+      color: "white",
+      border: "0px",
+      display: "block",
+    };
+
+    return {
+      style,
+    };
+  };
 
   return (
     <>
@@ -194,10 +212,11 @@ const HomePage = (): JSX.Element => {
             <Calendar
               localizer={localizer}
               events={scheduleItems}
-              views={[Views.MONTH]}
+              views={[Views.MONTH, Views.WEEK, Views.AGENDA]}
               defaultView={Views.MONTH}
               startAccessor="start"
               endAccessor="end"
+              eventPropGetter={eventStyleGetter}
             />
           </div>
           {archivedCourses.length > 0 && (
