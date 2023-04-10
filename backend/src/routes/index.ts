@@ -69,6 +69,7 @@ import { getWeekController } from "./workloadOverview/getWeek.route";
 import { getWorkloadController } from "./workloadOverview/getWorkload.route";
 import { updateTaskController } from "./workloadOverview/updateTask.route";
 import { updateWeekController } from "./workloadOverview/updateWeek.route";
+import { getKudos, getKudosController } from "./course/getKudosValues.route";
 
 export const indexRouter = Router();
 
@@ -93,6 +94,8 @@ indexRouter.get("/course/students", adminRoute(getStudentsController));
 indexRouter.put("/course/students/add", adminRoute(addStudentsController));
 indexRouter.put("/course/students/remove", adminRoute(removeStudentsController));
 indexRouter.post("/course/archive", adminRoute(archiveCourseController));
+indexRouter.get("/course/kudos", getKudosController);
+
 
 // Page routes
 indexRouter.get("/page", getPagesController);
