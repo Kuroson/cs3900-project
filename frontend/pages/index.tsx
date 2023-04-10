@@ -144,21 +144,14 @@ const HomePage = (): JSX.Element => {
 
   const eventStyleGetter = (event: ScheduleItem, start: Date, end: Date, isSelected: boolean) => {
     let backgroundColor = "";
-    switch (event.category) {
-      case "class":
-        backgroundColor = "blue";
-        break;
-      case "quiz":
-        backgroundColor = "green";
-        break;
-      case "assignment":
-        backgroundColor = "orange";
-        break;
-      case "workload":
-        backgroundColor = "black";
-        break;
-      default:
-        backgroundColor = "";
+    if (event.category === "class") {
+      backgroundColor = "blue";
+    } else if (event.category === "quiz") {
+      backgroundColor = "green";
+    } else if (event.category === "assignment") {
+      backgroundColor = "orange";
+    } else if (event.category === "workload") {
+      backgroundColor = "black";
     }
 
     const style = {
