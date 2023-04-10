@@ -3,6 +3,7 @@ import { adminRoute } from "@/utils/util";
 import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
+import { adminInstructorSetController } from "./admin/adminInstructorSet.route";
 import { getGradesController } from "./analytics/getGrades.route";
 import { getQuestionAnalyticsController } from "./analytics/getQuestionAnalytics.route";
 import { getTagSummaryController } from "./analytics/getTagSummary.route";
@@ -78,6 +79,7 @@ indexRouter.get("/", indexController);
 // Admin routes
 indexRouter.get("/admin", adminController);
 indexRouter.get("/admin/access", accessController);
+indexRouter.put("/admin/instructor/set", adminRoute(adminInstructorSetController));
 
 // User routes
 indexRouter.get("/user/details", userDetailsController);
