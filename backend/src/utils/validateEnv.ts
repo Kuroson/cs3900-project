@@ -14,7 +14,7 @@ const validateEnv = cleanEnv(process.env, {
     USE_LOCAL_MONGO: bool({ default: false }),
     USE_DOCKER_INTERNAL_MONGO: bool({ default: false }),
     SENDGRID_API_KEY: str(),
-    EMAIL_ENABLE: bool(),
+    EMAIL_ENABLE: bool({ default: true }),
 });
 
 export default validateEnv;
