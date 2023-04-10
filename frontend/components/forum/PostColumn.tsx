@@ -15,6 +15,7 @@ import { CreateNewForumReplyPayloadRequest, createNewResponse } from "util/api/f
 type PostColumnProps = {
   showedPost: FullPostInfo | null;
   userDetails: UserDetails;
+  courseId: string;
   setShowedPost: React.Dispatch<React.SetStateAction<FullPostInfo | null>>;
   admin?: true;
 };
@@ -22,6 +23,7 @@ type PostColumnProps = {
 const PostColumn = ({
   showedPost,
   userDetails,
+  courseId,
   setShowedPost,
   admin,
 }: PostColumnProps): JSX.Element => {
@@ -47,6 +49,7 @@ const PostColumn = ({
 
     const payload: CreateNewForumReplyPayloadRequest = {
       postId: showedPost._id,
+      courseId: courseId,
       text: postResponseText,
     };
 

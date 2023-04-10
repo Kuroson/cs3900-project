@@ -8,6 +8,7 @@ import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/ut
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 import { FullResponseInfo } from "./../../models/course/forum/response.model";
+import { getKudos } from "./../../routes/course/getKudosValues.route";
 
 type ResponsePayload = {
     responseData: FullResponseInfo;
@@ -15,6 +16,7 @@ type ResponsePayload = {
 
 type QueryPayload = {
     postId: string;
+    courseId: string;
     text: string;
 };
 
@@ -31,7 +33,7 @@ export const createResponseController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["postId", "text"];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["postId", "courseId", "text"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
@@ -72,7 +74,7 @@ export const createResponse = async (
     queryBody: QueryPayload,
     firebase_uid: string,
 ): Promise<FullResponseInfo> => {
-    const { postId, text } = queryBody;
+    const { postId, courseId, text } = queryBody;
 
     // Find user first
     const user = await User.findOne({ firebase_uid: firebase_uid }).catch(() => null);
@@ -104,6 +106,14 @@ export const createResponse = async (
     await myPost.save().catch((err) => {
         throw new HttpException(500, "Failed to save updated response to post", err);
     });
+
+    //Add kudos
+    const courseKudos = await getKudos(courseId)
+    user.kudos = user.kudos + courseKudos.forumPostAnswer; //myCourse.kudosValues.forumPostCreation;
+    await user.save().catch((err) => {
+        throw new HttpException(500, "Failed to add kudos to user", err);
+    });
+
 
     return { ...myResponse.toObject(), poster: user.toObject() };
 };

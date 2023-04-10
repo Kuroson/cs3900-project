@@ -40,6 +40,7 @@ type CreateNewForumReplyPayloadResponse = {
 
 export type CreateNewForumReplyPayloadRequest = {
   postId: string;
+  courseId: string;
   text: string;
 };
 
