@@ -9,8 +9,8 @@ import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
-import { getStudents } from "../course/getStudents.route";
 import { getKudos } from "../course/getKudosValues.route";
+import { getStudents } from "../course/getStudents.route";
 
 type ResponsePayload = {
     postData: FullPostInfo;
@@ -127,7 +127,7 @@ export const createPost = async (
         throw new HttpException(500, "Failed to save updated forum post to course", err);
     });
 
-    //Update kudos for user as they have created post 
+    //Update kudos for user as they have created post
     const courseKudos = await getKudos(myCourse._id);
     user.kudos = user.kudos + courseKudos.forumPostCreation; //myCourse.kudosValues.forumPostCreation;
 

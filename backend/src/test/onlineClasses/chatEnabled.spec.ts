@@ -93,9 +93,9 @@ describe("Test start online class", () => {
         const numMessagesBefore = data.chatMessages.length;
         await updateChatEnabled(onlineClassId, false);
         expect((await getClassFromId(onlineClassId)).chatEnabled).toEqual(false);
-        expect(addNewChatMessage(onlineClassId, `acc1${id}`, chatMessage1, courseId)).rejects.toThrow(
-            HttpException,
-        );
+        expect(
+            addNewChatMessage(onlineClassId, `acc1${id}`, chatMessage1, courseId),
+        ).rejects.toThrow(HttpException);
         data = await getClassFromId(onlineClassId);
         expect(data.chatMessages.length).toEqual(numMessagesBefore);
     });

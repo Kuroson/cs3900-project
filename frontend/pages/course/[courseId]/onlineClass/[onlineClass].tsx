@@ -103,7 +103,7 @@ const OnlineClassPage = ({ courseData, onlineClassData }: OnlineClassPageProps):
             </div>
             {/* Right col */}
             <div className="w-full h-full">
-              <RightColumn dynamicOnlineClass={dynamicOnlineClass} courseId={courseData._id}/>
+              <RightColumn dynamicOnlineClass={dynamicOnlineClass} courseId={courseData._id} />
             </div>
           </div>
         </div>

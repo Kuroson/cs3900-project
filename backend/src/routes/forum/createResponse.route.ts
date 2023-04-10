@@ -114,6 +114,5 @@ export const createResponse = async (
         throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
-
     return { ...myResponse.toObject(), poster: user.toObject() };
 };

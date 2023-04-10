@@ -4,13 +4,13 @@ import QuestionResponse from "@/models/course/enrolment/questionResponse.model";
 import QuizAttempt from "@/models/course/enrolment/quizAttempt.model";
 import Question, { EXTENDED_RESPONSE, MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
 import Quiz from "@/models/course/quiz/quiz.model";
+import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
-import { getAttempt } from "./getQuiz.route";
 import { getKudos } from "../course/getKudosValues.route";
-import User from "@/models/user.model";
+import { getAttempt } from "./getQuiz.route";
 
 type ResponsePayload = Record<string, never>;
 
@@ -207,15 +207,14 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
 
     enrolment.quizAttempts.push(attemptId);
 
-    //Update kudos for user as they have submitted quiz 
+    //Update kudos for user as they have submitted quiz
     const courseKudos = await getKudos(courseId);
-    const myStudent = await User.findOne({_id: user_id})
+    const myStudent = await User.findOne({ _id: user_id })
         .select("_id first_name kudos")
         .exec()
         .catch(() => null);
 
-    if (myStudent === null)
-        throw new HttpException(400, `Student of ${ user_id } does not exist`);
+    if (myStudent === null) throw new HttpException(400, `Student of ${user_id} does not exist`);
     myStudent.kudos = myStudent.kudos + courseKudos.quizCompletion;
 
     await myStudent.save().catch((err) => {
