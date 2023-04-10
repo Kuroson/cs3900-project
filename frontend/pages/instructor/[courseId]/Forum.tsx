@@ -71,6 +71,7 @@ const ForumPage = ({ courseData }: ForumPageProps): JSX.Element => {
           <PostColumn
             showedPost={showedPost}
             userDetails={userDetails}
+            courseId={courseData._id}
             setShowedPost={setShowedPost}
             admin={true}
           />

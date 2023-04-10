@@ -79,10 +79,11 @@ const LeftColumn = ({
 
 type RightColumnProps = {
   dynamicOnlineClass: OnlineClassFull;
+  courseId: string;
 };
 
-const RightColumn = ({ dynamicOnlineClass }: RightColumnProps): JSX.Element => {
-  return <ChatSection dynamicOnlineClass={dynamicOnlineClass} />;
+const RightColumn = ({ dynamicOnlineClass, courseId }: RightColumnProps): JSX.Element => {
+  return <ChatSection dynamicOnlineClass={dynamicOnlineClass} courseId={courseId} />;
 };
 
 const OnlineClassPage = ({ courseData, onlineClassData }: OnlineClassPageProps): JSX.Element => {
@@ -122,7 +123,7 @@ const OnlineClassPage = ({ courseData, onlineClassData }: OnlineClassPageProps):
             </div>
             {/* Right col */}
             <div className="w-full h-[90%]">
-              <RightColumn dynamicOnlineClass={dynamicOnlineClass} />
+              <RightColumn dynamicOnlineClass={dynamicOnlineClass} courseId={courseData._id} />
             </div>
           </div>
         </div>

@@ -81,7 +81,7 @@ describe("Test start online class", () => {
     it("Instructor should be able to send a message when chat is disabled", async () => {
         await updateChatEnabled(onlineClassId, false);
         expect((await getClassFromId(onlineClassId)).chatEnabled).toEqual(false);
-        await addNewChatMessage(onlineClassId, `acc${id}`, chatMessage1);
+        await addNewChatMessage(onlineClassId, `acc${id}`, chatMessage1, courseId);
         const data = await getClassFromId(onlineClassId);
         expect(data.chatMessages.length).toEqual(1);
         expect(data.chatMessages[0].message).toEqual(chatMessage1);
@@ -93,9 +93,9 @@ describe("Test start online class", () => {
         const numMessagesBefore = data.chatMessages.length;
         await updateChatEnabled(onlineClassId, false);
         expect((await getClassFromId(onlineClassId)).chatEnabled).toEqual(false);
-        expect(addNewChatMessage(onlineClassId, `acc1${id}`, chatMessage1)).rejects.toThrow(
-            HttpException,
-        );
+        expect(
+            addNewChatMessage(onlineClassId, `acc1${id}`, chatMessage1, courseId),
+        ).rejects.toThrow(HttpException);
         data = await getClassFromId(onlineClassId);
         expect(data.chatMessages.length).toEqual(numMessagesBefore);
     });

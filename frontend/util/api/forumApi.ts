@@ -40,6 +40,7 @@ type CreateNewForumReplyPayloadResponse = {
 
 export type CreateNewForumReplyPayloadRequest = {
   postId: string;
+  courseId: string;
   text: string;
 };
 
@@ -61,16 +62,17 @@ type MarkCorrectResponsePayloadResponse = {
 
 export type MarkCorrectResponsePayloadRequest = {
   responseId: string;
+  courseId: string;
 };
 
 export const markCorrectResponse = (
   token: string | null,
-  responseId: string,
+  payload: MarkCorrectResponsePayloadRequest,
   type: BackendLinkType,
 ) => {
   return apiPost<MarkCorrectResponsePayloadRequest, MarkCorrectResponsePayloadResponse>(
     `${getBackendLink(type)}/forum/post/correct`,
     token,
-    { responseId: responseId },
+    payload,
   );
 };
