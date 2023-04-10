@@ -128,7 +128,7 @@ export const createPost = async (
     });
 
     //Update kudos for user as they have created post 
-    const courseKudos = await getKudos(myCourse._id)
+    const courseKudos = await getKudos(myCourse._id);
     user.kudos = user.kudos + courseKudos.forumPostCreation; //myCourse.kudosValues.forumPostCreation;
 
     await user.save().catch((err) => {

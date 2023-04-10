@@ -108,7 +108,7 @@ export const createResponse = async (
     });
 
     //Add kudos
-    const courseKudos = await getKudos(courseId)
+    const courseKudos = await getKudos(courseId);
     user.kudos = user.kudos + courseKudos.forumPostAnswer; //myCourse.kudosValues.forumPostCreation;
     await user.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to user", err);

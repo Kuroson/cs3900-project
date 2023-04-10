@@ -208,7 +208,7 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     enrolment.quizAttempts.push(attemptId);
 
     //Update kudos for user as they have submitted quiz 
-    const courseKudos = await getKudos(courseId)
+    const courseKudos = await getKudos(courseId);
     const myStudent = await User.findOne({_id: user_id})
         .select("_id first_name kudos")
         .exec()

@@ -28,7 +28,7 @@ const CorrectResponseButton = ({
     const queryPayload = {
       responseId: resp._id,
       courseId: courseId
-    }
+    };
     const [res, err] = await markCorrectResponse(await authUser.getIdToken(), queryPayload, "client");
     if (err !== null) {
       console.error(err);

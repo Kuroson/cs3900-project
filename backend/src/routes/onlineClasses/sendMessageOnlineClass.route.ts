@@ -129,7 +129,7 @@ export const addNewChatMessage = async (
             throw new HttpException(500, "Error saving attendance", err);
         });
         //Give kudos for attending
-        const courseKudos = await getKudos(courseId)
+        const courseKudos = await getKudos(courseId);
         const myStudent = await User.findOne({_id: sender._id })
             .select("_id first_name kudos")
             .exec()
