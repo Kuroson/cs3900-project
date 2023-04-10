@@ -140,14 +140,14 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         workloadCompletionId = workload._id;
     }
 
+    //Give kudos
     const courseKudos = await getKudos(courseId);
     const myStudent = await User.findOne({_id: studentId })
         .select("_id first_name kudos")
         .exec()
         .catch(() => null);
 
-    if (myStudent === null)
-        throw new HttpException(400, `Student of ${ studentId } does not exist`);
+    if (myStudent === null) throw new HttpException(400, `Student of ${ studentId } does not exist`);
     myStudent.kudos = myStudent.kudos + courseKudos.weeklyTaskCompletion;
 
     await myStudent.save().catch((err) => {
