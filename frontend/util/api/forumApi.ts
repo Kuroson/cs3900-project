@@ -73,6 +73,6 @@ export const markCorrectResponse = (
   return apiPost<MarkCorrectResponsePayloadRequest, MarkCorrectResponsePayloadResponse>(
     `${getBackendLink(type)}/forum/post/correct`,
     token,
-    payload
+    payload,
   );
 };

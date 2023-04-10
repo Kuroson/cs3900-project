@@ -82,7 +82,7 @@ export const addNewChatMessage = async (
     classId: string,
     senderFirebaseUID: string,
     message: string,
-    courseId: string
+    courseId: string,
 ): Promise<string> => {
     // Find the class
     const onlineClass = await OnlineClass.findById(classId).catch(() => null);
@@ -130,20 +130,19 @@ export const addNewChatMessage = async (
         });
         //Give kudos for attending
         const courseKudos = await getKudos(courseId);
-        const myStudent = await User.findOne({_id: sender._id })
+        const myStudent = await User.findOne({ _id: sender._id })
             .select("_id first_name kudos")
             .exec()
             .catch(() => null);
 
         if (myStudent === null)
-            throw new HttpException(400, `Student of ${ sender._id } does not exist`);
+            throw new HttpException(400, `Student of ${sender._id} does not exist`);
         myStudent.kudos = myStudent.kudos + courseKudos.attendance;
 
         await myStudent.save().catch((err) => {
             throw new HttpException(500, "Failed to add kudos to user", err);
         });
-    } 
-    
+    }
 
     return messageId;
 };

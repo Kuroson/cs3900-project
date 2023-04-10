@@ -66,7 +66,7 @@ export const getKudos = async (courseId: string): Promise<KudosValuesInterface> 
     const course = await Course.findById(courseId, "students")
         // .populate("students", "_id email firebase_uid first_name last_name role avatar")
         .populate({
-            path: "kudosValues"
+            path: "kudosValues",
         })
         .exec()
         .catch(() => null);

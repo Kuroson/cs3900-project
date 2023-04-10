@@ -98,9 +98,9 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
         throw new HttpException(500, "Failed to save correct state to response");
     });
 
-    //Update kudos for user as they have answered correctly 
+    //Update kudos for user as they have answered correctly
     const courseKudos = await getKudos(courseId);
-    const myStudent = await User.findOne({_id: myResponse.poster})
+    const myStudent = await User.findOne({ _id: myResponse.poster })
         .select("_id first_name kudos")
         .exec()
         .catch(() => null);

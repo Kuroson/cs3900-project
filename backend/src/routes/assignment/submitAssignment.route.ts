@@ -1,12 +1,12 @@
 import { HttpException } from "@/exceptions/HttpException";
 import AssignmentSubmission from "@/models/course/enrolment/assignmentSubmission.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
+import User from "@/models/user.model";
 import { checkAuth, recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { getKudos } from "../course/getKudosValues.route";
-import User from "@/models/user.model";
 
 type ResponsePayload = {
     submissionId: string;
@@ -104,15 +104,15 @@ export const submitAssignment = async (
         throw new HttpException(500, "Failed to save updated enrolment");
     });
 
-    //Update kudos for user as they have submitted quiz 
+    //Update kudos for user as they have submitted quiz
     const courseKudos = await getKudos(courseId);
-    const myStudent = await User.findOne({_id: enrolment.student })
+    const myStudent = await User.findOne({ _id: enrolment.student })
         .select("_id first_name kudos")
         .exec()
         .catch(() => null);
 
     if (myStudent === null)
-        throw new HttpException(400, `Student of ${ enrolment.student } does not exist`);
+        throw new HttpException(400, `Student of ${enrolment.student} does not exist`);
     myStudent.kudos = myStudent.kudos + courseKudos.assignmentCompletion;
 
     await myStudent.save().catch((err) => {

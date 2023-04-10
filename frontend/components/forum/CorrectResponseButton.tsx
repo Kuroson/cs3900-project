@@ -18,7 +18,7 @@ const CorrectResponseButton = ({
   resp,
   setShowedPost,
   showedPost,
-  courseId
+  courseId,
 }: CorrectResponseButtonProps): JSX.Element => {
   const authUser = useAuthUser();
 
@@ -27,9 +27,13 @@ const CorrectResponseButton = ({
     if (showedPost === null) return;
     const queryPayload = {
       responseId: resp._id,
-      courseId: courseId
+      courseId: courseId,
     };
-    const [res, err] = await markCorrectResponse(await authUser.getIdToken(), queryPayload, "client");
+    const [res, err] = await markCorrectResponse(
+      await authUser.getIdToken(),
+      queryPayload,
+      "client",
+    );
     if (err !== null) {
       console.error(err);
       if (err instanceof HttpException) {
