@@ -11,6 +11,7 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { getKudos } from "./../../routes/course/getKudosValues.route";
 
 type ResponsePayload = {
     responseId: string;
@@ -18,6 +19,7 @@ type ResponsePayload = {
 
 type QueryPayload = {
     responseId: string;
+    courseId: string;
 };
 
 /**
@@ -33,7 +35,7 @@ export const markCorrectResponseController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["responseId"];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["responseId", "courseId"];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
@@ -78,13 +80,13 @@ export const markCorrectResponseController = async (
  * @returns The ID of the post that has been created
  */
 export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid: string) => {
-    const { responseId } = queryBody;
+    const { responseId, courseId } = queryBody;
 
     const user = await User.findOne({ firebase_uid: firebase_uid }).catch(() => null);
     if (user === null) throw new HttpException(400, `User of ${firebase_uid} does not exist`);
 
     const myResponse = await ForumResponse.findById(responseId)
-        .select("_id correct")
+        .select("_id poster correct")
         .exec()
         .catch(() => null);
 
@@ -94,6 +96,26 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
     myResponse.correct = true;
     await myResponse.save().catch((err) => {
         throw new HttpException(500, "Failed to save correct state to response");
+    });
+
+    //Update kudos for user as they have answered correctly 
+    const courseKudos = await getKudos(courseId);
+    console.log("Student id is ");
+    console.log(myResponse.poster);
+    const myStudent = await User.findOne({_id: myResponse.poster})
+        .select("_id first_name kudos")
+        .exec()
+        .catch(() => null);
+
+    if (myStudent === null)
+        throw new HttpException(400, `Student of ${myResponse.poster} does not exist`);
+
+    console.log("Student name is ");
+    console.log(myStudent.first_name);
+    myStudent.kudos = myStudent.kudos + courseKudos.forumPostCorrectAnswer; //myCourse.kudosValues.forumPostCreation;
+
+    await myStudent.save().catch((err) => {
+        throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
     return myResponse._id.toString() as string;

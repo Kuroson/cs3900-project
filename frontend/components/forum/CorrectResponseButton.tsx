@@ -11,20 +11,25 @@ type CorrectResponseButtonProps = {
   resp: FullResponseInfo;
   setShowedPost: React.Dispatch<React.SetStateAction<FullPostInfo | null>>;
   showedPost: FullPostInfo | null;
+  courseId: string;
 };
 
 const CorrectResponseButton = ({
   resp,
   setShowedPost,
   showedPost,
+  courseId
 }: CorrectResponseButtonProps): JSX.Element => {
   const authUser = useAuthUser();
 
   const handleCorrectResponse = async (e: React.SyntheticEvent, response: FullResponseInfo) => {
     e.preventDefault();
     if (showedPost === null) return;
-
-    const [res, err] = await markCorrectResponse(await authUser.getIdToken(), resp._id, "client");
+    const queryPayload = {
+      responseId: resp._id,
+      courseId: courseId
+    }
+    const [res, err] = await markCorrectResponse(await authUser.getIdToken(), queryPayload, "client");
     if (err !== null) {
       console.error(err);
       if (err instanceof HttpException) {

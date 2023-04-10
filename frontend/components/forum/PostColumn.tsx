@@ -87,6 +87,7 @@ const PostColumn = ({
               resp={resp}
               setShowedPost={setShowedPost}
               showedPost={showedPost}
+              courseId={courseId}
             />
           )}
         </div>
