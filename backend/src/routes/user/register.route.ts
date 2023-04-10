@@ -21,6 +21,7 @@ type QueryPayload = {
  * @param lastName
  * @param email
  * @param firebaseUID
+ * @param testOnly will set the first user created to an instructor if called upon
  * @throws { HttpException } if it fails to write new user to database
  * @returns
  */
@@ -29,10 +30,17 @@ export const registerUser = async (
     lastName: string,
     email: string,
     firebaseUID: string,
+    testOnly = true,
 ): Promise<string> => {
     logger.info(`Registering user, email: ${email}, firebaseUID: ${firebaseUID}`);
 
     const role = email.toLowerCase().includes("admin") ? INSTRUCTOR_ROLE : STUDENT_ROLE;
+
+    const numOfUsers = testOnly !== true ? await User.countDocuments() : 1000;
+
+    if (numOfUsers === 0) {
+        logger.info("First user to register, setting role to instructor");
+    }
 
     const newUser = new User({
         firebase_uid: firebaseUID,
@@ -41,7 +49,7 @@ export const registerUser = async (
         email: email,
         enrolments: [],
         created_courses: [],
-        role: role,
+        role: numOfUsers === 0 ? INSTRUCTOR_ROLE : role,
         avatar: "", // TODO
     });
 
@@ -80,7 +88,7 @@ export const registerController = async (
                 logger.info(`Emails do not match for ${authUser.uid}`);
                 throw new HttpException(401, "Email does not match email from JWT token");
             }
-            await registerUser(firstName, lastName, authUser.email, authUser.uid);
+            await registerUser(firstName, lastName, authUser.email, authUser.uid, false);
             return res.status(200).json({ message: "Success" });
         } else {
             throw new HttpException(

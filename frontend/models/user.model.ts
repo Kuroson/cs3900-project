@@ -2,8 +2,8 @@ import { MongooseDocument, MongooseId } from "models";
 import { BasicCourseInfo } from "./course.model";
 import { UserEnrolmentInformation } from "./enrolment.model";
 
-export const STUDENT_ROLE = "1";
-export const INSTRUCTOR_ROLE = "0";
+export const STUDENT_ROLE = 1;
+export const INSTRUCTOR_ROLE = 0;
 
 export interface UserInterface extends MongooseDocument {
   firebase_uid: string;
@@ -13,7 +13,7 @@ export interface UserInterface extends MongooseDocument {
   /**
    * 0=instructor, 1=student
    */
-  role: number;
+  role: 0 | 1;
   enrolments: Array<MongooseId>;
   created_courses: Array<MongooseId>;
   avatar?: string;
