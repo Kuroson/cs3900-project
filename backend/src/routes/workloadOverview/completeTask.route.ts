@@ -77,13 +77,10 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
     };
 
     // Get enrolment
-    const enrolment: QueryDataEnrolment | null = await Enrolment.findOne(
-        {
-            course: courseId,
-            student: studentId,
-        },
-        "workloadCompletion",
-    )
+    const enrolment: QueryDataEnrolment | null = await Enrolment.findOne({
+        course: courseId,
+        student: studentId,
+    })
         .populate("workloadCompletion", "_id week")
         .populate({ path: "workloadCompletion", populate: "week" })
         .exec()
@@ -119,6 +116,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostCreation;
 
         await enrolment.save().catch((err) => {
+            logger.error(err);
             throw new HttpException(500, "Failed to add new workload completion to enrolment", err);
         });
     } else {

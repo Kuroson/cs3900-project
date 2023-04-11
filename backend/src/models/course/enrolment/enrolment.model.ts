@@ -30,7 +30,7 @@ const enrolmentSchema: Schema = new Schema<EnrolmentInterface>({
     workloadCompletion: [
         { type: Schema.Types.ObjectId, ref: "WorkloadCompletion", required: true },
     ],
-    kudosEarned: { type: Number, default: 0 },
+    kudosEarned: { type: Number, default: 0, required: true },
 });
 
 const Enrolment = model<EnrolmentInterface & Document>("Enrolment", enrolmentSchema);
