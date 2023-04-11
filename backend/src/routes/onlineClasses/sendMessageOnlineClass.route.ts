@@ -151,7 +151,8 @@ export const addNewChatMessage = async (
         if (enrolment === null) {
             throw new HttpException(400, "Failed to fetch enrolment");
         }
-         //Update kudos for the enrolment object for dashboard updates
+        
+        //Update kudos for the enrolment object for dashboard updates
         enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.attendance;
         await enrolment.save().catch((err) => {
             throw new HttpException(500, "Failed to add kudos to enrolment", err);
