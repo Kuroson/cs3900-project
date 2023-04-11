@@ -1,5 +1,12 @@
 import { UserDetails } from "models/user.model";
-import { BackendLinkType, CLIENT_BACKEND_URL, SSR_BACKEND_URL, apiGet, apiPost } from "./api";
+import {
+  BackendLinkType,
+  CLIENT_BACKEND_URL,
+  SSR_BACKEND_URL,
+  apiGet,
+  apiPost,
+  apiPut,
+} from "./api";
 
 type RegisterUserPayloadRequest = {
   firstName: string;
@@ -65,5 +72,38 @@ export const getUserSchedule = (token: string | null, type: BackendLinkType) => 
     `${getBackendLink(type)}/user/schedule`,
     token,
     {},
+  );
+};
+
+type AdminInstructorSetPayloadRequest = {
+  /**
+   * User email to promote or demote
+   */
+  userEmail: string;
+  instructor: boolean;
+};
+
+type AdminInstructorSetPayloadResponse = {
+  message: string;
+};
+
+/**
+ * Set a user as an instructor or not
+ * @param token
+ * @param email
+ * @param instructor true to promote as instructor, false to demote
+ * @param type
+ * @returns
+ */
+export const adminInstructorSet = (
+  token: string | null,
+  email: string,
+  instructor: boolean,
+  type: BackendLinkType,
+) => {
+  return apiPut<AdminInstructorSetPayloadRequest, AdminInstructorSetPayloadResponse>(
+    `${getBackendLink(type)}/admin/instructor/set`,
+    token,
+    { userEmail: email, instructor },
   );
 };

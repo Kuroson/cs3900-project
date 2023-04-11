@@ -1,5 +1,7 @@
-import User from "@/models/user.model";
+import Course from "@/models/course/course.model";
+import User, { INSTRUCTOR_ROLE } from "@/models/user.model";
 import { registerUser } from "@/routes/user/register.route";
+import { getUserDetails } from "@/routes/user/userDetails.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
@@ -10,6 +12,8 @@ describe("Test creation of new User", () => {
     const uid1 = `normal-${id}`;
     const email2 = `admin-${id}@delete.com`;
     const uid2 = `admin-${id}`;
+    const email3 = `new-${id}@delete.com`;
+    const uid3 = `new-${id}`;
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -40,9 +44,20 @@ describe("Test creation of new User", () => {
         expect(user?.role).toBe(0); // admin
     });
 
+    it("Test default value of 0 for kudos", async () => {
+        const userId = await registerUser(`firstJest${id}`, `lastJest${id}`, email3, uid3);
+        const userDB = await User.findOne({ _id: userId }).catch(() => null);
+        expect(userDB).not.toBeNull();
+        expect(userDB?.kudos).toEqual(0);
+
+        Course; // Load course model
+        const userDetails = await getUserDetails(email3, email3);
+        expect(userDetails.kudos).toEqual(0);
+    });
+
     afterAll(async () => {
         // Clean up
-        await User.deleteMany({ email: [email1, email2] }).exec();
+        await User.deleteMany({ email: [email1, email2, email3] }).exec();
         await disconnect();
     });
 });
@@ -75,5 +90,24 @@ describe("Test function - Create multiple users", () => {
         await User.deleteMany({ email: userData.map((x) => x.email) });
 
         await disconnect();
+    });
+});
+
+describe("First account should be instructor", () => {
+    const id = uuidv4();
+    const email1 = `jest-${id}@delete.com`;
+    const uid1 = `normal-${id}`;
+
+    beforeAll(async () => {
+        await initialiseMongoose();
+        await User.deleteMany({}).exec();
+    });
+
+    it("First user should be instructor always", async () => {
+        expect(await User.countDocuments()).toEqual(0);
+        await registerUser(`firstJest${id}`, `lastJest${id}`, email1, uid1, false); // Use the prod version
+        expect(await User.countDocuments()).toEqual(1);
+        const userDetails = await getUserDetails(email1, email1);
+        expect(userDetails.role).toEqual(INSTRUCTOR_ROLE);
     });
 });

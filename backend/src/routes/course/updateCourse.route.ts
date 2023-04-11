@@ -1,5 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
+import KudosValues, { KudosValuesType } from "@/models/course/kudosValues.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -18,6 +19,7 @@ type QueryPayload = {
     description?: string;
     icon?: string;
     tags?: Array<string>;
+    kudosValues?: KudosValuesType;
     archived?: boolean;
 };
 
@@ -80,7 +82,8 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
         throw new HttpException(401, "Must be an admin to update course");
     }
 
-    const { courseId, code, title, session, description, icon, tags, archived } = queryBody;
+    const { courseId, code, title, session, description, icon, tags, kudosValues, archived } =
+        queryBody;
 
     const myCourse = await Course.findById(courseId).exec();
 
@@ -109,6 +112,31 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
     if (tags !== undefined && tags.length !== 0) {
         myCourse.tags.length = 0;
         tags.forEach((tag) => myCourse.tags.addToSet(tag));
+    }
+
+    if (kudosValues !== undefined) {
+        // Need to update this
+        const kudosToChange = await KudosValues.findById(myCourse.kudosValues).exec();
+
+        if (kudosToChange === null) {
+            throw new HttpException(
+                500,
+                `Failed to retrieve kudos value of ${myCourse.kudosValues}`,
+            );
+        }
+
+        kudosToChange.quizCompletion = kudosValues.quizCompletion;
+        kudosToChange.assignmentCompletion = kudosValues.assignmentCompletion;
+        kudosToChange.weeklyTaskCompletion = kudosValues.weeklyTaskCompletion;
+        kudosToChange.forumPostCreation = kudosValues.forumPostCreation;
+        kudosToChange.forumPostAnswer = kudosValues.forumPostAnswer;
+        kudosToChange.forumPostCorrectAnswer = kudosValues.forumPostCorrectAnswer;
+        kudosToChange.attendance = kudosValues.attendance;
+
+        // Save
+        await kudosToChange.save().catch((err) => {
+            throw new HttpException(500, "Failed to update kudos values", err);
+        });
     }
 
     if (archived !== undefined) {

@@ -103,6 +103,7 @@ export const createOnlineClass = async (
         running: false,
         chatMessages: [],
         chatEnabled: true, // Enabled by default
+        attendanceList: [],
     });
 
     const newLectureId = await newLecture

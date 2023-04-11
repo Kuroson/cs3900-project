@@ -9,6 +9,7 @@ import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { getKudos } from "../course/getKudosValues.route";
 import { getStudents } from "../course/getStudents.route";
 
 type ResponsePayload = {
@@ -124,6 +125,14 @@ export const createPost = async (
 
     await myCourse.forum.save().catch((err) => {
         throw new HttpException(500, "Failed to save updated forum post to course", err);
+    });
+
+    //Update kudos for user as they have created post
+    const courseKudos = await getKudos(myCourse._id);
+    user.kudos = user.kudos + courseKudos.forumPostCreation; //myCourse.kudosValues.forumPostCreation;
+
+    await user.save().catch((err) => {
+        throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
     // NOTE: don't have to fill responses as guaranteed to be [] array

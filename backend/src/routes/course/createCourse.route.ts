@@ -1,6 +1,8 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Forum from "@/models/course/forum/forum.model";
+import { KudosValuesType } from "@/models/course/kudosValues.model";
+import KudosValues from "@/models/course/kudosValues.model";
 import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
@@ -19,6 +21,7 @@ type QueryPayload = {
     session: string;
     description: string;
     icon: string;
+    kudosValues?: KudosValuesType;
 };
 
 /**
@@ -84,7 +87,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         throw new HttpException(401, "Must be an admin to create course");
     }
 
-    const { code, title, session, description, icon } = queryBody;
+    const { code, title, session, description, icon, kudosValues } = queryBody;
 
     const admin = await User.findOne({ firebase_uid }).catch((err) => null);
     if (admin === null) {
@@ -107,6 +110,10 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
             throw new HttpException(500, "Failed to make workload overview for course");
         });
 
+    const myKudosValues = await new KudosValues({ ...kudosValues }).save().catch((err) => {
+        throw new HttpException(500, "Failed to make kudos values for course", err);
+    });
+
     const myCourse = new Course({
         title,
         code,
@@ -122,6 +129,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         assignments: [],
         workloadOverview: courseWorkloadOverview._id,
         tags: [],
+        kudosValues: myKudosValues._id,
     });
 
     const courseId = await myCourse

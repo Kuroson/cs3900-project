@@ -7,6 +7,7 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { getKudos } from "../course/getKudosValues.route";
 
 type ResponsePayload = {
     messageId: string;
@@ -16,6 +17,7 @@ type ResponsePayload = {
 type QueryPayload = {
     classId: string;
     message: string;
+    courseId: string;
 };
 
 /**
@@ -30,11 +32,11 @@ export const sendChatMessageController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["classId", "message"];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["classId", "message", "courseId"];
 
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
-            const { classId, message } = req.body;
-            const messageId = await addNewChatMessage(classId, authUser.uid, message);
+            const { classId, message, courseId } = req.body;
+            const messageId = await addNewChatMessage(classId, authUser.uid, message, courseId);
 
             const onlineClass = await OnlineClass.findById(classId, "chatMessages")
                 .populate({
@@ -80,6 +82,7 @@ export const addNewChatMessage = async (
     classId: string,
     senderFirebaseUID: string,
     message: string,
+    courseId: string,
 ): Promise<string> => {
     // Find the class
     const onlineClass = await OnlineClass.findById(classId).catch(() => null);
@@ -117,5 +120,29 @@ export const addNewChatMessage = async (
     await onlineClass.save().catch((err) => {
         throw new HttpException(500, "Error saving class", err);
     });
+
+    //Mark attendance for attending and engaging in class
+    if (onlineClass.attendanceList.includes(sender._id) === false) {
+        //Student isn't already marked as attended
+        onlineClass.attendanceList.addToSet(sender._id);
+        await onlineClass.save().catch((err) => {
+            throw new HttpException(500, "Error saving attendance", err);
+        });
+        //Give kudos for attending
+        const courseKudos = await getKudos(courseId);
+        const myStudent = await User.findOne({ _id: sender._id })
+            .select("_id kudos")
+            .exec()
+            .catch(() => null);
+
+        if (myStudent === null)
+            throw new HttpException(400, `Student of ${sender._id} does not exist`);
+        myStudent.kudos = myStudent.kudos + courseKudos.attendance;
+
+        await myStudent.save().catch((err) => {
+            throw new HttpException(500, "Failed to add kudos to user", err);
+        });
+    }
+
     return messageId;
 };

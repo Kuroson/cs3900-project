@@ -3,6 +3,7 @@ import { adminRoute } from "@/utils/util";
 import { Router } from "express";
 import { accessController } from "./admin/access.route";
 import { adminController } from "./admin/admin.route";
+import { adminInstructorSetController } from "./admin/adminInstructorSet.route";
 import { getGradesController } from "./analytics/getGrades.route";
 import { getQuestionAnalyticsController } from "./analytics/getQuestionAnalytics.route";
 import { getTagSummaryController } from "./analytics/getTagSummary.route";
@@ -20,6 +21,7 @@ import { createCourseController } from "./course/createCourse.route";
 import { getAllCoursesController } from "./course/getAllCourses.route";
 import { getCourseController } from "./course/getCourse.route";
 import { getCoursePageController } from "./course/getCoursePage.route";
+import { getKudos, getKudosController } from "./course/getKudosValues.route";
 import { getStudentsController } from "./course/getStudents.route";
 import { removeStudentsController } from "./course/removeStudents.route";
 import { updateCourseController } from "./course/updateCourse.route";
@@ -79,6 +81,7 @@ indexRouter.get("/", indexController);
 // Admin routes
 indexRouter.get("/admin", adminController);
 indexRouter.get("/admin/access", accessController);
+indexRouter.put("/admin/instructor/set", adminRoute(adminInstructorSetController));
 
 // User routes
 indexRouter.get("/user/details", userDetailsController);
@@ -95,6 +98,7 @@ indexRouter.get("/course/students", adminRoute(getStudentsController));
 indexRouter.put("/course/students/add", adminRoute(addStudentsController));
 indexRouter.put("/course/students/remove", adminRoute(removeStudentsController));
 indexRouter.post("/course/archive", adminRoute(archiveCourseController));
+indexRouter.get("/course/kudos", getKudosController);
 
 // Page routes
 indexRouter.get("/page", getPagesController);

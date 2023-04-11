@@ -4,6 +4,14 @@ import sgMail from "@sendgrid/mail";
 import { logger } from "./logger";
 import validateEnv from "./validateEnv";
 
+const EMAIL_ENABLED = (): boolean => {
+    try {
+        return validateEnv.EMAIL_ENABLE !== undefined ? validateEnv.EMAIL_ENABLE : false;
+    } catch (err) {
+        return validateEnv.EMAIL_ENABLE ?? false;
+    }
+};
+
 const SENDGRID_KEY = (): string => {
     try {
         return validateEnv.SENDGRID_API_KEY !== undefined
@@ -23,6 +31,10 @@ type RecipientType = {
 export type RecipientsType = Array<RecipientType>;
 
 export const sendEmail = (recipients: RecipientsType, subject: string, text: string) => {
+    console.log(EMAIL_ENABLED());
+
+    if (!EMAIL_ENABLED()) return;
+
     const msg = {
         to: recipients,
         from: { email: "cs3900githappens23t1@gmail.com", name: "Git Happens" }, // Verified sender on sendgrid
