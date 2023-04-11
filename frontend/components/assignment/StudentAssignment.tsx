@@ -58,7 +58,6 @@ const StudentAssignment: React.FC<{
 
   const handleSubmitAssignment = async () => {
     if (file === null) return;
-
     const [res, err] = await submitAssignment(
       await authUser.getIdToken(),
       file,
