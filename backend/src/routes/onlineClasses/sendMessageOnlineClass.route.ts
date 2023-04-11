@@ -122,41 +122,43 @@ export const addNewChatMessage = async (
         throw new HttpException(500, "Error saving class", err);
     });
 
-    //Mark attendance for attending and engaging in class
-    if (onlineClass.attendanceList.includes(sender._id) === false) {
-        //Student isn't already marked as attended
-        onlineClass.attendanceList.addToSet(sender._id);
-        await onlineClass.save().catch((err) => {
-            throw new HttpException(500, "Error saving attendance", err);
-        });
-        //Give kudos for attending
-        const courseKudos = await getKudos(courseId);
-        const myStudent = await User.findOne({ _id: sender._id })
-            .select("_id kudos")
-            .exec()
-            .catch(() => null);
+    if (!isAdmin) {
+        //Mark attendance for attending and engaging in class
+        if (onlineClass.attendanceList.includes(sender._id) === false) {
+            //Student isn't already marked as attended
+            onlineClass.attendanceList.addToSet(sender._id);
+            await onlineClass.save().catch((err) => {
+                throw new HttpException(500, "Error saving attendance", err);
+            });
+            //Give kudos for attending
+            const courseKudos = await getKudos(courseId);
+            const myStudent = await User.findOne({ _id: sender._id })
+                .select("_id kudos")
+                .exec()
+                .catch(() => null);
 
-        if (myStudent === null)
-            throw new HttpException(400, `Student of ${sender._id} does not exist`);
-        myStudent.kudos = myStudent.kudos + courseKudos.attendance;
+            if (myStudent === null)
+                throw new HttpException(400, `Student of ${sender._id} does not exist`);
+            myStudent.kudos = myStudent.kudos + courseKudos.attendance;
 
-        await myStudent.save().catch((err) => {
-            throw new HttpException(500, "Failed to add kudos to user", err);
-        });
+            await myStudent.save().catch((err) => {
+                throw new HttpException(500, "Failed to add kudos to user", err);
+            });
 
-        const enrolment = await Enrolment.findOne({
-            student: sender._id,
-            course: courseId,
-        }).catch((err) => null);
-        if (enrolment === null) {
-            throw new HttpException(400, "Failed to fetch enrolment");
+            const enrolment = await Enrolment.findOne({
+                student: sender._id,
+                course: courseId,
+            }).catch((err) => null);
+            if (enrolment === null) {
+                throw new HttpException(400, "Failed to fetch enrolment");
+            }
+
+            //Update kudos for the enrolment object for dashboard updates
+            enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.attendance;
+            await enrolment.save().catch((err) => {
+                throw new HttpException(500, "Failed to add kudos to enrolment", err);
+            });
         }
-
-        //Update kudos for the enrolment object for dashboard updates
-        enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.attendance;
-        await enrolment.save().catch((err) => {
-            throw new HttpException(500, "Failed to add kudos to enrolment", err);
-        });
     }
 
     return messageId;
