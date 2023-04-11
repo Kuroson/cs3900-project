@@ -113,5 +113,17 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
         throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
+    //Add kudos to enrolment object for dashboard updates
+    const enrolment = await Enrolment.findOne({
+        student: myStudent._id,
+        course: courseId,
+    }).catch((err) => null);
+    if (enrolment === null)
+        throw new HttpException(400, "Enrolment not found");
+    enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostCorrectAnswer;
+    await enrolment.save().catch((err) => {
+        throw new HttpException(500, "Failed to add kudos to enrolment", err);
+    });
+
     return myResponse._id.toString() as string;
 };

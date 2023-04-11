@@ -221,6 +221,9 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
+    //Update kudos for the enrolment object for dashboard updates
+    enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.quizCompletion;
+
     await enrolment.save().catch((err) => {
         logger.error(err);
         throw new HttpException(500, "Failed to save updated enrolment");

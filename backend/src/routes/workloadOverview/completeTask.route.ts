@@ -96,7 +96,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
     const existingCompletion = enrolment.workloadCompletion.find(
         (element) => element.week._id.toString() === weekId,
     );
-
+    const courseKudos = await getKudos(courseId);
     let workloadCompletionId;
 
     if (existingCompletion === undefined) {
@@ -115,6 +115,8 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
             });
 
         enrolment.workloadCompletion.push(workloadCompletionId);
+        //Add kudos to enrolment for dashboard updates
+        enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostCreation;
 
         await enrolment.save().catch((err) => {
             throw new HttpException(500, "Failed to add new workload completion to enrolment", err);
@@ -141,7 +143,6 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
     }
 
     //Give kudos
-    const courseKudos = await getKudos(courseId);
     const myStudent = await User.findOne({ _id: studentId })
         .select("_id first_name kudos")
         .exec()
@@ -152,7 +153,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
 
     await myStudent.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to user", err);
-    });
+    });    
 
     return workloadCompletionId;
 };

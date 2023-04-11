@@ -99,13 +99,16 @@ export const submitAssignment = async (
         });
 
     enrolment.assignmentSubmissions.push(submissionId);
+    //Update kudos for the enrolment object for dashboard updates
+    const courseKudos = await getKudos(courseId); 
+    enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.assignmentCompletion;
+
     await enrolment.save().catch((err) => {
         logger.error(err);
         throw new HttpException(500, "Failed to save updated enrolment");
     });
 
     //Update kudos for user as they have submitted quiz
-    const courseKudos = await getKudos(courseId);
     const myStudent = await User.findOne({ _id: enrolment.student })
         .select("_id kudos")
         .exec()
