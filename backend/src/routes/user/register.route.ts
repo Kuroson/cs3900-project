@@ -50,7 +50,7 @@ export const registerUser = async (
         enrolments: [],
         created_courses: [],
         role: numOfUsers === 0 ? INSTRUCTOR_ROLE : role,
-        avatar: "", // TODO
+        avatar: "missy", // NOTE default avatar
     });
 
     const userId = await newUser
