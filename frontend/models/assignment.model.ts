@@ -37,12 +37,14 @@ export type SubmitAssignmentType = {
   courseId: string;
   assignmentId: string;
   title: string;
+  timeSubmitted: string;
 };
 
 export type SubmitAssignmentResponseType = {
   submissionId: string;
   fileType: string;
   linkToSubmission: string; // i.e., download link
+  timeSubmitted: number;
 };
 
 export type submissionType = {

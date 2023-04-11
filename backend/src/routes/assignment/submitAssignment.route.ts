@@ -2,14 +2,18 @@ import { HttpException } from "@/exceptions/HttpException";
 import AssignmentSubmission from "@/models/course/enrolment/assignmentSubmission.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import User from "@/models/user.model";
+import Assignment from "@/models/course/assignment/assignment.model";
 import { checkAuth, recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { getKudos } from "../course/getKudosValues.route";
+import { time } from "console";
+import dayjs from "dayjs";
 
 type ResponsePayload = {
     submissionId: string;
+    timeSubmitted: number;
     fileType: string;
     linkToSubmission: string; // i.e., download link
 };
@@ -82,12 +86,13 @@ export const submitAssignment = async (
     if (enrolment === null) {
         throw new HttpException(400, "Failed to fetch enrolment");
     }
-
+    const timeSubmitted = Date.now() / 1000;
     const submissionId = await new AssignmentSubmission({
         assignment: assignmentId,
         title,
         storedName: file.fileRef.name,
         fileType: file.mimetype,
+        timeSubmitted: timeSubmitted
     })
         .save()
         .then((res) => {
@@ -104,8 +109,21 @@ export const submitAssignment = async (
         throw new HttpException(500, "Failed to save updated enrolment");
     });
 
-    //Update kudos for user as they have submitted quiz
+    //Get assignment for which submission was made so deadline can be found for kudos adjustment
+    const assignment = await Assignment.findOne({ _id: assignmentId }).catch((err) => null);
+    if (assignment === null) {
+        throw new HttpException(400, "Failed to fetch assignment");
+    }
+
+   
+    //Update kudos for user as they have submitted assignment
     const courseKudos = await getKudos(courseId);
+
+    //Get extra kudos factor for submitting early
+    const daysEarly = -(dayjs.unix(timeSubmitted).diff(dayjs(assignment.deadline)) / 1000) / 3600 / 24;
+    var extraKudos = 0.1*Math.floor(daysEarly);
+    if (extraKudos > 0.5) extraKudos = 0.5; // caps off at 0.5
+    
     const myStudent = await User.findOne({ _id: enrolment.student })
         .select("_id kudos")
         .exec()
@@ -113,7 +131,7 @@ export const submitAssignment = async (
 
     if (myStudent === null)
         throw new HttpException(400, `Student of ${enrolment.student} does not exist`);
-    myStudent.kudos = myStudent.kudos + courseKudos.assignmentCompletion;
+    myStudent.kudos = myStudent.kudos + (1 + extraKudos)*courseKudos.assignmentCompletion;
 
     await myStudent.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to user", err);
@@ -121,6 +139,7 @@ export const submitAssignment = async (
 
     return {
         submissionId,
+        timeSubmitted,
         fileType: file.mimetype,
         linkToSubmission: await recallFileUrl(file.fileRef.name),
     };
