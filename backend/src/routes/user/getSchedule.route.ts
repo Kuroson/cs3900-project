@@ -182,14 +182,3 @@ export const getSchedule = async (firebase_uid: string) => {
 
     return deadlines;
 };
-
-/*
-type ItemType = {
-    courseCode: string;
-    courseTitle: string;
-    type: string;
-    title: string;
-    deadline: string;
-    open?: string;
-};
-*/

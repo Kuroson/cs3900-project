@@ -145,11 +145,11 @@ const HomePage = (): JSX.Element => {
   const eventStyleGetter = (event: ScheduleItem, start: Date, end: Date, isSelected: boolean) => {
     let backgroundColor = "";
     if (event.category === "class") {
-      backgroundColor = "blue";
+      backgroundColor = "#26a69a"; // Teal
     } else if (event.category === "quiz") {
-      backgroundColor = "green";
+      backgroundColor = "#F97316"; // Orange
     } else if (event.category === "assignment") {
-      backgroundColor = "orange";
+      backgroundColor = "#979091a7"; // Gray
     } else if (event.category === "workload") {
       backgroundColor = "black";
     }
@@ -157,7 +157,7 @@ const HomePage = (): JSX.Element => {
     const style = {
       backgroundColor,
       borderRadius: "5px",
-      opacity: 0.8,
+      opacity: 0.9,
       color: "white",
       border: "0px",
       display: "block",
