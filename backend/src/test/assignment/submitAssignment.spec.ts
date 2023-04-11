@@ -41,12 +41,14 @@ describe("Test submitting an assignment", () => {
         await updateCourse({ courseId, tags: ["tag1", "tag2"] }, `acc1${id}`);
         await addStudents(courseId, [`user${id}@email.com`], `acc1${id}`);
 
+        const oneDay = 24 * 60 * 60 * 1000;
+        const deadline = new Date(Date.now() + oneDay).toString();
         assignmentId = await createAssignment(
             {
                 courseId,
                 title: "Test assignment",
                 description: "This is the description",
-                deadline: "2023-03-26T12:00:00+11:00",
+                deadline: deadline,
                 marksAvailable: 1,
                 tags: ["tag1", "tag2"],
             },
