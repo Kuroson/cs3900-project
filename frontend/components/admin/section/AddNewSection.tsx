@@ -79,8 +79,8 @@ const AddNewSection = ({
     <div className="pb-4 flex flex-col">
       <div className="pb-4">
         <TextField
-          id="ResourceTitle"
-          label="Resource Title"
+          id="SectionTitle"
+          label="Section Title"
           variant="outlined"
           value={title}
           onChange={(e) => setTitle(e.target.value)}

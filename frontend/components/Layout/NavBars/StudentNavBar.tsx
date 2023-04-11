@@ -1,5 +1,6 @@
 import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
+import SearchIcon from "@mui/icons-material/Search";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
@@ -62,6 +63,11 @@ export default function StudentNavBar({
       name: "Marketplace",
       route: "/", //TODO
       icon: <StorefrontIcon fontSize="large" color="primary" />,
+    },
+    {
+      name: "Search",
+      route: `/course/${courseData?._id}/search`,
+      icon: <SearchIcon fontSize="large" color="primary" />,
       hasLine: true,
     },
     ...(courseData?.pages ?? []).map((page) => {
