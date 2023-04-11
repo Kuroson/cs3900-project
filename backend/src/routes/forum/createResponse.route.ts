@@ -1,8 +1,8 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Enrolment from "@/models/course/enrolment/enrolment.model";
 import Post from "@/models/course/forum/post.model";
 import ForumResponse from "@/models/course/forum/response.model";
 import User from "@/models/user.model";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -115,13 +115,12 @@ export const createResponse = async (
         throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
-    //Add kudos to enrolment for dashboard info 
+    //Add kudos to enrolment for dashboard info
     const enrolment = await Enrolment.findOne({
         student: user._id,
         course: courseId,
     }).catch((err) => null);
-    if (enrolment === null)
-        throw new HttpException(400, "Enrolment not found");
+    if (enrolment === null) throw new HttpException(400, "Enrolment not found");
     enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostAnswer;
     await enrolment.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to enrolment", err);

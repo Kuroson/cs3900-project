@@ -100,7 +100,7 @@ export const submitAssignment = async (
 
     enrolment.assignmentSubmissions.push(submissionId);
     //Update kudos for the enrolment object for dashboard updates
-    const courseKudos = await getKudos(courseId); 
+    const courseKudos = await getKudos(courseId);
     enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.assignmentCompletion;
 
     await enrolment.save().catch((err) => {

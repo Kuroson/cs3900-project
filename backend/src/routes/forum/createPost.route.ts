@@ -130,18 +130,18 @@ export const createPost = async (
         throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
-    //Update kudos for enrolment for dashboard updates 
+    //Update kudos for enrolment for dashboard updates
     // Try and find enrolment
     const enrolment = await Enrolment.findOne({
         student: user._id,
         course: courseId,
-    }).catch((err) => null);    if (enrolment === null)
-        throw new HttpException(400, "Enrolment not found");
+    }).catch((err) => null);
+    if (enrolment === null) throw new HttpException(400, "Enrolment not found");
     enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostCreation;
     await enrolment.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to enrolment", err);
     });
-    
+
     // NOTE: don't have to fill responses as guaranteed to be [] array
 
     // Send an email about a new post is added

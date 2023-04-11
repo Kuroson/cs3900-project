@@ -118,8 +118,7 @@ export const markCorrectResponse = async (queryBody: QueryPayload, firebase_uid:
         student: myStudent._id,
         course: courseId,
     }).catch((err) => null);
-    if (enrolment === null)
-        throw new HttpException(400, "Enrolment not found");
+    if (enrolment === null) throw new HttpException(400, "Enrolment not found");
     enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostCorrectAnswer;
     await enrolment.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to enrolment", err);

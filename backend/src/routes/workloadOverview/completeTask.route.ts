@@ -153,7 +153,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
 
     await myStudent.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to user", err);
-    });    
+    });
 
     return workloadCompletionId;
 };

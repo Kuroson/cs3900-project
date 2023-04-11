@@ -1,8 +1,8 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Enrolment from "@/models/course/enrolment/enrolment.model";
 import Message, { MessageInterface } from "@/models/course/onlineClass/message.model";
 import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
 import User from "@/models/user.model";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -151,7 +151,7 @@ export const addNewChatMessage = async (
         if (enrolment === null) {
             throw new HttpException(400, "Failed to fetch enrolment");
         }
-        
+
         //Update kudos for the enrolment object for dashboard updates
         enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.attendance;
         await enrolment.save().catch((err) => {
