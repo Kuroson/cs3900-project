@@ -1,4 +1,5 @@
 import { Document, Schema, Types, model } from "mongoose";
+import { TaskInterface } from "../workloadOverview/Task.model";
 import {
     QuestionInterface,
     QuestionInterfaceFull,
@@ -15,6 +16,7 @@ export interface QuizInterface extends Document {
     close: string; // Stringified datetime object
     maxMarks: number;
     questions: Types.DocumentArray<QuestionInterface["_id"]>;
+    task?: TaskInterface["_id"];
 }
 
 const quizSchema: Schema = new Schema<QuizInterface>({
@@ -24,6 +26,7 @@ const quizSchema: Schema = new Schema<QuizInterface>({
     close: { type: String, required: true },
     maxMarks: { type: Number, required: true },
     questions: [{ type: Schema.Types.ObjectId, ref: "Choice", required: true }],
+    task: { type: Schema.Types.ObjectId, ref: "Task" },
 });
 
 const Quiz = model<QuizInterface & Document>("Quiz", quizSchema);
