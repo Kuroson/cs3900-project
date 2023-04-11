@@ -1,4 +1,5 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Assignment from "@/models/course/assignment/assignment.model";
 import AssignmentSubmission from "@/models/course/enrolment/assignmentSubmission.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import User from "@/models/user.model";
@@ -64,7 +65,7 @@ export const submitAssignmentController = async (
  *
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
- * @throws { HttpException } Save/recall error
+ * @throws { HttpException } Save/recall error, not before deadline
  * @returns Ret data based on ResponsePayload above
  */
 export const submitAssignment = async (
@@ -80,7 +81,20 @@ export const submitAssignment = async (
         course: courseId,
     }).catch((err) => null);
     if (enrolment === null) {
-        throw new HttpException(400, "Failed to fetch enrolment");
+        throw new HttpException(400, "Failed to recall enrolment");
+    }
+
+    // Fail if submission after due date
+    const assignment = await Assignment.findById(assignmentId).catch((err) => null);
+    if (assignment === null) {
+        throw new HttpException(400, "Failed to recall assignment");
+    }
+
+    const deadline = new Date(Date.parse(assignment.deadline));
+    const now = new Date();
+
+    if (now > deadline) {
+        throw new HttpException(400, "Assignment already closed");
     }
 
     const submissionId = await new AssignmentSubmission({
