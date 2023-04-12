@@ -106,7 +106,7 @@ indexRouter.put("/course/students/add", adminRoute(addStudentsController));
 indexRouter.put("/course/students/remove", adminRoute(removeStudentsController));
 indexRouter.post("/course/archive", adminRoute(archiveCourseController));
 indexRouter.get("/course/kudos", getKudosController);
-indexRouter.get("/course/getstudentskudos", getStudentsKudosController);
+indexRouter.get("/course/studentskudos", getStudentsKudosController);
 
 // Page routes
 indexRouter.get("/page", getPagesController);
