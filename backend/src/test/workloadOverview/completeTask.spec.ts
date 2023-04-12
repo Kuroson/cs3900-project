@@ -51,8 +51,14 @@ describe("Test completing a task", () => {
             "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
-        task1Id = await createTask(weekId, "Do Task 1", "Look at week 1", `acc${id}`);
-        task2Id = await createTask(weekId, "Do Task 2", "Look at week 1", `acc${id}`);
+        task1Id = await createTask(
+            { weekId: weekId, title: "Do Task 1", description: "Look at week 1" },
+            `acc${id}`,
+        );
+        task2Id = await createTask(
+            { weekId: weekId, title: "Do Task 2", description: "Look at week 1" },
+            `acc${id}`,
+        );
 
         expect(typeof weekId).toEqual("string");
         expect(typeof task1Id).toEqual("string");

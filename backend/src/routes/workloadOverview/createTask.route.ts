@@ -1,4 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Assignment from "@/models/course/assignment/assignment.model";
+import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
 import Task from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
@@ -6,6 +8,7 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { updateQuiz } from "../quiz/updateQuiz.route";
 
 type ResponsePayload = {
     taskId: string;
@@ -37,10 +40,7 @@ export const createTaskController = async (
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
-            // Body has been verified
-            const { weekId, title, description } = req.body;
-
-            const taskId = await createTask(weekId, title, description, authUser.uid);
+            const taskId = await createTask(req.body, authUser.uid);
 
             logger.info(`taskId: ${taskId}`);
             return res.status(200).json({ taskId });
@@ -82,13 +82,58 @@ export const createTask = async (
         throw new HttpException(400, `Week, ${weekId}, does not exist`);
     }
 
-    // Check that only one of quiz, assignment and online class is selected
-    // Check that it actually exists.
+    let newTask;
 
-    const newTask = new Task({
-        title: title,
-        description: description,
-    });
+    if (quizId !== undefined) {
+        newTask = new Task({
+            title: title,
+            description: description,
+            quiz: quizId,
+        });
+
+        await updateQuiz({ quizId: quizId, task: newTask._id }, firebase_uid);
+    } else if (assignmentId !== undefined) {
+        newTask = new Task({
+            title: title,
+            description: description,
+            assignment: assignmentId,
+        });
+
+        const assignment = await Assignment.findById(assignmentId)
+            .exec()
+            .catch(() => null);
+        if (assignment === null) {
+            throw new HttpException(400, "Failed to fetch assignment");
+        }
+        assignment.task = newTask._id;
+        await assignment.save().catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Failed to save new assignment");
+        });
+    } else if (onlineClassId !== undefined) {
+        newTask = new Task({
+            title: title,
+            description: description,
+            onlineClass: onlineClassId,
+        });
+
+        const onlineClass = await OnlineClass.findById(onlineClassId)
+            .exec()
+            .catch(() => null);
+        if (onlineClass === null) {
+            throw new HttpException(400, "Failed to fetch Online Class");
+        }
+        onlineClass.task = newTask._id;
+        await onlineClass.save().catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Failed to save updated OnlineClass");
+        });
+    } else {
+        newTask = new Task({
+            title: title,
+            description: description,
+        });
+    }
 
     const taskId = await newTask
         .save()

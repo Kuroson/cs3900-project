@@ -3,8 +3,13 @@ import Page from "@/models/course/page/page.model";
 import Task from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
+import { createAssignment } from "@/routes/assignment/createAssignment.route";
+import { deleteAssignment } from "@/routes/assignment/deleteAssignment.route";
 import { createCourse } from "@/routes/course/createCourse.route";
+import { updateCourse } from "@/routes/course/updateCourse.route";
 import { createPage } from "@/routes/page/createPage.route";
+import { createQuiz } from "@/routes/quiz/createQuiz.route";
+import { deleteQuiz } from "@/routes/quiz/deleteQuiz.route";
 import { registerUser } from "@/routes/user/register.route";
 import { createTask } from "@/routes/workloadOverview/createTask.route";
 import { createWeek } from "@/routes/workloadOverview/createWeek.route";
@@ -18,6 +23,8 @@ describe("Test getting a week of courses", () => {
     let courseId: string;
     let pageId: string;
     let weekId: string;
+    let assignmentId: string;
+    let quizId: string;
     let task1Id: string;
     let task2Id: string;
 
@@ -36,6 +43,8 @@ describe("Test getting a week of courses", () => {
             `acc${id}`,
         );
 
+        await updateCourse({ courseId, tags: ["tag1", "tag2"] }, `acc${id}`);
+
         pageId = await createPage(courseId, "Test page 1", `acc${id}`);
 
         weekId = await createWeek(
@@ -46,12 +55,41 @@ describe("Test getting a week of courses", () => {
             "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
+
+        assignmentId = await createAssignment(
+            {
+                courseId,
+                title: "Test assignment",
+                description: "This is the description",
+                deadline: "2023-03-26T12:00:00+11:00",
+                marksAvailable: 1,
+                tags: ["tag1", "tag2"],
+            },
+            `acc${id}`,
+        );
+
+        quizId = await createQuiz(
+            {
+                courseId,
+                title: "Test quiz",
+                description: "This is the description",
+                maxMarks: 1,
+                open: "2023-03-24T10:00:00+11:00",
+                close: "2023-03-24T11:00:00+11:00",
+            },
+            `acc${id}`,
+        );
         task1Id = await createTask(
-            { weekId: weekId, title: "Do Task 1", description: "Look at week 1" },
+            {
+                weekId: weekId,
+                title: "Do Assignment 1",
+                description: "Look at week 1",
+                assignmentId: assignmentId,
+            },
             `acc${id}`,
         );
         task2Id = await createTask(
-            { weekId: weekId, title: "Do Task 2", description: "Look at week 2" },
+            { weekId: weekId, title: "Do Quiz 1", description: "Look at week 2", quizId: quizId },
             `acc${id}`,
         );
     });
@@ -63,11 +101,16 @@ describe("Test getting a week of courses", () => {
         expect(week.description as string).toEqual("Week 1 Description");
         expect(week.tasks.length).toEqual(2);
 
-        expect(week.tasks[0].title as string).toEqual("Do Task 1");
+        expect(week.tasks[0].title as string).toEqual("Do Assignment 1");
         expect(week.tasks[0].description as string).toEqual("Look at week 1");
+        expect(week.tasks[0].assignment._id as string).toEqual(assignmentId);
 
-        expect(week.tasks[1].title as string).toEqual("Do Task 2");
+        expect(week.tasks[1].title as string).toEqual("Do Quiz 1");
         expect(week.tasks[1].description as string).toEqual("Look at week 2");
+        expect(week.tasks[1].quiz._id as string).toEqual(quizId);
+
+        await deleteQuiz({ courseId, quizId }, `acc${id}`);
+        await deleteAssignment({ courseId, assignmentId }, `acc${id}`);
     });
 
     afterAll(async () => {

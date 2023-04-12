@@ -82,10 +82,20 @@ export const getWeek = async (courseId: string, weekId: string): Promise<WeekInt
         throw new HttpException(400, `Week, ${weekId}, does not exist in course workload overview`);
     }
 
+    // Get all week including tasks
     const week = await Week.findById(weekId)
         .populate("tasks")
+        .populate({
+            path: "tasks",
+            populate: [
+                { path: "quiz", select: "_id title description" },
+                { path: "assignment", select: "_id title description" },
+                { path: "onlineClass", select: "_id title description" },
+            ],
+        })
         .exec()
         .catch(() => null);
     if (week === null) throw new HttpException(400, "Week does not exist");
+
     return week;
 };
