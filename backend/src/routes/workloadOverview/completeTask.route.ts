@@ -79,13 +79,10 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
     };
 
     // Get enrolment
-    const enrolment: QueryDataEnrolment | null = await Enrolment.findOne(
-        {
-            course: courseId,
-            student: studentId,
-        },
-        "workloadCompletion",
-    )
+    const enrolment: QueryDataEnrolment | null = await Enrolment.findOne({
+        course: courseId,
+        student: studentId,
+    })
         .populate("workloadCompletion", "_id week")
         .populate({ path: "workloadCompletion", populate: "week" })
         .exec()
@@ -98,6 +95,17 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
     const existingCompletion = enrolment.workloadCompletion.find(
         (element) => element.week._id.toString() === weekId,
     );
+
+    //Calculate kudos to be awarded
+    const courseKudos = await getKudos(courseId);
+    const week = await Week.findOne({ _id: weekId })
+        .catch(() => null);
+    if (week === null) throw new HttpException(400, `Week with _id ${weekId} not found`);
+
+    const timeSubmitted = Date.now() / 1000;
+    const daysEarly = -(dayjs.unix(timeSubmitted).diff(dayjs(week.deadline)) / 1000) / 3600 / 24;
+    let extraKudos = 0.1 * Math.floor(daysEarly);
+    if (extraKudos > 0.7) extraKudos = 0.7; // caps off at 0.7 as the week is 7 days long
 
     let workloadCompletionId;
 
@@ -117,8 +125,11 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
             });
 
         enrolment.workloadCompletion.push(workloadCompletionId);
+        //Add kudos to enrolment for dashboard updates
+        enrolment.kudosEarned = enrolment.kudosEarned + (1 + extraKudos)*courseKudos.weeklyTaskCompletion;
 
         await enrolment.save().catch((err) => {
+            logger.error(err);
             throw new HttpException(500, "Failed to add new workload completion to enrolment", err);
         });
     } else {
@@ -142,17 +153,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         workloadCompletionId = workload._id;
     }
 
-    //Give kudos
-    //Get kudos scaling factor for earlier completion
-    const week = await Week.findOne({ _id: weekId }).catch(() => null);
-    if (week === null) throw new HttpException(400, `Week with _id ${weekId} not found`);
-
-    const timeSubmitted = Date.now() / 1000;
-    const daysEarly = -(dayjs.unix(timeSubmitted).diff(dayjs(week.deadline)) / 1000) / 3600 / 24;
-    let extraKudos = 0.1 * Math.floor(daysEarly);
-    if (extraKudos > 0.7) extraKudos = 0.7; // caps off at 0.7 as the week is 7 days long
-
-    const courseKudos = await getKudos(courseId);
+    //Give kudos to student to spend
     const myStudent = await User.findOne({ _id: studentId })
         .select("_id first_name kudos")
         .exec()

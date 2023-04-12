@@ -26,6 +26,20 @@ type UserDetailsResponsePayload = {
   userDetails: UserDetails;
 };
 
+export type ScheduleItemType = {
+  courseCode: string;
+  courseTitle: string;
+  type: string;
+  title: string;
+  deadline: string;
+  deadlineTimestamp: number;
+  start: string;
+};
+
+type UserScheduleResponsePayload = {
+  deadlines: Array<ScheduleItemType>;
+};
+
 export const getBackendLink = (type: BackendLinkType) => {
   return type === "client" ? CLIENT_BACKEND_URL : SSR_BACKEND_URL;
 };
@@ -50,6 +64,14 @@ export const getUserDetails = (token: string | null, email: string, type: Backen
     `${getBackendLink(type)}/user/details`,
     token,
     { email: email },
+  );
+};
+
+export const getUserSchedule = (token: string | null, type: BackendLinkType) => {
+  return apiGet<Record<string, never>, UserScheduleResponsePayload>(
+    `${getBackendLink(type)}/user/schedule`,
+    token,
+    {},
   );
 };
 
