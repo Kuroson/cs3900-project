@@ -15,6 +15,9 @@ type QueryPayload = {
     weekId: string;
     title: string;
     description: string;
+    quizId?: string;
+    assignmentId?: string;
+    onlineClassId?: string;
 };
 
 /**
@@ -64,20 +67,23 @@ export const createTaskController = async (
  * @param description
  */
 export const createTask = async (
-    weekId: string,
-    title: string,
-    description: string,
+    queryBody: QueryPayload,
     firebase_uid: string,
 ): Promise<string> => {
     if (!(await checkAdmin(firebase_uid))) {
         throw new HttpException(403, "Must be an admin to create a task");
     }
 
+    const { weekId, title, description, quizId, assignmentId, onlineClassId } = queryBody;
+
     const week = await Week.findById(weekId).catch(() => null);
 
     if (week === null) {
         throw new HttpException(400, `Week, ${weekId}, does not exist`);
     }
+
+    // Check that only one of quiz, assignment and online class is selected
+    // Check that it actually exists.
 
     const newTask = new Task({
         title: title,
