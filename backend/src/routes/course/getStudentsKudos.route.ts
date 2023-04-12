@@ -6,10 +6,8 @@ import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/ut
 import { Request, Response } from "express";
 
 type StudentKudosInfo = {
-    first_name: string;
-    last_name: string;
-    avatar: string;
-    kudos: number;
+    kudosEarned: number;
+    student: { first_name: string; last_name: string; avatar: string; kudos: number };
 };
 
 type ResponsePayload = {
@@ -68,11 +66,11 @@ export const getStudentsKudos = async (courseId: string): Promise<StudentKudosIn
         .populate({
             path: "students",
             model: "Enrolment",
-            select: "student",
+            select: "student kudosEarned",
             populate: {
                 path: "student",
                 model: "User",
-                select: "_id first_name last_name avatar kudos",
+                select: "_id first_name last_name avatar",
             },
         })
         .exec()
@@ -80,9 +78,9 @@ export const getStudentsKudos = async (courseId: string): Promise<StudentKudosIn
 
     if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
 
-    let students = course.students as StudentKudosInfo[];
+    const students = course.students as StudentKudosInfo[];
 
-    students.sort((a, b) => b.kudos - a.kudos);
+    students.sort((a, b) => b.kudosEarned - a.kudosEarned);
 
     return students;
 };
