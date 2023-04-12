@@ -14,7 +14,7 @@ import { logger } from "./logger";
  * tasks assigned that are near their due date.
  */
 export const checkWorkloadNotifications = async () => {
-    console.log("Checking for required notifications every hour");
+    console.log("Checking for required notifications every hour: " + new Date());
 
     type CourseType = Omit<Omit<CourseInterface, "workloadOverview">, "students"> & {
         workloadOverview: Omit<WorkloadOverviewInterface, "weeks"> & {
@@ -75,7 +75,6 @@ export const checkWorkloadNotifications = async () => {
             const timeToDeadline =
                 new Date(Date.parse(week.deadline)).getTime() - new Date().getTime();
             const minutesToDeadline = Math.round(timeToDeadline / 60000);
-            console.log(new Date());
 
             if (minutesToDeadline <= 60 && minutesToDeadline > 0) {
                 // Get students that need to be notified

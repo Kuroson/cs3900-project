@@ -3,13 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, TextField } from "@mui/material";
 import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -101,9 +95,7 @@ const Admin = (): JSX.Element => {
             <div>
               <Accordion elevation={3} className="mt-5 mb-5">
                 <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography>
-                    <h3>Archived Courses</h3>
-                  </Typography>
+                  <h3>Archived Courses</h3>
                 </AccordionSummary>
                 <AccordionDetails>
                   {archivedCourses?.map((course, index) => (
