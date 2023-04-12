@@ -17,6 +17,7 @@ export interface EnrolmentInterface extends Document {
     quizAttempts: Types.DocumentArray<QuizAttemptInterface["_id"]>;
     assignmentSubmissions: Types.DocumentArray<AssignmentSubmissionInterface["_id"]>;
     workloadCompletion: Types.DocumentArray<WorkloadCompletionInterface["_id"]>;
+    kudosEarned: number;
 }
 
 const enrolmentSchema: Schema = new Schema<EnrolmentInterface>({
@@ -29,6 +30,7 @@ const enrolmentSchema: Schema = new Schema<EnrolmentInterface>({
     workloadCompletion: [
         { type: Schema.Types.ObjectId, ref: "WorkloadCompletion", required: true },
     ],
+    kudosEarned: { type: Number, default: 0, required: true },
 });
 
 const Enrolment = model<EnrolmentInterface & Document>("Enrolment", enrolmentSchema);
