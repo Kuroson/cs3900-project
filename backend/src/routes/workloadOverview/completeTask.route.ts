@@ -98,8 +98,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
 
     //Calculate kudos to be awarded
     const courseKudos = await getKudos(courseId);
-    const week = await Week.findOne({ _id: weekId })
-        .catch(() => null);
+    const week = await Week.findOne({ _id: weekId }).catch(() => null);
     if (week === null) throw new HttpException(400, `Week with _id ${weekId} not found`);
 
     const timeSubmitted = Date.now() / 1000;
@@ -126,7 +125,8 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
 
         enrolment.workloadCompletion.push(workloadCompletionId);
         //Add kudos to enrolment for dashboard updates
-        enrolment.kudosEarned = enrolment.kudosEarned + (1 + extraKudos)*courseKudos.weeklyTaskCompletion;
+        enrolment.kudosEarned =
+            enrolment.kudosEarned + (1 + extraKudos) * courseKudos.weeklyTaskCompletion;
 
         await enrolment.save().catch((err) => {
             logger.error(err);

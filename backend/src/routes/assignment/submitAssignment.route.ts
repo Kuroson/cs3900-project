@@ -117,17 +117,18 @@ export const submitAssignment = async (
         });
 
     enrolment.assignmentSubmissions.push(submissionId);
-    
+
     //Calculate kudos to be earned for submitting this assignment
     const courseKudos = await getKudos(courseId);
     const daysEarly =
         -(dayjs.unix(timeSubmitted).diff(dayjs(assignment.deadline)) / 1000) / 3600 / 24;
     let extraKudos = 0.1 * Math.floor(daysEarly);
     // caps off at 0.5
-    if (extraKudos > 0.5) extraKudos = 0.5; 
+    if (extraKudos > 0.5) extraKudos = 0.5;
 
     //Add to enrolment for leaderboard updates
-    enrolment.kudosEarned = enrolment.kudosEarned + (1 + extraKudos)*courseKudos.assignmentCompletion;
+    enrolment.kudosEarned =
+        enrolment.kudosEarned + (1 + extraKudos) * courseKudos.assignmentCompletion;
 
     await enrolment.save().catch((err) => {
         logger.error(err);
