@@ -65,6 +65,7 @@ export const getStudentsController = async (
  */
 export const getStudents = async (courseId: string): Promise<StudentInfo[]> => {
     // 1. Find the course
+    Enrolment; //Keep this in. We need it so that the Mongoose DB can recall the schema when fetching records
     const course = await Course.findById(courseId, "students")
         .populate({
             path: "students",
