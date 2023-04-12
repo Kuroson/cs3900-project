@@ -129,3 +129,28 @@ export const removeStudentFromCourse = (
     { studentEmails: [email], courseId: courseId },
   );
 };
+
+type GetStudentKudosPayloadRequest = {
+  courseId: string;
+};
+
+type GetStudentKudosPayloadResponse = {
+  kudosEarned: number;
+  student: {
+    first_name: string;
+    last_name: string;
+    avatar: string;
+  };
+};
+
+export const getStudentsKudos = (
+  token: string | null,
+  payload: { courseId: string },
+  type: BackendLinkType,
+) => {
+  return apiGet<GetStudentKudosPayloadRequest, GetStudentKudosPayloadResponse>(
+    `${getBackendLink(type)}/course/studentsKudos`,
+    token,
+    payload,
+  );
+};
