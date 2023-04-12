@@ -25,6 +25,7 @@ import { getCourseController } from "./course/getCourse.route";
 import { getCoursePageController } from "./course/getCoursePage.route";
 import { getKudos, getKudosController } from "./course/getKudosValues.route";
 import { getStudentsController } from "./course/getStudents.route";
+import { getStudentsKudosController } from "./course/getStudentsKudos.route";
 import { removeStudentsController } from "./course/removeStudents.route";
 import { updateCourseController } from "./course/updateCourse.route";
 import { downloadFileController } from "./file/downloadFile.route";
@@ -105,6 +106,7 @@ indexRouter.put("/course/students/add", adminRoute(addStudentsController));
 indexRouter.put("/course/students/remove", adminRoute(removeStudentsController));
 indexRouter.post("/course/archive", adminRoute(archiveCourseController));
 indexRouter.get("/course/kudos", getKudosController);
+indexRouter.get("/course/studentskudos", getStudentsKudosController);
 
 // Page routes
 indexRouter.get("/page", getPagesController);
