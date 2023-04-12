@@ -7,7 +7,7 @@ import { Request, Response } from "express";
 
 type StudentKudosInfo = {
     kudosEarned: number;
-    student: { first_name: string; last_name: string; avatar: string; kudos: number };
+    student: { first_name: string; last_name: string; avatar: string };
 };
 
 type ResponsePayload = {
