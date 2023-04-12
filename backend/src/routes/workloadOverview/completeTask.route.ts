@@ -2,10 +2,12 @@ import { HttpException } from "@/exceptions/HttpException";
 import Enrolment, { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
 import WorkloadCompletion from "@/models/course/enrolment/workloadCompletion.model";
 import Task from "@/models/course/workloadOverview/Task.model";
+import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
+import dayjs from "dayjs";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 import { getKudos } from "../course/getKudosValues.route";
@@ -93,7 +95,17 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
     const existingCompletion = enrolment.workloadCompletion.find(
         (element) => element.week._id.toString() === weekId,
     );
+
+    //Calculate kudos to be awarded
     const courseKudos = await getKudos(courseId);
+    const week = await Week.findOne({ _id: weekId }).catch(() => null);
+    if (week === null) throw new HttpException(400, `Week with _id ${weekId} not found`);
+
+    const timeSubmitted = Date.now() / 1000;
+    const daysEarly = -(dayjs.unix(timeSubmitted).diff(dayjs(week.deadline)) / 1000) / 3600 / 24;
+    let extraKudos = 0.1 * Math.floor(daysEarly);
+    if (extraKudos > 0.7) extraKudos = 0.7; // caps off at 0.7 as the week is 7 days long
+
     let workloadCompletionId;
 
     if (existingCompletion === undefined) {
@@ -113,7 +125,8 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
 
         enrolment.workloadCompletion.push(workloadCompletionId);
         //Add kudos to enrolment for dashboard updates
-        enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostCreation;
+        enrolment.kudosEarned =
+            enrolment.kudosEarned + (1 + extraKudos) * courseKudos.weeklyTaskCompletion;
 
         await enrolment.save().catch((err) => {
             logger.error(err);
@@ -140,14 +153,14 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         workloadCompletionId = workload._id;
     }
 
-    //Give kudos
+    //Give kudos to student to spend
     const myStudent = await User.findOne({ _id: studentId })
         .select("_id first_name kudos")
         .exec()
         .catch(() => null);
 
     if (myStudent === null) throw new HttpException(400, `Student of ${studentId} does not exist`);
-    myStudent.kudos = myStudent.kudos + courseKudos.weeklyTaskCompletion;
+    myStudent.kudos = myStudent.kudos + (1 + extraKudos) * courseKudos.weeklyTaskCompletion;
 
     await myStudent.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to user", err);
