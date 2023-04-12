@@ -58,11 +58,11 @@ const StudentAssignment: React.FC<{
 
   const handleSubmitAssignment = async () => {
     if (file === null) return;
-
+    const timeSubmitted = String(Date.now() / 1000);
     const [res, err] = await submitAssignment(
       await authUser.getIdToken(),
       file,
-      { courseId, assignmentId, title },
+      { courseId, assignmentId, title, timeSubmitted },
       "client",
     );
 

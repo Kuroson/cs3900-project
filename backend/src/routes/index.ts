@@ -15,6 +15,8 @@ import { getAssignmentsController } from "./assignment/getAssignments.route";
 import { gradeAssignmentController } from "./assignment/gradeAssignment.route";
 import { submitAssignmentController } from "./assignment/submitAssignment.route";
 import { updateAssignmentController } from "./assignment/updateAssignment.route";
+import { avatarController } from "./avatars/avatar.route";
+import { buyAvatarController } from "./avatars/buyAvatar.route";
 import { addStudentsController } from "./course/addStudents.route";
 import { archiveCourseController } from "./course/archiveCourse.route";
 import { createCourseController } from "./course/createCourse.route";
@@ -60,6 +62,7 @@ import { getSubmissionsController } from "./quiz/getSubmissions.route";
 import { gradeQuestionController } from "./quiz/gradeQuestion.route";
 import { startQuizController } from "./quiz/startQuiz.route";
 import { updateQuizController } from "./quiz/updateQuiz.route";
+import { getScheduleController } from "./user/getSchedule.route";
 import { registerController } from "./user/register.route";
 import { userDetailsController } from "./user/userDetails.route";
 import { completeTaskController } from "./workloadOverview/completeTask.route";
@@ -77,6 +80,10 @@ export const indexRouter = Router();
 // Base routes
 indexRouter.get("/", indexController);
 
+// Avatar routes
+indexRouter.get("/avatars", avatarController);
+indexRouter.post("/avatar/buy", buyAvatarController);
+
 // Admin routes
 indexRouter.get("/admin", adminController);
 indexRouter.get("/admin/access", accessController);
@@ -85,6 +92,7 @@ indexRouter.put("/admin/instructor/set", adminRoute(adminInstructorSetController
 // User routes
 indexRouter.get("/user/details", userDetailsController);
 indexRouter.post("/user/register", registerController);
+indexRouter.get("/user/schedule", getScheduleController);
 
 // Course routes
 indexRouter.get("/course", getCourseController);

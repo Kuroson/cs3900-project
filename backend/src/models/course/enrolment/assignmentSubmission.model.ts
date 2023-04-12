@@ -9,6 +9,7 @@ export interface AssignmentSubmissionInterface extends Document {
     title: string;
     storedName: string;
     fileType: string;
+    timeSubmitted: number;
     mark?: number;
     comments?: string;
     successfulTags?: Types.Array<string>; // Should come from the list of tags stored in the course object
@@ -20,6 +21,7 @@ const assignmentSubmissionSchema: Schema = new Schema<AssignmentSubmissionInterf
     title: { type: String, required: true },
     storedName: { type: String, required: true },
     fileType: { type: String, required: true },
+    timeSubmitted: { type: Number, required: true },
     mark: { type: Number },
     comments: { type: String },
     successfulTags: [{ type: String }],

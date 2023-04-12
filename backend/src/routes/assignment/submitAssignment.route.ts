@@ -1,15 +1,19 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Assignment from "@/models/course/assignment/assignment.model";
 import AssignmentSubmission from "@/models/course/enrolment/assignmentSubmission.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import User from "@/models/user.model";
 import { checkAuth, recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
+import { time } from "console";
+import dayjs from "dayjs";
 import { Request, Response } from "express";
 import { getKudos } from "../course/getKudosValues.route";
 
 type ResponsePayload = {
     submissionId: string;
+    timeSubmitted: number;
     fileType: string;
     linkToSubmission: string; // i.e., download link
 };
@@ -64,7 +68,7 @@ export const submitAssignmentController = async (
  *
  * @param queryBody Arguments containing the fields defined above in QueryPayload
  * @param firebase_uid Unique identifier of user
- * @throws { HttpException } Save/recall error
+ * @throws { HttpException } Save/recall error, not before deadline
  * @returns Ret data based on ResponsePayload above
  */
 export const submitAssignment = async (
@@ -80,14 +84,28 @@ export const submitAssignment = async (
         course: courseId,
     }).catch((err) => null);
     if (enrolment === null) {
-        throw new HttpException(400, "Failed to fetch enrolment");
+        throw new HttpException(400, "Failed to recall enrolment");
     }
 
+    // Fail if submission after due date
+    const assignment = await Assignment.findById(assignmentId).catch((err) => null);
+    if (assignment === null) {
+        throw new HttpException(400, "Failed to recall assignment");
+    }
+
+    const deadline = new Date(Date.parse(assignment.deadline));
+    const now = new Date();
+
+    if (now > deadline) {
+        throw new HttpException(400, "Assignment already closed");
+    }
+    const timeSubmitted = Date.now() / 1000;
     const submissionId = await new AssignmentSubmission({
         assignment: assignmentId,
         title,
         storedName: file.fileRef.name,
         fileType: file.mimetype,
+        timeSubmitted: timeSubmitted,
     })
         .save()
         .then((res) => {
@@ -99,13 +117,25 @@ export const submitAssignment = async (
         });
 
     enrolment.assignmentSubmissions.push(submissionId);
+
+    //Calculate kudos to be earned for submitting this assignment
+    const courseKudos = await getKudos(courseId);
+    const daysEarly =
+        -(dayjs.unix(timeSubmitted).diff(dayjs(assignment.deadline)) / 1000) / 3600 / 24;
+    let extraKudos = 0.1 * Math.floor(daysEarly);
+    // caps off at 0.5
+    if (extraKudos > 0.5) extraKudos = 0.5;
+
+    //Add to enrolment for leaderboard updates
+    enrolment.kudosEarned =
+        enrolment.kudosEarned + (1 + extraKudos) * courseKudos.assignmentCompletion;
+
     await enrolment.save().catch((err) => {
         logger.error(err);
         throw new HttpException(500, "Failed to save updated enrolment");
     });
 
-    //Update kudos for user as they have submitted quiz
-    const courseKudos = await getKudos(courseId);
+    //Get and save to student kudos for spending
     const myStudent = await User.findOne({ _id: enrolment.student })
         .select("_id kudos")
         .exec()
@@ -113,7 +143,7 @@ export const submitAssignment = async (
 
     if (myStudent === null)
         throw new HttpException(400, `Student of ${enrolment.student} does not exist`);
-    myStudent.kudos = myStudent.kudos + courseKudos.assignmentCompletion;
+    myStudent.kudos = myStudent.kudos + (1 + extraKudos) * courseKudos.assignmentCompletion;
 
     await myStudent.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to user", err);
@@ -121,6 +151,7 @@ export const submitAssignment = async (
 
     return {
         submissionId,
+        timeSubmitted,
         fileType: file.mimetype,
         linkToSubmission: await recallFileUrl(file.fileRef.name),
     };
