@@ -50,7 +50,7 @@ describe("Test getting course pages", () => {
         const coursePages = await getPages(courseId);
         expect(coursePages.length).toBe(2);
         expect(coursePages[0]._id).toEqual(new mongoose.Types.ObjectId(pageId1));
-        expect(coursePages[1]._id).toEqual(pageId3);
+        expect(coursePages[1]._id).toEqual(new mongoose.Types.ObjectId(pageId3));
 
         // Delete the pages
         await deletePage({ courseId, pageId: pageId1 }, `acc${id}`);
