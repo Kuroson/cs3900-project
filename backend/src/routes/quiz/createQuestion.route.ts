@@ -93,6 +93,11 @@ export const createQuestion = async (queryBody: QueryPayload, firebase_uid: stri
 
     const { courseId, quizId, text, type, marks, choices, tag } = queryBody;
 
+    // Check mark valid
+    if (marks < 0) {
+        throw new HttpException(400, "Mark must be positive");
+    }
+
     // Get course tags
     const course = await Course.findById(courseId).catch((err) => null);
     if (course === null) {

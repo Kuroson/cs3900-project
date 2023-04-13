@@ -97,7 +97,10 @@ export const gradeAssignment = async (queryBody: QueryPayload, firebase_uid: str
         throw new HttpException(400, "Failed to recall assignment");
     }
 
-    if (mark > assignment.marksAvailable) {
+    // Check mark valid
+    if (mark < 0) {
+        throw new HttpException(400, "Mark awarded must be positive");
+    } else if (mark > assignment.marksAvailable) {
         throw new HttpException(400, "Cannot award more than maximum mark");
     }
 

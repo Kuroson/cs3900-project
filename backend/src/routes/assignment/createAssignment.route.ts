@@ -84,6 +84,11 @@ export const createAssignment = async (queryBody: QueryPayload, firebase_uid: st
 
     const { courseId, title, description, deadline, marksAvailable, tags } = queryBody;
 
+    // Check mark valid
+    if (marksAvailable < 0) {
+        throw new HttpException(400, "Mark must be positive");
+    }
+
     const course = await Course.findById(courseId)
         .exec()
         .catch((err) => null);

@@ -224,7 +224,9 @@ export const getSummary = async (queryBody: QueryPayload, firebase_uid: string) 
 
         for (const question of studentQuestions.questions) {
             if (!(question._id in retData.questions)) {
-                const questionInfo = await Question.findById(question._id).catch((err) => null);
+                const questionInfo = await Question.findById(question._id)
+                    .populate({ path: "choices", model: "Choice" })
+                    .catch((err) => null);
                 if (questionInfo === null) {
                     throw new HttpException(500, "Failed to recall question");
                 }

@@ -93,6 +93,11 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     }
 
     if (maxMarks !== undefined) {
+        // Check mark valid
+        if (maxMarks < 0) {
+            throw new HttpException(400, "Mark must be positive");
+        }
+
         quiz.maxMarks = maxMarks;
     }
 
