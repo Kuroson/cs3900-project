@@ -16,11 +16,11 @@ type AdminGradeTableProps = {
 };
 
 const AdminGradeTable: React.FC<AdminGradeTableProps> = ({ tableTitle, data }) => {
-  const [order, setOrder] = React.useState<Array<Array<any>>>([]);
+  const [order, setOrder] = React.useState<Array<Array<string | number>>>([]);
 
   React.useEffect(() => {
     // Organise order
-    const constructOrder: Array<Array<any>> = [];
+    const constructOrder: Array<Array<string | number>> = [];
     if (tableTitle === "Quiz") {
       for (const item of Object.keys(data.quizzes)) {
         constructOrder.push([item, data.quizzes[item].title, data.quizzes[item].maxMarks]);
@@ -31,8 +31,7 @@ const AdminGradeTable: React.FC<AdminGradeTableProps> = ({ tableTitle, data }) =
       }
     }
     setOrder(constructOrder);
-    console.log(data);
-  }, []);
+  }, [tableTitle, data]);
 
   return (
     <>

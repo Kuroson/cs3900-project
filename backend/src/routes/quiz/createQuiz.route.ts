@@ -118,5 +118,5 @@ export const createQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(500, "Failed to save updated course");
     });
 
-    return myQuiz._id;
+    return myQuiz._id.toString() as string;
 };

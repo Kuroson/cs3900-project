@@ -7,7 +7,7 @@ import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { updatePage } from "@/routes/page/updatePage.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
+import mongoose, { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -58,7 +58,7 @@ describe("Test getting a page", () => {
 
         const pageState = await getPage(pageId, courseId);
 
-        expect(pageState._id).toEqual(pageId);
+        expect(pageState._id).toEqual(new mongoose.Types.ObjectId(pageId));
         expect(pageState.title).toBe("Test page");
         expect(pageState.resources.length).toBe(2);
         expect(pageState.resources[0].title).toBe("res1");

@@ -5,7 +5,7 @@ import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { getPages } from "@/routes/page/getPages.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
+import mongoose, { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -34,7 +34,7 @@ describe("Test getting course pages", () => {
 
         const coursePages = await getPages(courseId);
         expect(coursePages.length).toBe(1);
-        expect(coursePages[0]._id).toEqual(pageId);
+        expect(coursePages[0]._id).toEqual(new mongoose.Types.ObjectId(pageId));
 
         // Delete the page
         await deletePage({ courseId, pageId }, `acc${id}`);
@@ -49,7 +49,7 @@ describe("Test getting course pages", () => {
 
         const coursePages = await getPages(courseId);
         expect(coursePages.length).toBe(2);
-        expect(coursePages[0]._id).toEqual(pageId1);
+        expect(coursePages[0]._id).toEqual(new mongoose.Types.ObjectId(pageId1));
         expect(coursePages[1]._id).toEqual(pageId3);
 
         // Delete the pages

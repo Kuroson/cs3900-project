@@ -8,7 +8,7 @@ import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteSection } from "@/routes/page/deleteSection.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
+import mongoose, { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -49,7 +49,7 @@ describe("Test adding a section to a page", () => {
 
         expect(myPage === null).toBe(false);
         expect(myPage?.sections.length).toBe(1);
-        expect(myPage?.sections[0]).toEqual(sectionId);
+        expect(myPage?.sections[0].toString()).toEqual(sectionId);
 
         const mySection = await Section.findById(sectionId);
         expect(mySection === null).toBe(false);
@@ -75,7 +75,7 @@ describe("Test adding a section to a page", () => {
 
         expect(myPage === null).toBe(false);
         expect(myPage?.sections.length).toBe(1);
-        expect(myPage?.sections[0]).toEqual(sectionId);
+        expect(myPage?.sections[0]).toEqual(new mongoose.Types.ObjectId(sectionId));
 
         const mySection = await Section.findById(sectionId);
         expect(mySection === null).toBe(false);

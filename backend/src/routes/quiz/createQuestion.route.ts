@@ -163,5 +163,5 @@ export const createQuestion = async (queryBody: QueryPayload, firebase_uid: stri
         throw new HttpException(500, "Failed to save update quiz");
     });
 
-    return myQuestion._id;
+    return myQuestion._id.toString() as string;
 };

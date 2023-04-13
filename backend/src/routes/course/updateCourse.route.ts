@@ -111,6 +111,7 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
 
     if (tags !== undefined && tags.length !== 0) {
         myCourse.tags.length = 0;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         tags.forEach((tag) => myCourse.tags.addToSet(tag));
     }
 
@@ -146,7 +147,7 @@ export const updateCourse = async (queryBody: QueryPayload, firebase_uid: string
     const retCourseId = await myCourse
         .save()
         .then((res) => {
-            return res._id;
+            return res._id.toString() as string;
         })
         .catch((err) => {
             throw new HttpException(500, "Failed to update course", err);

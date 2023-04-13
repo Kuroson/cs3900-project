@@ -46,6 +46,7 @@ export const getUserId = async (firebase_uid: string) => {
     if (user === null) {
         throw new HttpException(400, "Failed to recall user");
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return user._id;
 };
 
@@ -79,6 +80,7 @@ export const adminRoute = (
                 return await adminFailed(req, res);
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return await routeHandler(req, res);
         } catch (error) {
             // Auth failed

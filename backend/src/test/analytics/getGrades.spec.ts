@@ -16,7 +16,7 @@ import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
 import { updateQuiz } from "@/routes/quiz/updateQuiz.route";
-import { disconnect } from "mongoose";
+import mongoose, { Mongoose, disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
@@ -200,7 +200,7 @@ describe("Test getting student grades", () => {
         expect(grades).toEqual({
             assignmentGrades: [
                 {
-                    assignmentId: assignmentId1,
+                    assignmentId: new mongoose.Types.ObjectId(assignmentId1),
                     title: "Test assignment",
                     maxMarks: 2,
                     marksAwarded: 1.75,
@@ -208,14 +208,14 @@ describe("Test getting student grades", () => {
                     imrpovementTags: ["tag4"],
                 },
                 {
-                    assignmentId: assignmentId2,
+                    assignmentId: new mongoose.Types.ObjectId(assignmentId2),
                     title: "Test assignment 2",
                     maxMarks: 3,
                 },
             ],
             quizGrades: [
                 {
-                    quizId,
+                    quizId: new mongoose.Types.ObjectId(quizId),
                     title: "Test quiz",
                     maxMarks: 1,
                     marksAwarded: 0.75,

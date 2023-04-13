@@ -86,7 +86,9 @@ describe("Test removing a student", () => {
         expect(students.length).toBe(3);
 
         // Parse each student id to string
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         const ourOutput = myCourse?.students.map((x) => stringifyOutput(x.student._id)) ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         const expectedStudentsIds = students.map((x) => stringifyOutput(x._id));
         expect(ourOutput.length).toBe(3);
         expect(ourOutput.sort()).toEqual(expectedStudentsIds.sort());

@@ -16,7 +16,7 @@ import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
 import { getUserId } from "@/utils/util";
-import { disconnect } from "mongoose";
+import mongoose, { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
@@ -223,19 +223,19 @@ describe("Test a course summary", () => {
                 ],
                 quizzes: {
                     [quizId]: {
-                        quizId: quizId,
+                        quizId: new mongoose.Types.ObjectId(quizId),
                         title: "Test quiz",
                         maxMarks: 1,
                     },
                 },
                 assignments: {
                     [assignmentId1]: {
-                        assignmentId: assignmentId1,
+                        assignmentId: new mongoose.Types.ObjectId(assignmentId1),
                         title: "Test assignment",
                         maxMarks: 2,
                     },
                     [assignmentId2]: {
-                        assignmentId: assignmentId2,
+                        assignmentId: new mongoose.Types.ObjectId(assignmentId2),
                         title: "Test assignment 2",
                         maxMarks: 3,
                     },
@@ -243,7 +243,7 @@ describe("Test a course summary", () => {
             },
             questions: {
                 [question2]: {
-                    questionId: question2,
+                    questionId: new mongoose.Types.ObjectId(question2),
                     count: 1,
                     text: "question 2 text",
                     tag: "tag2",

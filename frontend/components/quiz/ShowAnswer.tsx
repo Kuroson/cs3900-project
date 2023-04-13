@@ -32,7 +32,9 @@ const ShowAnswer: React.FC<ShowAnswerProps> = ({
           } ${String(questionInfo.marks)}`}
           color="bg-[#78909c]"
         />
-        {answerCount && <Tag text={`Answer count: ${answerCount}`} color="bg-[#78909c]" />}
+        {answerCount !== undefined && (
+          <Tag text={`Answer count: ${answerCount}`} color="bg-[#78909c]" />
+        )}
         {isAdmin && (isBeforeOpen ?? false) && (
           <IconButton aria-label="delete" onClick={handleDelete}>
             <DeleteIcon color="error" />

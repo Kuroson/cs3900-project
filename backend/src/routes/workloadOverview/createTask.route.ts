@@ -87,6 +87,7 @@ export const createTask = async (
     const taskId = await newTask
         .save()
         .then((res) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return res._id;
         })
         .catch((err) => {
@@ -100,5 +101,5 @@ export const createTask = async (
         throw new HttpException(500, "Failed to add task to week", err);
     });
 
-    return taskId.toString();
+    return taskId.toString() as string;
 };

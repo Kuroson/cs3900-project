@@ -131,5 +131,5 @@ export const createAssignment = async (queryBody: QueryPayload, firebase_uid: st
         throw new HttpException(500, "Failed to save updated course");
     });
 
-    return myAssignment._id;
+    return myAssignment._id.toString() as string;
 };

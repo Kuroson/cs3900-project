@@ -94,5 +94,5 @@ export const updateWeek = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(500, "Failed to save updated week", err);
     });
 
-    return myWeek._id;
+    return myWeek._id.toString() as string;
 };

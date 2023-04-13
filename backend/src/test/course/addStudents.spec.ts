@@ -68,6 +68,7 @@ describe("Test adding a student", () => {
         const student1 = students.at(0);
         const student2 = students.at(1);
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         const ourOutput = myCourse?.students.map((x) => stringifyOutput(x)) ?? []; // Parse each student id to string
         expect(ourOutput.length).toBe(2);
         expect(ourOutput).toContain(stringifyOutput(student1?.enrolments[0]._id));
@@ -111,8 +112,10 @@ describe("Test adding a student", () => {
 
         expect(students.length).toEqual(3);
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         const expectedStudentsIds = students.map((x) => stringifyOutput(x._id));
         // Parse each student id to string
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         const ourOutput = myCourse?.students.map((x) => stringifyOutput(x.student._id)) ?? [];
 
         expect(ourOutput.length).toBe(3);

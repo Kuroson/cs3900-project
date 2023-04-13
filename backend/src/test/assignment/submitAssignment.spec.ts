@@ -7,7 +7,7 @@ import { submitAssignment } from "@/routes/assignment/submitAssignment.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
-import { disconnect } from "mongoose";
+import mongoose, { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
@@ -70,7 +70,7 @@ describe("Test submitting an assignment", () => {
 
         expect(submission === null).toBe(false);
         expect(submission?.title).toBe("test title");
-        expect(submission?.assignment).toEqual(assignmentId);
+        expect(submission?.assignment).toEqual(new mongoose.Types.ObjectId(assignmentId));
         expect(submission?.storedName).toBe("TestFile.PNG");
         expect(submission?.fileType).toBe("image/png");
         expect(submission?.mark).toBe(undefined);
