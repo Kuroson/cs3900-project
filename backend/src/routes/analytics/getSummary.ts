@@ -1,7 +1,9 @@
 import { HttpException } from "@/exceptions/HttpException";
+import { AssignmentInterface } from "@/models/course/assignment/assignment.model";
 import Course, { CourseInterface } from "@/models/course/course.model";
 import { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
 import Question, { MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
+import { QuizInterface } from "@/models/course/quiz/quiz.model";
 import { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -137,23 +139,35 @@ export const getSummaryController = async (
 export const getSummary = async (queryBody: QueryPayload, firebase_uid: string) => {
     const { courseId } = queryBody;
 
-    type CourseType = Omit<CourseInterface, "students"> & {
+    type CourseType = Omit<CourseInterface, "students" | "quizzes" | "assignments"> & {
         students: Array<
             Omit<EnrolmentInterface, "student"> & {
                 student: UserInterface;
             }
         >;
+        quizzes: Array<QuizInterface>;
+        assignments: Array<AssignmentInterface>;
     };
 
     const course: CourseType | null = await Course.findById(courseId)
-        .populate({
-            path: "students",
-            model: "Enrolment",
-            populate: {
-                path: "student",
-                model: "User",
+        .populate([
+            {
+                path: "students",
+                model: "Enrolment",
+                populate: {
+                    path: "student",
+                    model: "User",
+                },
             },
-        })
+            {
+                path: "quizzes",
+                model: "Quiz",
+            },
+            {
+                path: "assignments",
+                model: "Assignment",
+            },
+        ])
         .catch((err) => {
             logger.error(err);
             return null;
@@ -238,39 +252,22 @@ export const getSummary = async (queryBody: QueryPayload, firebase_uid: string) 
         }
     }
 
-    // TODO: fill in assignments and quizzes
-    /*
-        const retData: ResponsePayload = {
-        tags: {
-            successTags: {},
-            improvementTags: {},
-        },
-        grades: {
-            studentGrades: [],
-            quizzes: {},
-            assignments: {},
-        },
-        questions: {},
-    };
+    // Fill in assignments and quizzes
+    for (const quiz of course.quizzes) {
+        retData.grades.quizzes[quiz._id] = {
+            quizId: quiz._id,
+            title: quiz.title,
+            maxMarks: quiz.maxMarks,
+        };
+    }
 
-    type QuizType = {
-        quizId: string;
-        title: string;
-        maxMarks: number;
-    };
-
-    type AssignmentType = {
-        assignmentId: string;
-        title: string;
-        maxMarks: number;
-    };
-
-    type GradeSummaryType = {
-        studentGrades: Array<StudentGradesType>;
-        quizzes: Record<string, QuizType>;
-        assignments: Record<string, AssignmentType>;
-    };
-    */
+    for (const assignment of course.assignments) {
+        retData.grades.assignments[assignment._id] = {
+            assignmentId: assignment._id,
+            title: assignment.title,
+            maxMarks: assignment.marksAvailable,
+        };
+    }
 
     return retData;
 };
