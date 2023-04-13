@@ -10,6 +10,7 @@ import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
+import AdminGradeTable from "components/analytics/AdminGradeTable";
 import PageHeader from "components/common/PageHeader";
 import ShowAnswer from "components/quiz/ShowAnswer";
 import { HttpException } from "util/HttpExceptions";
@@ -98,15 +99,15 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
                 <h3>Grades</h3>
               </AccordionSummary>
               <AccordionDetails>
-                {/* {grades && (
+                {summary?.grades && (
                   <>
-                    <GradeTable tableTitle="Quiz" rows={organiseQuizGrades(grades.quizGrades)} />
-                    <GradeTable
+                    <AdminGradeTable tableTitle="Quiz" data={summary.grades} />
+                    {/* <GradeTable
                       tableTitle="Assignment"
                       rows={organiseAssignmentGrades(grades.assignmentGrades)}
-                    />
+                    /> */}
                   </>
-                )} */}
+                )}
               </AccordionDetails>
             </Accordion>
             <Accordion elevation={3}>

@@ -13,23 +13,6 @@ import { getGrades } from "./getGrades.route";
 import { getQuestionAnalytics } from "./getQuestionAnalytics.route";
 import { getTagSummary } from "./getTagSummary.route";
 
-type AssignmentGrade = {
-    assignmentId: string;
-    title: string;
-    maxMarks: number;
-    marksAwarded?: number;
-    successTags?: Array<string>;
-    imrpovementTags?: Array<string>;
-};
-
-type QuizGrade = {
-    quizId: string;
-    title: string;
-    maxMarks: number;
-    marksAwarded?: number;
-    incorrectTags?: Array<string>;
-};
-
 type StudentInfo = {
     studentId: string;
     name: string;
@@ -37,8 +20,7 @@ type StudentInfo = {
 
 type StudentGradesType = {
     student: StudentInfo;
-    assignmentGrades: Array<AssignmentGrade>;
-    quizGrades: Array<QuizGrade>;
+    grades: Record<string, number>;
 };
 
 type QuizType = {
@@ -208,13 +190,26 @@ export const getSummary = async (queryBody: QueryPayload, firebase_uid: string) 
         }
 
         const studentGrades = await getGrades(queryBody, student.student.firebase_uid);
+        const grades: Record<string, number> = {};
+
+        for (const quiz of studentGrades.quizGrades) {
+            if (quiz.marksAwarded !== undefined) {
+                grades[quiz.quizId] = quiz.marksAwarded;
+            }
+        }
+
+        for (const assignment of studentGrades.assignmentGrades) {
+            if (assignment.marksAwarded !== undefined) {
+                grades[assignment.assignmentId] = assignment.marksAwarded;
+            }
+        }
+
         retData.grades.studentGrades.push({
             student: {
                 studentId: student.student._id,
                 name: `${student.student.first_name} ${student.student.last_name}`,
             },
-            assignmentGrades: studentGrades.assignmentGrades,
-            quizGrades: studentGrades.quizGrades,
+            grades,
         });
 
         const studentQuestions = await getQuestionAnalytics(

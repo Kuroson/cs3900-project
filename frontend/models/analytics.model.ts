@@ -62,8 +62,7 @@ type StudentInfo = {
 
 type StudentGradesType = {
   student: StudentInfo;
-  assignmentGrades: Array<AssignmentGrade>;
-  quizGrades: Array<QuizGrade>;
+  grades: Record<string, number>;
 };
 
 type QuizType = {
@@ -78,7 +77,7 @@ type AssignmentType = {
   maxMarks: number;
 };
 
-type GradeSummaryType = {
+export type GradeSummaryType = {
   studentGrades: Array<StudentGradesType>;
   quizzes: Record<string, QuizType>;
   assignments: Record<string, AssignmentType>;

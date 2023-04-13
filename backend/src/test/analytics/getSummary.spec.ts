@@ -215,30 +215,10 @@ describe("Test a course summary", () => {
                             studentId: await getUserId(`acc2${id}`),
                             name: "first_name last_name",
                         },
-                        assignmentGrades: [
-                            {
-                                assignmentId: assignmentId1,
-                                title: "Test assignment",
-                                maxMarks: 2,
-                                marksAwarded: 1.75,
-                                successTags: ["tag1", "tag2"],
-                                imrpovementTags: ["tag4"],
-                            },
-                            {
-                                assignmentId: assignmentId2,
-                                title: "Test assignment 2",
-                                maxMarks: 3,
-                            },
-                        ],
-                        quizGrades: [
-                            {
-                                quizId: quizId,
-                                title: "Test quiz",
-                                maxMarks: 1,
-                                marksAwarded: 0.75,
-                                incorrectTags: ["tag2"],
-                            },
-                        ],
+                        grades: {
+                            [assignmentId1]: 1.75,
+                            [quizId]: 0.75,
+                        },
                     },
                 ],
                 quizzes: {
