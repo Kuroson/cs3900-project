@@ -71,7 +71,7 @@ export const adminRoute = (
 ): ((req: Request, res: Response) => Promise<void>) => {
     return async (req, res) => {
         try {
-            const authUser = await checkAuth(req); // TODO: HERE
+            const authUser = await checkAuth(req);
             if (!(await checkAdmin(authUser.uid))) {
                 const adminFailed = async (req: Request, res: Response) => {
                     return res.status(403).json({ message: "Must be an admin to access route" });

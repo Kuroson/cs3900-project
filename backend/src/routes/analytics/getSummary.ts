@@ -1,20 +1,87 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course, { CourseInterface } from "@/models/course/course.model";
 import { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
+import Question, { MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
 import { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { getGrades } from "./getGrades.route";
+import { getQuestionAnalytics } from "./getQuestionAnalytics.route";
 import { getTagSummary } from "./getTagSummary.route";
+
+type AssignmentGrade = {
+    assignmentId: string;
+    title: string;
+    maxMarks: number;
+    marksAwarded?: number;
+    successTags?: Array<string>;
+    imrpovementTags?: Array<string>;
+};
+
+type QuizGrade = {
+    quizId: string;
+    title: string;
+    maxMarks: number;
+    marksAwarded?: number;
+    incorrectTags?: Array<string>;
+};
+
+type StudentInfo = {
+    studentId: string;
+    name: string;
+};
+
+type StudentGradesType = {
+    student: StudentInfo;
+    assignmentGrades: Array<AssignmentGrade>;
+    quizGrades: Array<QuizGrade>;
+};
+
+type QuizType = {
+    quizId: string;
+    title: string;
+    maxMarks: number;
+};
+
+type AssignmentType = {
+    assignmentId: string;
+    title: string;
+    maxMarks: number;
+};
+
+type GradeSummaryType = {
+    studentGrades: Array<StudentGradesType>;
+    quizzes: Record<string, QuizType>;
+    assignments: Record<string, AssignmentType>;
+};
 
 type TagSummaryType = {
     successTags: Record<string, number>;
     improvementTags: Record<string, number>;
 };
 
+type ChoiceInfo = {
+    choiceId: string;
+    text: string;
+    correct: boolean;
+};
+
+type QuestionInfo = {
+    questionId: string;
+    count: number;
+    text: string;
+    tag: string;
+    type: string;
+    marks: number;
+    choices?: Array<ChoiceInfo>;
+};
+
 type ResponsePayload = {
     tags: TagSummaryType;
+    grades: GradeSummaryType;
+    questions: Record<string, QuestionInfo>;
 };
 
 type QueryPayload = {
@@ -100,6 +167,12 @@ export const getSummary = async (queryBody: QueryPayload, firebase_uid: string) 
             successTags: {},
             improvementTags: {},
         },
+        grades: {
+            studentGrades: [],
+            quizzes: {},
+            assignments: {},
+        },
+        questions: {},
     };
 
     // For each student, get their tags and then add to global
@@ -119,7 +192,85 @@ export const getSummary = async (queryBody: QueryPayload, firebase_uid: string) 
             }
             retData.tags.improvementTags[tag] += count;
         }
+
+        const studentGrades = await getGrades(queryBody, student.student.firebase_uid);
+        retData.grades.studentGrades.push({
+            student: {
+                studentId: student.student._id,
+                name: `${student.student.first_name} ${student.student.last_name}`,
+            },
+            assignmentGrades: studentGrades.assignmentGrades,
+            quizGrades: studentGrades.quizGrades,
+        });
+
+        const studentQuestions = await getQuestionAnalytics(
+            queryBody,
+            student.student.firebase_uid,
+        );
+
+        for (const question of studentQuestions.questions) {
+            if (!(question._id in retData.questions)) {
+                const questionInfo = await Question.findById(question._id).catch((err) => null);
+                if (questionInfo === null) {
+                    throw new HttpException(500, "Failed to recall question");
+                }
+                retData.questions[questionInfo._id] = {
+                    questionId: questionInfo._id,
+                    count: 0,
+                    text: questionInfo.text,
+                    tag: questionInfo.tag,
+                    type: questionInfo.type,
+                    marks: questionInfo.marks,
+                };
+                if (questionInfo.type === MULTIPLE_CHOICE) {
+                    retData.questions[questionInfo._id].choices = [];
+                    for (const choice of questionInfo.choices ?? []) {
+                        retData.questions[questionInfo._id].choices?.push({
+                            choiceId: choice._id,
+                            text: choice.text,
+                            correct: choice.correct,
+                        });
+                    }
+                }
+            }
+
+            retData.questions[question._id].count += 1;
+        }
     }
+
+    // TODO: fill in assignments and quizzes
+    /*
+        const retData: ResponsePayload = {
+        tags: {
+            successTags: {},
+            improvementTags: {},
+        },
+        grades: {
+            studentGrades: [],
+            quizzes: {},
+            assignments: {},
+        },
+        questions: {},
+    };
+
+    type QuizType = {
+        quizId: string;
+        title: string;
+        maxMarks: number;
+    };
+
+    type AssignmentType = {
+        assignmentId: string;
+        title: string;
+        maxMarks: number;
+    };
+
+    type GradeSummaryType = {
+        studentGrades: Array<StudentGradesType>;
+        quizzes: Record<string, QuizType>;
+        assignments: Record<string, AssignmentType>;
+    };
+    */
 
     return retData;
 };
