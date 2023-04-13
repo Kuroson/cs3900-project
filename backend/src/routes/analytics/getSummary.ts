@@ -189,7 +189,7 @@ export const getSummary = async (queryBody: QueryPayload, firebase_uid: string) 
             retData.tags.improvementTags[tag] += count;
         }
 
-        const studentGrades = await getGrades(queryBody, student.student.firebase_uid);
+        const studentGrades = await getGrades(queryBody, student.student.firebase_uid, true);
         const grades: Record<string, number> = {};
 
         for (const quiz of studentGrades.quizGrades) {

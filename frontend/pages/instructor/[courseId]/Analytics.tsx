@@ -102,10 +102,7 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
                 {summary?.grades && (
                   <>
                     <AdminGradeTable tableTitle="Quiz" data={summary.grades} />
-                    {/* <GradeTable
-                      tableTitle="Assignment"
-                      rows={organiseAssignmentGrades(grades.assignmentGrades)}
-                    /> */}
+                    <AdminGradeTable tableTitle="Assignment" data={summary.grades} />
                   </>
                 )}
               </AccordionDetails>

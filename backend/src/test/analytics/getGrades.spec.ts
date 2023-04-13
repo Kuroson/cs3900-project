@@ -15,6 +15,7 @@ import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
+import { updateQuiz } from "@/routes/quiz/updateQuiz.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
@@ -120,6 +121,8 @@ describe("Test getting student grades", () => {
             },
             `acc2${id}`,
         );
+        const newClose = new Date(Date.now() - oneDay / 2).toString();
+        await updateQuiz({ quizId, close: newClose }, `acc1${id}`);
 
         // Grade quiz
         const submissions = await getSubmissions({ courseId, quizId }, `acc1${id}`);

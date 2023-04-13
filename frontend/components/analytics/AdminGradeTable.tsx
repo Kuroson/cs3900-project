@@ -50,7 +50,7 @@ const AdminGradeTable: React.FC<AdminGradeTableProps> = ({ tableTitle, data }) =
                   <b>Student</b>
                 </TableCell>
                 {order.map((item, idx) => (
-                  <TableCell key={idx}>
+                  <TableCell key={idx} align="center">
                     <b>
                       {item[1]} (/{item[2]})
                     </b>
@@ -72,22 +72,12 @@ const AdminGradeTable: React.FC<AdminGradeTableProps> = ({ tableTitle, data }) =
                       {item[0] in studentGrade.grades ? (
                         <>{studentGrade.grades[item[0]]}</>
                       ) : (
-                        <>?</>
+                        <>-</>
                       )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))}
-
-              {/* {rows.map((row) => (
-                <TableRow key={row.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                  <TableCell component="th" scope="row">
-                    {row.title}
-                  </TableCell>
-                  <TableCell align="center">{row.marksAwarded ?? "?"}</TableCell>
-                  <TableCell align="center">{row.maxMarks}</TableCell>
-                </TableRow>
-              ))} */}
             </TableBody>
           </Table>
         </TableContainer>
