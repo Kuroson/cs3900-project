@@ -66,7 +66,7 @@ export const buyAvatarController = async (
 
 export const buyAvatar = async (firebaseUId: string, avatarToBuy: string): Promise<void> => {
     // Find user
-    const user = await User.findOne({ uid: firebaseUId }).catch((err) => null);
+    const user = await User.findOne({ firebase_uid: firebaseUId }).catch((err) => null);
     if (user === null) throw new HttpException(400, `User of ${firebaseUId} not found`);
 
     // Check if the avatar is valid
