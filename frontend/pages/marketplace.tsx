@@ -48,10 +48,6 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
 
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-
-  console.log("🚀 ~ file: marketplace.tsx:41 ~ MarketPlacePage ~ userDetails:", userDetails);
-  console.log(avatars);
 
   const studentRoutes: Routes[] = [
     { name: "Dashboard", route: "/", icon: <HomeIcon fontSize="large" color="primary" /> },
@@ -83,7 +79,10 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
     }
     toast.success("Bought avatar successfully");
     setAvatarName(avatar);
-    setKudos((prev) => (prev != null ? prev - cost : 0));
+    user.setUserDetails((prev) => {
+      if (prev === null) return null;
+      return { ...prev, avatar: avatar, kudos: prev.kudos - cost };
+    });
   };
 
   return (
