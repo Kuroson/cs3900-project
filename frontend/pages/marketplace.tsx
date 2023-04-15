@@ -35,14 +35,10 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = useState(user.userDetails !== null);
-  const [kudos, setKudos] = useState<number>();
-  const [avatarName, setAvatarName] = useState<string>();
 
   useEffect(() => {
     if (user.userDetails !== null) {
       setLoading(false);
-      setKudos(user.userDetails.kudos);
-      setAvatarName(user.userDetails.avatar);
     }
   }, [user.userDetails]);
 
@@ -53,7 +49,7 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
     { name: "Dashboard", route: "/", icon: <HomeIcon fontSize="large" color="primary" /> },
     {
       name: "Marketplace",
-      route: "/marketplace", //TODO
+      route: "/marketplace",
       icon: <StorefrontIcon fontSize="large" color="primary" />,
       hasLine: true,
     },
@@ -61,7 +57,6 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
       return {
         name: x.course.code,
         route: `/course/${x.course._id}`,
-        // Icon: <HomeIcon fontSize="large" color="primary" />,
       };
     }),
   ];
@@ -78,7 +73,6 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
       return;
     }
     toast.success("Bought avatar successfully");
-    setAvatarName(avatar);
     user.setUserDetails((prev) => {
       if (prev === null) return null;
       return { ...prev, avatar: avatar, kudos: prev.kudos - cost };
@@ -98,12 +92,12 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
           <PageHeader title="Marketplace">
             <Card className="flex items-center rounded-md px-4 gap-2">
               <SavingsIcon sx={{ color: "#ffc400" }} />
-              <h6>{kudos}</h6>
+              <h6>{user.userDetails.kudos}</h6>
             </Card>
           </PageHeader>
           <div className="flex flex-col items-center mt-6 gap-8">
             <img
-              src={`${CLIENT_BACKEND_URL}/public/avatars/${avatarName}.svg`}
+              src={`${CLIENT_BACKEND_URL}/public/avatars/${user.userDetails.avatar}.svg`}
               className="h-[150px] w-[150px] rounded-full"
               alt="self avatar"
             />
