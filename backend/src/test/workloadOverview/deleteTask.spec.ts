@@ -47,7 +47,12 @@ describe("Test deleting a task", () => {
 
     it("Should delete task from week", async () => {
         const taskId = await createTask(
-            { weekId: weekId, title: "Do Task 1", description: "Look at week 1" },
+            {
+                courseId: courseId,
+                weekId: weekId,
+                title: "Do Task 1",
+                description: "Look at week 1",
+            },
             `acc${id}`,
         );
 

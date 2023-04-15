@@ -8,6 +8,7 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { updateAssignment } from "../assignment/updateAssignment.route";
 import { updateQuiz } from "../quiz/updateQuiz.route";
 
 type ResponsePayload = {
@@ -15,6 +16,7 @@ type ResponsePayload = {
 };
 
 type QueryPayload = {
+    courseId: string;
     weekId: string;
     title: string;
     description: string;
@@ -36,7 +38,12 @@ export const createTaskController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["weekId", "title", "description"];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
+            "courseId",
+            "weekId",
+            "title",
+            "description",
+        ];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
@@ -74,7 +81,7 @@ export const createTask = async (
         throw new HttpException(403, "Must be an admin to create a task");
     }
 
-    const { weekId, title, description, quizId, assignmentId, onlineClassId } = queryBody;
+    const { courseId, weekId, title, description, quizId, assignmentId, onlineClassId } = queryBody;
 
     const week = await Week.findById(weekId).catch(() => null);
 
@@ -82,8 +89,45 @@ export const createTask = async (
         throw new HttpException(400, `Week, ${weekId}, does not exist`);
     }
 
-    let newTask;
+    const newTask = await setClassType(
+        courseId,
+        title,
+        description,
+        quizId,
+        assignmentId,
+        onlineClassId,
+        firebase_uid,
+    );
 
+    const taskId = await newTask
+        .save()
+        .then((res) => {
+            return res._id;
+        })
+        .catch((err) => {
+            throw new HttpException(500, "4ailed to create task", err);
+        });
+
+    //Add task to the week
+    week?.tasks.push(taskId);
+
+    await week?.save().catch((err) => {
+        throw new HttpException(500, "Failed to add task to week", err);
+    });
+
+    return taskId.toString();
+};
+
+const setClassType = async (
+    courseId: string,
+    title: string,
+    description: string,
+    quizId: string | undefined,
+    assignmentId: string | undefined,
+    onlineClassId: string | undefined,
+    firebase_uid: string,
+) => {
+    let newTask;
     if (quizId !== undefined) {
         newTask = new Task({
             title: title,
@@ -99,17 +143,10 @@ export const createTask = async (
             assignment: assignmentId,
         });
 
-        const assignment = await Assignment.findById(assignmentId)
-            .exec()
-            .catch(() => null);
-        if (assignment === null) {
-            throw new HttpException(400, "Failed to fetch assignment");
-        }
-        assignment.task = newTask._id;
-        await assignment.save().catch((err) => {
-            logger.error(err);
-            throw new HttpException(500, "Failed to save new assignment");
-        });
+        await updateAssignment(
+            { courseId: courseId, assignmentId: assignmentId, task: newTask._id },
+            firebase_uid,
+        );
     } else if (onlineClassId !== undefined) {
         newTask = new Task({
             title: title,
@@ -134,22 +171,5 @@ export const createTask = async (
             description: description,
         });
     }
-
-    const taskId = await newTask
-        .save()
-        .then((res) => {
-            return res._id;
-        })
-        .catch((err) => {
-            throw new HttpException(500, "4ailed to create task", err);
-        });
-
-    //Add task to the week
-    week?.tasks.push(taskId);
-
-    await week?.save().catch((err) => {
-        throw new HttpException(500, "Failed to add task to week", err);
-    });
-
-    return taskId.toString();
+    return newTask;
 };

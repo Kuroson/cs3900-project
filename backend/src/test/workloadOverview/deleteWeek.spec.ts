@@ -92,7 +92,12 @@ describe("Test deleting a week", () => {
             `acc${id}`,
         );
         const taskId = await createTask(
-            { weekId: weekId, title: "Do Task 1", description: "Look at week 1" },
+            {
+                courseId: courseId,
+                weekId: weekId,
+                title: "Do Task 1",
+                description: "Look at week 1",
+            },
             `acc${id}`,
         );
 

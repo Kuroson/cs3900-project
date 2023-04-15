@@ -72,6 +72,7 @@ describe("Test deleting an assignment linked to a task", () => {
         // create a task
         const taskId = await createTask(
             {
+                courseId: courseId,
                 weekId: weekId,
                 title: "Do Task 1",
                 description: "Look at week 1",

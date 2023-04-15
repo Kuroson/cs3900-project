@@ -51,11 +51,21 @@ describe("Test getting a week of courses", () => {
             `acc${id}`,
         );
         task1Id = await createTask(
-            { weekId: weekId, title: "Do Task 1", description: "Look at week 1" },
+            {
+                courseId: courseId,
+                weekId: weekId,
+                title: "Do Task 1",
+                description: "Look at week 1",
+            },
             `acc${id}`,
         );
         task2Id = await createTask(
-            { weekId: weekId, title: "Do Task 2", description: "Look at week 2" },
+            {
+                courseId: courseId,
+                weekId: weekId,
+                title: "Do Task 2",
+                description: "Look at week 2",
+            },
             `acc${id}`,
         );
     });

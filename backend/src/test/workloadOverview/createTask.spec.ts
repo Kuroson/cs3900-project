@@ -51,11 +51,21 @@ describe("Test creating a week", () => {
 
     it("Should create a new tasks within week", async () => {
         const task1Id = await createTask(
-            { weekId: weekId, title: "Do Task 1", description: "Look at week 1" },
+            {
+                courseId: courseId,
+                weekId: weekId,
+                title: "Do Task 1",
+                description: "Look at week 1",
+            },
             `acc${id}`,
         );
         const task2Id = await createTask(
-            { weekId: weekId, title: "Do Task 2", description: "Look at week 1" },
+            {
+                courseId: courseId,
+                weekId: weekId,
+                title: "Do Task 2",
+                description: "Look at week 1",
+            },
             `acc${id}`,
         );
 
