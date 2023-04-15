@@ -1,11 +1,13 @@
 import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
-import { Button } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
+import { deepOrange } from "@mui/material/colors";
 import { getAuth, signOut } from "firebase/auth";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails, getRoleText } from "models/user.model";
 import { useUser } from "util/UserContext";
+import CourseDetails from "./CourseDetails";
 import NavBar, { Routes } from "./NavBar";
 import UserDetailsSection from "./UserDetailSection";
 
@@ -13,23 +15,6 @@ type SideNavBarProps = {
   userDetails: UserDetails;
   routes?: Routes[];
   courseData?: UserCourseInformation;
-};
-
-type CourseDetailsProps = {
-  code: string;
-};
-
-const CourseDetails = ({ code }: CourseDetailsProps): JSX.Element => {
-  return (
-    <div className="mt-5 flex flex-row justify-center">
-      <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
-        <span className="text-3xl font-bold">{code.charAt(0) ?? ""}</span>
-      </div>
-      <div className="flex flex-col pl-2 justify-center items-center">
-        <span className="font-bold text-start w-full text-2xl">{code}</span>
-      </div>
-    </div>
-  );
 };
 
 export default function StudentNavBar({
@@ -106,7 +91,9 @@ export default function StudentNavBar({
           <div>
             {/* Top */}
             {courseData === undefined && <UserDetailsSection {...userDetails} />}
-            {courseData !== undefined && <CourseDetails code={courseData?.code ?? ""} />}
+            {courseData !== undefined && (
+              <CourseDetails code={courseData?.code ?? ""} avatar={courseData.icon ?? ""} />
+            )}
             <NavBar
               routes={routes ?? studentRoutes}
               role={getRoleText(userDetails.role)}
