@@ -43,6 +43,7 @@ const SingleStudentWeekSection = ({
         return; // toast
       }
       if (res === null) throw new Error("Response and error are null");
+      console.warn(res);
       setWeekInfo(res);
     };
     getWeekInfo();

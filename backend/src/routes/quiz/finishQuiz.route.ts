@@ -252,5 +252,7 @@ const completeQuizTask = async (studentId: string, courseId: string, taskId: str
         taskId: taskId,
     };
 
+    logger.error("CompleteQuiz");
+    logger.error(queryPayload);
     await completeTask(queryPayload);
 };

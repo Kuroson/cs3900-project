@@ -109,7 +109,9 @@ export const updateAssignment = async (queryBody: QueryPayload, firebase_uid: st
         assignment.marksAvailable = marksAvailable;
     }
 
-    if (task !== undefined) {
+    if (assignment.task !== undefined && task !== undefined) {
+        throw new HttpException(400, "Assignment is already an assigned task");
+    } else if (task !== undefined) {
         assignment.task = task;
     }
 

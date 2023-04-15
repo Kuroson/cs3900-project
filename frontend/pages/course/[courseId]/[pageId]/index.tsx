@@ -13,7 +13,7 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
-import SingleEditableWeekSection from "components/admin/workload/SingleEditableWorkload";
+import SingleEditableWeekSection from "components/admin/workload/SingleEditableWeekSection";
 import SingleStudentWeekSection from "components/workloadOverview/workload/SingleWorkload";
 import StudentWorkloadSection from "components/workloadOverview/workload/StudentWorkloadSection";
 import { useUser } from "util/UserContext";
@@ -88,6 +88,9 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
   const [dynamicWorkload, setDynamicWorkload] = React.useState<FullWeekInterface | undefined>(
     pageData.workload,
   );
+
+  console.log("This is");
+  console.log(dynamicWorkload);
 
   React.useEffect(() => {
     // Build user data for user context

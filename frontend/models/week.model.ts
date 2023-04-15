@@ -16,3 +16,10 @@ export type CompleteWeekInterface = Omit<WeekInterface, "tasks"> & {
   uncompletedTasks: Array<TaskInterface>;
   completedTasks: Array<TaskInterface>;
 };
+
+export type CompleteWeekType = {
+  title: string;
+  description?: string;
+  deadline: string;
+  tasks: Array<MongooseId>;
+};
