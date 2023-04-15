@@ -121,20 +121,6 @@ export const getWeek = async (courseId: string, weekId: string) => {
             throw new HttpException(400, "Could not fetch completed week", err);
         });
 
-    let weekTasks = week.tasks;
-    let uncompleteTasks;
-
-    // Filter out all the completed tasks from the weekly tasks
-    // if (completedWeek !== null) {
-    //     uncompleteTasks = weekTasks.filter(
-    //         (x) =>
-    //             completedWeek.completedTasks.find((y) => {
-    //                 y._id.toString() === x._id.toString();
-    //             }) === undefined,
-    //     );
-    //     week.tasks = uncompleteTasks;
-    // }
-
     // Create the response Payload
     const ret_data: ResponsePayload = {
         title: week.title,
@@ -158,7 +144,7 @@ const getUncompleteTasks = async (
     return weekTasks.filter(
         (x) =>
             completedTasks.find((y) => {
-                y._id.toString() === x._id.toString();
+                return y._id.toString() === x._id.toString();
             }) === undefined,
     );
 };

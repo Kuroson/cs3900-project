@@ -75,7 +75,7 @@ describe("Test getting a week of courses", () => {
 
         const user = await User.findOne({ email: `student1${id}@email.com` }).exec();
         expect(user).not.toBeNull();
-        let workloadCompletionId = await completeTask({
+        const workloadCompletionId = await completeTask({
             studentId: user?._id,
             courseId: courseId,
             weekId: weekId,
