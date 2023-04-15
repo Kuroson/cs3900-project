@@ -251,8 +251,5 @@ const completeQuizTask = async (studentId: string, courseId: string, taskId: str
         weekId: week._id,
         taskId: taskId,
     };
-
-    logger.error("CompleteQuiz");
-    logger.error(queryPayload);
     await completeTask(queryPayload);
 };
