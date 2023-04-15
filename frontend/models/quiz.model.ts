@@ -4,6 +4,7 @@ export type QuizListType = {
   isResponded?: boolean;
   open: string;
   close: string;
+  task?: string;
 };
 
 export type CreateQuizType = {
@@ -52,6 +53,7 @@ export type QuizInfoType = {
   open: string;
   close: string;
   questions: Array<QuizQuestionType>;
+  task?: string;
 };
 
 export type ResponsesType = {

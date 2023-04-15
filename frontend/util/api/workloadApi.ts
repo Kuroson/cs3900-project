@@ -41,7 +41,7 @@ export const createNewWeek = (
   );
 };
 
-type CreateNewTaskPayloadRequest = {
+export type CreateNewTaskPayloadRequest = {
   courseId: string;
   weekId: string;
   title: string;
@@ -174,6 +174,29 @@ export const deleteTask = (
 ) => {
   return apiDelete<DeleteTaskPayloadRequest, DeleteTaskPayloadRespose>(
     `${getBackendLink(type)}/workload/task/delete`,
+    token,
+    payload,
+  );
+};
+
+type CompleteTaskPayloadResponse = {
+  workloadCompletionId: string;
+};
+
+export type CompleteTaskPayloadRequest = {
+  studentId: string;
+  courseId: string;
+  weekId: string;
+  taskId: string;
+};
+
+export const completeTask = (
+  token: string | null,
+  payload: CompleteTaskPayloadRequest,
+  type: BackendLinkType,
+) => {
+  return apiPost<CompleteTaskPayloadRequest, CompleteTaskPayloadResponse>(
+    `${getBackendLink(type)}/workload/task/complete`,
     token,
     payload,
   );

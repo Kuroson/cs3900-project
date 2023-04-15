@@ -3,6 +3,7 @@ export type AssignmentListType = {
   title: string;
   description?: string;
   deadline: string;
+  task?: string;
 };
 
 export type CreateAssignmentType = {

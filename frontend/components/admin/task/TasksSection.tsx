@@ -4,12 +4,13 @@ import AddNewTaskSection from "./AddNewTaskSection";
 import SingleEditableTask from "./SingleEditableTask";
 
 type TasksSectionProps = {
+  courseId: string;
   weekId: string;
   tasks: TaskInterface[];
   setTasks: React.Dispatch<React.SetStateAction<TaskInterface[]>>;
 };
 
-const TasksSection = ({ weekId, tasks, setTasks }: TasksSectionProps): JSX.Element => {
+const TasksSection = ({ courseId, weekId, tasks, setTasks }: TasksSectionProps): JSX.Element => {
   return (
     <div>
       <div className="flex flex-col w-full">
@@ -25,7 +26,12 @@ const TasksSection = ({ weekId, tasks, setTasks }: TasksSectionProps): JSX.Eleme
               />
             );
           })}
-          <AddNewTaskSection weekId={weekId} setTasks={setTasks} tasks={tasks} />
+          <AddNewTaskSection
+            courseId={courseId}
+            weekId={weekId}
+            setTasks={setTasks}
+            tasks={tasks}
+          />
         </List>
       </div>
     </div>

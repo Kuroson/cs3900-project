@@ -1,5 +1,4 @@
 import { FullWeekInterface, WeekInterface } from "models/week.model";
-import AddNewWorkloadSection from "./AddNewWeekSection";
 import SingleEditableWorkload from "./SingleEditableWorkload";
 
 type WorkloadSectionProps = {

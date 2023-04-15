@@ -96,6 +96,10 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
     }
   }, [user.userDetails]);
 
+  React.useEffect(() => {
+    setDynamicWorkload(pageData.workload);
+  }, [pageData, courseData]);
+
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
@@ -113,7 +117,14 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
             <span className="ml-4">{pageData.title}</span>
           </h1>
 
-          {dynamicWorkload !== undefined && <SingleStudentWeekSection week={dynamicWorkload} />}
+          {dynamicWorkload !== undefined && (
+            <SingleStudentWeekSection
+              courseId={courseData._id}
+              weekId={dynamicWorkload._id}
+              week={dynamicWorkload}
+              studentId={user.userDetails._id}
+            />
+          )}
 
           {/* First list out all the base resources */}
           <div className="bg-gray-400 rounded-xl px-[2.5%] py-[2.5%] mb-5">

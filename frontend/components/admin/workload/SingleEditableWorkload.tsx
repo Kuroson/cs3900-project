@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { Button, TextField } from "@mui/material";
 import Divider from "@mui/material/Divider";
@@ -7,13 +7,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import utcPlugin from "dayjs/plugin/utc";
-import { FullWeekInterface } from "models/week.model";
+import { CompleteWeekInterface, FullWeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import {
   DeleteWeekPayloadRequest,
   UpdateWeekPayloadRequest,
   deleteWeek,
+  getWeek,
   updateWeek,
 } from "util/api/workloadApi";
 import EditPanelButtons from "../EditPanelButtons";
@@ -190,7 +191,7 @@ const SingleEditableWeekSection = ({
         </div>
         <Divider />
         <div>
-          <TasksSection weekId={week._id} tasks={tasks} setTasks={setTasks} />
+          <TasksSection courseId={courseId} weekId={week._id} tasks={tasks} setTasks={setTasks} />
         </div>
       </div>
     </div>

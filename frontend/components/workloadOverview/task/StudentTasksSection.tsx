@@ -1,20 +1,49 @@
 import { List } from "@mui/material";
 import { TaskInterface } from "models/task.model";
-import SingleTask from "./SingleTask";
+import SingleCompleteTask from "./SingleCompleteTask";
+import SingleUncompleteTask from "./SingleUncompleteTask";
+import SingleTask from "./SingleUncompleteTask";
 
 type StudentTasksSectionProps = {
-  tasks: TaskInterface[];
+  completedTasks: TaskInterface[] | undefined;
+  uncompletedTasks: TaskInterface[] | undefined;
+  courseId: string;
+  weekId: string;
+  studentId: string;
 };
 
-const StudentTasksSection = ({ tasks }: StudentTasksSectionProps): JSX.Element => {
+const StudentTasksSection = ({
+  completedTasks,
+  uncompletedTasks,
+  courseId,
+  weekId,
+  studentId,
+}: StudentTasksSectionProps): JSX.Element => {
   return (
     <div>
       <div className="flex flex-col w-full">
-        <List dense={true}>
-          {tasks.map((task) => {
-            return <SingleTask task={task} key={task._id} />;
-          })}
-        </List>
+        {completedTasks !== undefined && (
+          <List>
+            {completedTasks.map((task) => {
+              return <SingleCompleteTask task={task} key={task._id} />;
+            })}
+          </List>
+        )}
+        {uncompletedTasks !== undefined && (
+          <List>
+            {uncompletedTasks.map((task) => {
+              return (
+                <SingleUncompleteTask
+                  courseId={courseId}
+                  weekId={weekId}
+                  task={task}
+                  key={task._id}
+                  studentId={studentId}
+                />
+              );
+            })}
+          </List>
+        )}
       </div>
     </div>
   );
