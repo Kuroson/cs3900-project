@@ -117,6 +117,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         workloadCompletionId = await newWorkload
             .save()
             .then((res) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                 return res._id;
             })
             .catch((err) => {
@@ -166,5 +167,5 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
-    return workloadCompletionId;
+    return workloadCompletionId.toString() as string;
 };

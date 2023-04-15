@@ -105,6 +105,11 @@ export const updateAssignment = async (queryBody: QueryPayload, firebase_uid: st
     }
 
     if (marksAvailable !== undefined) {
+        // Check mark valid
+        if (marksAvailable < 0) {
+            throw new HttpException(400, "Mark must be positive");
+        }
+
         assignment.marksAvailable = marksAvailable;
     }
 

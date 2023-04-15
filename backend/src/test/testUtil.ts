@@ -22,6 +22,7 @@ const initialiseMongoose = async () => {
  * @param a
  */
 export const stringifyOutput = (a: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return JSON.parse(JSON.stringify(a));
 };
 

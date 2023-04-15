@@ -109,18 +109,18 @@ export const addSection = async (
 
     const newSectionId = await newSection
         .save()
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         .then((res) => res._id)
         .catch((err) => {
             throw new HttpException(500, "Failed to create section", err);
         });
 
     // Add to page
-
     currPage.sections.push(newSectionId);
 
     await currPage.save().catch((err) => {
         throw new HttpException(500, "Failed to save updated section", err);
     });
 
-    return newSectionId;
+    return newSectionId.toString() as string;
 };

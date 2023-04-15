@@ -100,7 +100,7 @@ export const submitAssignment = async (
         throw new HttpException(400, "Assignment already closed");
     }
     const timeSubmitted = Date.now() / 1000;
-    const submissionId = await new AssignmentSubmission({
+    const submission = await new AssignmentSubmission({
         assignment: assignmentId,
         title,
         storedName: file.fileRef.name,
@@ -108,15 +108,12 @@ export const submitAssignment = async (
         timeSubmitted: timeSubmitted,
     })
         .save()
-        .then((res) => {
-            return res._id;
-        })
         .catch((err) => {
             logger.error(err);
             throw new HttpException(500, "Failed to save submission");
         });
 
-    enrolment.assignmentSubmissions.push(submissionId);
+    enrolment.assignmentSubmissions.push(submission._id);
 
     //Calculate kudos to be earned for submitting this assignment
     const courseKudos = await getKudos(courseId);
@@ -150,7 +147,7 @@ export const submitAssignment = async (
     });
 
     return {
-        submissionId,
+        submissionId: submission._id.toString() as string,
         timeSubmitted,
         fileType: file.mimetype,
         linkToSubmission: await recallFileUrl(file.fileRef.name),

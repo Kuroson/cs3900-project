@@ -1,6 +1,6 @@
 import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
-import { getGrades } from "@/routes/analytics/getGrades.route";
+import { getSummary } from "@/routes/analytics/getSummary";
 import { createAssignment } from "@/routes/assignment/createAssignment.route";
 import { deleteAssignment } from "@/routes/assignment/deleteAssignment.route";
 import { gradeAssignment } from "@/routes/assignment/gradeAssignment.route";
@@ -15,12 +15,12 @@ import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
-import { updateQuiz } from "@/routes/quiz/updateQuiz.route";
-import mongoose, { Mongoose, disconnect } from "mongoose";
+import { getUserId } from "@/utils/util";
+import mongoose, { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
-describe("Test getting student grades", () => {
+describe("Test a course summary", () => {
     const id = uuidv4();
     const userData = [
         genUserTestOnly("first_name", "last_name", `admin${id}@email.com`, `acc1${id}`),
@@ -31,6 +31,8 @@ describe("Test getting student grades", () => {
     let quizId: string;
     let assignmentId1: string;
     let assignmentId2: string;
+    let question1: string;
+    let question2: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -68,7 +70,7 @@ describe("Test getting student grades", () => {
             `acc1${id}`,
         );
 
-        await createQuestion(
+        question1 = await createQuestion(
             {
                 courseId,
                 quizId,
@@ -90,7 +92,7 @@ describe("Test getting student grades", () => {
             `acc1${id}`,
         );
 
-        await createQuestion(
+        question2 = await createQuestion(
             {
                 courseId,
                 quizId,
@@ -121,8 +123,6 @@ describe("Test getting student grades", () => {
             },
             `acc2${id}`,
         );
-        const newClose = new Date(Date.now() - oneDay / 2).toString();
-        await updateQuiz({ quizId, close: newClose }, `acc1${id}`);
 
         // Grade quiz
         const submissions = await getSubmissions({ courseId, quizId }, `acc1${id}`);
@@ -194,34 +194,63 @@ describe("Test getting student grades", () => {
         );
     });
 
-    it("Should get all the student's grades in the course", async () => {
-        const grades = await getGrades({ courseId }, `acc2${id}`);
+    it("Should get the course summary for the admin", async () => {
+        const summary = await getSummary({ courseId }, `acc1${id}`);
 
-        expect(grades).toEqual({
-            assignmentGrades: [
-                {
-                    assignmentId: new mongoose.Types.ObjectId(assignmentId1),
-                    title: "Test assignment",
-                    maxMarks: 2,
-                    marksAwarded: 1.75,
-                    successTags: ["tag1", "tag2"],
-                    imrpovementTags: ["tag4"],
+        expect(summary).toEqual({
+            tags: {
+                successTags: {
+                    tag1: 2,
+                    tag2: 1,
                 },
-                {
-                    assignmentId: new mongoose.Types.ObjectId(assignmentId2),
-                    title: "Test assignment 2",
-                    maxMarks: 3,
+                improvementTags: {
+                    tag2: 1,
+                    tag4: 1,
                 },
-            ],
-            quizGrades: [
-                {
-                    quizId: new mongoose.Types.ObjectId(quizId),
-                    title: "Test quiz",
-                    maxMarks: 1,
-                    marksAwarded: 0.75,
-                    incorrectTags: ["tag2"],
+            },
+            grades: {
+                studentGrades: [
+                    {
+                        student: {
+                            studentId: await getUserId(`acc2${id}`),
+                            name: "first_name last_name",
+                        },
+                        grades: {
+                            [assignmentId1]: 1.75,
+                            [quizId]: 0.75,
+                        },
+                    },
+                ],
+                quizzes: {
+                    [quizId]: {
+                        quizId: new mongoose.Types.ObjectId(quizId),
+                        title: "Test quiz",
+                        maxMarks: 1,
+                    },
                 },
-            ],
+                assignments: {
+                    [assignmentId1]: {
+                        assignmentId: new mongoose.Types.ObjectId(assignmentId1),
+                        title: "Test assignment",
+                        maxMarks: 2,
+                    },
+                    [assignmentId2]: {
+                        assignmentId: new mongoose.Types.ObjectId(assignmentId2),
+                        title: "Test assignment 2",
+                        maxMarks: 3,
+                    },
+                },
+            },
+            questions: {
+                [question2]: {
+                    questionId: new mongoose.Types.ObjectId(question2),
+                    count: 1,
+                    text: "question 2 text",
+                    tag: "tag2",
+                    type: "open",
+                    marks: 2,
+                },
+            },
         });
     });
 

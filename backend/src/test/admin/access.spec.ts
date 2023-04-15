@@ -30,6 +30,7 @@ describe("Test checking if user has access to a course", () => {
         adminId = await User.findOne({ firebase_uid: `acc1${id}` })
             .then((res) => {
                 if (res === null) throw new Error("Failed to get admin for test");
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                 return res._id;
             })
             .catch((err) => {
@@ -69,6 +70,7 @@ describe("Test checking if user has access to a course", () => {
         courseId = await myCourse
             .save()
             .then((res) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                 return res._id;
             })
             .catch((err) => {

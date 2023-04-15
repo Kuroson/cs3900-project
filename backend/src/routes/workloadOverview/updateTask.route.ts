@@ -91,5 +91,5 @@ export const updateTask = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(500, "Failed to save updated task", err);
     });
 
-    return myTask._id;
+    return myTask._id.toString() as string;
 };
