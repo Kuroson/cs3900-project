@@ -23,6 +23,7 @@ export type QuizBasicInfo = {
   markAwarded?: number; // just for student
   open: string;
   close: string;
+  task?: string;
 };
 
 // for showing answers in admin/student page

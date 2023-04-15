@@ -31,6 +31,7 @@ export type AssignmentInfoType = {
   tags: Array<string>;
   submission?: SubmissionInfo; // just for student
   markAwarded?: number;
+  task?: string;
 };
 
 export type SubmitAssignmentType = {

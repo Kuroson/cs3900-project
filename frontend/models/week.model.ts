@@ -11,3 +11,8 @@ export interface WeekInterface extends MongooseDocument {
 export type FullWeekInterface = Omit<WeekInterface, "tasks"> & {
   tasks: Array<TaskInterface>;
 };
+
+export type CompleteWeekInterface = Omit<WeekInterface, "tasks"> & {
+  uncompletedTasks: Array<TaskInterface>;
+  completedTasks: Array<TaskInterface>;
+};

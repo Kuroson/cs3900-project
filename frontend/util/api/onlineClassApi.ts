@@ -131,6 +131,7 @@ export type UpdateOnlineClassPayloadRequest = {
   description: string;
   startTime: number;
   linkToClass: string;
+  task?: string;
 };
 
 export const updateOnlineClass = (
