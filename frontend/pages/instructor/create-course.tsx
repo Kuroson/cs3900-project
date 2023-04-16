@@ -30,7 +30,6 @@ const CreateCourse = (): JSX.Element => {
   const router = useRouter();
   const [loading, setLoading] = React.useState(user.userDetails === null);
 
-  const [image, setImage] = useState<string>();
   const [code, setCode] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [session, setSession] = useState<string>("");
@@ -49,13 +48,12 @@ const CreateCourse = (): JSX.Element => {
   const userDetails = user.userDetails as UserDetails;
 
   // upload image
-  // TODO: Icons don't do anything atm. Probably should upload them to firebase storage and have a permanent public URL
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
       reader.onload = () => {
-        setImage(reader.result as string);
+        setIcon(reader.result as string);
       };
     }
   };
@@ -125,11 +123,9 @@ const CreateCourse = (): JSX.Element => {
           className="flex flex-col items-center justify-center gap-6"
           onSubmit={handleCreateCourse}
         >
-          <Avatar
-            alt="Course"
-            src={image != null ? image : "/static/images/avatar/3.jpg"}
-            sx={{ width: "100px", height: "100px" }}
-          />
+          <Avatar alt="Course" src={icon} sx={{ width: "100px", height: "100px" }}>
+            C
+          </Avatar>
           <Button variant="outlined" component="label">
             Upload Icon
             <input hidden accept="image/*" multiple type="file" onChange={handleImageChange} />
