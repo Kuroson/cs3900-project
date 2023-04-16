@@ -29,6 +29,7 @@ const WorkloadOverviewPage = ({
   const [loading, setLoading] = React.useState(user.userDetails === null);
 
   const [dynamicWeeks, setDynamicWeeks] = React.useState(workloadData.weeks);
+  const [dynamicOnlineClasses, setDynamicOnlineClasses] = React.useState(courseData.onlineClasses);
 
   React.useEffect(() => {
     setDynamicWeeks(workloadData.weeks);
@@ -66,6 +67,8 @@ const WorkloadOverviewPage = ({
             courseId={courseData._id}
             setWeeks={setDynamicWeeks}
             weeks={dynamicWeeks}
+            onlineClasses={dynamicOnlineClasses}
+            setOnlineClasses={setDynamicOnlineClasses}
           />
         </div>
       </ContentContainer>

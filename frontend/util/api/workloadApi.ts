@@ -1,4 +1,4 @@
-import { FullWeekInterface } from "models/week.model";
+import { CompleteWeekInterface, FullWeekInterface } from "models/week.model";
 import { FullWorkloadInfo, WorkloadInterface } from "models/workload.model";
 import { BackendLinkType, apiDelete, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
@@ -41,10 +41,14 @@ export const createNewWeek = (
   );
 };
 
-type CreateNewTaskPayloadRequest = {
+export type CreateNewTaskPayloadRequest = {
+  courseId: string;
   weekId: string;
   title: string;
   description: string;
+  quizId?: string;
+  assignmentId?: string;
+  onlineClassId?: string;
 };
 
 type CreateNewTaskPayloadResponse = {
@@ -53,15 +57,13 @@ type CreateNewTaskPayloadResponse = {
 
 export const createNewTask = (
   token: string | null,
-  weekId: string,
-  title: string,
-  description: string,
+  payload: CreateNewTaskPayloadRequest,
   type: BackendLinkType,
 ) => {
   return apiPost<CreateNewTaskPayloadRequest, CreateNewTaskPayloadResponse>(
     `${getBackendLink(type)}/workload/task/create`,
     token,
-    { weekId: weekId, title: title, description: description },
+    payload,
   );
 };
 
@@ -70,7 +72,7 @@ export const getWeek = (
   ids: { courseId: string; weekId: string },
   type: BackendLinkType,
 ) => {
-  return apiGet<{ courseId: string; weekId: string }, FullWeekInterface>(
+  return apiGet<{ courseId: string; weekId: string }, CompleteWeekInterface>(
     `${getBackendLink(type)}/workload/week`,
     token,
     ids,
@@ -172,6 +174,29 @@ export const deleteTask = (
 ) => {
   return apiDelete<DeleteTaskPayloadRequest, DeleteTaskPayloadRespose>(
     `${getBackendLink(type)}/workload/task/delete`,
+    token,
+    payload,
+  );
+};
+
+type CompleteTaskPayloadResponse = {
+  workloadCompletionId: string;
+};
+
+export type CompleteTaskPayloadRequest = {
+  studentId: string;
+  courseId: string;
+  weekId: string;
+  taskId: string;
+};
+
+export const completeTask = (
+  token: string | null,
+  payload: CompleteTaskPayloadRequest,
+  type: BackendLinkType,
+) => {
+  return apiPost<CompleteTaskPayloadRequest, CompleteTaskPayloadResponse>(
+    `${getBackendLink(type)}/workload/task/complete`,
     token,
     payload,
   );

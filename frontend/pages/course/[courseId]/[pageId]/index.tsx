@@ -13,7 +13,7 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
-import SingleEditableWeekSection from "components/admin/workload/SingleEditableWorkload";
+import SingleEditableWeekSection from "components/admin/workload/SingleEditableWeekSection";
 import SingleStudentWeekSection from "components/workloadOverview/workload/SingleWorkload";
 import StudentWorkloadSection from "components/workloadOverview/workload/StudentWorkloadSection";
 import { useUser } from "util/UserContext";
@@ -89,12 +89,19 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
     pageData.workload,
   );
 
+  console.log("This is");
+  console.log(dynamicWorkload);
+
   React.useEffect(() => {
     // Build user data for user context
     if (user.userDetails !== null) {
       setLoading(false);
     }
   }, [user.userDetails]);
+
+  React.useEffect(() => {
+    setDynamicWorkload(pageData.workload);
+  }, [pageData, courseData]);
 
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
@@ -113,7 +120,14 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
             <span className="ml-4">{pageData.title}</span>
           </h1>
 
-          {dynamicWorkload !== undefined && <SingleStudentWeekSection week={dynamicWorkload} />}
+          {dynamicWorkload !== undefined && (
+            <SingleStudentWeekSection
+              courseId={courseData._id}
+              weekId={dynamicWorkload._id}
+              week={dynamicWorkload}
+              studentId={user.userDetails._id}
+            />
+          )}
 
           {/* First list out all the base resources */}
           <div className="bg-gray-400 rounded-xl px-[2.5%] py-[2.5%] mb-5">

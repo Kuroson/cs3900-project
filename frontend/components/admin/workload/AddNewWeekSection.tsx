@@ -1,9 +1,11 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { Box, Button, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import relativeTimePlugin from "dayjs/plugin/relativeTime";
+import utcPlugin from "dayjs/plugin/utc";
 import { FullWeekInterface, WeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
@@ -29,7 +31,7 @@ const AddNewWorkloadSection = ({
   const [open, setOpen] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [deadline, setDeadline] = React.useState<Dayjs>(dayjs().add(1, "day"));
+  const [deadline, setDeadline] = React.useState<Dayjs>(dayjs.utc().local());
 
   const handleCloseForm = () => {
     setOpen(false);
@@ -75,7 +77,9 @@ const AddNewWorkloadSection = ({
     };
 
     setWeeks([...weeks, weekToAdd]);
+
     setWeek(weekToAdd);
+
     handleCloseForm();
   };
 

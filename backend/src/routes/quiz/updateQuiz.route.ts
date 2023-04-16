@@ -110,7 +110,9 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         quiz.close = close;
     }
 
-    if (task !== undefined) {
+    if (quiz.task !== undefined && task !== undefined) {
+        throw new HttpException(400, "Quiz is already an assigned task");
+    } else if (task !== undefined) {
         quiz.task = task;
     }
 

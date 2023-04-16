@@ -161,6 +161,11 @@ const setClassType = async (
         if (onlineClass === null) {
             throw new HttpException(400, "Failed to fetch Online Class");
         }
+
+        if (onlineClass.task !== undefined) {
+            throw new HttpException(400, "Online Class is already an assigned task");
+        }
+
         onlineClass.task = newTask._id;
         await onlineClass.save().catch((err) => {
             logger.error(err);

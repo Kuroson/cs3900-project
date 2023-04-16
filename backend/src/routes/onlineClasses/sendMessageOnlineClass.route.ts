@@ -126,6 +126,15 @@ export const addNewChatMessage = async (
 
     if (!isAdmin) {
         //Mark attendance for attending and engaging in class
+        const courseKudos = await getKudos(courseId);
+        const myStudent = await User.findOne({ _id: sender._id })
+            .select("_id kudos")
+            .exec()
+            .catch(() => null);
+
+        if (myStudent === null)
+            throw new HttpException(400, `Student of ${sender._id} does not exist`);
+
         if (onlineClass.attendanceList.includes(sender._id) === false) {
             //Student isn't already marked as attended
             onlineClass.attendanceList.addToSet(sender._id);
@@ -133,14 +142,6 @@ export const addNewChatMessage = async (
                 throw new HttpException(500, "Error saving attendance", err);
             });
             //Give kudos for attending
-            const courseKudos = await getKudos(courseId);
-            const myStudent = await User.findOne({ _id: sender._id })
-                .select("_id kudos")
-                .exec()
-                .catch(() => null);
-
-            if (myStudent === null)
-                throw new HttpException(400, `Student of ${sender._id} does not exist`);
             myStudent.kudos = myStudent.kudos + courseKudos.attendance;
 
             await myStudent.save().catch((err) => {

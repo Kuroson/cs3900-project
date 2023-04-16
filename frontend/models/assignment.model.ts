@@ -3,6 +3,7 @@ export type AssignmentListType = {
   title: string;
   description?: string;
   deadline: string;
+  task?: string;
 };
 
 export type CreateAssignmentType = {
@@ -31,6 +32,7 @@ export type AssignmentInfoType = {
   tags: Array<string>;
   submission?: SubmissionInfo; // just for student
   markAwarded?: number;
+  task?: string;
 };
 
 export type SubmitAssignmentType = {

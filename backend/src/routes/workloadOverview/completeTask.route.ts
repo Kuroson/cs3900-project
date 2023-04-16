@@ -92,9 +92,9 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         throw new HttpException(400, "Failed to fetch enrolment");
     }
 
-    const existingCompletion = enrolment.workloadCompletion.find(
-        (element) => element.week._id.toString() === weekId,
-    );
+    const existingCompletion = enrolment.workloadCompletion.find((element) => {
+        return element.week._id.toString() === weekId.toString();
+    });
 
     //Calculate kudos to be awarded
     const courseKudos = await getKudos(courseId);
@@ -145,7 +145,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         workload.completedTasks.addToSet(taskId);
         await workload.save().catch((err) => {
             throw new HttpException(
-                400,
+                500,
                 "Failed to add completed task to workload completion",
                 err,
             );

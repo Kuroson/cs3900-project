@@ -252,6 +252,5 @@ const completeQuizTask = async (studentId: string, courseId: string, taskId: str
         weekId: week._id,
         taskId: taskId,
     };
-
     await completeTask(queryPayload);
 };
