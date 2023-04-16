@@ -29,7 +29,7 @@ const SingleStudentWeekSection = ({
   studentId,
 }: SingleStudentWeekProps): JSX.Element => {
   const authUser = useAuthUser();
-  const [weekInfo, setWeekInfo] = React.useState<CompleteWeekInterface>();
+  const [weekInfo, setWeekInfo] = React.useState<CompleteWeekInterface | undefined>();
 
   useEffect(() => {
     const getWeekInfo = async () => {

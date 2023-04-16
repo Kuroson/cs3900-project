@@ -1,5 +1,5 @@
 import { MongooseDocument, MongooseId } from "models";
-import { TaskInterface } from "./task.model";
+import { FullTaskInterface, TaskInterface } from "./task.model";
 
 export interface WeekInterface extends MongooseDocument {
   title: string;
@@ -13,8 +13,8 @@ export type FullWeekInterface = Omit<WeekInterface, "tasks"> & {
 };
 
 export type CompleteWeekInterface = Omit<WeekInterface, "tasks"> & {
-  uncompletedTasks: Array<TaskInterface>;
-  completedTasks: Array<TaskInterface>;
+  uncompletedTasks: Array<FullTaskInterface>;
+  completedTasks: Array<FullTaskInterface>;
 };
 
 export type CompleteWeekType = {
