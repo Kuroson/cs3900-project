@@ -128,10 +128,6 @@ const setClassType = async (
     onlineClassId: string | undefined,
     firebase_uid: string,
 ) => {
-    console.log("QuizId" + quizId);
-    console.log("assignmentId" + assignmentId);
-    console.log("onlineClassId" + onlineClassId);
-
     let newTask;
     if (quizId !== undefined) {
         newTask = new Task({
@@ -181,6 +177,5 @@ const setClassType = async (
             description: description,
         });
     }
-    console.log(newTask);
     return newTask;
 };

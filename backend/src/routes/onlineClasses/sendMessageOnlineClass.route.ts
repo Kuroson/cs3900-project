@@ -161,6 +161,7 @@ export const addNewChatMessage = async (
             await enrolment.save().catch((err) => {
                 throw new HttpException(500, "Failed to add kudos to enrolment", err);
             });
+
             if (onlineClass.task !== undefined) {
                 await completeOnlineClassTask(myStudent._id, courseId, onlineClass.task);
             }
@@ -179,7 +180,6 @@ const completeOnlineClassTask = async (studentId: string, courseId: string, task
         throw new HttpException(400, "Failed to fetch week");
     }
 
-    logger.error("HIT THIS");
     const queryPayload = {
         studentId: studentId,
         courseId: courseId,
