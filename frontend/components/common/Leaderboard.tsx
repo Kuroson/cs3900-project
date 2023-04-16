@@ -30,7 +30,7 @@ const Leaderboard = ({ courseId }: LeaderboardProps): JSX.Element => {
   }, [authUser]);
 
   return (
-    <div className="p-3 min-w-min max-w-lg">
+    <div className="p-5 min-w-min max-w-sm mx-3 my-2">
       <div
         className="w-full py-5 px-10 rounded-lg border-solid border-5 border-[#26a69a;]"
         data-cy={`section-${Leaderboard}`}
