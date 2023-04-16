@@ -22,12 +22,18 @@ describe("Test getting a week of courses", () => {
     let weekId: string;
     let task1Id: string;
     let task2Id: string;
+    let studentId: string;
 
     beforeAll(async () => {
         await initialiseMongoose();
 
         await registerUser("first_name", "last_name", `admin${id}@email.com`, `acc${id}`);
         await registerUser("first_name", "last_name", `student1${id}@email.com`, `acc1${id}`);
+        await User.findOne({ email: `student1${id}@email.com` })
+            .then((student) => {
+                studentId = student?._id;
+            })
+            .catch(() => null);
         courseId = await createCourse(
             {
                 code: "TEST",
@@ -71,7 +77,7 @@ describe("Test getting a week of courses", () => {
     });
 
     it("Should retrieve a week's worth of tasks", async () => {
-        let week = await getWeek(courseId, weekId);
+        let week = await getWeek(courseId, weekId, studentId);
         expect(week).not.toBeNull();
         expect(week.title as string).toEqual("Week 1");
         expect(week.description as string).toEqual("Week 1 Description");
@@ -92,7 +98,7 @@ describe("Test getting a week of courses", () => {
             taskId: task1Id,
         });
 
-        week = await getWeek(courseId, weekId);
+        week = await getWeek(courseId, weekId, studentId);
         expect(week).not.toBeNull();
         expect(week.title as string).toEqual("Week 1");
         expect(week.description as string).toEqual("Week 1 Description");

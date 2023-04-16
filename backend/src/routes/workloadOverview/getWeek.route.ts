@@ -1,6 +1,9 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
-import WorkloadCompletion from "@/models/course/enrolment/workloadCompletion.model";
+import Enrolment, { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
+import WorkloadCompletion, {
+    WorkloadCompletionInterface,
+} from "@/models/course/enrolment/workloadCompletion.model";
 import { TaskInterface } from "@/models/course/workloadOverview/Task.model";
 import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import Week, { WeekInterface } from "@/models/course/workloadOverview/week.model";
@@ -20,6 +23,7 @@ type ResponsePayload = {
 type QueryPayload = {
     courseId: string;
     weekId: string;
+    studentId: string;
 };
 
 /**
@@ -34,11 +38,11 @@ export const getWeekController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId", "weekId"];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["courseId", "weekId", "studentId"];
 
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
-            const { courseId, weekId } = req.query;
-            const ret_data = await getWeek(courseId, weekId);
+            const { courseId, weekId, studentId } = req.query;
+            const ret_data = await getWeek(courseId, weekId, studentId);
 
             return res.status(200).json(ret_data);
         } else {
@@ -65,7 +69,7 @@ export const getWeekController = async (
  * @param weekId
  * @returns
  */
-export const getWeek = async (courseId: string, weekId: string) => {
+export const getWeek = async (courseId: string, weekId: string, studentId: string) => {
     // Check course exists
     const course = await Course.findById(courseId).catch(() => null);
     if (course == null) {
@@ -103,9 +107,9 @@ export const getWeek = async (courseId: string, weekId: string) => {
         .catch(() => null);
     if (week === null) throw new HttpException(400, "Week does not exist");
 
-    // Get all the completed tasks for a week
     const completedWeek = await WorkloadCompletion.findOne({
-        week: week._id,
+        week: weekId,
+        student: studentId,
     })
         .populate("completedTasks")
         .populate({

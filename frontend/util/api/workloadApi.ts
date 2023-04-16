@@ -69,7 +69,7 @@ export const createNewTask = (
 
 export const getWeek = (
   token: string | null,
-  ids: { courseId: string; weekId: string },
+  ids: { courseId: string; weekId: string; studentId: string },
   type: BackendLinkType,
 ) => {
   return apiGet<{ courseId: string; weekId: string }, CompleteWeekInterface>(

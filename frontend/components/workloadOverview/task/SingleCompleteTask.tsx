@@ -9,10 +9,10 @@ import {
   ListItemText,
   TextField,
 } from "@mui/material";
-import { TaskInterface } from "models/task.model";
+import { FullTaskInterface, TaskInterface } from "models/task.model";
 
 type SingleCompleteTaskProps = {
-  task: TaskInterface;
+  task: FullTaskInterface;
 };
 
 /**

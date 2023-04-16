@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
+import Link from "next/link";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import { Checkbox, ListItem, ListItemAvatar, ListItemIcon, ListItemText } from "@mui/material";
-import { TaskInterface } from "models/task.model";
+import {
+  Checkbox,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import { FullTaskInterface, TaskInterface } from "models/task.model";
 import { useAuthUser } from "next-firebase-auth";
 import { CompleteTaskPayloadRequest, completeTask } from "util/api/workloadApi";
 
 type SingleUncompleteTaskProps = {
-  task: TaskInterface;
+  task: FullTaskInterface;
   courseId: string;
   weekId: string;
   studentId: string;
@@ -38,12 +46,28 @@ const SingleUncompleteTask = ({
     await completeTask(await authuser.getIdToken(), payload, "client");
   };
 
+  const handleLink = (task: FullTaskInterface) => {
+    console.error(task);
+
+    if (task.quiz !== undefined) {
+      return `/course/${courseId}/Quiz`;
+    } else if (task.assignment !== undefined) {
+      return `/course/${courseId}/Assignment`;
+    } else if (task.onlineClass !== undefined) {
+      return `/course/${courseId}/onlineClass/${task.onlineClass._id.toString()}`;
+    } else {
+      return "/";
+    }
+  };
+
   if (task.quiz !== undefined || task.assignment !== undefined || task.onlineClass !== undefined) {
     return (
       <ListItem className="hover:shadow">
-        <ListItemIcon>
-          <Checkbox edge="start" checked={false} disabled={true} />
-        </ListItemIcon>
+        <Link href={handleLink(task)}>
+          <ListItemIcon>
+            <Checkbox edge="start" checked={false} disabled={true} />
+          </ListItemIcon>
+        </Link>
         <ListItemText primary={task.title} secondary={task.description} />
       </ListItem>
     );

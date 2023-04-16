@@ -1,4 +1,4 @@
-import { CourseInterface } from "models";
+import { CourseInterface, MongooseId } from "models";
 import { UserCourseInformation } from "models/course.model";
 import { KudosValuesInterface, KudosValuesType } from "models/kudosValue.model";
 import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
@@ -127,5 +127,35 @@ export const removeStudentFromCourse = (
     `${getBackendLink(type)}/course/students/remove`,
     token,
     { studentEmails: [email], courseId: courseId },
+  );
+};
+
+type GetStudentKudosPayloadRequest = {
+  courseId: string;
+};
+
+export type StudentKudosInfo = {
+  _id: string;
+  kudosEarned: number;
+  student: {
+    first_name: string;
+    last_name: string;
+    avatar: string;
+  };
+};
+
+export type GetStudentKudosPayloadResponse = {
+  students: Array<StudentKudosInfo>;
+};
+
+export const getStudentsKudos = (
+  token: string | null,
+  payload: { courseId: string },
+  type: BackendLinkType,
+) => {
+  return apiGet<GetStudentKudosPayloadRequest, GetStudentKudosPayloadResponse>(
+    `${getBackendLink(type)}/course/studentsKudos`,
+    token,
+    payload,
   );
 };

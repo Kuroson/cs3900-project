@@ -1,5 +1,5 @@
 import { FullWeekInterface } from "models/week.model";
-import SingleStudentWeekSection from "./SingleWorkload";
+import SingleStudentWeekSection from "./SingleStudentWeekSection";
 
 type StudentWorkloadSectionProps = {
   weeks: FullWeekInterface[];

@@ -112,6 +112,7 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         const newWorkload = new WorkloadCompletion({
             week: weekId,
             completedTasks: [taskId],
+            student: studentId,
         });
 
         workloadCompletionId = await newWorkload
