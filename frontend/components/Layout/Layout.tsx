@@ -14,8 +14,6 @@ export default function Layout({ children, className }: LayoutProps): JSX.Elemen
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(false);
-  console.log(user);
-  console.log(authUser);
   React.useEffect(() => {
     // Build user data for user context
     const fetchUserData = async () => {
