@@ -108,9 +108,6 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
 
     let workloadCompletionId;
 
-    logger.error(`Existing completion is ${enrolment}`);
-    logger.error(`Existing completion is ${existingCompletion}`);
-
     if (existingCompletion === undefined) {
         const newWorkload = new WorkloadCompletion({
             week: weekId,
