@@ -16,7 +16,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, href }): JSX.Element =>
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Avatar alt="Course" src={course.icon ?? "Course"} />
+          <Avatar alt="Course" src={course.icon}>
+            {course.code.charAt(0)}
+          </Avatar>
           <h3>{course.code}</h3>
         </div>
         <span className="bg-[#b0e3de] p-1 rounded-md font-bold text-white">{course.session}</span>
