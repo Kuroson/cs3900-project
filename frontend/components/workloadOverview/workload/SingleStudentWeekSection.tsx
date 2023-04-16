@@ -35,7 +35,7 @@ const SingleStudentWeekSection = ({
     const getWeekInfo = async () => {
       const [res, err] = await getWeek(
         await authUser.getIdToken(),
-        { courseId: courseId, weekId: weekId },
+        { courseId: courseId, weekId: weekId, studentId: studentId },
         "client",
       );
       if (err !== null) {
@@ -47,7 +47,9 @@ const SingleStudentWeekSection = ({
       setWeekInfo(res);
     };
     getWeekInfo();
-  }, [authUser, weekId]);
+  }, [authUser, weekId, courseId, studentId]);
+
+  console.warn(weekInfo);
 
   return (
     <div className="p-3">

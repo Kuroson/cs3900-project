@@ -66,6 +66,7 @@ const StudentWorkloadPage = ({
             courseId={courseData._id}
             setWeeks={setDynamicWeeks}
             weeks={dynamicWeeks}
+            studentId={user.userDetails._id}
           />
         </div>
       </ContentContainer>

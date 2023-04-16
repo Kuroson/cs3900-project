@@ -25,6 +25,7 @@ describe("Test getting a week of courses", () => {
     let weekId: string;
     let task1Id: string;
     let task2Id: string;
+    let studentId: string;
 
     let onlineClassId;
     const onlineClassTitle = "Test online class";
@@ -89,10 +90,15 @@ describe("Test getting a week of courses", () => {
             `acc${id}`,
         );
         await triggerOnlineClass(onlineClassId, true);
+        await User.findOne({ email: `student1${id}@email.com` })
+            .then((student) => {
+                studentId = student?._id;
+            })
+            .catch(() => null);
     });
 
     it("Should complete Tasks", async () => {
-        let week = await getWeek(courseId, weekId);
+        let week = await getWeek(courseId, weekId, studentId);
         expect(week).not.toBeNull();
         expect(week.title as string).toEqual("Week 1");
         expect(week.description as string).toEqual("Week 1 Description");
@@ -108,7 +114,7 @@ describe("Test getting a week of courses", () => {
         expect(user).not.toBeNull();
         await addNewChatMessage(onlineClassId, `acc1${id}`, chatMessage1, courseId);
 
-        week = await getWeek(courseId, weekId);
+        week = await getWeek(courseId, weekId, studentId);
         expect(week).not.toBeNull();
         expect(week.title as string).toEqual("Week 1");
         expect(week.description as string).toEqual("Week 1 Description");
