@@ -49,8 +49,24 @@ describe("Test getting a workload for a course", () => {
             "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
-        task1Id = await createTask(week1Id, "Do Task 1", "Look at week 1", `acc${id}`);
-        task2Id = await createTask(week1Id, "Do Task 2", "Look at week 1", `acc${id}`);
+        task1Id = await createTask(
+            {
+                courseId: courseId,
+                weekId: week1Id,
+                title: "Do Task 1",
+                description: "Look at week 1",
+            },
+            `acc${id}`,
+        );
+        task2Id = await createTask(
+            {
+                courseId: courseId,
+                weekId: week1Id,
+                title: "Do Task 2",
+                description: "Look at week 1",
+            },
+            `acc${id}`,
+        );
 
         week2Id = await createWeek(
             `${courseId}`,

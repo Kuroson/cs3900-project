@@ -1,21 +1,22 @@
+import Assignment from "@/models/course/assignment/assignment.model";
 import Course from "@/models/course/course.model";
 import Page from "@/models/course/page/page.model";
 import Task from "@/models/course/workloadOverview/Task.model";
-import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
+import { createAssignment } from "@/routes/assignment/createAssignment.route";
+import { deleteAssignment } from "@/routes/assignment/deleteAssignment.route";
 import { createCourse } from "@/routes/course/createCourse.route";
-import { getCourse } from "@/routes/course/getCourse.route";
+import { updateCourse } from "@/routes/course/updateCourse.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { registerUser } from "@/routes/user/register.route";
 import { createTask } from "@/routes/workloadOverview/createTask.route";
 import { createWeek } from "@/routes/workloadOverview/createWeek.route";
-import { logger } from "@/utils/logger";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
-describe("Test creating a week", () => {
+describe("Test deleting an assignment linked to a task", () => {
     const id = uuidv4();
     let courseId: string;
     let weekId: string;
@@ -36,6 +37,7 @@ describe("Test creating a week", () => {
             },
             `acc${id}`,
         );
+        await updateCourse({ courseId, tags: ["tag1", "tag2"] }, `acc${id}`);
 
         pageId = await createPage(courseId, "Test page 1", `acc${id}`);
 
@@ -49,41 +51,54 @@ describe("Test creating a week", () => {
         );
     });
 
-    it("Should create a new tasks within week", async () => {
-        const task1Id = await createTask(
+    it("Should delete task after assignment is deleted", async () => {
+        const assignmentId = await createAssignment(
+            {
+                courseId,
+                title: "Test assignment",
+                description: "This is the description",
+                deadline: "2023-03-26T12:00:00+11:00",
+                marksAvailable: 1,
+                tags: ["tag1", "tag2"],
+            },
+            `acc${id}`,
+        );
+
+        let myAssignment = await Assignment.findById(assignmentId);
+        expect(myAssignment === null).toBe(false);
+        let myCourse = await Course.findById(courseId);
+        expect(myCourse?.assignments.includes(assignmentId)).toBe(true);
+
+        // create a task
+        const taskId = await createTask(
             {
                 courseId: courseId,
                 weekId: weekId,
                 title: "Do Task 1",
                 description: "Look at week 1",
+                assignmentId: assignmentId,
             },
             `acc${id}`,
         );
-        const task2Id = await createTask(
-            {
-                courseId: courseId,
-                weekId: weekId,
-                title: "Do Task 2",
-                description: "Look at week 1",
-            },
-            `acc${id}`,
-        );
+        let myTask = await Task.findById(taskId);
+        expect(myTask === null).toBe(false);
+        myAssignment = await Assignment.findById(assignmentId);
+        expect(myAssignment?.task.toString()).toBe(taskId.toString());
 
-        const week = await Week.findById(weekId);
+        // Delete the assignment
+        await deleteAssignment({ courseId, assignmentId }, `acc${id}`);
 
-        expect(week).not.toBeNull();
-
-        expect(week?.tasks.length).toEqual(2);
-        expect(week?.tasks[0].toString()).toEqual(task1Id);
-        expect(week?.tasks[1].toString()).toEqual(task2Id);
-
-        await Task.findByIdAndDelete(task1Id).exec();
-        await Task.findByIdAndDelete(task2Id).exec();
+        myAssignment = await Assignment.findById(assignmentId);
+        expect(myAssignment === null).toBe(true);
+        myCourse = await Course.findById(courseId);
+        expect(myCourse?.assignments.includes(assignmentId)).toBe(false);
+        myTask = await Task.findById(taskId);
+        expect(myTask === null).toBe(true);
     });
 
     afterAll(async () => {
         // Clean up
-        await User.deleteOne({ firebase_uid: `acc1${id}` }).exec();
+        await User.deleteOne({ firebase_uid: `acc${id}` }).exec();
         await Course.findByIdAndDelete(courseId).exec();
         await Page.findByIdAndDelete(pageId).exec();
         await Week.findByIdAndDelete(weekId).exec();

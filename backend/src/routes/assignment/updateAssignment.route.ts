@@ -20,6 +20,7 @@ type QueryPayload = {
     deadline?: string;
     marksAvailable?: number;
     tags?: Array<string>;
+    task?: string;
 };
 
 /**
@@ -77,7 +78,7 @@ export const updateAssignment = async (queryBody: QueryPayload, firebase_uid: st
         throw new HttpException(401, "Must be an admin to update assignment");
     }
 
-    const { courseId, assignmentId, title, description, deadline, marksAvailable, tags } =
+    const { courseId, assignmentId, title, description, deadline, marksAvailable, tags, task } =
         queryBody;
 
     const assignment = await Assignment.findById(assignmentId).catch((err) => null);
@@ -111,6 +112,10 @@ export const updateAssignment = async (queryBody: QueryPayload, firebase_uid: st
         }
 
         assignment.marksAvailable = marksAvailable;
+    }
+
+    if (task !== undefined) {
+        assignment.task = task;
     }
 
     if (tags !== undefined && tags.length !== 0) {

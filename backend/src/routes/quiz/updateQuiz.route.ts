@@ -17,6 +17,7 @@ type QueryPayload = {
     maxMarks?: number;
     open?: string;
     close?: string;
+    task?: string;
 };
 
 /**
@@ -74,7 +75,7 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(401, "Must be an admin to update quiz");
     }
 
-    const { quizId, title, description, maxMarks, open, close } = queryBody;
+    const { quizId, title, description, maxMarks, open, close, task } = queryBody;
 
     const quiz = await Quiz.findById(quizId)
         .exec()
@@ -107,6 +108,10 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
 
     if (close !== undefined) {
         quiz.close = close;
+    }
+
+    if (task !== undefined) {
+        quiz.task = task;
     }
 
     const myQuiz = await quiz.save().catch((err) => {

@@ -1,11 +1,13 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Quiz from "@/models/course/quiz/quiz.model";
+import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { deleteTask } from "../workloadOverview/deleteTask.route";
 
 type ResponsePayload = Record<string, never>;
 
@@ -78,6 +80,9 @@ export const deleteQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(400, "Failed to fetch course");
     }
 
+    // delete Quiz
+    await deleteQuizTask(quizId, firebase_uid);
+
     course.quizzes.pull(quizId);
 
     await Quiz.findByIdAndDelete(quizId).catch((err) => {
@@ -89,4 +94,29 @@ export const deleteQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         logger.error(err);
         throw new HttpException(500, "Failed to save updated course");
     });
+};
+
+const deleteQuizTask = async (quizId: string, firebase_uid: string) => {
+    //gets assignment
+    const quiz = await Quiz.findById(quizId).catch((err) => null);
+    if (quiz === null) {
+        throw new HttpException(400, "Failed to recall quiz");
+    }
+
+    // deletes task if a task exists
+    if (quiz.task !== undefined) {
+        // Get the week
+        // delete task
+        const week = await Week.findOne({ tasks: { $all: [quiz.task] } })
+            .exec()
+            .catch(() => null);
+
+        if (week === null) {
+            throw new HttpException(400, "Failed to fetch week");
+        }
+
+        const queryPayload = { weekId: week._id, taskId: quiz.task };
+
+        await deleteTask(queryPayload, firebase_uid);
+    }
 };

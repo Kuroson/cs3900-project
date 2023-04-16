@@ -46,7 +46,15 @@ describe("Test updating a task", () => {
     });
 
     it("Should update parameters in Task", async () => {
-        const taskId = await createTask(weekId, "Do Task 1", "Look at week 1", `acc${id}`);
+        const taskId = await createTask(
+            {
+                courseId: courseId,
+                weekId: weekId,
+                title: "Do Task 1",
+                description: "Look at week 1",
+            },
+            `acc${id}`,
+        );
         let newTaskId = await updateTask(
             {
                 taskId: taskId,

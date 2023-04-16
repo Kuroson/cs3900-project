@@ -1,4 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Assignment from "@/models/course/assignment/assignment.model";
+import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
 import Task from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
@@ -6,15 +8,21 @@ import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { updateAssignment } from "../assignment/updateAssignment.route";
+import { updateQuiz } from "../quiz/updateQuiz.route";
 
 type ResponsePayload = {
     taskId: string;
 };
 
 type QueryPayload = {
+    courseId: string;
     weekId: string;
     title: string;
     description: string;
+    quizId?: string;
+    assignmentId?: string;
+    onlineClassId?: string;
 };
 
 /**
@@ -30,14 +38,16 @@ export const createTaskController = async (
 ) => {
     try {
         const authUser = await checkAuth(req);
-        const KEYS_TO_CHECK: Array<keyof QueryPayload> = ["weekId", "title", "description"];
+        const KEYS_TO_CHECK: Array<keyof QueryPayload> = [
+            "courseId",
+            "weekId",
+            "title",
+            "description",
+        ];
 
         // User has been verified
         if (isValidBody<QueryPayload>(req.body, KEYS_TO_CHECK)) {
-            // Body has been verified
-            const { weekId, title, description } = req.body;
-
-            const taskId = await createTask(weekId, title, description, authUser.uid);
+            const taskId = await createTask(req.body, authUser.uid);
 
             logger.info(`taskId: ${taskId}`);
             return res.status(200).json({ taskId });
@@ -64,14 +74,14 @@ export const createTaskController = async (
  * @param description
  */
 export const createTask = async (
-    weekId: string,
-    title: string,
-    description: string,
+    queryBody: QueryPayload,
     firebase_uid: string,
 ): Promise<string> => {
     if (!(await checkAdmin(firebase_uid))) {
         throw new HttpException(403, "Must be an admin to create a task");
     }
+
+    const { courseId, weekId, title, description, quizId, assignmentId, onlineClassId } = queryBody;
 
     const week = await Week.findById(weekId).catch(() => null);
 
@@ -79,10 +89,15 @@ export const createTask = async (
         throw new HttpException(400, `Week, ${weekId}, does not exist`);
     }
 
-    const newTask = new Task({
-        title: title,
-        description: description,
-    });
+    const newTask = await setClassType(
+        courseId,
+        title,
+        description,
+        quizId,
+        assignmentId,
+        onlineClassId,
+        firebase_uid,
+    );
 
     const taskId = await newTask
         .save()
@@ -102,4 +117,60 @@ export const createTask = async (
     });
 
     return taskId.toString() as string;
+};
+
+const setClassType = async (
+    courseId: string,
+    title: string,
+    description: string,
+    quizId: string | undefined,
+    assignmentId: string | undefined,
+    onlineClassId: string | undefined,
+    firebase_uid: string,
+) => {
+    let newTask;
+    if (quizId !== undefined) {
+        newTask = new Task({
+            title: title,
+            description: description,
+            quiz: quizId,
+        });
+
+        await updateQuiz({ quizId: quizId, task: newTask._id }, firebase_uid);
+    } else if (assignmentId !== undefined) {
+        newTask = new Task({
+            title: title,
+            description: description,
+            assignment: assignmentId,
+        });
+
+        await updateAssignment(
+            { courseId: courseId, assignmentId: assignmentId, task: newTask._id },
+            firebase_uid,
+        );
+    } else if (onlineClassId !== undefined) {
+        newTask = new Task({
+            title: title,
+            description: description,
+            onlineClass: onlineClassId,
+        });
+
+        const onlineClass = await OnlineClass.findById(onlineClassId)
+            .exec()
+            .catch(() => null);
+        if (onlineClass === null) {
+            throw new HttpException(400, "Failed to fetch Online Class");
+        }
+        onlineClass.task = newTask._id;
+        await onlineClass.save().catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Failed to save updated OnlineClass");
+        });
+    } else {
+        newTask = new Task({
+            title: title,
+            description: description,
+        });
+    }
+    return newTask;
 };
