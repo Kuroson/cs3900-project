@@ -49,8 +49,6 @@ const SingleStudentWeekSection = ({
     getWeekInfo();
   }, [authUser, weekId, courseId, studentId]);
 
-  console.warn(weekInfo);
-
   return (
     <div className="p-3">
       <div

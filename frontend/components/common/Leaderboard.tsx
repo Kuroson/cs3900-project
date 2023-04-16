@@ -1,12 +1,8 @@
 import React, { useEffect } from "react";
-import { Checkbox, Divider, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Divider, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { useAuthUser } from "next-firebase-auth";
 import { CLIENT_BACKEND_URL } from "util/api/api";
-import {
-  GetStudentKudosPayloadResponse,
-  StudentKudosInfo,
-  getStudentsKudos,
-} from "util/api/courseApi";
+import { StudentKudosInfo, getStudentsKudos } from "util/api/courseApi";
 
 type LeaderboardProps = {
   courseId: string;
