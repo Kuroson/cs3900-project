@@ -143,6 +143,7 @@ export const updatePage = async (
 
         const newResourceId = await newResource
             .save()
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             .then((res) => res._id)
             .catch((err) => {
                 throw new HttpException(500, "Failed to save resource", err);
@@ -184,6 +185,7 @@ export const updatePage = async (
 
         const currSectionId = await currSection
             .save()
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             .then((res) => res._id)
             .catch((err) => {
                 throw new HttpException(500, "Failed to save section", err);

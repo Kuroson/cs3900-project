@@ -7,7 +7,7 @@ import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
+import mongoose, { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -73,13 +73,13 @@ describe("Test listing assignments", () => {
 
         expect(myAssignments).toEqual([
             {
-                assignmentId: assignments[0],
+                assignmentId: new mongoose.Types.ObjectId(assignments[0]),
                 title: "Test assignment",
                 deadline: "2023-03-26T12:00:00+11:00",
                 description: "This is the description",
             },
             {
-                assignmentId: assignments[1],
+                assignmentId: new mongoose.Types.ObjectId(assignments[1]),
                 title: "Another assignment",
                 deadline: "2023-03-26T12:00:00+11:00",
                 description: "This is the description",

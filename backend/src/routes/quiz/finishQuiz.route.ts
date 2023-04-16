@@ -200,6 +200,7 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     const attemptId = await attempt
         .save()
         .then((res) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return res._id;
         })
         .catch((err) => {

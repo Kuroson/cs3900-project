@@ -49,8 +49,8 @@ describe("Test creating a page", () => {
         expect(myCourse).not.toBeNull();
 
         expect(myCourse?.pages.length).toEqual(2);
-        expect(myCourse?.pages[0] as string).toEqual(pageId1);
-        expect(myCourse?.pages[1] as string).toEqual(pageId2);
+        expect(myCourse?.pages[0].toString() as string).toEqual(pageId1);
+        expect(myCourse?.pages[1].toString() as string).toEqual(pageId2);
 
         // Delete the pages
         await deletePage({ courseId, pageId: pageId1 }, `acc${id}`);

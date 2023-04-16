@@ -1,7 +1,6 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
-import { KudosValuesInterface, KudosValuesType } from "@/models/course/kudosValues.model";
+import { KudosValuesInterface } from "@/models/course/kudosValues.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
@@ -68,5 +67,5 @@ export const getKudos = async (courseId: string): Promise<KudosValuesInterface> 
         .exec()
         .catch(() => null);
     if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
-    return course.kudosValues;
+    return course.kudosValues as KudosValuesInterface;
 };

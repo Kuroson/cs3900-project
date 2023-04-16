@@ -1,7 +1,6 @@
 import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
-import StorefrontIcon from "@mui/icons-material/Storefront";
 import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
 import { UserCourseInformation } from "models/course.model";
@@ -58,11 +57,6 @@ export default function StudentNavBar({
       name: "Home",
       route: `/course/${courseData?._id}`, // TODO better case handling?
       icon: <GridViewIcon fontSize="large" color="primary" />,
-    },
-    {
-      name: "Marketplace",
-      route: "/marketplace", //TODO
-      icon: <StorefrontIcon fontSize="large" color="primary" />,
     },
     {
       name: "Search",

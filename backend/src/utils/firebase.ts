@@ -9,6 +9,7 @@ import FirebaseStorage from "multer-firebase-storage";
 
 const FIREBASE_KEY = (): string => {
     try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return validateEnv.FIREBASE_PRIVATE_KEY !== undefined
             ? JSON.parse(validateEnv.FIREBASE_PRIVATE_KEY)
             : undefined;

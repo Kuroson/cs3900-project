@@ -134,6 +134,7 @@ export const createWeek = async (
     const weekId = await newWeek
         .save()
         .then((res) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return res._id;
         })
         .catch((err) => {
@@ -154,5 +155,5 @@ export const createWeek = async (
         throw new HttpException(500, "Failed to save week workload to the page", err);
     });
 
-    return weekId.toString();
+    return weekId.toString() as string;
 };

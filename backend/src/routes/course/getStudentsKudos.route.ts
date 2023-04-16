@@ -1,16 +1,17 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
-import Enrolment from "@/models/course/enrolment/enrolment.model";
-import { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 
-type StudentInfo = { student: Omit<UserInterface, "enrolments" | "created_courses"> };
+type StudentKudosInfo = {
+    kudosEarned: number;
+    student: { first_name: string; last_name: string; avatar: string; kudos: number };
+};
 
 type ResponsePayload = {
-    students: Array<StudentInfo>;
+    students: Array<StudentKudosInfo>;
 };
 
 type QueryPayload = {
@@ -18,14 +19,13 @@ type QueryPayload = {
 };
 
 /**
- * GET /course/students
- * Returns all the students in a given course
- * TODO Figure out who can use this method. Currently, anyone with a valid JWT token
+ * Get /course/studentskudos
+ * Returns all the student kudos for a given course in order
  * @param req
  * @param res
  * @returns
  */
-export const getStudentsController = async (
+export const getStudentsKudosController = async (
     req: Request<QueryPayload>,
     res: Response<ResponsePayload | ErrorResponsePayload>,
 ) => {
@@ -36,7 +36,7 @@ export const getStudentsController = async (
 
         if (isValidBody<QueryPayload>(req.query, KEYS_TO_CHECK)) {
             const { courseId } = req.query;
-            const students = await getStudents(courseId);
+            const students = await getStudentsKudos(courseId);
             return res.status(200).json({ students: [...students] });
         } else {
             throw new HttpException(
@@ -57,27 +57,30 @@ export const getStudentsController = async (
 };
 
 /**
- * Returns all the students in a given course
- *
- * @param courseId The ID of the course to be recalled
- * @throws { HttpException } if the course doesn't exist
- * @returns All students for a given courseId
+ * Returns all the students in a given course in order of kudos
+ * @param courseId
+ * @returns
  */
-export const getStudents = async (courseId: string): Promise<StudentInfo[]> => {
-    // 1. Find the course
-    Enrolment; //Keep this in. We need it so that the Mongoose DB can recall the schema when fetching records
+export const getStudentsKudos = async (courseId: string): Promise<StudentKudosInfo[]> => {
     const course = await Course.findById(courseId, "students")
         .populate({
             path: "students",
             model: "Enrolment",
-            select: "student",
+            select: "student kudosEarned",
             populate: {
                 path: "student",
                 model: "User",
-                select: "_id email firebase_uid first_name last_name role avatar",
+                select: "_id first_name last_name avatar",
             },
         })
+        .exec()
         .catch(() => null);
+
     if (course === null) throw new HttpException(400, `Course of ${courseId} does not exist`);
-    return course.students;
+
+    const students = course.students as StudentKudosInfo[];
+
+    students.sort((a, b) => b.kudosEarned - a.kudosEarned);
+
+    return students;
 };

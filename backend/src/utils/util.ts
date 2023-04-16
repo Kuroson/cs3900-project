@@ -46,6 +46,7 @@ export const getUserId = async (firebase_uid: string) => {
     if (user === null) {
         throw new HttpException(400, "Failed to recall user");
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return user._id;
 };
 
@@ -70,14 +71,32 @@ export const adminRoute = (
     routeHandler: (req: Request<any>, res: Response<any>) => any,
 ): ((req: Request, res: Response) => Promise<void>) => {
     return async (req, res) => {
-        const authUser = await checkAuth(req);
-        if (!(await checkAdmin(authUser.uid))) {
-            const adminFailed = async (req: Request, res: Response) => {
-                return res.status(403).json({ message: "Must be an admin to access route" });
-            };
-            return await adminFailed(req, res);
-        }
+        try {
+            const authUser = await checkAuth(req);
+            if (!(await checkAdmin(authUser.uid))) {
+                const adminFailed = async (req: Request, res: Response) => {
+                    return res.status(403).json({ message: "Must be an admin to access route" });
+                };
+                return await adminFailed(req, res);
+            }
 
-        return await routeHandler(req, res);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            return await routeHandler(req, res);
+        } catch (error) {
+            // Auth failed
+            const authFailed = async (req: Request, res: Response, error) => {
+                if (error instanceof HttpException) {
+                    logger.error(error.getMessage());
+                    logger.error(error.originalError);
+                    return res.status(error.getStatusCode()).json({ message: error.getMessage() });
+                } else {
+                    logger.error(error);
+                    return res
+                        .status(500)
+                        .json({ message: "Internal server error. Error was not caught" });
+                }
+            };
+            return await authFailed(req, res, error);
+        }
     };
 };

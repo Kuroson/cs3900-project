@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import HomeIcon from "@mui/icons-material/Home";
+import StorefrontIcon from "@mui/icons-material/Storefront";
 import { Accordion, AccordionDetails, AccordionSummary, TextField } from "@mui/material";
 import { UserEnrolmentInformation } from "models/enrolment.model";
 import { UserDetails } from "models/user.model";
@@ -130,9 +131,14 @@ const HomePage = (): JSX.Element => {
       }
     }
   };
-  console.log(userDetails.enrolments);
   const studentRoutes: Routes[] = [
     { name: "Dashboard", route: "/", icon: <HomeIcon fontSize="large" color="primary" /> },
+    {
+      name: "Marketplace",
+      route: "/marketplace", //TODO
+      icon: <StorefrontIcon fontSize="large" color="primary" />,
+      hasLine: true,
+    },
     ...userDetails.enrolments.map((x) => {
       return {
         name: x.course.code,

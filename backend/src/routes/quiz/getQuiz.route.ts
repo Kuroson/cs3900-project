@@ -214,7 +214,7 @@ export const getAttempt = async (courseId: string, quizId: string, firebase_uid:
     for (const attempt of enrolment.quizAttempts) {
         const isQuiz: boolean = attempt.quiz.equals(quizId);
         if (isQuiz) {
-            return attempt._id;
+            return attempt._id.toString() as string;
         }
     }
     return null;

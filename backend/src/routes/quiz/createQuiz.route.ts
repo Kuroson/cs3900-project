@@ -84,6 +84,11 @@ export const createQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
 
     const { courseId, title, description, maxMarks, open, close } = queryBody;
 
+    // Check mark valid
+    if (maxMarks < 0) {
+        throw new HttpException(400, "Mark must be positive");
+    }
+
     const course = await Course.findById(courseId)
         .exec()
         .catch((err) => null);
@@ -113,5 +118,5 @@ export const createQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(500, "Failed to save updated course");
     });
 
-    return myQuiz._id;
+    return myQuiz._id.toString() as string;
 };
