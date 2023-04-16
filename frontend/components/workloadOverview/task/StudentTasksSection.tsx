@@ -1,12 +1,12 @@
 import { List } from "@mui/material";
-import { TaskInterface } from "models/task.model";
+import { FullTaskInterface, TaskInterface } from "models/task.model";
 import SingleCompleteTask from "./SingleCompleteTask";
 import SingleUncompleteTask from "./SingleUncompleteTask";
 import SingleTask from "./SingleUncompleteTask";
 
 type StudentTasksSectionProps = {
-  completedTasks: TaskInterface[] | undefined;
-  uncompletedTasks: TaskInterface[] | undefined;
+  completedTasks: FullTaskInterface[] | undefined;
+  uncompletedTasks: FullTaskInterface[] | undefined;
   courseId: string;
   weekId: string;
   studentId: string;

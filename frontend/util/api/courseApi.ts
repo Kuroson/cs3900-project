@@ -1,4 +1,4 @@
-import { CourseInterface } from "models";
+import { CourseInterface, MongooseId } from "models";
 import { UserCourseInformation } from "models/course.model";
 import { KudosValuesInterface, KudosValuesType } from "models/kudosValue.model";
 import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
@@ -135,6 +135,7 @@ type GetStudentKudosPayloadRequest = {
 };
 
 export type StudentKudosInfo = {
+  _id: string;
   kudosEarned: number;
   student: {
     first_name: string;

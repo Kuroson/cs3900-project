@@ -51,7 +51,7 @@ const Leaderboard = ({ courseId }: LeaderboardProps): JSX.Element => {
           <List>
             {studentsKudosInfo?.map((person) => {
               return (
-                <ListItem>
+                <ListItem key={person._id}>
                   <ListItemIcon>
                     <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
                       <img
