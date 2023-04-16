@@ -94,11 +94,7 @@ export default function StudentNavBar({
             {courseData !== undefined && (
               <CourseDetails code={courseData?.code ?? ""} avatar={courseData.icon ?? ""} />
             )}
-            <NavBar
-              routes={routes ?? studentRoutes}
-              role={getRoleText(userDetails.role)}
-              isCoursePage={false}
-            />
+            <NavBar routes={routes ?? studentRoutes} role={getRoleText(userDetails.role)} />
           </div>
           <div className="flex justify-center items-center mb-5">
             {/* Bottom */}

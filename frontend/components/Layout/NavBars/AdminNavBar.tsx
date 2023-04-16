@@ -210,13 +210,9 @@ export default function AdminNavBar({
             {courseData !== undefined && (
               <CourseDetails code={courseData?.code ?? ""} avatar={courseData.icon ?? ""} />
             )}
-            <NavBar
-              routes={dynamicRoutes}
-              role={getRoleText(userDetails.role)}
-              isCoursePage={false}
-            />
+            <NavBar routes={dynamicRoutes} role={getRoleText(userDetails.role)} />
             {showAddPage === true && (
-              <div className="flex justify-center items-center w-full">
+              <div className="flex justify-center items-center w-full mt-8">
                 <Button variant="outlined" onClick={handleOpen} id="addNewPage">
                   Add New Page
                 </Button>

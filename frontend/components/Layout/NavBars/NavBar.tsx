@@ -15,7 +15,6 @@ export type Routes = {
 
 type NavBarProps = {
   routes: Routes[];
-  isCoursePage: boolean;
   role: RoleText;
 };
 
@@ -34,40 +33,25 @@ export const defaultAdminRoutes: Routes[] = [
   },
 ];
 
-const NavBar = ({ routes, isCoursePage, role }: NavBarProps): JSX.Element => {
-  if (role === "Student") {
-    return (
-      <div className="w-full flex flex-col items-center justify-center mt-4 pl-2" id="navbar">
-        {routes.map(({ name, route, icon, hasLine }, index) => {
-          return (
-            <div key={`nav-index-${index}`} className="w-full flex py-2 flex-col">
-              {/* TODO: href doesn't reload page and therefore doesn't call useEffect */}
-              <Link href={route}>
-                <TitleWithIcon text={name}>{icon}</TitleWithIcon>
-              </Link>
-              {(hasLine ?? false) && <Divider light sx={{ width: "100%", marginTop: "10px" }} />}
-            </div>
-          );
-        })}
-      </div>
-    );
-  } else {
-    return (
-      <div className="w-full flex flex-col items-center justify-center mt-4 ml-4" id="navbar">
-        {routes.map(({ name, route, icon, hasLine }, index) => {
-          return (
-            <div key={`nav-index-${index}`} className="w-full flex py-2 flex-col">
-              {/* TODO: href doesn't reload page and therefore doesn't call useEffect */}
-              <Link href={route}>
-                <TitleWithIcon text={name}>{icon}</TitleWithIcon>
-              </Link>
-              {(hasLine ?? false) && <Divider light sx={{ width: "100%", marginTop: "10px" }} />}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
+const NavBar = ({ routes, role }: NavBarProps): JSX.Element => {
+  return (
+    <div
+      className="w-full flex flex-col items-center ml-2 mt-3 h-[780px] overflow-scroll"
+      id="navbar"
+    >
+      {routes.map(({ name, route, icon, hasLine }, index) => {
+        return (
+          <div key={`nav-index-${index}`} className="w-full flex py-2 flex-col">
+            {/* TODO: href doesn't reload page and therefore doesn't call useEffect */}
+            <Link href={route}>
+              <TitleWithIcon text={name}>{icon}</TitleWithIcon>
+            </Link>
+            {(hasLine ?? false) && <Divider light sx={{ width: "100%", marginTop: "10px" }} />}
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
 export default NavBar;
