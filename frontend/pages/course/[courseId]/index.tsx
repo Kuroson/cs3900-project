@@ -10,6 +10,7 @@ import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, OnlineClassCard, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
+import Leaderboard from "components/common/Leaderboard";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { getUserDetails } from "util/api/userApi";
@@ -82,6 +83,7 @@ const StudentCoursePage = ({ courseData }: StudentCoursePageProps): JSX.Element 
           )}
           <p className="mt-5">{courseData.description}</p>
           <LectureCards onlineClasses={courseData.onlineClasses} courseId={courseData._id} />
+          <Leaderboard courseId={courseData._id} />
         </div>
       </ContentContainer>
     </>

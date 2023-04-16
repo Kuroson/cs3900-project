@@ -14,7 +14,7 @@ import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "nex
 import { ContentContainer, Loading, StudentNavBar } from "components";
 import { Routes } from "components/Layout/NavBars/NavBar";
 import SingleEditableWeekSection from "components/admin/workload/SingleEditableWeekSection";
-import SingleStudentWeekSection from "components/workloadOverview/workload/SingleWorkload";
+import SingleStudentWeekSection from "components/workloadOverview/workload/SingleStudentWeekSection";
 import StudentWorkloadSection from "components/workloadOverview/workload/StudentWorkloadSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";

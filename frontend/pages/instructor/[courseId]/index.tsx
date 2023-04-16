@@ -9,6 +9,7 @@ import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading, OnlineClassCard } from "components";
+import Leaderboard from "components/common/Leaderboard";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import {
@@ -114,6 +115,7 @@ const AdminCoursePage = ({ courseData }: AdminCoursePageProps): JSX.Element => {
           )}
           <p className="pt-1.5">{courseData.description}</p>
           <LectureCards courseId={courseData._id} onlineClasses={dynamicOnlineClass} />
+          <Leaderboard courseId={courseData._id} />
         </div>
       </ContentContainer>
     </>

@@ -134,13 +134,17 @@ type GetStudentKudosPayloadRequest = {
   courseId: string;
 };
 
-type GetStudentKudosPayloadResponse = {
+export type StudentKudosInfo = {
   kudosEarned: number;
   student: {
     first_name: string;
     last_name: string;
     avatar: string;
   };
+};
+
+export type GetStudentKudosPayloadResponse = {
+  students: Array<StudentKudosInfo>;
 };
 
 export const getStudentsKudos = (
