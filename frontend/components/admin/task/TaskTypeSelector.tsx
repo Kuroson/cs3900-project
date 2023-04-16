@@ -73,7 +73,11 @@ const TaskTypeSelector = ({
           <InputLabel>Select Quiz</InputLabel>
           <Select onChange={handleChange}>
             {quizzes?.map((quiz) => {
-              return <MenuItem value={quiz.quizId}>{quiz.title}</MenuItem>;
+              return (
+                <MenuItem value={quiz.quizId} key={quiz.quizId}>
+                  {quiz.title}
+                </MenuItem>
+              );
             })}
           </Select>
         </FormControl>
@@ -86,7 +90,11 @@ const TaskTypeSelector = ({
           <InputLabel>Select Assignment</InputLabel>
           <Select onChange={handleChange}>
             {assignments?.map((assignment) => {
-              return <MenuItem value={assignment.assignmentId}>{assignment.title}</MenuItem>;
+              return (
+                <MenuItem value={assignment.assignmentId} key={assignment.assignmentId}>
+                  {assignment.title}
+                </MenuItem>
+              );
             })}
           </Select>
         </FormControl>
@@ -99,7 +107,11 @@ const TaskTypeSelector = ({
           <InputLabel>Select Online Class</InputLabel>
           <Select onChange={handleChange}>
             {onlineClasses.map((onlineClass) => {
-              return <MenuItem value={onlineClass._id}>{onlineClass.title}</MenuItem>;
+              return (
+                <MenuItem value={onlineClass._id} key={onlineClass._id}>
+                  {onlineClass.title}
+                </MenuItem>
+              );
             })}
           </Select>
         </FormControl>
