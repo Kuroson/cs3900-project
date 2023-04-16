@@ -4,6 +4,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Button, TextField } from "@mui/material";
+import { deepOrange } from "@mui/material/colors";
 import { BasicCourseInfo } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -123,7 +124,11 @@ const CreateCourse = (): JSX.Element => {
           className="flex flex-col items-center justify-center gap-6"
           onSubmit={handleCreateCourse}
         >
-          <Avatar alt="Course" src={icon} sx={{ width: "100px", height: "100px" }}>
+          <Avatar
+            alt="Course"
+            src={icon}
+            sx={{ width: "100px", height: "100px", bgcolor: deepOrange[500] }}
+          >
             C
           </Avatar>
           <Button variant="outlined" component="label">

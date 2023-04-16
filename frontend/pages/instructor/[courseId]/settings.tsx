@@ -4,6 +4,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Button, FormControlLabel, Switch, TextField } from "@mui/material";
+import { deepOrange } from "@mui/material/colors";
 import { BasicCourseInfo, UserCourseInformation } from "models/course.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
@@ -36,14 +37,13 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
   const router = useRouter();
   const [loading, setLoading] = React.useState(user.userDetails === null);
 
-  const [image, setImage] = useState<string>();
   const [code, setCode] = useState<string>(courseData.code);
   const [title, setTitle] = useState<string>(courseData.title);
   const [session, setSession] = useState<string>(courseData.session);
   const [description, setDescription] = useState<string>(courseData.description ?? "");
   const [tags, setTags] = useState<string>(courseData.tags.toString());
   const [archived, setArchived] = useState<boolean>(courseData.archived);
-  const [icon, setIcon] = useState<string>("");
+  const [icon, setIcon] = useState<string>(courseData.icon ?? "");
   const [buttonLoading, setButtonLoading] = React.useState(false);
 
   React.useEffect(() => {
@@ -63,7 +63,7 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
       reader.onload = () => {
-        setImage(reader.result as string);
+        setIcon(reader.result as string);
       };
     }
   };
@@ -100,6 +100,10 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
     if (tags !== "") {
       const sendTags = tags.split(",");
       dataPayload.tags = sendTags;
+    }
+
+    if (icon !== "") {
+      dataPayload.icon = icon;
     }
 
     setButtonLoading(true);
@@ -140,9 +144,11 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
         >
           <Avatar
             alt="Course"
-            src={image != null ? image : "/static/images/avatar/3.jpg"}
-            sx={{ width: "100px", height: "100px" }}
-          />
+            src={icon}
+            sx={{ bgcolor: deepOrange[500], width: "100px", height: "100px" }}
+          >
+            C
+          </Avatar>
           <Button variant="outlined" component="label">
             Upload Icon
             <input hidden accept="image/*" multiple type="file" onChange={handleImageChange} />
