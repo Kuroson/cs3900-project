@@ -1,6 +1,7 @@
 import {
   AnalyticsGradesType,
   AnalyticsQuestionsType,
+  AnalyticsSummaryType,
   AnalyticsTagSummaryType,
 } from "models/analytics.model";
 import { BackendLinkType, apiGet } from "./api";
@@ -43,4 +44,14 @@ export const getAnalyticsQuestions = (
 };
 
 // Admin
-// TODO
+export const getAnalyticsSummary = (
+  token: string | null,
+  courseId: string,
+  type: BackendLinkType,
+) => {
+  return apiGet<{ courseId: string }, AnalyticsSummaryType>(
+    `${getBackendLink(type)}/analytics/summary`,
+    token,
+    { courseId: courseId },
+  );
+};

@@ -20,7 +20,7 @@ import {
   ResourcesSection,
 } from "components";
 import AddNewWorkloadSection from "components/admin/workload/AddNewWeekSection";
-import SingleEditableWeekSection from "components/admin/workload/SingleEditableWorkload";
+import SingleEditableWeekSection from "components/admin/workload/SingleEditableWeekSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { deletePage } from "util/api/pageApi";
@@ -53,6 +53,7 @@ const AdminCoursePage = ({
   const [dynamicWorkload, setDynamicWorkload] = React.useState<FullWeekInterface | undefined>(
     pageData.workload,
   );
+  const [dynamicOnlineClasses, setDynamicOnlineClasses] = React.useState(courseData.onlineClasses);
 
   React.useEffect(() => {
     // Trigger a re-render when pageData props change from server
@@ -60,7 +61,8 @@ const AdminCoursePage = ({
     setDynamicSections(pageData.sections);
     setDynamicWeeks(workloadData.weeks);
     setDynamicWorkload(pageData.workload);
-  }, [pageData, workloadData]);
+    setDynamicOnlineClasses(courseData.onlineClasses);
+  }, [pageData, workloadData, courseData]);
 
   React.useEffect(() => {
     // Build user data for user context
@@ -126,6 +128,8 @@ const AdminCoursePage = ({
               weeks={dynamicWeeks}
               week={dynamicWorkload}
               setWeek={setDynamicWorkload}
+              onlineClasses={dynamicOnlineClasses}
+              setOnlineClasses={setDynamicOnlineClasses}
             />
           )}
           <ResourcesSection

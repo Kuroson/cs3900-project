@@ -82,7 +82,11 @@ export const getGradesController = async (
  * @throws { HttpException } Recall failed
  * @returns Object of grade information based on ResponsePayload above
  */
-export const getGrades = async (queryBody: QueryPayload, firebase_uid: string) => {
+export const getGrades = async (
+    queryBody: QueryPayload,
+    firebase_uid: string,
+    adminCheck = false,
+) => {
     const { courseId } = queryBody;
 
     type assignmentEnrolmentType =
@@ -173,7 +177,8 @@ export const getGrades = async (queryBody: QueryPayload, firebase_uid: string) =
             maxMarks: quizAttempt.quiz.maxMarks,
         };
 
-        if (allAnswered) {
+        const closed = new Date() >= new Date(Date.parse(quizAttempt.quiz.close));
+        if (allAnswered && (adminCheck || closed)) {
             quizGrade.marksAwarded = (marksAwarded / marksTotal) * quizAttempt.quiz.maxMarks;
             quizGrade.incorrectTags = incorrectTags;
         }

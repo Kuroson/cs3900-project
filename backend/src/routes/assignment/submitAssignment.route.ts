@@ -2,6 +2,7 @@ import { HttpException } from "@/exceptions/HttpException";
 import Assignment from "@/models/course/assignment/assignment.model";
 import AssignmentSubmission from "@/models/course/enrolment/assignmentSubmission.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
+import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { checkAuth, recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -10,6 +11,7 @@ import { time } from "console";
 import dayjs from "dayjs";
 import { Request, Response } from "express";
 import { getKudos } from "../course/getKudosValues.route";
+import { completeTask } from "../workloadOverview/completeTask.route";
 
 type ResponsePayload = {
     submissionId: string;
@@ -100,7 +102,7 @@ export const submitAssignment = async (
         throw new HttpException(400, "Assignment already closed");
     }
     const timeSubmitted = Date.now() / 1000;
-    const submissionId = await new AssignmentSubmission({
+    const submission = await new AssignmentSubmission({
         assignment: assignmentId,
         title,
         storedName: file.fileRef.name,
@@ -108,15 +110,12 @@ export const submitAssignment = async (
         timeSubmitted: timeSubmitted,
     })
         .save()
-        .then((res) => {
-            return res._id;
-        })
         .catch((err) => {
             logger.error(err);
             throw new HttpException(500, "Failed to save submission");
         });
 
-    enrolment.assignmentSubmissions.push(submissionId);
+    enrolment.assignmentSubmissions.push(submission._id);
 
     //Calculate kudos to be earned for submitting this assignment
     const courseKudos = await getKudos(courseId);
@@ -149,10 +148,33 @@ export const submitAssignment = async (
         throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
+    if (assignment.task !== undefined) {
+        completeAssignmentTask(myStudent._id, courseId, assignment.task);
+    }
+
     return {
-        submissionId,
+        submissionId: submission._id.toString() as string,
         timeSubmitted,
         fileType: file.mimetype,
         linkToSubmission: await recallFileUrl(file.fileRef.name),
     };
+};
+
+const completeAssignmentTask = async (studentId: string, courseId: string, taskId: string) => {
+    const week = await Week.findOne({ tasks: { $all: [taskId] } })
+        .exec()
+        .catch(() => null);
+
+    if (week === null) {
+        throw new HttpException(400, "Failed to fetch week");
+    }
+
+    const queryPayload = {
+        studentId: studentId,
+        courseId: courseId,
+        weekId: week._id,
+        taskId: taskId,
+    };
+
+    await completeTask(queryPayload);
 };

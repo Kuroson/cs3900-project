@@ -1,11 +1,14 @@
 import { HttpException } from "@/exceptions/HttpException";
 import Assignment from "@/models/course/assignment/assignment.model";
 import Course from "@/models/course/course.model";
+import Task from "@/models/course/workloadOverview/Task.model";
+import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
+import { deleteTask } from "../workloadOverview/deleteTask.route";
 
 type ResponsePayload = Record<string, never>;
 
@@ -75,6 +78,7 @@ export const deleteAssignment = async (queryBody: QueryPayload, firebase_uid: st
     if (course === null) {
         throw new HttpException(400, "Failed to fetch course");
     }
+    await deleteAssignmentTask(assignmentId, firebase_uid);
 
     course.assignments.pull(assignmentId);
 
@@ -87,4 +91,29 @@ export const deleteAssignment = async (queryBody: QueryPayload, firebase_uid: st
         logger.error(err);
         throw new HttpException(400, "Failed to save updated course");
     });
+};
+
+const deleteAssignmentTask = async (assignmentId: string, firebase_uid: string) => {
+    //gets assignment
+    const assignment = await Assignment.findById(assignmentId).catch((err) => null);
+    if (assignment === null) {
+        throw new HttpException(400, "Failed to recall assignment");
+    }
+
+    // deletes task if a task exists
+    if (assignment.task !== undefined) {
+        // Get the week
+        // delete task
+        const week = await Week.findOne({ tasks: { $all: [assignment.task] } })
+            .exec()
+            .catch(() => null);
+
+        if (week === null) {
+            throw new HttpException(400, "Failed to fetch week");
+        }
+
+        const queryPayload = { weekId: week._id, taskId: assignment.task };
+
+        await deleteTask(queryPayload, firebase_uid);
+    }
 };

@@ -1,23 +1,54 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Divider from "@mui/material/Divider";
 import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import utcPlugin from "dayjs/plugin/utc";
-import { FullWeekInterface } from "models/week.model";
+import { CompleteWeekInterface, FullWeekInterface } from "models/week.model";
+import { useAuthUser } from "next-firebase-auth";
+import { getWeek } from "util/api/workloadApi";
 import StudentTasksSection from "../task/StudentTasksSection";
 
 dayjs.extend(utcPlugin);
 dayjs.extend(relativeTimePlugin);
 
 type SingleStudentWeekProps = {
+  courseId: string;
+  weekId: string;
   week: FullWeekInterface;
+  studentId: string;
 };
 
 /**
  * Component for a single Week.
  * Does not have an edit option
  */
-const SingleStudentWeekSection = ({ week }: SingleStudentWeekProps): JSX.Element => {
+const SingleStudentWeekSection = ({
+  courseId,
+  weekId,
+  week,
+  studentId,
+}: SingleStudentWeekProps): JSX.Element => {
+  const authUser = useAuthUser();
+  const [weekInfo, setWeekInfo] = React.useState<CompleteWeekInterface>();
+
+  useEffect(() => {
+    const getWeekInfo = async () => {
+      const [res, err] = await getWeek(
+        await authUser.getIdToken(),
+        { courseId: courseId, weekId: weekId },
+        "client",
+      );
+      if (err !== null) {
+        console.error(err);
+        return; // toast
+      }
+      if (res === null) throw new Error("Response and error are null");
+      console.warn(res);
+      setWeekInfo(res);
+    };
+    getWeekInfo();
+  }, [authUser, weekId]);
+
   return (
     <div className="p-3">
       <div
@@ -39,7 +70,13 @@ const SingleStudentWeekSection = ({ week }: SingleStudentWeekProps): JSX.Element
         </div>
         <Divider />
         <div>
-          <StudentTasksSection tasks={week.tasks} />
+          <StudentTasksSection
+            completedTasks={weekInfo?.completedTasks}
+            uncompletedTasks={weekInfo?.uncompletedTasks}
+            courseId={courseId}
+            weekId={weekId}
+            studentId={studentId}
+          />
         </div>
       </div>
     </div>

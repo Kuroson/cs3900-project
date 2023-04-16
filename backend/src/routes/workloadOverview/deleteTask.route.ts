@@ -1,4 +1,7 @@
 import { HttpException } from "@/exceptions/HttpException";
+import Assignment from "@/models/course/assignment/assignment.model";
+import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
+import Quiz from "@/models/course/quiz/quiz.model";
 import Task from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
@@ -80,6 +83,8 @@ export const deleteTask = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(400, "Failed to delete Task. Task not within provided Week");
     }
 
+    await removeTask(taskId);
+
     // Delete task
     await Task.findByIdAndDelete(taskId).catch((err) => {
         logger.error(err);
@@ -94,4 +99,54 @@ export const deleteTask = async (queryBody: QueryPayload, firebase_uid: string) 
         logger.error(err);
         throw new HttpException(500, "Failed to save updated week", err);
     });
+};
+
+// Removes taskId from quiz, assignment or online class
+const removeTask = async (taskId: string) => {
+    // Get the task and check to see if it exists
+    const task = await Task.findById(taskId)
+        .exec()
+        .catch(() => null);
+
+    if (task === null) {
+        throw new HttpException(400, "Failed to fetch task");
+    }
+
+    if (task.quiz !== undefined) {
+        const quiz = await Quiz.findById(task.quiz)
+            .exec()
+            .catch(() => null);
+        if (quiz === null) {
+            throw new HttpException(400, "Failed to fetch quiz");
+        }
+        quiz.task = undefined;
+        await quiz.save().catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Failed to save quiz");
+        });
+    } else if (task.assignment !== undefined) {
+        const assignment = await Assignment.findById(task.assignment)
+            .exec()
+            .catch(() => null);
+        if (assignment === null) {
+            throw new HttpException(400, "Failed to fetch assignment");
+        }
+        assignment.task = undefined;
+        await assignment.save().catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Failed to save ssignment");
+        });
+    } else if (task.onlineClass !== undefined) {
+        const onlineClass = await OnlineClass.findById(task.onlineClass)
+            .exec()
+            .catch(() => null);
+        if (onlineClass === null) {
+            throw new HttpException(400, "Failed to fetch Online Class");
+        }
+        onlineClass.task = undefined;
+        await onlineClass.save().catch((err) => {
+            logger.error(err);
+            throw new HttpException(500, "Failed to save updated OnlineClass");
+        });
+    }
 };

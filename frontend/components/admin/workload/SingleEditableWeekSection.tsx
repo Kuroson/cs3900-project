@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { Button, TextField } from "@mui/material";
 import Divider from "@mui/material/Divider";
@@ -7,13 +7,15 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import utcPlugin from "dayjs/plugin/utc";
-import { FullWeekInterface } from "models/week.model";
+import { OnlineClassInterface } from "models/onlineClass.model";
+import { CompleteWeekInterface, FullWeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import {
   DeleteWeekPayloadRequest,
   UpdateWeekPayloadRequest,
   deleteWeek,
+  getWeek,
   updateWeek,
 } from "util/api/workloadApi";
 import EditPanelButtons from "../EditPanelButtons";
@@ -28,6 +30,8 @@ type SingleEditableWeekProps = {
   courseId: string;
   weeks: FullWeekInterface[];
   setWeek?: React.Dispatch<React.SetStateAction<FullWeekInterface | undefined>>;
+  onlineClasses: OnlineClassInterface[];
+  setOnlineClasses: React.Dispatch<React.SetStateAction<OnlineClassInterface[]>>;
 };
 
 /**
@@ -40,6 +44,8 @@ const SingleEditableWeekSection = ({
   courseId,
   week, //corresponds to the current week
   setWeek,
+  onlineClasses,
+  setOnlineClasses,
 }: SingleEditableWeekProps): JSX.Element => {
   const authUser = useAuthUser();
 
@@ -48,6 +54,14 @@ const SingleEditableWeekSection = ({
   const [description, setDescription] = React.useState(week.description);
   const [deadline, setDeadline] = React.useState<Dayjs>(dayjs.utc(week.deadline).local());
   const [tasks, setTasks] = React.useState(week.tasks);
+
+  useEffect(() => {
+    setEditMode(false);
+    setTitle(week.title);
+    setDescription(week.description);
+    setDeadline(dayjs.utc(week.deadline).local());
+    setTasks(week.tasks);
+  }, [weeks, courseId, week, onlineClasses]);
 
   const handleRemoveClick = async () => {
     // Remove
@@ -190,7 +204,14 @@ const SingleEditableWeekSection = ({
         </div>
         <Divider />
         <div>
-          <TasksSection weekId={week._id} tasks={tasks} setTasks={setTasks} />
+          <TasksSection
+            courseId={courseId}
+            weekId={week._id}
+            tasks={tasks}
+            setTasks={setTasks}
+            onlineClasses={onlineClasses}
+            setOnlineClasses={setOnlineClasses}
+          />
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ type ShowAnswerProps = {
   isAdmin: boolean;
   handleDelete?: () => void;
   isBeforeOpen?: boolean;
+  answerCount?: number;
 };
 
 const label = { inputProps: { "aria-label": "Checkbox choice" } };
@@ -17,6 +18,7 @@ const ShowAnswer: React.FC<ShowAnswerProps> = ({
   isAdmin,
   handleDelete,
   isBeforeOpen,
+  answerCount,
 }) => {
   return (
     <div>
@@ -30,6 +32,9 @@ const ShowAnswer: React.FC<ShowAnswerProps> = ({
           } ${String(questionInfo.marks)}`}
           color="bg-[#78909c]"
         />
+        {answerCount !== undefined && (
+          <Tag text={`Answer count: ${answerCount}`} color="bg-[#78909c]" />
+        )}
         {isAdmin && (isBeforeOpen ?? false) && (
           <IconButton aria-label="delete" onClick={handleDelete}>
             <DeleteIcon color="error" />

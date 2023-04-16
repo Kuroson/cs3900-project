@@ -14,6 +14,7 @@ type QuizInfo = {
     isResponded?: boolean;
     open: string;
     close: string;
+    task?: string;
 };
 
 type ResponsePayload = {
@@ -105,6 +106,7 @@ export const getQuizzes = async (queryBody: QueryPayload, firebase_uid: string) 
             title: quiz.title,
             open: quiz.open,
             close: quiz.close,
+            task: quiz.task,
         };
 
         if (!isAdmin) {

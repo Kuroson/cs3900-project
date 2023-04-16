@@ -17,6 +17,7 @@ export type WorkloadData = Omit<WorkloadOverviewInterface, "weeks"> & {
         }
     >;
 };
+
 type ResponsePayload = {
     courseId: string;
     workload: WorkloadData;

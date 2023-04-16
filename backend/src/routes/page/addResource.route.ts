@@ -108,7 +108,7 @@ export const addResource = async (
         await existingResource.save().catch((err) => {
             throw new HttpException(500, "Failed to update resource", err);
         });
-        return;
+        return resourceId;
     }
 
     // Otherwise, create a new resource
@@ -119,6 +119,7 @@ export const addResource = async (
 
     const newResourceId = await newResource
         .save()
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         .then((res) => res._id)
         .catch((err) => {
             throw new HttpException(500, "Failed to save resource", err);
@@ -165,5 +166,5 @@ export const addResource = async (
         );
     }
 
-    return newResourceId;
+    return newResourceId.toString() as string;
 };

@@ -2,6 +2,7 @@ import { HttpException } from "@/exceptions/HttpException";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import Message, { MessageInterface } from "@/models/course/onlineClass/message.model";
 import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
+import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
@@ -9,6 +10,7 @@ import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/ut
 import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 import { getKudos } from "../course/getKudosValues.route";
+import { completeTask } from "../workloadOverview/completeTask.route";
 
 type ResponsePayload = {
     messageId: string;
@@ -124,6 +126,15 @@ export const addNewChatMessage = async (
 
     if (!isAdmin) {
         //Mark attendance for attending and engaging in class
+        const courseKudos = await getKudos(courseId);
+        const myStudent = await User.findOne({ _id: sender._id })
+            .select("_id kudos")
+            .exec()
+            .catch(() => null);
+
+        if (myStudent === null)
+            throw new HttpException(400, `Student of ${sender._id} does not exist`);
+
         if (onlineClass.attendanceList.includes(sender._id) === false) {
             //Student isn't already marked as attended
             onlineClass.attendanceList.addToSet(sender._id);
@@ -131,14 +142,6 @@ export const addNewChatMessage = async (
                 throw new HttpException(500, "Error saving attendance", err);
             });
             //Give kudos for attending
-            const courseKudos = await getKudos(courseId);
-            const myStudent = await User.findOne({ _id: sender._id })
-                .select("_id kudos")
-                .exec()
-                .catch(() => null);
-
-            if (myStudent === null)
-                throw new HttpException(400, `Student of ${sender._id} does not exist`);
             myStudent.kudos = myStudent.kudos + courseKudos.attendance;
 
             await myStudent.save().catch((err) => {
@@ -158,8 +161,31 @@ export const addNewChatMessage = async (
             await enrolment.save().catch((err) => {
                 throw new HttpException(500, "Failed to add kudos to enrolment", err);
             });
+
+            if (onlineClass.task !== undefined) {
+                await completeOnlineClassTask(myStudent._id, courseId, onlineClass.task);
+            }
         }
     }
 
     return messageId;
+};
+
+const completeOnlineClassTask = async (studentId: string, courseId: string, taskId: string) => {
+    const week = await Week.findOne({ tasks: { $all: [taskId] } })
+        .exec()
+        .catch(() => null);
+
+    if (week === null) {
+        throw new HttpException(400, "Failed to fetch week");
+    }
+
+    const queryPayload = {
+        studentId: studentId,
+        courseId: courseId,
+        weekId: week._id,
+        taskId: taskId,
+    };
+
+    await completeTask(queryPayload);
 };

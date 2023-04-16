@@ -6,7 +6,7 @@ import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { updatePage } from "@/routes/page/updatePage.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
+import mongoose, { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
@@ -55,7 +55,7 @@ describe("Test updating a page", () => {
             `acc${id}`,
         );
 
-        expect(pageState._id).toEqual(pageId);
+        expect(pageState._id).toEqual(new mongoose.Types.ObjectId(pageId));
         expect(pageState.resources.length).toBe(2);
         expect(pageState.resources[0].title).toBe("res1");
         expect(pageState.resources[1].title).toBe("res2");
@@ -121,7 +121,7 @@ describe("Test updating a page", () => {
 
         const updatedPageState = await updatePage(newPayload, `acc${id}`);
 
-        expect(updatedPageState._id).toEqual(pageId);
+        expect(updatedPageState._id).toEqual(new mongoose.Types.ObjectId(pageId));
         expect(updatedPageState.resources.length).toBe(3);
         expect(updatedPageState.resources[0].title).toBe("res1");
         expect(updatedPageState.resources[1].title).toBe("res2");

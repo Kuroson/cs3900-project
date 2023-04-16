@@ -6,6 +6,7 @@ import { adminController } from "./admin/admin.route";
 import { adminInstructorSetController } from "./admin/adminInstructorSet.route";
 import { getGradesController } from "./analytics/getGrades.route";
 import { getQuestionAnalyticsController } from "./analytics/getQuestionAnalytics.route";
+import { getSummaryController } from "./analytics/getSummary";
 import { getTagSummaryController } from "./analytics/getTagSummary.route";
 import { createAssignmentController } from "./assignment/createAssignment.route";
 import { deleteAssignmentController } from "./assignment/deleteAssignment.route";
@@ -106,7 +107,7 @@ indexRouter.put("/course/students/add", adminRoute(addStudentsController));
 indexRouter.put("/course/students/remove", adminRoute(removeStudentsController));
 indexRouter.post("/course/archive", adminRoute(archiveCourseController));
 indexRouter.get("/course/kudos", getKudosController);
-indexRouter.get("/course/getstudentskudos", getStudentsKudosController);
+indexRouter.get("/course/studentskudos", getStudentsKudosController);
 
 // Page routes
 indexRouter.get("/page", getPagesController);
@@ -160,6 +161,7 @@ indexRouter.post("/workload/task/complete", completeTaskController);
 indexRouter.get("/analytics/grades", getGradesController);
 indexRouter.get("/analytics/tags/summary", getTagSummaryController);
 indexRouter.get("/analytics/questions", getQuestionAnalyticsController);
+indexRouter.get("/analytics/summary", adminRoute(getSummaryController));
 
 // Online Classes Routes
 indexRouter.get("/class", getOnlineClassController);

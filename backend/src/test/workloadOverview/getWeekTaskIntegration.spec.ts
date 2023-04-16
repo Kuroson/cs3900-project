@@ -5,6 +5,9 @@ import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
+import { createOnlineClass } from "@/routes/onlineClasses/createOnlineClass.route";
+import { addNewChatMessage } from "@/routes/onlineClasses/sendMessageOnlineClass.route";
+import { triggerOnlineClass } from "@/routes/onlineClasses/startOnlineClass.route";
 import { createPage } from "@/routes/page/createPage.route";
 import { registerUser } from "@/routes/user/register.route";
 import { completeTask } from "@/routes/workloadOverview/completeTask.route";
@@ -22,6 +25,15 @@ describe("Test getting a week of courses", () => {
     let weekId: string;
     let task1Id: string;
     let task2Id: string;
+
+    let onlineClassId;
+    const onlineClassTitle = "Test online class";
+    const onlineClassDescription = "This is the description";
+    const onlineClassLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    const onlineClassDate: number = Date.now();
+
+    const chatMessage1 = "This is a test message";
+    const chatMessage2 = "This is a test message2";
 
     beforeAll(async () => {
         await initialiseMongoose();
@@ -50,12 +62,20 @@ describe("Test getting a week of courses", () => {
             "2023-04-08T12:00:00+10:00",
             `acc${id}`,
         );
+        onlineClassId = await createOnlineClass(
+            courseId,
+            onlineClassTitle,
+            onlineClassDescription,
+            onlineClassDate,
+            onlineClassLink,
+        );
         task1Id = await createTask(
             {
                 courseId: courseId,
                 weekId: weekId,
                 title: "Do Task 1",
                 description: "Look at week 1",
+                onlineClassId: onlineClassId,
             },
             `acc${id}`,
         );
@@ -68,9 +88,10 @@ describe("Test getting a week of courses", () => {
             },
             `acc${id}`,
         );
+        await triggerOnlineClass(onlineClassId, true);
     });
 
-    it("Should retrieve a week's worth of tasks", async () => {
+    it("Should complete Tasks", async () => {
         let week = await getWeek(courseId, weekId);
         expect(week).not.toBeNull();
         expect(week.title as string).toEqual("Week 1");
@@ -85,12 +106,7 @@ describe("Test getting a week of courses", () => {
 
         const user = await User.findOne({ email: `student1${id}@email.com` }).exec();
         expect(user).not.toBeNull();
-        const workloadCompletionId = await completeTask({
-            studentId: user?._id,
-            courseId: courseId,
-            weekId: weekId,
-            taskId: task1Id,
-        });
+        await addNewChatMessage(onlineClassId, `acc1${id}`, chatMessage1, courseId);
 
         week = await getWeek(courseId, weekId);
         expect(week).not.toBeNull();

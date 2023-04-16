@@ -33,6 +33,7 @@ type ResponsePayload = {
     open: string;
     close: string;
     questions?: Array<QuestionInfo>;
+    task?: string;
 };
 
 type QueryPayload = {
@@ -116,6 +117,7 @@ export const getQuiz = async (queryBody: QueryPayload, firebase_uid: string) => 
         maxMarks: quiz.maxMarks,
         open: quiz.open,
         close: quiz.close,
+        task: quiz.task !== undefined ? quiz.task : undefined,
     };
 
     // Get attempt
@@ -212,7 +214,7 @@ export const getAttempt = async (courseId: string, quizId: string, firebase_uid:
     for (const attempt of enrolment.quizAttempts) {
         const isQuiz: boolean = attempt.quiz.equals(quizId);
         if (isQuiz) {
-            return attempt._id;
+            return attempt._id.toString() as string;
         }
     }
     return null;

@@ -17,6 +17,7 @@ type QueryPayload = {
     maxMarks?: number;
     open?: string;
     close?: string;
+    task?: string;
 };
 
 /**
@@ -74,7 +75,7 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         throw new HttpException(401, "Must be an admin to update quiz");
     }
 
-    const { quizId, title, description, maxMarks, open, close } = queryBody;
+    const { quizId, title, description, maxMarks, open, close, task } = queryBody;
 
     const quiz = await Quiz.findById(quizId)
         .exec()
@@ -93,6 +94,11 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     }
 
     if (maxMarks !== undefined) {
+        // Check mark valid
+        if (maxMarks < 0) {
+            throw new HttpException(400, "Mark must be positive");
+        }
+
         quiz.maxMarks = maxMarks;
     }
 
@@ -104,10 +110,16 @@ export const updateQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         quiz.close = close;
     }
 
+    if (quiz.task !== undefined && task !== undefined) {
+        throw new HttpException(400, "Quiz is already an assigned task");
+    } else if (task !== undefined) {
+        quiz.task = task;
+    }
+
     const myQuiz = await quiz.save().catch((err) => {
         logger.error(err);
         throw new HttpException(500, "Failed to save updated quiz");
     });
 
-    return myQuiz._id;
+    return myQuiz._id.toString() as string;
 };

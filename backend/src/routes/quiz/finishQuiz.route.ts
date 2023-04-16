@@ -4,12 +4,14 @@ import QuestionResponse from "@/models/course/enrolment/questionResponse.model";
 import QuizAttempt from "@/models/course/enrolment/quizAttempt.model";
 import Question, { EXTENDED_RESPONSE, MULTIPLE_CHOICE } from "@/models/course/quiz/question.model";
 import Quiz from "@/models/course/quiz/quiz.model";
+import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
 import { getKudos } from "../course/getKudosValues.route";
+import { completeTask } from "../workloadOverview/completeTask.route";
 import { getAttempt } from "./getQuiz.route";
 
 type ResponsePayload = Record<string, never>;
@@ -198,6 +200,7 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
     const attemptId = await attempt
         .save()
         .then((res) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return res._id;
         })
         .catch((err) => {
@@ -228,4 +231,26 @@ export const finishQuiz = async (queryBody: QueryPayload, firebase_uid: string) 
         logger.error(err);
         throw new HttpException(500, "Failed to save updated enrolment");
     });
+
+    if (quiz.task !== undefined) {
+        completeQuizTask(myStudent._id, courseId, quiz.task);
+    }
+};
+
+const completeQuizTask = async (studentId: string, courseId: string, taskId: string) => {
+    const week = await Week.findOne({ tasks: { $all: [taskId] } })
+        .exec()
+        .catch(() => null);
+
+    if (week === null) {
+        throw new HttpException(400, "Failed to fetch week");
+    }
+
+    const queryPayload = {
+        studentId: studentId,
+        courseId: courseId,
+        weekId: week._id,
+        taskId: taskId,
+    };
+    await completeTask(queryPayload);
 };

@@ -46,7 +46,15 @@ describe("Test deleting a task", () => {
     });
 
     it("Should delete task from week", async () => {
-        const taskId = await createTask(weekId, "Do Task 1", "Look at week 1", `acc${id}`);
+        const taskId = await createTask(
+            {
+                courseId: courseId,
+                weekId: weekId,
+                title: "Do Task 1",
+                description: "Look at week 1",
+            },
+            `acc${id}`,
+        );
 
         let week = await Week.findById(weekId);
         expect(week).not.toBeNull();

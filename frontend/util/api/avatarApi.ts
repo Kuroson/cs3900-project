@@ -1,4 +1,4 @@
-import { BackendLinkType, apiGet } from "./api";
+import { BackendLinkType, apiGet, apiPost } from "./api";
 import { getBackendLink } from "./userApi";
 
 export type Avatar = {
@@ -42,5 +42,13 @@ export const getAvatars = (token: string | null, type: BackendLinkType) => {
     `${getBackendLink(type)}/avatars`,
     token,
     {},
+  );
+};
+
+export const buyAvatar = (token: string | null, avatarToBuy: string, type: BackendLinkType) => {
+  return apiPost<{ avatarToBuy: string }, { message: string }>(
+    `${getBackendLink(type)}/avatar/buy`,
+    token,
+    { avatarToBuy: avatarToBuy },
   );
 };

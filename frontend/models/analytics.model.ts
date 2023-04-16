@@ -53,3 +53,59 @@ type QuestionInfo = {
 export type AnalyticsQuestionsType = {
   questions: Array<QuestionInfo>;
 };
+
+// Admin
+type StudentInfo = {
+  studentId: string;
+  name: string;
+};
+
+type StudentGradesType = {
+  student: StudentInfo;
+  grades: Record<string, number>;
+};
+
+type QuizType = {
+  quizId: string;
+  title: string;
+  maxMarks: number;
+};
+
+type AssignmentType = {
+  assignmentId: string;
+  title: string;
+  maxMarks: number;
+};
+
+export type GradeSummaryType = {
+  studentGrades: Array<StudentGradesType>;
+  quizzes: Record<string, QuizType>;
+  assignments: Record<string, AssignmentType>;
+};
+
+type TagSummaryType = {
+  successTags: Record<string, number>;
+  improvementTags: Record<string, number>;
+};
+
+type ChoiceSummaryInfo = {
+  choiceId: string;
+  text: string;
+  correct: boolean;
+};
+
+type QuestionSummaryInfo = {
+  questionId: string;
+  count: number;
+  text: string;
+  tag: string;
+  type: string;
+  marks: number;
+  choices?: Array<ChoiceSummaryInfo>;
+};
+
+export type AnalyticsSummaryType = {
+  tags: TagSummaryType;
+  grades: GradeSummaryType;
+  questions: Record<string, QuestionSummaryInfo>;
+};

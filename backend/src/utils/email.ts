@@ -14,6 +14,7 @@ const EMAIL_ENABLED = (): boolean => {
 
 const SENDGRID_KEY = (): string => {
     try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return validateEnv.SENDGRID_API_KEY !== undefined
             ? JSON.parse(validateEnv.SENDGRID_API_KEY)
             : undefined;
