@@ -56,8 +56,10 @@ const QuizStudent = ({ courseData }: StudentCoursePageProps): JSX.Element => {
       if (res === null) throw new Error("Response and error are null");
       setQuizList(res.quizzes);
     };
-    getQuizzes();
-  }, [authUser, courseData._id]);
+    if (!openQuiz) {
+      getQuizzes();
+    }
+  }, [authUser, courseData._id, openQuiz]);
 
   React.useEffect(() => {
     // Build user data for user context

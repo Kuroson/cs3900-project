@@ -7,6 +7,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {
+  Avatar,
   Button,
   FormControl,
   FormControlLabel,
@@ -16,6 +17,7 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
+import { deepOrange } from "@mui/material/colors";
 import { getAuth, signOut } from "firebase/auth";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails, getRoleText } from "models/user.model";
@@ -23,6 +25,7 @@ import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { createNewPage } from "util/api/pageApi";
+import CourseDetails from "./CourseDetails";
 import NavBar, { Routes } from "./NavBar";
 import UserDetailsSection from "./UserDetailSection";
 
@@ -35,19 +38,6 @@ type AdminNavBar = {
 
 type CourseDetailsProps = {
   code: string;
-};
-
-const CourseDetails = ({ code }: CourseDetailsProps): JSX.Element => {
-  return (
-    <div className="mt-5 flex flex-row justify-center">
-      <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
-        <span className="text-3xl font-bold">{code.charAt(0) ?? ""}</span>
-      </div>
-      <div className="flex flex-col pl-2 justify-center items-center">
-        <span className="font-bold text-start w-full text-2xl">{code}</span>
-      </div>
-    </div>
-  );
 };
 
 const style = {
@@ -217,14 +207,12 @@ export default function AdminNavBar({
           <div>
             {/* Top */}
             {courseData === undefined && <UserDetailsSection {...userDetails} />}
-            {courseData !== undefined && <CourseDetails code={courseData?.code ?? ""} />}
-            <NavBar
-              routes={dynamicRoutes}
-              role={getRoleText(userDetails.role)}
-              isCoursePage={false}
-            />
+            {courseData !== undefined && (
+              <CourseDetails code={courseData?.code ?? ""} avatar={courseData.icon ?? ""} />
+            )}
+            <NavBar routes={dynamicRoutes} role={getRoleText(userDetails.role)} />
             {showAddPage === true && (
-              <div className="flex justify-center items-center w-full">
+              <div className="flex justify-center items-center w-full mt-8">
                 <Button variant="outlined" onClick={handleOpen} id="addNewPage">
                   Add New Page
                 </Button>
