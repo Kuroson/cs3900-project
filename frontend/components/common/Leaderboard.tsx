@@ -29,7 +29,7 @@ const Leaderboard = ({ courseId }: LeaderboardProps): JSX.Element => {
       setStudentsKudosInfo(res.students);
     };
     getStudentsKudosInfo();
-  }, [authUser]);
+  }, []);
   return (
     <div className="p-5 min-w-min max-w-sm mx-3 my-2">
       <div
