@@ -9,6 +9,7 @@ import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
 import { Request, Response } from "express";
+import { checkAdmin } from "../admin/admin.route";
 import { getKudos } from "../course/getKudosValues.route";
 import { getStudents } from "../course/getStudents.route";
 
@@ -122,25 +123,29 @@ export const createPost = async (
         throw new HttpException(500, "Failed to save updated forum post to course", err);
     });
 
-    //Update kudos for user as they have created post
-    const courseKudos = await getKudos(myCourse._id);
-    user.kudos = user.kudos + courseKudos.forumPostCreation; //myCourse.kudosValues.forumPostCreation;
+    const isAdmin = await checkAdmin(firebase_uid);
 
-    await user.save().catch((err) => {
-        throw new HttpException(500, "Failed to add kudos to user", err);
-    });
+    if (!isAdmin) {
+        //Update kudos for user as they have created post
+        const courseKudos = await getKudos(myCourse._id);
+        user.kudos = user.kudos + courseKudos.forumPostCreation; //myCourse.kudosValues.forumPostCreation;
 
-    //Update kudos for enrolment for dashboard updates
-    // Try and find enrolment
-    const enrolment = await Enrolment.findOne({
-        student: user._id,
-        course: courseId,
-    }).catch((err) => null);
-    if (enrolment === null) throw new HttpException(400, "Enrolment not found");
-    enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostCreation;
-    await enrolment.save().catch((err) => {
-        throw new HttpException(500, "Failed to add kudos to enrolment", err);
-    });
+        await user.save().catch((err) => {
+            throw new HttpException(500, "Failed to add kudos to user", err);
+        });
+
+        //Update kudos for enrolment for dashboard updates
+        // Try and find enrolment
+        const enrolment = await Enrolment.findOne({
+            student: user._id,
+            course: courseId,
+        }).catch((err) => null);
+        if (enrolment === null) throw new HttpException(400, "Enrolment not found");
+        enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostCreation;
+        await enrolment.save().catch((err) => {
+            throw new HttpException(500, "Failed to add kudos to enrolment", err);
+        });
+    }
 
     // NOTE: don't have to fill responses as guaranteed to be [] array
 

@@ -108,23 +108,27 @@ export const createResponse = async (
         throw new HttpException(500, "Failed to save updated response to post", err);
     });
 
-    //Add kudos
-    const courseKudos = await getKudos(courseId);
-    user.kudos = user.kudos + courseKudos.forumPostAnswer; //myCourse.kudosValues.forumPostCreation;
-    await user.save().catch((err) => {
-        throw new HttpException(500, "Failed to add kudos to user", err);
-    });
+    const isAdmin = await checkAdmin(firebase_uid);
 
-    //Add kudos to enrolment for dashboard info
-    const enrolment = await Enrolment.findOne({
-        student: user._id,
-        course: courseId,
-    }).catch((err) => null);
-    if (enrolment === null) throw new HttpException(400, "Enrolment not found");
-    enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostAnswer;
-    await enrolment.save().catch((err) => {
-        throw new HttpException(500, "Failed to add kudos to enrolment", err);
-    });
+    if (!isAdmin) {
+        //Add kudos
+        const courseKudos = await getKudos(courseId);
+        user.kudos = user.kudos + courseKudos.forumPostAnswer; //myCourse.kudosValues.forumPostCreation;
+        await user.save().catch((err) => {
+            throw new HttpException(500, "Failed to add kudos to user", err);
+        });
+
+        //Add kudos to enrolment for dashboard info
+        const enrolment = await Enrolment.findOne({
+            student: user._id,
+            course: courseId,
+        }).catch((err) => null);
+        if (enrolment === null) throw new HttpException(400, "Enrolment not found");
+        enrolment.kudosEarned = enrolment.kudosEarned + courseKudos.forumPostAnswer;
+        await enrolment.save().catch((err) => {
+            throw new HttpException(500, "Failed to add kudos to enrolment", err);
+        });
+    }
 
     return { ...myResponse.toObject(), poster: user.toObject() };
 };
