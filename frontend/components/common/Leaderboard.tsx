@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Divider, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { useAuthUser } from "next-firebase-auth";
+import { useUser } from "util/UserContext";
 import { CLIENT_BACKEND_URL } from "util/api/api";
 import { StudentKudosInfo, getStudentsKudos } from "util/api/courseApi";
 
@@ -10,6 +11,7 @@ type LeaderboardProps = {
 
 const Leaderboard = ({ courseId }: LeaderboardProps): JSX.Element => {
   const authUser = useAuthUser();
+  const user = useUser();
   const [studentsKudosInfo, setStudentsKudosInfo] = React.useState<StudentKudosInfo[]>();
 
   useEffect(() => {
@@ -27,8 +29,7 @@ const Leaderboard = ({ courseId }: LeaderboardProps): JSX.Element => {
       setStudentsKudosInfo(res.students);
     };
     getStudentsKudosInfo();
-  }, [authUser]);
-
+  }, []);
   return (
     <div className="p-5 min-w-min max-w-sm mx-3 my-2">
       <div
@@ -46,10 +47,20 @@ const Leaderboard = ({ courseId }: LeaderboardProps): JSX.Element => {
         <div>
           <List>
             {studentsKudosInfo?.map((person) => {
+              console.error(person);
               return (
-                <ListItem key={person._id}>
+                <ListItem
+                  key={person._id}
+                  className={
+                    person.student._id === user.userDetails?._id
+                      ? "border-solid border-2 border-rose-600 rounded-full"
+                      : ""
+                  }
+                >
                   <ListItemIcon>
-                    <div className="w-[50px] h-[50px] bg-orange-500 rounded-full flex justify-center items-center">
+                    <div
+                      className={"w-[50px] h-[50px] rounded-full flex justify-center items-center"}
+                    >
                       <img
                         src={`${CLIENT_BACKEND_URL}/public/avatars/${
                           person.student.avatar?.length !== 0 ? person.student.avatar : "missy"

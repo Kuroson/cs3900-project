@@ -138,6 +138,7 @@ export type StudentKudosInfo = {
   _id: string;
   kudosEarned: number;
   student: {
+    _id: string;
     first_name: string;
     last_name: string;
     avatar: string;
