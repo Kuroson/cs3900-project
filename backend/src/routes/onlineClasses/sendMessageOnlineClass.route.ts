@@ -161,10 +161,9 @@ export const addNewChatMessage = async (
             await enrolment.save().catch((err) => {
                 throw new HttpException(500, "Failed to add kudos to enrolment", err);
             });
-
-            if (onlineClass.task !== undefined) {
-                await completeOnlineClassTask(myStudent._id, courseId, onlineClass.task);
-            }
+        }
+        if (onlineClass.task !== undefined) {
+            await completeOnlineClassTask(myStudent._id, courseId, onlineClass.task);
         }
     }
 
