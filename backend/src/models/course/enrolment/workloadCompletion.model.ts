@@ -1,5 +1,5 @@
-import { UserInterface } from "@/models/user.model";
 import { Document, Schema, Types, model } from "mongoose";
+import { UserInterface } from "@/models/user.model";
 import { TaskInterface } from "../workloadOverview/Task.model";
 import { WeekInterface } from "../workloadOverview/week.model";
 

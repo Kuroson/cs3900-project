@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Enrolment, { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
 import { QuestionResponseInterface } from "@/models/course/enrolment/questionResponse.model";
@@ -8,7 +9,6 @@ import { QuizInterface } from "@/models/course/quiz/quiz.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 
 type ChoiceInfo = {
     _id: string;

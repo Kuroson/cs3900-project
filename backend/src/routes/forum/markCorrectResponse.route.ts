@@ -1,15 +1,11 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
-import Forum from "@/models/course/forum/forum.model";
-import Post from "@/models/course/forum/post.model";
 import ForumResponse from "@/models/course/forum/response.model";
-import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 import { getKudos } from "./../../routes/course/getKudosValues.route";
 

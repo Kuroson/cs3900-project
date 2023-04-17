@@ -2,7 +2,6 @@ import React from "react";
 import { toast } from "react-toastify";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
-import { TaskInterface } from "models/task.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import {
@@ -11,6 +10,7 @@ import {
   deleteTask,
   updateTask,
 } from "util/api/workloadApi";
+import { TaskInterface } from "models/task.model";
 import EditPanelButtons from "../EditPanelButtons";
 
 type SingleEditableTaskProps = {

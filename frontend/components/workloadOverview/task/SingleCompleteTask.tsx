@@ -1,15 +1,6 @@
 import React from "react";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import {
-  Checkbox,
-  ListItem,
-  ListItemAvatar,
-  ListItemIcon,
-  ListItemText,
-  TextField,
-} from "@mui/material";
-import { FullTaskInterface, TaskInterface } from "models/task.model";
+import { Checkbox, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { FullTaskInterface } from "models/task.model";
 
 type SingleCompleteTaskProps = {
   task: FullTaskInterface;

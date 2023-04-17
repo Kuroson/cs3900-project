@@ -1,12 +1,9 @@
-import { HttpException } from "@/exceptions/HttpException";
-import Course from "@/models/course/course.model";
-import User from "@/models/user.model";
-import { addStudents } from "@/routes/course/addStudents.route";
-import { archiveCourse } from "@/routes/course/archiveCourse.route";
-import { createCourse } from "@/routes/course/createCourse.route";
-import { getStudents } from "@/routes/course/getStudents.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import Course from "@/models/course/course.model";
+import User from "@/models/user.model";
+import { archiveCourse } from "@/routes/course/archiveCourse.route";
+import { createCourse } from "@/routes/course/createCourse.route";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test archiving a course", () => {

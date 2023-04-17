@@ -1,15 +1,13 @@
+import dayjs from "dayjs";
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Enrolment, { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
 import WorkloadCompletion from "@/models/course/enrolment/workloadCompletion.model";
-import Task from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import dayjs from "dayjs";
-import { Request, Response } from "express";
-import { checkAdmin } from "../admin/admin.route";
 import { getKudos } from "../course/getKudosValues.route";
 import { WorkloadCompletionInterface } from "./../../models/course/enrolment/workloadCompletion.model";
 import { WeekInterface } from "./../../models/course/workloadOverview/week.model";

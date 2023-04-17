@@ -1,26 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { toast } from "react-toastify";
 import Head from "next/head";
 import Link from "next/link";
 import { Button, Typography } from "@mui/material";
+import { GetServerSideProps } from "next";
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
+import { ContentContainer, Loading, StudentNavBar } from "components";
+import SingleStudentWeekSection from "components/workloadOverview/workload/SingleStudentWeekSection";
+import { useUser } from "util/UserContext";
+import { getUserCourseDetails } from "util/api/courseApi";
+import { getFileDownloadLink } from "util/api/resourceApi";
+import initAuth from "util/firebase";
 import { ResourceInterface } from "models";
 import { UserCourseInformation } from "models/course.model";
 import { PageFull } from "models/page.model";
 import { UserDetails } from "models/user.model";
 import { FullWeekInterface } from "models/week.model";
-import { GetServerSideProps } from "next";
-import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
-import { ContentContainer, Loading, StudentNavBar } from "components";
-import { Routes } from "components/Layout/NavBars/NavBar";
-import SingleEditableWeekSection from "components/admin/workload/SingleEditableWeekSection";
-import SingleStudentWeekSection from "components/workloadOverview/workload/SingleStudentWeekSection";
-import StudentWorkloadSection from "components/workloadOverview/workload/StudentWorkloadSection";
-import { useUser } from "util/UserContext";
-import { getUserCourseDetails } from "util/api/courseApi";
-import { getFileDownloadLink } from "util/api/resourceApi";
-import { getUserDetails } from "util/api/userApi";
-import initAuth from "util/firebase";
 
 initAuth(); // SSR maybe, i think...
 
@@ -89,9 +84,6 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
     pageData.workload,
   );
 
-  console.log("This is");
-  console.log(dynamicWorkload);
-
   React.useEffect(() => {
     // Build user data for user context
     if (user.userDetails !== null) {
@@ -109,9 +101,9 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Course page</title>
-        <meta name="description" content="Home page" />
-        <link rel="icon" href="/favicon.png" />
+        <title>{pageData.title}</title>
+        <meta name="description" content="Course content page" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>

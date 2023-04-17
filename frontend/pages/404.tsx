@@ -6,7 +6,7 @@ export default function Custom404() {
     <>
       <Head>
         <title>404 - Page Not Found</title>
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <EmptyNavBar />
       <ContentContainer>

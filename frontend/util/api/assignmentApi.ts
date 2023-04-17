@@ -1,3 +1,4 @@
+import { HttpException } from "util/HttpExceptions";
 import {
   AssignmentInfoType,
   AssignmentListType,
@@ -7,7 +8,6 @@ import {
   getAllSubmissionsType,
   gradingType,
 } from "models/assignment.model";
-import { HttpException } from "util/HttpExceptions";
 import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
 

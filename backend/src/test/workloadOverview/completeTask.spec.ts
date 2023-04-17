@@ -1,3 +1,5 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import WorkloadCompletion from "@/models/course/enrolment/workloadCompletion.model";
 import Page from "@/models/course/page/page.model";
@@ -11,9 +13,7 @@ import { registerUser } from "@/routes/user/register.route";
 import { completeTask } from "@/routes/workloadOverview/completeTask.route";
 import { createTask } from "@/routes/workloadOverview/createTask.route";
 import { createWeek } from "@/routes/workloadOverview/createWeek.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
-import initialiseMongoose, { stringifyOutput } from "../testUtil";
+import initialiseMongoose from "../testUtil";
 
 describe("Test completing a task", () => {
     const id = uuidv4();

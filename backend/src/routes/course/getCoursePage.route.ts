@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Page, { PageInterface } from "@/models/course/page/page.model";
@@ -6,7 +7,6 @@ import { SectionInterface } from "@/models/course/page/section.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 
 export type PageData = Omit<PageInterface, "sections" | "resources"> & {
     sections: Array<

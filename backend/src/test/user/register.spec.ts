@@ -1,9 +1,9 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import User, { INSTRUCTOR_ROLE } from "@/models/user.model";
 import { registerUser } from "@/routes/user/register.route";
 import { getUserDetails } from "@/routes/user/userDetails.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test creation of new User", () => {

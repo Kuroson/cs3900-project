@@ -1,10 +1,10 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import User, { INSTRUCTOR_ROLE, STUDENT_ROLE } from "@/models/user.model";
 import { updateUserInstructor } from "@/routes/admin/adminInstructorSet.route";
 import { registerUser } from "@/routes/user/register.route";
 import { getUserDetails } from "@/routes/user/userDetails.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Promoting user to instructor", () => {

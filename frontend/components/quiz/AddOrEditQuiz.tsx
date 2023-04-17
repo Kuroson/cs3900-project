@@ -4,10 +4,9 @@ import { Box, Button, TextField } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { CreateQuizType, QuizBasicInfo } from "models/quiz.model";
 import PageHeader from "components/common/PageHeader";
 import TitleWithIcon from "components/common/TitleWithIcon";
-import styles from "./EditQuiz.module.scss";
+import { CreateQuizType, QuizBasicInfo } from "models/quiz.model";
 
 type AddOrEditQuizProps = {
   handleAddNewQuiz?: (newQuiz: CreateQuizType) => void;

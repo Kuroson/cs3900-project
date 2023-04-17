@@ -1,5 +1,5 @@
-import { CompleteWeekInterface, FullWeekInterface } from "models/week.model";
-import { FullWorkloadInfo, WorkloadInterface } from "models/workload.model";
+import { CompleteWeekInterface } from "models/week.model";
+import { FullWorkloadInfo } from "models/workload.model";
 import { BackendLinkType, apiDelete, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
 

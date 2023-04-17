@@ -5,17 +5,8 @@ import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Button, TextField } from "@mui/material";
 import { deepOrange } from "@mui/material/colors";
-import { BasicCourseInfo } from "models/course.model";
-import { KudosValuesType } from "models/kudosValue.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
-import {
-  AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserSSR,
-  withAuthUserTokenSSR,
-} from "next-firebase-auth";
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
 import { defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import { HttpException } from "util/HttpExceptions";
@@ -23,6 +14,9 @@ import { useUser } from "util/UserContext";
 import { CreateNewCoursePayloadRequest, createNewCourse } from "util/api/courseApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
+import { BasicCourseInfo } from "models/course.model";
+import { KudosValuesType } from "models/kudosValue.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -153,9 +147,9 @@ const CreateCourse = (): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Admin page</title>
-        <meta name="description" content="Home page" />
-        <link rel="icon" href="/favicon.png" />
+        <title>Create a new course</title>
+        <meta name="description" content="Create a new course" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} routes={defaultAdminRoutes} />
       <ContentContainer>

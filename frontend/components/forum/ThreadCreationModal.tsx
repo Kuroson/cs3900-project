@@ -3,12 +3,12 @@ import { toast } from "react-toastify";
 import ImageIcon from "@mui/icons-material/Image";
 import { LoadingButton } from "@mui/lab";
 import { Button, FormControl, Modal, TextField } from "@mui/material";
-import { FullPostInfo } from "models/post.model";
-import { UserDetails } from "models/user.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { CreateNewPostPayloadRequest, createNewPost } from "util/api/forumApi";
 import { fileToDataUrl } from "util/util";
+import { FullPostInfo } from "models/post.model";
+import { UserDetails } from "models/user.model";
 
 const style = {
   position: "absolute",

@@ -1,20 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ExpandMore } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
-import {
-  AnalyticsGradesType,
-  AnalyticsQuestionsType,
-  AnalyticsTagSummaryType,
-  AssignmentGrade,
-  GradeType,
-  QuizGrade,
-} from "models/analytics.model";
-import { UserCourseInformation } from "models/course.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
@@ -30,6 +20,16 @@ import {
 } from "util/api/analyticsApi";
 import { getUserCourseDetails } from "util/api/courseApi";
 import initAuth from "util/firebase";
+import {
+  AnalyticsGradesType,
+  AnalyticsQuestionsType,
+  AnalyticsTagSummaryType,
+  AssignmentGrade,
+  GradeType,
+  QuizGrade,
+} from "models/analytics.model";
+import { UserCourseInformation } from "models/course.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -169,7 +169,7 @@ const Analytics = ({ courseData }: AnalyticsProps): JSX.Element => {
       <Head>
         <title>Analytics</title>
         <meta name="description" content="Analytics" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>

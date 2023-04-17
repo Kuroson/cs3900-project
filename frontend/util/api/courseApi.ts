@@ -1,6 +1,5 @@
-import { CourseInterface, MongooseId } from "models";
 import { UserCourseInformation } from "models/course.model";
-import { KudosValuesInterface, KudosValuesType } from "models/kudosValue.model";
+import { KudosValuesType } from "models/kudosValue.model";
 import { BackendLinkType, apiGet, apiPost, apiPut } from "./api";
 import { getBackendLink } from "./userApi";
 

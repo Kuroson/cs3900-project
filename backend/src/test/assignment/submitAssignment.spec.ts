@@ -1,3 +1,5 @@
+import mongoose, { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import AssignmentSubmission from "@/models/course/enrolment/assignmentSubmission.model";
 import User from "@/models/user.model";
@@ -7,8 +9,6 @@ import { submitAssignment } from "@/routes/assignment/submitAssignment.route";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
-import mongoose, { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test submitting an assignment", () => {

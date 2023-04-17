@@ -4,8 +4,6 @@ import { useRouter } from "next/router";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { Accordion, AccordionDetails, AccordionSummary, TextField } from "@mui/material";
-import { BasicCourseInfo } from "models/course.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
@@ -14,6 +12,8 @@ import CourseCard from "components/common/CourseCard";
 import { useUser } from "util/UserContext";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
+import { BasicCourseInfo } from "models/course.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -55,9 +55,9 @@ const Admin = (): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Admin page</title>
-        <meta name="description" content="Home page" />
-        <link rel="icon" href="/favicon.png" />
+        <title>Instructor Home Page</title>
+        <meta name="description" content="Instructor home page" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} routes={defaultAdminRoutes} />
       <ContentContainer>

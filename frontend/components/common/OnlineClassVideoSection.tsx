@@ -1,7 +1,7 @@
 import YouTube from "react-youtube";
-import { OnlineClassFull } from "models/onlineClass.model";
 import moment from "moment";
 import { youtubeURLParser } from "util/util";
+import { OnlineClassFull } from "models/onlineClass.model";
 
 type OnlineClassVideoSectionProps = {
   dynamicOnlineClass: OnlineClassFull;

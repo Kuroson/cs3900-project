@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /* eslint-disable max-len */
+import validateEnv from "@utils/validateEnv";
+import { connect, set } from "mongoose";
 import { HttpException } from "@/exceptions/HttpException";
 import User, { INSTRUCTOR_ROLE, STUDENT_ROLE } from "@/models/user.model";
 import { logger } from "@/utils/logger";
-import validateEnv from "@utils/validateEnv";
-import { connect, set } from "mongoose";
 
 const initialiseMongoose = async () => {
     const MONGO_DB_NAME = "jestTesting";

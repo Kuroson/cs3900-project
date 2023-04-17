@@ -1,7 +1,7 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import User from "@/models/user.model";
 import { checkAdmin } from "@/routes/admin/admin.route";
-import { Request, Response } from "express";
 import { checkAuth } from "./firebase";
 import { logger } from "./logger";
 

@@ -2,10 +2,10 @@ import React from "react";
 import { toast } from "react-toastify";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
-import { ResourceInterface } from "models";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { UploadFilePayloadResponse, addNewResource, uploadResourceFile } from "util/api/pageApi";
+import { ResourceInterface } from "models";
 
 type AddNewResourceSectionProps = {
   courseId: string;

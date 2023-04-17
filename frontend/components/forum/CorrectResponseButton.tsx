@@ -1,11 +1,11 @@
 import React from "react";
 import { toast } from "react-toastify";
 import { Button } from "@mui/material";
-import { FullPostInfo } from "models/post.model";
-import { FullResponseInfo } from "models/response.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { markCorrectResponse } from "util/api/forumApi";
+import { FullPostInfo } from "models/post.model";
+import { FullResponseInfo } from "models/response.model";
 
 type CorrectResponseButtonProps = {
   resp: FullResponseInfo;

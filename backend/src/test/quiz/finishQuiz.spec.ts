@@ -1,3 +1,5 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import QuizAttempt from "@/models/course/enrolment/quizAttempt.model";
@@ -11,8 +13,6 @@ import { deleteQuiz } from "@/routes/quiz/deleteQuiz.route";
 import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
 import { updateQuiz } from "@/routes/quiz/updateQuiz.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test finishing a quiz", () => {

@@ -1,5 +1,8 @@
+import mongoose, { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
+import { getUserId } from "@/utils/util";
 import { getSummary } from "@/routes/analytics/getSummary";
 import { createAssignment } from "@/routes/assignment/createAssignment.route";
 import { deleteAssignment } from "@/routes/assignment/deleteAssignment.route";
@@ -15,9 +18,6 @@ import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
-import { getUserId } from "@/utils/util";
-import mongoose, { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test a course summary", () => {

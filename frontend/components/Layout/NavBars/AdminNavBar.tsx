@@ -7,7 +7,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {
-  Avatar,
   Button,
   FormControl,
   FormControlLabel,
@@ -17,14 +16,13 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
 import { getAuth, signOut } from "firebase/auth";
-import { UserCourseInformation } from "models/course.model";
-import { UserDetails, getRoleText } from "models/user.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { createNewPage } from "util/api/pageApi";
+import { UserCourseInformation } from "models/course.model";
+import { UserDetails, getRoleText } from "models/user.model";
 import CourseDetails from "./CourseDetails";
 import NavBar, { Routes } from "./NavBar";
 import UserDetailsSection from "./UserDetailSection";

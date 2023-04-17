@@ -3,9 +3,6 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { Button } from "@mui/material";
-import { UserCourseInformation } from "models/course.model";
-import { OnlineClassInterface } from "models/onlineClass.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading, OnlineClassCard } from "components";
@@ -19,6 +16,9 @@ import {
 } from "util/api/courseApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
+import { UserCourseInformation } from "models/course.model";
+import { OnlineClassInterface } from "models/onlineClass.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -97,9 +97,9 @@ const AdminCoursePage = ({ courseData }: AdminCoursePageProps): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Course page</title>
-        <meta name="description" content="Home page" />
-        <link rel="icon" href="/favicon.png" />
+        <title>{courseData.title}</title>
+        <meta name="description" content="Course page" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>

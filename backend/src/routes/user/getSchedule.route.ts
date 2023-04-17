@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import { AssignmentInterface } from "@/models/course/assignment/assignment.model";
 import { CourseInterface } from "@/models/course/course.model";
@@ -10,7 +11,6 @@ import User, { UserInterface } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, getUserId, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 
 type ItemType = {
     courseCode: string;

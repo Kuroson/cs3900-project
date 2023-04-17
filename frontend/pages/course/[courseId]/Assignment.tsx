@@ -2,10 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
-import dayjs from "dayjs";
-import { AssignmentListType } from "models/assignment.model";
-import { UserCourseInformation } from "models/course.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
@@ -17,6 +13,9 @@ import { useUser } from "util/UserContext";
 import { getListOfAssignments } from "util/api/assignmentApi";
 import { getUserCourseDetails } from "util/api/courseApi";
 import initAuth from "util/firebase";
+import { AssignmentListType } from "models/assignment.model";
+import { UserCourseInformation } from "models/course.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -72,7 +71,7 @@ const Assignment = ({ courseData }: AssignmentProps): JSX.Element => {
       <Head>
         <title>Assignment</title>
         <meta name="description" content="Assignment" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>

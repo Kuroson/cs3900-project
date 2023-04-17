@@ -1,3 +1,5 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Question from "@/models/course/quiz/question.model";
@@ -9,8 +11,6 @@ import { createQuiz } from "@/routes/quiz/createQuiz.route";
 import { deleteQuestion } from "@/routes/quiz/deleteQuestion.route";
 import { deleteQuiz } from "@/routes/quiz/deleteQuiz.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test creating a question", () => {

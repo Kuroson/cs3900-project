@@ -4,12 +4,9 @@ import { toast } from "react-toastify";
 import Head from "next/head";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
-import { UserCourseInformation } from "models/course.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
-import { Routes } from "components/Layout/NavBars/NavBar";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import {
@@ -17,9 +14,10 @@ import {
   getUserCourseDetails,
   removeStudentFromCourse,
 } from "util/api/courseApi";
-import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
+import { UserCourseInformation } from "models/course.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -118,8 +116,8 @@ const AddStudentsPage = ({ courseData }: AddStudentPageProps): JSX.Element => {
     <>
       <Head>
         <title>Add Students</title>
-        <meta name="description" content="Add students to a page" />
-        <link rel="icon" href="/favicon.png" />
+        <meta name="description" content="Add students to a course" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>

@@ -1,10 +1,10 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import User, { UserInterfaceFull, isRoleAdmin } from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
-import { Nullable, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
+import { getMissingBodyIDs, isValidBody } from "@/utils/util";
 
 type ErrorPayload = {
     message: string;

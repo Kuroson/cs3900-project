@@ -1,3 +1,5 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
@@ -6,8 +8,6 @@ import { createCourse } from "@/routes/course/createCourse.route";
 import { createOnlineClass } from "@/routes/onlineClasses/createOnlineClass.route";
 import { getClassFromId } from "@/routes/onlineClasses/getOnlineClass.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 import { updateOnlineClassDetails } from "./../../routes/onlineClasses/updateOnlineClass.route";
 

@@ -3,9 +3,9 @@ import Divider from "@mui/material/Divider";
 import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import utcPlugin from "dayjs/plugin/utc";
-import { CompleteWeekInterface, FullWeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { getWeek } from "util/api/workloadApi";
+import { CompleteWeekInterface, FullWeekInterface } from "models/week.model";
 import StudentTasksSection from "../task/StudentTasksSection";
 
 dayjs.extend(utcPlugin);

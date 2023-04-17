@@ -1,15 +1,14 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
-import Assignment from "@/models/course/assignment/assignment.model";
 import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
-import Task from "@/models/course/workloadOverview/Task.model";
+import Task, { TaskInterface } from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
-import { updateAssignment } from "../assignment/updateAssignment.route";
 import { updateQuiz } from "../quiz/updateQuiz.route";
+import { updateAssignment } from "../assignment/updateAssignment.route";
 
 type ResponsePayload = {
     taskId: string;
@@ -127,7 +126,7 @@ const setClassType = async (
     assignmentId: string | undefined,
     onlineClassId: string | undefined,
     firebase_uid: string,
-) => {
+): Promise<TaskInterface> => {
     let newTask;
     if (quizId !== undefined) {
         newTask = new Task({
@@ -177,5 +176,5 @@ const setClassType = async (
             description: description,
         });
     }
-    return newTask;
+    return newTask as TaskInterface;
 };

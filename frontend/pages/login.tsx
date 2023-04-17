@@ -44,7 +44,7 @@ const LoginPage = (): JSX.Element => {
       <Head>
         <title>Login Page</title>
         <meta name="description" content="Login Page" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <EmptyNavBar />
       <ContentContainer>

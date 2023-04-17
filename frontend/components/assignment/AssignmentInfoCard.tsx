@@ -3,10 +3,10 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import RuleIcon from "@mui/icons-material/Rule";
 import { Box, Button, Modal } from "@mui/material";
 import dayjs from "dayjs";
-import { AssignmentInfoType } from "models/assignment.model";
 import ShowTimeLeft from "components/common/ShowTimeLeft";
 import Tag from "components/common/Tag";
 import TitleWithIcon from "components/common/TitleWithIcon";
+import { AssignmentInfoType } from "models/assignment.model";
 import AddOrEditAssignment from "./AddOrEditAssignment";
 
 type AssignmentInfoCardProps = {

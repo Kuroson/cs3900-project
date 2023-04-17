@@ -2,8 +2,6 @@ import React from "react";
 import { toast } from "react-toastify";
 import ImportContacts from "@mui/icons-material/ImportContacts";
 import { TextField } from "@mui/material";
-import { ResourceInterface } from "models";
-import { SectionFull } from "models/section.model";
 import { useAuthUser } from "next-firebase-auth";
 import { EditPanelButtons, ResourcesSection } from "components";
 import TitleWithIcon from "components/common/TitleWithIcon";
@@ -14,6 +12,8 @@ import {
   deleteSection,
   updateSection,
 } from "util/api/pageApi";
+import { ResourceInterface } from "models";
+import { SectionFull } from "models/section.model";
 
 type SingleEditableSectionProps = {
   section: SectionFull;

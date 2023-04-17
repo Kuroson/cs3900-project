@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
 import Message, { MessageInterface } from "@/models/course/onlineClass/message.model";
@@ -7,7 +8,6 @@ import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 import { getKudos } from "../course/getKudosValues.route";
 import { completeTask } from "../workloadOverview/completeTask.route";

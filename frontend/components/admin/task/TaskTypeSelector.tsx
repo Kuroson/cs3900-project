@@ -1,14 +1,14 @@
 import React from "react";
 import { toast } from "react-toastify";
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { Box, maxWidth } from "@mui/system";
-import { AssignmentListType } from "models/assignment.model";
-import { OnlineClassInterface } from "models/onlineClass.model";
-import { QuizListType } from "models/quiz.model";
+import { Box } from "@mui/system";
 import { AuthUserContext, useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { getListOfAssignments } from "util/api/assignmentApi";
-import { getListOfQuizzes, getQuizInfoAdmin } from "util/api/quizApi";
+import { getListOfQuizzes } from "util/api/quizApi";
+import { AssignmentListType } from "models/assignment.model";
+import { OnlineClassInterface } from "models/onlineClass.model";
+import { QuizListType } from "models/quiz.model";
 
 type TaskTypeSelectorProps = {
   courseId: string;
@@ -47,6 +47,7 @@ const TaskTypeSelector = ({
     } else if (taskType === "assignment") {
       getAssignments(courseId, authUser, setAssignments);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskType]);
 
   const handleChange = async (event: SelectChangeEvent) => {
@@ -64,7 +65,6 @@ const TaskTypeSelector = ({
       setOnlineClass(event.target.value as string);
     }
   };
-  console.log(taskType, quiz, assignment, onlineClass);
 
   if (taskType === "quiz") {
     return (

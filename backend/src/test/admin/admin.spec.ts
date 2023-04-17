@@ -1,7 +1,7 @@
-import User from "@/models/user.model";
-import { checkAdmin } from "@/routes/admin/admin.route";
 import { disconnect } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import User from "@/models/user.model";
+import { checkAdmin } from "@/routes/admin/admin.route";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test checking if user is admin", () => {

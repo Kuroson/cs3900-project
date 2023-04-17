@@ -1,20 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { toast } from "react-toastify";
 import Head from "next/head";
-import HomeIcon from "@mui/icons-material/Home";
-import { UserCourseInformation } from "models/course.model";
-import { OnlineClassInterface } from "models/onlineClass.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, OnlineClassCard, StudentNavBar } from "components";
-import { Routes } from "components/Layout/NavBars/NavBar";
 import Leaderboard from "components/common/Leaderboard";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
-import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
+import { UserCourseInformation } from "models/course.model";
+import { OnlineClassInterface } from "models/onlineClass.model";
+import { UserDetails } from "models/user.model";
 
 initAuth();
 
@@ -68,7 +64,7 @@ const StudentCoursePage = ({ courseData }: StudentCoursePageProps): JSX.Element 
       <Head>
         <title>{`${courseData.code} ${courseData.session}`}</title>
         <meta name="description" content={courseData.description} />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>

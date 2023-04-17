@@ -3,12 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button } from "@mui/material";
-import { ResourceInterface } from "models";
-import { UserCourseInformation } from "models/course.model";
-import { PageFull } from "models/page.model";
-import { UserDetails } from "models/user.model";
-import { FullWeekInterface } from "models/week.model";
-import { FullWorkloadInfo } from "models/workload.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import {
@@ -28,6 +22,12 @@ import { getFileDownloadLink } from "util/api/resourceApi";
 import { getWorkload } from "util/api/workloadApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
+import { ResourceInterface } from "models";
+import { UserCourseInformation } from "models/course.model";
+import { PageFull } from "models/page.model";
+import { UserDetails } from "models/user.model";
+import { FullWeekInterface } from "models/week.model";
+import { FullWorkloadInfo } from "models/workload.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -87,15 +87,12 @@ const AdminCoursePage = ({
     router.push(`/instructor/${courseData._id}`);
   };
 
-  console.log("THIS is " + dynamicWorkload);
-  console.log(pageData);
-
   return (
     <>
       <Head>
-        <title>Course page</title>
-        <meta name="description" content="Home page" />
-        <link rel="icon" href="/favicon.png" />
+        <title>{pageData.title}</title>
+        <meta name="description" content="Content page" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>
