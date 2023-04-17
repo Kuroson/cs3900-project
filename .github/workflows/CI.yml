@@ -29,7 +29,7 @@ jobs:
           cache: "yarn"
           cache-dependency-path: ./backend/yarn.lock
       - name: Install dependencies
-        run: yarn
+        run: yarn --frozen-lockfile
       - name: Lint
         run: yarn lint
       - name: Prettier
@@ -86,7 +86,7 @@ jobs:
           cache: "yarn"
           cache-dependency-path: ./backend/yarn.lock
       - name: Install dependencies
-        run: yarn
+        run: yarn --frozen-lockfile
       - name: Build
         env:
           FIREBASE_PRIVATE_KEY: ${{ secrets.BACKEND_FIREBASE_PRIVATE_KEY }}
@@ -148,7 +148,7 @@ jobs:
           cache: "yarn"
           cache-dependency-path: ./frontend/yarn.lock
       - name: Install dependencies
-        run: yarn
+        run: yarn --frozen-lockfile
       - name: Lint
         run: yarn lint
       - name: Prettier
@@ -179,7 +179,7 @@ jobs:
           cache-dependency-path: ./frontend/yarn.lock
       - name: Install frontend dependencies
         working-directory: "./frontend"
-        run: yarn
+        run: yarn --frozen-lockfile
       - name: Dump backend env
         working-directory: "./backend"
         env:
