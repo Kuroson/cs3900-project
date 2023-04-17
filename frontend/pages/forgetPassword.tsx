@@ -39,6 +39,7 @@ const ForgetPasswordPage = (): JSX.Element => {
     await sendPasswordResetEmail(getAuth(), email)
       .then((res) => {
         console.log(res);
+        toast.success("Successfully sent password reset link");
       })
       .catch((err) => {
         if (err?.code === "auth/user-not-found") {
