@@ -42,6 +42,29 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
     }
   }, [user.userDetails]);
 
+  // Re-render stuff on load
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const [resUserData, errUserData] = await getUserDetails(
+        await authUser.getIdToken(),
+        authUser.email ?? "bad",
+        "client",
+      );
+
+      if (errUserData !== null) {
+        throw errUserData;
+      }
+
+      if (resUserData === null) throw new Error("This shouldn't have happened");
+      return resUserData;
+    };
+    if (user.userDetails !== null) {
+      fetchUserData().then((res) => user.setUserDetails(res.userDetails));
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (loading || user.userDetails === null) return <Loading />;
   const userDetails = user.userDetails as UserDetails;
 
