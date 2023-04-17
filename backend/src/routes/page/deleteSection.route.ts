@@ -18,7 +18,7 @@ type QueryPayload = {
 };
 
 /**
- * DELETE /page/removes/sect
+ * DELETE /page/remove/sect
  * Attempts to remove a section based on sectionId
  * @param req
  * @param res

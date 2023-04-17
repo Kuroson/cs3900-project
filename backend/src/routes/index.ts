@@ -117,7 +117,7 @@ indexRouter.post("/page/create", adminRoute(createPageController));
 indexRouter.put("/page/add/resource", adminRoute(addResourceController)); // This updates and create, should split up
 indexRouter.put("/page/add/section", adminRoute(addSectionController));
 indexRouter.delete("/page/remove/resource", adminRoute(deleteResourceController));
-indexRouter.delete("/page/removes/section", adminRoute(deleteSectionController));
+indexRouter.delete("/page/remove/section", adminRoute(deleteSectionController));
 
 // File routes
 indexRouter.post("/file/upload", firebaseUpload.single("file"), adminRoute(uploadFileController));
