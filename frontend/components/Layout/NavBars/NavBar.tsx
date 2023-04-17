@@ -36,7 +36,7 @@ export const defaultAdminRoutes: Routes[] = [
 const NavBar = ({ routes, role }: NavBarProps): JSX.Element => {
   return (
     <div
-      className="w-full flex flex-col items-center ml-2 mt-3 h-[780px] overflow-scroll"
+      className="w-full flex flex-col items-center ml-2 mt-3 h-[600px] overflow-scroll"
       id="navbar"
     >
       {routes.map(({ name, route, icon, hasLine }, index) => {
