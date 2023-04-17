@@ -2,10 +2,12 @@
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { ImportContacts } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
+import TitleWithIcon from "components/common/TitleWithIcon";
 import SingleStudentWeekSection from "components/workloadOverview/workload/SingleStudentWeekSection";
 import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
@@ -43,10 +45,10 @@ const ResourcesDisplay = ({ resources }: ResourceDisplayProps): JSX.Element => {
             <span
               className="w-full text-xl font-medium flex flex-col"
               data-cy="resource-title"
-            >{`Resource: ${resource.title}`}</span>
+            >{`${resource.title}`}</span>
             {/* Description */}
             {resource.description !== undefined && (
-              <span data-cy="resource-description">{`Description: ${resource.description}`}</span>
+              <span data-cy="resource-description">{`${resource.description}`}</span>
             )}
             {/* Resource */}
             {resource.stored_name !== undefined && (
@@ -122,7 +124,7 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
           )}
 
           {/* First list out all the base resources */}
-          <div className="bg-gray-400 rounded-xl px-[2.5%] py-[2.5%] mb-5">
+          <div className="rounded-xl px-[2.5%] py-[2.5%] mb-5">
             <ResourcesDisplay resources={pageData.resources} />
           </div>
 
@@ -130,10 +132,10 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
           {pageData.sections.map((section) => {
             return (
               <div key={section._id}>
-                <div className="w-full flex flex-col bg-gray-300 rounded-xl px-[2.5%] py-[2.5%] mb-5">
-                  <Typography variant="h5" fontWeight="600">
-                    {`Section: ${section.title}`}
-                  </Typography>
+                <div className="w-full flex flex-col outline outline-[#F1F6EE] rounded-xl px-[2.5%] py-[2.5%] mb-5">
+                  <TitleWithIcon text={`Section: ${section.title}`}>
+                    <ImportContacts color="primary" />
+                  </TitleWithIcon>
                   <ResourcesDisplay resources={section.resources} />
                 </div>
               </div>
