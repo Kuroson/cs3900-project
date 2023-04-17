@@ -1,10 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { Button, IconButton, TextField } from "@mui/material";
-import { SectionFull } from "models/section.model";
+import { Button, TextField } from "@mui/material";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { AddSectionPayloadRequest, createSection } from "util/api/pageApi";
+import { SectionFull } from "models/section.model";
 
 type AddNewSectionProps = {
   courseId: string;

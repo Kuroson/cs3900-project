@@ -1,17 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import {
-  Checkbox,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
-import { FullTaskInterface, TaskInterface } from "models/task.model";
+import { Checkbox, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { useAuthUser } from "next-firebase-auth";
 import { CompleteTaskPayloadRequest, completeTask } from "util/api/workloadApi";
+import { FullTaskInterface } from "models/task.model";
 
 type SingleUncompleteTaskProps = {
   task: FullTaskInterface;

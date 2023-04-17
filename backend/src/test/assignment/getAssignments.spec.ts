@@ -1,3 +1,5 @@
+import mongoose, { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { createAssignment } from "@/routes/assignment/createAssignment.route";
@@ -7,8 +9,6 @@ import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
 import { registerUser } from "@/routes/user/register.route";
-import mongoose, { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test listing assignments", () => {

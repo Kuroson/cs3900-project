@@ -1,15 +1,13 @@
+import dayjs from "dayjs";
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Enrolment, { EnrolmentInterface } from "@/models/course/enrolment/enrolment.model";
 import WorkloadCompletion from "@/models/course/enrolment/workloadCompletion.model";
-import Task from "@/models/course/workloadOverview/Task.model";
 import Week from "@/models/course/workloadOverview/week.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import dayjs from "dayjs";
-import { Request, Response } from "express";
-import { checkAdmin } from "../admin/admin.route";
 import { getKudos } from "../course/getKudosValues.route";
 import { WorkloadCompletionInterface } from "./../../models/course/enrolment/workloadCompletion.model";
 import { WeekInterface } from "./../../models/course/workloadOverview/week.model";
@@ -126,9 +124,6 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
             });
 
         enrolment.workloadCompletion.push(workloadCompletionId);
-        //Add kudos to enrolment for dashboard updates
-        enrolment.kudosEarned =
-            enrolment.kudosEarned + (1 + extraKudos) * courseKudos.weeklyTaskCompletion;
 
         await enrolment.save().catch((err) => {
             logger.error(err);
@@ -166,6 +161,14 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
 
     await myStudent.save().catch((err) => {
         throw new HttpException(500, "Failed to add kudos to user", err);
+    });
+
+    //Add kudos to enrolment for dashboard updates
+    enrolment.kudosEarned =
+        enrolment.kudosEarned + (1 + extraKudos) * courseKudos.weeklyTaskCompletion;
+    await enrolment.save().catch((err) => {
+        logger.error(err);
+        throw new HttpException(500, "Failed to add kudos to enrolment", err);
     });
 
     return workloadCompletionId.toString() as string;

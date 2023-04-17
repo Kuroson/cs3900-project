@@ -1,9 +1,9 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Course, { CourseInterface } from "@/models/course/course.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload } from "@/utils/util";
-import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {

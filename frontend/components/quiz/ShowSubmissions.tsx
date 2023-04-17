@@ -3,15 +3,11 @@ import { toast } from "react-toastify";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Avatar, Button, Card, TextField } from "@mui/material";
-import {
-  EachQuestionSubmissionsType,
-  QuizSubmissionsType,
-  StudentResponseType,
-} from "models/quiz.model";
 import { useAuthUser } from "next-firebase-auth";
 import Tag from "components/common/Tag";
 import { HttpException } from "util/HttpExceptions";
 import { getQuizSubmissions, gradeSubmission } from "util/api/quizApi";
+import { EachQuestionSubmissionsType, StudentResponseType } from "models/quiz.model";
 
 type MarkProps = {
   courseId: string;

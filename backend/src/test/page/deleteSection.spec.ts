@@ -1,3 +1,5 @@
+import mongoose, { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import Page from "@/models/course/page/page.model";
 import Section from "@/models/course/page/section.model";
@@ -8,8 +10,6 @@ import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { deleteSection } from "@/routes/page/deleteSection.route";
 import { registerUser } from "@/routes/user/register.route";
-import mongoose, { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test removing a section from a page", () => {

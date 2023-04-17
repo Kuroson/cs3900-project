@@ -1,10 +1,10 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Page from "@/models/course/page/page.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {

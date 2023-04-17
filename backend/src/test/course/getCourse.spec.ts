@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import Post from "@/models/course/forum/post.model";
 import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
@@ -8,8 +10,6 @@ import { createCourse } from "@/routes/course/createCourse.route";
 import { getCourse } from "@/routes/course/getCourse.route";
 import { updateCourse } from "@/routes/course/updateCourse.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test getting course details", () => {

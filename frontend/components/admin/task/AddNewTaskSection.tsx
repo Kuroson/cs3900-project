@@ -15,11 +15,11 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import { OnlineClassInterface } from "models/onlineClass.model";
-import { TaskInterface } from "models/task.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { CreateNewTaskPayloadRequest, createNewTask } from "util/api/workloadApi";
+import { OnlineClassInterface } from "models/onlineClass.model";
+import { TaskInterface } from "models/task.model";
 import TaskTypeSelector from "./TaskTypeSelector";
 
 type AddNewTaskSectionProps = {

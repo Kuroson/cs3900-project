@@ -216,7 +216,7 @@ export const deleteSection = (
   type: BackendLinkType,
 ) => {
   return apiDelete<DeleteSectionPayloadRequest, DeleteSectionPayloadResponse>(
-    `${getBackendLink(type)}/page/removes/section`,
+    `${getBackendLink(type)}/page/remove/section`,
     token,
     payload,
   );

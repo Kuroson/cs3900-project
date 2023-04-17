@@ -8,8 +8,6 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import HomeIcon from "@mui/icons-material/Home";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import { Accordion, AccordionDetails, AccordionSummary, TextField } from "@mui/material";
-import { UserEnrolmentInformation } from "models/enrolment.model";
-import { UserDetails } from "models/user.model";
 import moment from "moment";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
@@ -20,6 +18,8 @@ import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { getUserDetails, getUserSchedule } from "util/api/userApi";
 import initAuth from "util/firebase";
+import { UserEnrolmentInformation } from "models/enrolment.model";
+import { UserDetails } from "models/user.model";
 
 const localizer = momentLocalizer(moment);
 
@@ -179,7 +179,7 @@ const HomePage = (): JSX.Element => {
       <Head>
         <title>Home page</title>
         <meta name="description" content="Home page" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <StudentNavBar userDetails={userDetails} routes={studentRoutes} />
       <ContentContainer>

@@ -1,13 +1,13 @@
 import { Document, Schema, Types, model } from "mongoose";
 import { UserInterface } from "../user.model";
-import { AssignmentInterface } from "./assignment/assignment.model";
-import { EnrolmentInterface } from "./enrolment/enrolment.model";
-import { ForumInterface } from "./forum/forum.model";
-import { KudosValuesInterface } from "./kudosValues.model";
-import { OnlineClassInterface } from "./onlineClass/onlineClass.model";
 import { PageInterface } from "./page/page.model";
 import { QuizInterface } from "./quiz/quiz.model";
+import { AssignmentInterface } from "./assignment/assignment.model";
 import { WorkloadOverviewInterface } from "./workloadOverview/WorkloadOverview.model";
+import { ForumInterface } from "./forum/forum.model";
+import { EnrolmentInterface } from "./enrolment/enrolment.model";
+import { KudosValuesInterface } from "./kudosValues.model";
+import { OnlineClassInterface } from "./onlineClass/onlineClass.model";
 
 /**
  * Model to represent a course in the system

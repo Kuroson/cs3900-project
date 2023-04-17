@@ -1,12 +1,11 @@
 import GridViewIcon from "@mui/icons-material/GridView";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
-import { Avatar, Button } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
+import { Button } from "@mui/material";
 import { getAuth, signOut } from "firebase/auth";
+import { useUser } from "util/UserContext";
 import { UserCourseInformation } from "models/course.model";
 import { UserDetails, getRoleText } from "models/user.model";
-import { useUser } from "util/UserContext";
 import CourseDetails from "./CourseDetails";
 import NavBar, { Routes } from "./NavBar";
 import UserDetailsSection from "./UserDetailSection";

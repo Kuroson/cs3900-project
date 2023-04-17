@@ -1,8 +1,7 @@
 import { List } from "@mui/material";
-import { FullTaskInterface, TaskInterface } from "models/task.model";
+import { FullTaskInterface } from "models/task.model";
 import SingleCompleteTask from "./SingleCompleteTask";
 import SingleUncompleteTask from "./SingleUncompleteTask";
-import SingleTask from "./SingleUncompleteTask";
 
 type StudentTasksSectionProps = {
   completedTasks: FullTaskInterface[] | undefined;

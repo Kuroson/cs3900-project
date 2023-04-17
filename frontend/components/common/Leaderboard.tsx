@@ -29,7 +29,9 @@ const Leaderboard = ({ courseId }: LeaderboardProps): JSX.Element => {
       setStudentsKudosInfo(res.students);
     };
     getStudentsKudosInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div className="p-5 min-w-min max-w-sm mx-3 my-2">
       <div

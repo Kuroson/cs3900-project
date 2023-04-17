@@ -1,6 +1,5 @@
 import { OnlineClassInterface } from "models/onlineClass.model";
-import { FullWeekInterface, WeekInterface } from "models/week.model";
-import { useAuthUser } from "next-firebase-auth";
+import { FullWeekInterface } from "models/week.model";
 import SingleEditableWeekSection from "./SingleEditableWeekSection";
 
 type WorkloadSectionProps = {

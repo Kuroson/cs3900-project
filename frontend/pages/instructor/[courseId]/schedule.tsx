@@ -5,8 +5,6 @@ import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { UserCourseInformation } from "models/course.model";
-import { UserDetails } from "models/user.model";
 import moment from "moment";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
@@ -17,6 +15,8 @@ import { getUserCourseDetails } from "util/api/courseApi";
 import { CreateOnlineClassPayloadRequest, createOnlineClass } from "util/api/onlineClassApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess, youtubeURLParser } from "util/util";
+import { UserCourseInformation } from "models/course.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -89,7 +89,7 @@ const SchedulePage = ({ courseData }: SchedulePageProps): JSX.Element => {
       <Head>
         <title>Schedule New Lecture</title>
         <meta name="description" content="Schedule New Lecture" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>

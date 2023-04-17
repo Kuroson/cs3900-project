@@ -4,9 +4,9 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import RuleIcon from "@mui/icons-material/Rule";
 import { Box, Button, Modal } from "@mui/material";
 import dayjs from "dayjs";
-import { QuizBasicInfo } from "models/quiz.model";
 import ShowTimeLeft from "components/common/ShowTimeLeft";
 import TitleWithIcon from "components/common/TitleWithIcon";
+import { QuizBasicInfo } from "models/quiz.model";
 import AddOrEditQuiz from "./AddOrEditQuiz";
 
 type QuizInfoCardProps = {

@@ -3,10 +3,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import AddIcon from "@mui/icons-material/Add";
-import dayjs from "dayjs";
-import { AssignmentListType, CreateAssignmentType } from "models/assignment.model";
-import { UserCourseInformation } from "models/course.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
@@ -20,6 +16,9 @@ import { createNewAssignment, getListOfAssignments } from "util/api/assignmentAp
 import { getUserCourseDetails } from "util/api/courseApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
+import { AssignmentListType, CreateAssignmentType } from "models/assignment.model";
+import { UserCourseInformation } from "models/course.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -56,7 +55,7 @@ const Assignment = ({ courseData }: AssignmentProps): JSX.Element => {
       return;
     }
     if (res === null) throw new Error("Response and error are null");
-    console.log(res);
+
     const assignment: AssignmentListType = {
       assignmentId: res.assignmentId,
       title: newAssignment.title,
@@ -105,7 +104,7 @@ const Assignment = ({ courseData }: AssignmentProps): JSX.Element => {
       <Head>
         <title>Assignment</title>
         <meta name="description" content="Assignment" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>

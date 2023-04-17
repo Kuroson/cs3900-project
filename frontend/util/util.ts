@@ -69,7 +69,5 @@ export const fileToDataUrl = (file: File) => {
  */
 export const adminRouteAccess = async (token: string | null, email: string): Promise<boolean> => {
   const [res, err] = await getUserDetails(token, email ?? "", "ssr");
-  console.log(res);
-  console.log(res?.userDetails.role !== 0);
   return res !== null && res.userDetails !== null && res.userDetails.role === 0;
 };

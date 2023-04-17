@@ -1,11 +1,11 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { addStudents } from "@/routes/course/addStudents.route";
 import { createCourse } from "@/routes/course/createCourse.route";
 import { removeStudents } from "@/routes/course/removeStudents.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, {
     genUserTestOnly,
     registerMultipleUsersTestingOnly,

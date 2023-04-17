@@ -1,9 +1,9 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Resource from "@/models/course/page/resource.model";
 import { recallFileUrl } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 
 type ResponsePayload = {
     success: boolean;

@@ -1,15 +1,12 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
-import Course, { CourseInterface } from "@/models/course/course.model";
+import Course from "@/models/course/course.model";
 import Enrolment from "@/models/course/enrolment/enrolment.model";
-import Forum, { ForumInterface } from "@/models/course/forum/forum.model";
-import { PageInterface } from "@/models/course/page/page.model";
-import { ResourceInterface } from "@/models/course/page/resource.model";
-import { SectionInterface } from "@/models/course/page/section.model";
+import { ForumInterface } from "@/models/course/forum/forum.model";
 import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 
 type ResponsePayload = BasicForumInfo;
 

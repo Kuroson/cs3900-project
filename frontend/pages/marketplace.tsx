@@ -7,7 +7,6 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import SavingsIcon from "@mui/icons-material/Savings";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import { Card } from "@mui/material";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
@@ -16,9 +15,10 @@ import PageHeader from "components/common/PageHeader";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
 import { CLIENT_BACKEND_URL } from "util/api/api";
-import { Avatar, AvatarMap, buyAvatar, getAvatars } from "util/api/avatarApi";
+import { Avatar, buyAvatar, getAvatars } from "util/api/avatarApi";
 import { getUserDetails } from "util/api/userApi";
 import initAuth from "util/firebase";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -105,9 +105,9 @@ const MarketPlacePage = ({ avatars }: MarketPlacePageProps): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Marketplace page</title>
+        <title>Marketplace</title>
         <meta name="description" content="Marketplace page" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <StudentNavBar userDetails={userDetails} routes={studentRoutes} />
       <ContentContainer>

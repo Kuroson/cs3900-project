@@ -1,7 +1,7 @@
-import { Document, Schema, Types, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
+import { QuizInterface } from "../quiz/quiz.model";
 import { AssignmentInterface } from "../assignment/assignment.model";
 import { OnlineClassInterface } from "../onlineClass/onlineClass.model";
-import { QuizInterface } from "../quiz/quiz.model";
 
 /**
  * This is an individual task within a week for students to complete.

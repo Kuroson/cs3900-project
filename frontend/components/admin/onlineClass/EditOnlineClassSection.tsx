@@ -3,12 +3,12 @@ import { toast } from "react-toastify";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { OnlineClassFull } from "models/onlineClass.model";
 import moment from "moment";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { UpdateOnlineClassPayloadRequest, updateOnlineClass } from "util/api/onlineClassApi";
 import { youtubeURLParser } from "util/util";
+import { OnlineClassFull } from "models/onlineClass.model";
 
 type EditOnlineClassSectionProps = {
   dynamicOnlineClass: OnlineClassFull;

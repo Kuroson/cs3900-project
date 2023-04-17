@@ -1,4 +1,4 @@
-import { Document, Schema, Types, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
 /**
  * A model for a resource that represents a file uploaded to the system.

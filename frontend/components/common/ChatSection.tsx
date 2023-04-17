@@ -2,13 +2,12 @@ import React from "react";
 import { toast } from "react-toastify";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
-import { MessageInterface } from "models/message.model";
-import { OnlineClassFull } from "models/onlineClass.model";
 import moment from "moment";
 import { useAuthUser } from "next-firebase-auth";
-import CourseId from "pages/course/[courseId]";
 import { HttpException } from "util/HttpExceptions";
 import { getOnlineClassDetails, sendOnlineClassMessage } from "util/api/onlineClassApi";
+import { MessageInterface } from "models/message.model";
+import { OnlineClassFull } from "models/onlineClass.model";
 
 type ChatSectionProps = {
   dynamicOnlineClass: OnlineClassFull;

@@ -1,3 +1,5 @@
+import mongoose, { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { createCourse } from "@/routes/course/createCourse.route";
@@ -5,8 +7,6 @@ import { createPage } from "@/routes/page/createPage.route";
 import { deletePage } from "@/routes/page/deletePage.route";
 import { getPages } from "@/routes/page/getPages.route";
 import { registerUser } from "@/routes/user/register.route";
-import mongoose, { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test getting course pages", () => {

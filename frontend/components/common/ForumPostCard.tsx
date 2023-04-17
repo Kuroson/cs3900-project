@@ -1,14 +1,13 @@
 import React from "react";
 import { Divider } from "@mui/material";
-import { FullPostInfo } from "models/post.model";
 import moment from "moment";
+import { FullPostInfo } from "models/post.model";
 
 type ForumPostCardProps = {
   post: FullPostInfo;
 };
 
 const ForumPostCard: React.FC<ForumPostCardProps> = ({ post }): JSX.Element => {
-  console.log(post);
   return (
     <>
       <div className="flex flex-col rounded-lg px-5 pb-5 mb-2 mx-5 w-[600px]">

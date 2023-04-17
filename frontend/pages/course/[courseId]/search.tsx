@@ -5,10 +5,6 @@ import Link from "next/link";
 import FolderIcon from "@mui/icons-material/Folder";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import { Button, TextField } from "@mui/material";
-import { ResourceInterface } from "models";
-import { UserCourseInformation } from "models/course.model";
-import { PageFull } from "models/page.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { ContentContainer, Loading, StudentNavBar } from "components";
@@ -16,6 +12,10 @@ import { useUser } from "util/UserContext";
 import { getUserCourseDetails } from "util/api/courseApi";
 import { getFileDownloadLink } from "util/api/resourceApi";
 import initAuth from "util/firebase";
+import { ResourceInterface } from "models";
+import { UserCourseInformation } from "models/course.model";
+import { PageFull } from "models/page.model";
+import { UserDetails } from "models/user.model";
 
 initAuth();
 
@@ -81,7 +81,6 @@ const CourseResourceSearchPage = ({
   courseData,
   resourceItems,
 }: CourseResourceSearchPageProps): JSX.Element => {
-  // console.log(resourceItems);
   const user = useUser();
   const authUser = useAuthUser();
   const [loading, setLoading] = React.useState(user.userDetails === null);
@@ -112,7 +111,7 @@ const CourseResourceSearchPage = ({
       <Head>
         <title>{`${courseData.code} ${courseData.session}`}</title>
         <meta name="description" content={courseData.description} />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <StudentNavBar userDetails={userDetails} courseData={courseData} />
       <ContentContainer>

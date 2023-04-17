@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import Forum from "@/models/course/forum/forum.model";
@@ -8,7 +9,6 @@ import User from "@/models/user.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {
@@ -22,6 +22,7 @@ type QueryPayload = {
     description: string;
     icon: string;
     kudosValues?: KudosValuesType;
+    tags?: string[];
 };
 
 /**
@@ -128,7 +129,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         quizzes: [],
         assignments: [],
         workloadOverview: courseWorkloadOverview._id,
-        tags: [],
+        tags: queryBody.tags ?? [],
         kudosValues: myKudosValues._id,
     });
 

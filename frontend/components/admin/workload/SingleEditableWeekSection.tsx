@@ -1,23 +1,22 @@
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import utcPlugin from "dayjs/plugin/utc";
-import { OnlineClassInterface } from "models/onlineClass.model";
-import { CompleteWeekInterface, FullWeekInterface } from "models/week.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import {
   DeleteWeekPayloadRequest,
   UpdateWeekPayloadRequest,
   deleteWeek,
-  getWeek,
   updateWeek,
 } from "util/api/workloadApi";
+import { OnlineClassInterface } from "models/onlineClass.model";
+import { FullWeekInterface } from "models/week.model";
 import EditPanelButtons from "../EditPanelButtons";
 import TasksSection from "../task/TasksSection";
 

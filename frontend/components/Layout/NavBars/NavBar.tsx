@@ -3,8 +3,8 @@ import AddIcon from "@mui/icons-material/Add";
 import HomeIcon from "@mui/icons-material/Home";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { Divider } from "@mui/material";
-import { RoleText } from "models/user.model";
 import TitleWithIcon from "components/common/TitleWithIcon";
+import { RoleText } from "models/user.model";
 
 export type Routes = {
   name: string;

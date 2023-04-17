@@ -3,14 +3,14 @@ import React from "react";
 import { toast } from "react-toastify";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
-import { FullPostInfo } from "models/post.model";
-import { UserDetails } from "models/user.model";
 import { useAuthUser } from "next-firebase-auth";
 import { CorrectResponseButton } from "components";
 import ForumPostCard from "components/common/ForumPostCard";
 import ForumResponseCard from "components/common/ForumResponseCard";
 import { HttpException } from "util/HttpExceptions";
 import { CreateNewForumReplyPayloadRequest, createNewResponse } from "util/api/forumApi";
+import { FullPostInfo } from "models/post.model";
+import { UserDetails } from "models/user.model";
 
 type PostColumnProps = {
   showedPost: FullPostInfo | null;

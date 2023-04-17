@@ -1,3 +1,5 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import { HttpException } from "@/exceptions/HttpException";
 import Course from "@/models/course/course.model";
 import OnlineClass from "@/models/course/onlineClass/onlineClass.model";
@@ -8,8 +10,6 @@ import { updateChatEnabled } from "@/routes/onlineClasses/enableChatOnlineClass.
 import { getClassFromId } from "@/routes/onlineClasses/getOnlineClass.route";
 import { addNewChatMessage } from "@/routes/onlineClasses/sendMessageOnlineClass.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test start online class", () => {

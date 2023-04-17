@@ -1,8 +1,8 @@
-import { UserInterface } from "@/models/user.model";
 import { Document, Schema, Types, model } from "mongoose";
+import { UserInterface } from "@/models/user.model";
 import { CourseInterface } from "../course.model";
-import { AssignmentSubmissionInterface } from "./assignmentSubmission.model";
 import { QuizAttemptInterface } from "./quizAttempt.model";
+import { AssignmentSubmissionInterface } from "./assignmentSubmission.model";
 import { WorkloadCompletionInterface } from "./workloadCompletion.model";
 
 /**

@@ -1,6 +1,6 @@
-import { MongooseDocument, MongooseId, ResourceInterface, SectionInterface } from "models";
+import { MongooseDocument, MongooseId, ResourceInterface } from "models";
 import { SectionFull } from "./section.model";
-import { FullWeekInterface, WeekInterface } from "./week.model";
+import { FullWeekInterface } from "./week.model";
 
 export interface PageInterface extends MongooseDocument {
   title: string;

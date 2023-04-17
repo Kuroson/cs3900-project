@@ -1,11 +1,11 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import Forum from "@/models/course/forum/forum.model";
 import KudosValues from "@/models/course/kudosValues.model";
 import WorkloadOverview from "@/models/course/workloadOverview/WorkloadOverview.model";
 import User from "@/models/user.model";
 import { checkAccess } from "@/routes/admin/access.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test checking if user has access to a course", () => {

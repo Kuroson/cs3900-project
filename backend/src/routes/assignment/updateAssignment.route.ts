@@ -1,11 +1,11 @@
+import { Request, Response } from "express";
+import { Types } from "mongoose";
 import { HttpException } from "@/exceptions/HttpException";
 import Assignment from "@/models/course/assignment/assignment.model";
 import Course from "@/models/course/course.model";
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
-import { Types } from "mongoose";
 import { checkAdmin } from "../admin/admin.route";
 
 type ResponsePayload = {

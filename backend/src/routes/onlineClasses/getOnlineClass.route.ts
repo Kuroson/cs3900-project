@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { HttpException } from "@/exceptions/HttpException";
 import Message from "@/models/course/onlineClass/message.model";
 import OnlineClass, {
@@ -6,7 +7,6 @@ import OnlineClass, {
 import { checkAuth } from "@/utils/firebase";
 import { logger } from "@/utils/logger";
 import { ErrorResponsePayload, getMissingBodyIDs, isValidBody } from "@/utils/util";
-import { Request, Response } from "express";
 
 type ResponsePayload = FullOnlineClassInterface;
 

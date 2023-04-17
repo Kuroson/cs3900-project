@@ -1,3 +1,5 @@
+import mongoose, { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { getGrades } from "@/routes/analytics/getGrades.route";
@@ -16,8 +18,6 @@ import { getSubmissions } from "@/routes/quiz/getSubmissions.route";
 import { gradeQuestion } from "@/routes/quiz/gradeQuestion.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
 import { updateQuiz } from "@/routes/quiz/updateQuiz.route";
-import mongoose, { Mongoose, disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test getting student grades", () => {

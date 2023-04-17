@@ -5,7 +5,7 @@
     },
     "parser": "@typescript-eslint/parser",
     "extends": ["plugin:@typescript-eslint/recommended", "plugin:import/typescript"],
-    "plugins": ["@typescript-eslint"],
+    "plugins": ["@typescript-eslint", "unused-imports"],
     "parserOptions": {
         "ecmaVersion": 2018,
         "sourceType": "module",
@@ -22,6 +22,7 @@
         "no-empty-function": "off",
         "@typescript-eslint/no-empty-function": ["warn"],
         "@typescript-eslint/strict-boolean-expressions": ["warn"],
-        "@typescript-eslint/no-unsafe-return": "warn"
+        "@typescript-eslint/no-unsafe-return": "warn",
+        "unused-imports/no-unused-imports": "warn"
     }
 }

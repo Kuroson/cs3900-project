@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { Button, TextField } from "@mui/material";
-import { ResourceInterface } from "models";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import {
@@ -13,6 +12,7 @@ import {
   updatePageResource,
   uploadResourceFile,
 } from "util/api/pageApi";
+import { ResourceInterface } from "models";
 import EditPanelButtons from "../EditPanelButtons";
 
 type SingleEditableResourceProps = {

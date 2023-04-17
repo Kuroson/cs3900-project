@@ -1,10 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
 import { LoadingButton } from "@mui/lab";
-import { OnlineClassFull } from "models/onlineClass.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { endOnlineClass, startOnlineClass } from "util/api/onlineClassApi";
+import { OnlineClassFull } from "models/onlineClass.model";
 
 type StartAndEndClassButtonsProps = {
   dynamicOnlineClass: OnlineClassFull;

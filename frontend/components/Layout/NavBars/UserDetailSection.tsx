@@ -1,5 +1,5 @@
-import { UserDetails, getRoleText } from "models/user.model";
 import { CLIENT_BACKEND_URL } from "util/api/api";
+import { UserDetails, getRoleText } from "models/user.model";
 
 /**
  * User avatar

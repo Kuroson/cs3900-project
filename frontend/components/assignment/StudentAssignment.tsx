@@ -8,14 +8,13 @@ import SpellcheckIcon from "@mui/icons-material/Spellcheck";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { Button, TextField } from "@mui/material";
-import dayjs from "dayjs";
-import { AssignmentInfoType } from "models/assignment.model";
 import { useAuthUser } from "next-firebase-auth";
 import PageHeader from "components/common/PageHeader";
 import Tag from "components/common/Tag";
 import TitleWithIcon from "components/common/TitleWithIcon";
 import { HttpException } from "util/HttpExceptions";
-import { getAssignmentInfo, submitAssignment, updateAssignmentAdmin } from "util/api/assignmentApi";
+import { getAssignmentInfo, submitAssignment } from "util/api/assignmentApi";
+import { AssignmentInfoType } from "models/assignment.model";
 import AssignmentInfoCard from "./AssignmentInfoCard";
 
 const StudentAssignment: React.FC<{

@@ -1,5 +1,5 @@
-import { UserInterface } from "@/models/user.model";
 import { Document, Schema, Types, model } from "mongoose";
+import { UserInterface } from "@/models/user.model";
 import { CourseInterface } from "../course.model";
 import { FullResponseInfo, ResponseInterface } from "./response.model";
 

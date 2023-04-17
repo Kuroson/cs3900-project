@@ -9,8 +9,7 @@ import { GetStaticProps } from "next";
 import { AuthAction, withAuthUser } from "next-firebase-auth";
 import { ContentContainer, EmptyNavBar } from "components";
 import { HttpException } from "util/HttpExceptions";
-import { useUser } from "util/UserContext";
-import { CLIENT_BACKEND_URL, apiPost } from "util/api/api";
+import { CLIENT_BACKEND_URL } from "util/api/api";
 import { registerNewUser } from "util/api/userApi";
 import { isValidEmail, isValidPassword } from "util/authVerficiation";
 
@@ -106,7 +105,6 @@ const SignUpPage = ({ CLIENT_BACKEND_URL }: SignUpPageProps): JSX.Element => {
 
     await createUserWithEmailAndPassword(getAuth(), email, password)
       .then((res) => {
-        console.log(res);
         return res;
       })
       .then(async (authUser) => {
@@ -161,8 +159,8 @@ const SignUpPage = ({ CLIENT_BACKEND_URL }: SignUpPageProps): JSX.Element => {
     <>
       <Head>
         <title>Sign Up</title>
-        <meta name="description" content="Sign Up" />
-        <link rel="icon" href="/favicon.png" />
+        <meta name="description" content="Sign Up Page" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <EmptyNavBar />
       <ContentContainer>

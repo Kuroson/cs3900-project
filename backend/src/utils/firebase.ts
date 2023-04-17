@@ -1,4 +1,3 @@
-import { HttpException } from "@/exceptions/HttpException";
 import validateEnv from "@utils/validateEnv";
 import { Request } from "express";
 import { cert, initializeApp } from "firebase-admin/app";
@@ -6,6 +5,7 @@ import { getAuth } from "firebase-admin/auth";
 import { getStorage } from "firebase-admin/storage";
 import multer from "multer";
 import FirebaseStorage from "multer-firebase-storage";
+import { HttpException } from "@/exceptions/HttpException";
 
 const FIREBASE_KEY = (): string => {
     try {

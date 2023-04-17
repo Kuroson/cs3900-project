@@ -15,10 +15,10 @@ import {
   SelectChangeEvent,
   TextField,
 } from "@mui/material";
-import { getAllSubmissionsType, submissionType } from "models/assignment.model";
 import { useAuthUser } from "next-firebase-auth";
 import { HttpException } from "util/HttpExceptions";
 import { getSubmissionsAss, gradeSubmission } from "util/api/assignmentApi";
+import { getAllSubmissionsType, submissionType } from "models/assignment.model";
 
 type ShowSubmissionsAssProps = {
   courseId: string;

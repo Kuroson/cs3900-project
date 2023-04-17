@@ -1,8 +1,5 @@
 import React from "react";
 import Head from "next/head";
-import { UserCourseInformation } from "models/course.model";
-import { UserDetails } from "models/user.model";
-import { FullWorkloadInfo, WorkloadInterface } from "models/workload.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading, WorkloadSection } from "components";
@@ -12,6 +9,9 @@ import { getUserCourseDetails } from "util/api/courseApi";
 import { getWorkload } from "util/api/workloadApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
+import { UserCourseInformation } from "models/course.model";
+import { UserDetails } from "models/user.model";
+import { FullWorkloadInfo } from "models/workload.model";
 
 initAuth();
 
@@ -53,7 +53,7 @@ const WorkloadOverviewPage = ({
       <Head>
         <title>Add Workload Overview</title>
         <meta name="description" content="Add Workload Overview" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>

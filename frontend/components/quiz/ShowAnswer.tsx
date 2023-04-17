@@ -1,8 +1,8 @@
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Checkbox, IconButton, TextField } from "@mui/material";
-import { QuizQuestionType } from "models/quiz.model";
 import Tag from "components/common/Tag";
+import { QuizQuestionType } from "models/quiz.model";
 
 type ShowAnswerProps = {
   questionInfo: QuizQuestionType;

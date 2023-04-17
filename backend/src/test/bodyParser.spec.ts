@@ -1,5 +1,5 @@
-import { isValidBody } from "@/utils/util";
 import { disconnect } from "mongoose";
+import { isValidBody } from "@/utils/util";
 
 describe("Test Util Body Parser", () => {
     type Payload = {

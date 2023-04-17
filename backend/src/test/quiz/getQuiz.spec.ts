@@ -1,3 +1,5 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import User from "@/models/user.model";
 import { addStudents } from "@/routes/course/addStudents.route";
@@ -10,8 +12,6 @@ import { finishQuiz } from "@/routes/quiz/finishQuiz.route";
 import { getQuiz } from "@/routes/quiz/getQuiz.route";
 import { startQuiz } from "@/routes/quiz/startQuiz.route";
 import { updateQuiz } from "@/routes/quiz/updateQuiz.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose, { genUserTestOnly, registerMultipleUsersTestingOnly } from "../testUtil";
 
 describe("Test getting quiz info", () => {

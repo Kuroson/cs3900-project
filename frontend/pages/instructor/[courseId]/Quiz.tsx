@@ -3,10 +3,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import AddIcon from "@mui/icons-material/Add";
-import dayjs from "dayjs";
-import { UserCourseInformation } from "models/course.model";
-import { CreateQuizType, QuizListType } from "models/quiz.model";
-import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth";
 import { AdminNavBar, ContentContainer, Loading } from "components";
@@ -20,6 +16,9 @@ import { getUserCourseDetails } from "util/api/courseApi";
 import { createNewQuiz, getListOfQuizzes } from "util/api/quizApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
+import { UserCourseInformation } from "models/course.model";
+import { CreateQuizType, QuizListType } from "models/quiz.model";
+import { UserDetails } from "models/user.model";
 
 initAuth(); // SSR maybe, i think...
 
@@ -49,8 +48,6 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
       return;
     }
     if (res === null) throw new Error("Response and error are null");
-
-    console.log(res);
 
     const quiz = {
       quizId: res.quizId,
@@ -101,7 +98,7 @@ const Quiz = ({ courseData }: QuizProps): JSX.Element => {
       <Head>
         <title>Quiz</title>
         <meta name="description" content="Quiz" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>

@@ -38,7 +38,7 @@ const ForgetPasswordPage = (): JSX.Element => {
     // Send request to backendAPI;
     await sendPasswordResetEmail(getAuth(), email)
       .then((res) => {
-        console.log(res);
+        toast.success("Successfully sent password reset link");
       })
       .catch((err) => {
         if (err?.code === "auth/user-not-found") {
@@ -61,8 +61,8 @@ const ForgetPasswordPage = (): JSX.Element => {
     <>
       <Head>
         <title>Forget Password</title>
-        <link rel="icon" href="/favicon.png" />
-        <meta name="description" content="Forget password page" />
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="description" content="Forget password page. Reset it here!" />
       </Head>
       <EmptyNavBar />
       <ContentContainer>

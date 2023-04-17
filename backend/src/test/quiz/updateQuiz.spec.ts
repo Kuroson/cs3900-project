@@ -1,3 +1,5 @@
+import { disconnect } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 import Course from "@/models/course/course.model";
 import Quiz from "@/models/course/quiz/quiz.model";
 import User from "@/models/user.model";
@@ -6,8 +8,6 @@ import { createQuiz } from "@/routes/quiz/createQuiz.route";
 import { deleteQuiz } from "@/routes/quiz/deleteQuiz.route";
 import { updateQuiz } from "@/routes/quiz/updateQuiz.route";
 import { registerUser } from "@/routes/user/register.route";
-import { disconnect } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 import initialiseMongoose from "../testUtil";
 
 describe("Test updating a quiz", () => {
