@@ -126,9 +126,6 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
             });
 
         enrolment.workloadCompletion.push(workloadCompletionId);
-        //Add kudos to enrolment for dashboard updates
-        enrolment.kudosEarned =
-            enrolment.kudosEarned + (1 + extraKudos) * courseKudos.weeklyTaskCompletion;
 
         await enrolment.save().catch((err) => {
             logger.error(err);
@@ -168,5 +165,13 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         throw new HttpException(500, "Failed to add kudos to user", err);
     });
 
+    //Add kudos to enrolment for dashboard updates
+    enrolment.kudosEarned =
+        enrolment.kudosEarned + (1 + extraKudos) * courseKudos.weeklyTaskCompletion;
+    await enrolment.save().catch((err) => {
+        logger.error(err);
+        throw new HttpException(500, "Failed to add kudos to enrolment", err);
+    });
+    
     return workloadCompletionId.toString() as string;
 };
