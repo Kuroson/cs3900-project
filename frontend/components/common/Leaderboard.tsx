@@ -59,7 +59,7 @@ const Leaderboard = ({ courseId }: LeaderboardProps): JSX.Element => {
                 >
                   <ListItemIcon>
                     <div
-                      className={`w-[50px] h-[50px] rounded-full flex justify-center items-center`}
+                      className={"w-[50px] h-[50px] rounded-full flex justify-center items-center"}
                     >
                       <img
                         src={`${CLIENT_BACKEND_URL}/public/avatars/${
