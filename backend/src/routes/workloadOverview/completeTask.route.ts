@@ -172,6 +172,6 @@ export const completeTask = async (queryBody: QueryPayload): Promise<string> => 
         logger.error(err);
         throw new HttpException(500, "Failed to add kudos to enrolment", err);
     });
-    
+
     return workloadCompletionId.toString() as string;
 };
