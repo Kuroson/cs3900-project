@@ -6,6 +6,7 @@ import { LoadingButton } from "@mui/lab";
 import { Avatar, Button, TextField } from "@mui/material";
 import { deepOrange } from "@mui/material/colors";
 import { BasicCourseInfo } from "models/course.model";
+import { KudosValuesType } from "models/kudosValue.model";
 import { UserDetails } from "models/user.model";
 import { GetServerSideProps } from "next";
 import {
@@ -19,7 +20,7 @@ import { AdminNavBar, ContentContainer, Loading } from "components";
 import { defaultAdminRoutes } from "components/Layout/NavBars/NavBar";
 import { HttpException } from "util/HttpExceptions";
 import { useUser } from "util/UserContext";
-import { createNewCourse } from "util/api/courseApi";
+import { CreateNewCoursePayloadRequest, createNewCourse } from "util/api/courseApi";
 import initAuth from "util/firebase";
 import { adminRouteAccess } from "util/util";
 
@@ -37,6 +38,16 @@ const CreateCourse = (): JSX.Element => {
   const [description, setDescription] = useState<string>("");
   const [icon, setIcon] = useState<string>("");
   const [buttonLoading, setButtonLoading] = React.useState(false);
+
+  const [quizCompletionKudos, setQuizCompletionKudos] = React.useState<number>(100);
+  const [assignmentCompletionKudos, setAssignmentCompletionKudos] = React.useState<number>(100);
+  const [weeklyTaskCompletionKudos, setWeeklyTaskCompletionKudos] = React.useState<number>(100);
+  const [forumPostKudos, setForumPostKudos] = React.useState<number>(100);
+  const [forumPostAnswer, setForumPostAnswer] = React.useState<number>(100);
+  const [forumPostCorrectAnswer, setForumPostCorrectAnswer] = React.useState<number>(100);
+  const [attendance, setAttendance] = React.useState<number>(100);
+
+  const [tags, setTags] = React.useState("");
 
   React.useEffect(() => {
     // Build user data for user context
@@ -63,17 +74,46 @@ const CreateCourse = (): JSX.Element => {
   const handleCreateCourse = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    if ([code, title, session, description].some((x) => x.length === 0)) {
+    if ([code, title, session, description, tags].some((x) => x.length === 0)) {
       toast.error("Please fill out all fields");
       return;
     }
-    const dataPayload = {
+
+    const input = [
+      quizCompletionKudos,
+      assignmentCompletionKudos,
+      weeklyTaskCompletionKudos,
+      forumPostKudos,
+      forumPostAnswer,
+      forumPostCorrectAnswer,
+      attendance,
+    ];
+
+    if (input.some((x) => isNaN(x))) {
+      toast.error("Please fill out all fields");
+      return;
+    }
+
+    const kudosValues: KudosValuesType = {
+      quizCompletion: quizCompletionKudos,
+      assignmentCompletion: assignmentCompletionKudos,
+      weeklyTaskCompletion: weeklyTaskCompletionKudos,
+      forumPostCreation: forumPostKudos,
+      forumPostAnswer: forumPostAnswer,
+      forumPostCorrectAnswer: forumPostCorrectAnswer,
+      attendance: attendance,
+    };
+
+    const dataPayload: CreateNewCoursePayloadRequest = {
       code,
       title,
       session,
       description,
       icon,
+      kudosValues,
+      tags: tags.split(","),
     };
+
     setButtonLoading(true);
     const [res, err] = await createNewCourse(await authUser.getIdToken(), dataPayload, "client");
     if (err !== null) {
@@ -94,6 +134,8 @@ const CreateCourse = (): JSX.Element => {
       code: code,
       title: title,
       session: session,
+      description: description,
+      icon: icon,
       archived: false,
     };
     toast.success("Course created successfully");
@@ -117,8 +159,8 @@ const CreateCourse = (): JSX.Element => {
       </Head>
       <AdminNavBar userDetails={userDetails} routes={defaultAdminRoutes} />
       <ContentContainer>
-        <div className="py-5 px-9">
-          <h1>Create Course</h1>
+        <div className="py-5 px-9 w-full flex justify-center">
+          <h1 className="text-4xl">Create Course</h1>
         </div>
         <form
           className="flex flex-col items-center justify-center gap-6"
@@ -135,42 +177,114 @@ const CreateCourse = (): JSX.Element => {
             Upload Icon
             <input hidden accept="image/*" multiple type="file" onChange={handleImageChange} />
           </Button>
-          <div className="flex flex-col gap-6 w-[600px]">
-            <TextField
-              id="CourseCode"
-              label="Course Code"
-              variant="outlined"
-              onChange={(e) => setCode(e.target.value)}
-            />
-            <TextField
-              id="Title"
-              label="Course Title"
-              variant="outlined"
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <TextField
-              id="Session"
-              label="Course Session"
-              variant="outlined"
-              onChange={(e) => setSession(e.target.value)}
-            />
-            <TextField
-              id="Description"
-              label="Description"
-              variant="outlined"
-              multiline
-              rows={9}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <LoadingButton
-              variant="contained"
-              fullWidth
-              type="submit"
-              loading={buttonLoading}
-              id="create-course-button"
-            >
-              Create
-            </LoadingButton>
+          <div className="w-full flex justify-center">
+            <div className="flex flex-col gap-6 w-[600px] px-5">
+              <TextField
+                id="CourseCode"
+                label="Course Code"
+                variant="outlined"
+                onChange={(e) => setCode(e.target.value)}
+              />
+              <TextField
+                id="Title"
+                label="Course Title"
+                variant="outlined"
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              <TextField
+                id="Session"
+                label="Course Session"
+                variant="outlined"
+                onChange={(e) => setSession(e.target.value)}
+              />
+              <TextField
+                id="Description"
+                label="Description"
+                variant="outlined"
+                multiline
+                rows={9}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <LoadingButton
+                variant="contained"
+                fullWidth
+                type="submit"
+                loading={buttonLoading}
+                id="create-course-button"
+              >
+                Create
+              </LoadingButton>
+            </div>
+            <div className="flex flex-col gap-6 w-[600px] px-5">
+              <TextField
+                id="quizCompletionKudos"
+                label="Quiz Completion Kudos"
+                variant="outlined"
+                value={quizCompletionKudos}
+                onChange={(e) => setQuizCompletionKudos(parseInt(e.target.value))}
+                type="number"
+              />
+              <TextField
+                id="assignmentCompletionKudos"
+                label="Assignment Completion Kudos"
+                variant="outlined"
+                value={assignmentCompletionKudos}
+                onChange={(e) => setAssignmentCompletionKudos(parseInt(e.target.value))}
+                type="number"
+              />
+              <TextField
+                id="weeklyTaskCompletionKudos"
+                label="Weekly Task Completion Kudos"
+                variant="outlined"
+                value={weeklyTaskCompletionKudos}
+                onChange={(e) => setWeeklyTaskCompletionKudos(parseInt(e.target.value))}
+                type="number"
+              />
+              <TextField
+                id="forumPostKudos"
+                label="Forum Post Kudos"
+                variant="outlined"
+                value={forumPostKudos}
+                onChange={(e) => setForumPostKudos(parseInt(e.target.value))}
+                type="number"
+              />
+              <TextField
+                id="forumPostAnswer"
+                label="Forum Post Answer Kudos"
+                variant="outlined"
+                value={forumPostAnswer}
+                onChange={(e) => setForumPostAnswer(parseInt(e.target.value))}
+                type="number"
+              />
+              <TextField
+                id="forumPostCorrectAnswer"
+                label="Forum Post Correct Answer Kudos"
+                variant="outlined"
+                value={forumPostCorrectAnswer}
+                onChange={(e) => setForumPostCorrectAnswer(parseInt(e.target.value))}
+                type="number"
+              />
+              <TextField
+                id="attendance"
+                label="Attendance Kudos"
+                variant="outlined"
+                value={attendance}
+                onChange={(e) => setAttendance(parseInt(e.target.value))}
+                type="number"
+              />
+              <TextField
+                id="Tags"
+                label="Tags"
+                variant="outlined"
+                multiline
+                rows={5}
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+              />
+              <p style={{ textAlign: "right" }}>
+                <i>Enter tags as comma separated list</i>
+              </p>
+            </div>
           </div>
         </form>
       </ContentContainer>

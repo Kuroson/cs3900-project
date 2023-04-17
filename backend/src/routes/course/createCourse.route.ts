@@ -22,6 +22,7 @@ type QueryPayload = {
     description: string;
     icon: string;
     kudosValues?: KudosValuesType;
+    tags?: string[];
 };
 
 /**
@@ -128,7 +129,7 @@ export const createCourse = async (queryBody: QueryPayload, firebase_uid: string
         quizzes: [],
         assignments: [],
         workloadOverview: courseWorkloadOverview._id,
-        tags: [],
+        tags: queryBody.tags ?? [],
         kudosValues: myKudosValues._id,
     });
 

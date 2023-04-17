@@ -95,6 +95,7 @@ describe("Admin Workflow", () => {
     cy.get("#Title").focus().type(title);
     cy.get("#Session").focus().type(session);
     cy.get("#Description").focus().type(description);
+    cy.get("#Tags").type("hello,world");
     cy.get("#create-course-button").click();
     cy.wait(500);
     cy.get(".Toastify__toast-body").contains("Course created successfully");

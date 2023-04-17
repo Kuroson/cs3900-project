@@ -22,13 +22,14 @@ export const getUserCourseDetails = (
   );
 };
 
-type CreateNewCoursePayloadRequest = {
+export type CreateNewCoursePayloadRequest = {
   code: string;
   title: string;
   session: string;
   description: string;
   icon: string;
   kudosValues?: KudosValuesType;
+  tags?: string[];
 };
 
 type CreateNewCoursePayloadResponse = {
