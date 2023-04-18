@@ -1,12 +1,4 @@
 
-
-- What was planned for the period since the last work diary entry
-- What was finished
-- What were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
-- What was finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
-- What is planned for the next period (e.g., next week)
-
-
 WEEK 1
 We picked our project topic. We decided to go with a Learning Management System (LMS).
 Alexander is the Scrum master. 
