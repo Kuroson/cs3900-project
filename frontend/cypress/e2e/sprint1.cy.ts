@@ -238,6 +238,7 @@ describe("Admin Workflow", () => {
     // Go to week 2
     cy.get("h1").contains(pageWeek2).should("not.exist");
     cy.get("#navbar").contains(pageWeek2).click();
+    cy.wait(2000);
     cy.get("h1").contains(pageWeek2).should("exist");
 
     // Go back to home page to test route
