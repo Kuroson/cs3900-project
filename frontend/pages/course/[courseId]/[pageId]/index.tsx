@@ -124,15 +124,17 @@ const CoursePage = ({ courseData, pageData }: CoursePageProps): JSX.Element => {
           )}
 
           {/* First list out all the base resources */}
-          <div className="rounded-xl px-[2.5%] py-[2.5%] mb-5">
-            <ResourcesDisplay resources={pageData.resources} />
-          </div>
+          {pageData.resources.length !== 0 && (
+            <div className="rounded-xl px-[2.5%] py-[2.5%] mb-5">
+              <ResourcesDisplay resources={pageData.resources} />
+            </div>
+          )}
 
           {/* Then list out all the sections */}
           {pageData.sections.map((section) => {
             return (
               <div key={section._id}>
-                <div className="w-full flex flex-col outline outline-[#F1F6EE] rounded-xl px-[2.5%] py-[2.5%] mb-5">
+                <div className="w-full flex flex-col outline outline-[#F1F6EE] rounded-xl px-[2.5%] py-[2.5%] my-2">
                   <TitleWithIcon text={`Section: ${section.title}`}>
                     <ImportContacts color="primary" />
                   </TitleWithIcon>
