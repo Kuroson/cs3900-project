@@ -6,22 +6,79 @@
 - What was finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
 - What is planned for the next period (e.g., next week)
 
+
 WEEK 1
+We picked our project topic. We decided to go with a Learning Management System (LMS).
+Alexander is the Scrum master. 
+
+It was discussed that we would use React/Typescript for the Frontend, ExpressJs/Typescript for the backend and either MongoDB or firebase for the Database. I acknowledge that none of these decisions are set in stone and we'll confirm them as we write out our proposal
+It was also discussed that Charlene would do frontend work, Alexander would do mostly backend work and Alvin, Aditi and I would could do full stack. 
+
+I look forward to: 
+- Picking out the project extensions. It will be exciting to see what new cool features we can include and debate their feasibility.
+- Finalising our user stories. I think there should be a set number we commit to. We should not over-commit to adding more user functionality.
+- Once we finalise our user stories, we should start writing tickets and acceptance stories. I'm keen to get some guidance from our tutor regarding this. 
+
 
 WEEK 2
+We curated the user stories and split up the work for the proposal. I was assigned to work on the System Architecture and user-flow diagrams with Alvin and Charlene. 
+I was interested to work on both of these tasks as I would like to learn more and get more experience from design a web-system architecture. Furthermore, I would like to get more UI/UX experience by learning to use Balsamiq.
 
-Week 3
+There weren't really any challenges other than the usual learning curve when learning something new. I was lucky to have Alvin and Charlene with me as they were both experienced in their tasks. 
+
+I look forward to working on the System Architecture and user flow diagrams next week.
+
+
+WEEK 3
+I expressed to my team mates that I am concerned that the scope of this project was too large and I was worried that we would be penalised if we did not achieve all functionality at the end of each sprint. I asked if any of my other team mates felt the same way too. Charlene and Alvin both agreed with me. 
+As a team we decided to talk discuss with our tutor regarding this and have a discussion about this. 
+
+After talking with our tutor, we decided to pare back on the functionality and focus on achieving an MVP instead of a more fleshed out product.
+It was difficult to fit all diagrams into the report, so I had to decouple large systems and break them down for clarity sake.
+
+I look forward to starting off Sprint 1 and creating our Learning Management System.
+
 
 WEEK 4
+We set up the repository and started working on some of the first tickets. I was really impressed with the amount of time and effort Alvin put in to setting up this project especially in regards to setting up MongoDB and CI/CD pipelines.
+I was satisfied with the attention to detail in the System Architecture and User flow diagrams in our proposal. 
 
-Week 5
+I felt that the acceptance criteria for each user story is not granular enough, which makes it difficult to decouple tasks and I had to make smaller sub-tasks and tickets to complete a user story.
+I also found it difficult to work on tasks this week due to Thesis and work commitments. I made it clear to my team that I was unable to commit as much attention to COMP3900.
+
+I look forward to working on more tickets next week.
+
+
+WEEK 5
+We delivered on all our promised features for sprint 1 for Project demo this week. Our tutor seemed satisfied with what we had.
+
+Halfway through this sprint, I realised that we needed way more structure and communication if we wanted to progress ahead successfully.
+A lot of the user stories and tasks were overlapping and required the same base functionality.
+This lead to two issues:
+- Other group members were blocked by one ticket and could not start that task unless it was actually complete. E.g. An API end point was not implemented
+- To progress with their own tickets, team members would implement the required functionality. This often meant that there was duplicate code that essentially did the same thing.
+There was not enough discussion and pairing within the team to create a maintainable code base which lead to a lot of code issues.
+
+These points were discussed in the retro. I don't think it will be as much of an issue from now on though as the tasks in sprint 2 are much more granular.
+Furthermore, we have a set list of APIs to implement rather than just making them up as we go.
 
 WEEK 6
+As it was flex week, I did not focus too much attention on COMP3900. I was more preoccupied with my Thesis Course. I recognise that I should have spent more time on COMP3900 and I may struggle getting all my assigned tasks completed before the demonstration in week 8. Overall I don't believe this should affect the project's progress at all.
+
+I look forward to implementing more of the backend for workload overview. I suspect that this ticket size is much larger than it is. In particular, I aim to finish implementing the POST, PUT, GET, DELETE requests for workload Overview. Through these routes, the instructor should be able to create tasks and weekly workload overviews and they should also have the ability to edit and delete them as well.
+I also aim to provide backend functionality for the student as well. The student should have the ability to view all work they have to do as well as complete tasks.
 
 WEEK 7
+Last week I aimed to finish all the backend API routes  and I achieved this.
+Writing up all the backend APIs took longer than expected as I found that the ticket size was much larger than I anticipated. It took a while for me to become fully familiar with the Mongoose DB, and typescript. 
+It also took me some time to figure what I needed to implement to create a Workload Overview.
+Luckily I had help from Alvin who was able to explain the implementation of parts of the code base and help me debug my code. 
+I also struggled to complete a PR when I am also working on Thesis and part-time working at the same time. 
+
+At the moment, the frontend of my tickets has not been completed. I aim to complete this next week before the demo on Wednesday. I believe it can be completed before then. 
+
 
 WEEK 8
-
 Since last week, I aimed to complete the frontend for my Workload Overview feature. There were two main pieces of functionality achieved from this: The instructor view and functionality and the student view and functionality.
 The instructor can create a To do list of action items for students to complete. These lists of action items are specific to each page/week. These action items can be edited and deleted and whole lists can be removed. 
 A student can view the To do list on each specific course page. Alternatively they can view all workloads on a single page
@@ -33,3 +90,27 @@ I will get better with the more typescript I use.
 I also helped Aditi complete her ticket" GH-15- Manage student forums" by fixing up the frontend and styling of the forums for both the instructor and the student view.
 This was completed and had no affect on the overall project progress. 
 
+After the retro on Wednesday, my team and I plan to work on Sprint 3 tickets and the report. 
+
+
+WEEK 9
+As I was working on the workload overview feature in sprint 2, I was assigned the workload overview feature tickets in sprint 3. 
+Gamification was left as one of the last features to implement as it required a considerable amount of the other features to be implemented before hand. It involves the implementation of a Kudos systema and avatar marketplace, such that when a student completes a task e.g. completes a quiz, answers a forum question e.t.c, they can use the credit/kudos gained to buy avatars in the marketplace.
+Alvin, Aditi, Charlene and I met up to discuss how we can go about creating this feature - how and where the DB should store kudos, what APIs we needed to implement e.t.c
+After our discussion, I was assigned to implement a leaderboard that ranks students anonymously based on kudos. 
+
+The biggest challenge I faced was finalising the workload overview feature such that students have their tasks automatically ticked off, if a task is linked to a quiz, assignment or online class. 
+The DB was not optimised for this acceptance criteria and thus, I had to make edits to the DB to ensure that this feature was achievable. It was also relatively complex to implement compared to other tickets in sprint 3. I was able to finish this ticket this week.
+
+I look forward to implementing the Leaderboard and doing the demo and report next week.
+
+
+WEEK 10
+I finished all my assigned tickets for Sprint 3 before the code freeze on Sunday. This gave the team ample time to prepare for the demonstration on Wednesday, find and fix and bugs and write the report. 
+
+There weren't any real challenges other than finding and fixing bugs in our Learning Management System. 
+We met up on Monday to prepare for the presentation and we're going to meet again on Wednesday morning to do a final rehearsal. 
+
+The report has been split into sections such that everyone is writing an even amount. I will be writing about features and functionalities and any implementation challenges in our report. 
+
+I look forward to finishing this project and report. 
