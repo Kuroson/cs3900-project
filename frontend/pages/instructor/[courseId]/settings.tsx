@@ -169,7 +169,7 @@ const UpdateSettingsPage = ({ courseData }: UpdateSettingsPageProps): JSX.Elemen
         <meta name="description" content="Update course details page" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <AdminNavBar userDetails={userDetails} courseData={courseData} />
+      <AdminNavBar userDetails={userDetails} courseData={courseData} showAddPage={true} />
       <ContentContainer>
         <div className="py-5 px-9 w-full flex flex-col">
           <h1 className="text-center text-4xl">Update Course</h1>
